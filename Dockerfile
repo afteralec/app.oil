@@ -1,6 +1,6 @@
-ARG APP_NAME=app
+ARG APP_NAME=oil-app
 
-FROM golang:1.19 as builder
+FROM golang:1.21 as builder
 ARG APP_NAME
 ENV APP_NAME=$APP_NAME
 WORKDIR /app
@@ -12,5 +12,5 @@ FROM alpine:latest
 ARG APP_NAME
 ENV APP_NAME=$APP_NAME
 WORKDIR /usr/local/bin/
-COPY --from=build /$APP_NAME ./
+COPY --from=builder /$APP_NAME ./
 CMD ./$APP_NAME
