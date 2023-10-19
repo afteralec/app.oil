@@ -26,3 +26,15 @@ table "players" {
     unique = true
   }
 }
+
+table "requests" {
+  schema = schema.public
+  column "id" {
+    null = false
+    type = bigint
+    auto_increment = true
+  }
+  primary_key {
+    columns = [column.id]
+  }
+}
