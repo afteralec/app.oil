@@ -1,0 +1,27 @@
+name: CI Atlas
+on: [push]
+jobs:
+  ci-atlas: 
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE: oilatlasdev
+          MYSQL_ROOT_PASSWORD: pass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-start-period 10s
+          --health-timeout 5s
+          --health-retries 10
+    runs-on: ubuntu-latest
+    steps:
+          - name: Setup Atlas
+            uses: ariga/setup-atlas@v0
+          - name: Lint Migrations
+            uses: ariga/atlas-action/migrate/lint@v1
+            with:
+              dir: 'file://migrations'
+              dev-url: "mysql://root:pass@:3306/oilatlasdev"
