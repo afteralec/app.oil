@@ -23,5 +23,6 @@ jobs:
           - name: Lint Migrations
             uses: ariga/atlas-action/migrate/lint@v1
             with:
-              dir: 'file://migrations'
+              dir: "file://migrations"
+              dir-name: ""
               dev-url: "mysql://root:pass@:3306/oilatlasdev"
