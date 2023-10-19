@@ -1,7 +1,7 @@
 name: Go Test
 on: [push]
 jobs:
-  atlas:
+  test:
     services:
       # Spin up a mysql:8 container to be used as the dev-database for analysis.
       mysql:
