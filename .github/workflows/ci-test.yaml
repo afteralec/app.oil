@@ -19,6 +19,8 @@ jobs:
           --health-retries 10
     runs-on: ubuntu-latest
     steps:
+          - name: Setup Atlas
+            uses: ariga/setup-atlas@v0
           - name: Checkout
             uses: actions/checkout@v4
           - name: Setup Go
