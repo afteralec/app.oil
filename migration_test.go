@@ -9,6 +9,10 @@ import (
 	"ariga.io/atlas-go-sdk/atlasexec"
 )
 
+func TestFail(t *testing.T) {
+	t.Error("Emotional Damage")
+}
+
 func TestLintMigrations(t *testing.T) {
 	wd, err := os.Getwd()
 	if err != nil {
