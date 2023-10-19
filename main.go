@@ -27,7 +27,7 @@ func main() {
 	}
 
 	var hello string
-  if err := db.QueryRow("SELECT 'hello from MySQL!';").Scan(&hello); err != nil {
+	if err := db.QueryRow("SELECT 'hello from MySQL!';").Scan(&hello); err != nil {
 		log.Fatalf("query: %v", err)
 	}
 
