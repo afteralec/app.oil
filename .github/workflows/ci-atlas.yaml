@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
           - name: Setup Atlas
-            uses: ariga/setup-atlas@v0
+            uses: ariga/setup-atlas@v1
           - name: Lint Migrations
             uses: ariga/atlas-action/migrate/lint@v1
             with:
