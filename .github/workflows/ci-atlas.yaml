@@ -19,9 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
           - name: Setup Atlas
-            uses: ariga/setup-atlas@v0.2.6
+            uses: ariga/setup-atlas@v0
           - name: Lint Migrations
-            uses: ariga/atlas-action/migrate/lint@v0.2.6
+            uses: ariga/atlas-action/migrate/lint@v1
             with:
               dir: 'file://migrations'
               dev-url: "mysql://root:pass@:3306/oilatlasdev"
