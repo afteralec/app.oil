@@ -44,10 +44,7 @@ func migrateDatabase(t *testing.T) {
 }
 
 func TestPlayers(t *testing.T) {
-	err := godotenv.Load()
-	if err != nil {
-		t.Fatal(err)
-	}
+	godotenv.Load()
 	if os.Getenv("CLEAN_DATABASE") == "true" {
 		setupDatabase(t)
 		migrateDatabase(t)
