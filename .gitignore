@@ -1,2 +1,5 @@
 .env
+
+# Database schema files required for codegen
 schema.hcl
+migrations/
