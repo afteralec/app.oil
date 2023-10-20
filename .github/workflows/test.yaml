@@ -1,4 +1,4 @@
-name: Go Test
+name: Test
 on: [push]
 jobs:
   test:
@@ -18,20 +18,19 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     steps:
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21.x
       - name: Setup Atlas
         uses: ariga/setup-atlas@v0
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup migrations
-        run: |
-          curl --location --remote-header-name --remote-name https://raw.githubusercontent.com/afteralec/db.oil/main/schema.hcl \
-          && atlas migrate diff --dev-url "mysql://root:pass@:3306/test" --to "file://schema.hcl"
-      - name: Setup Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.21.x
+        run: make fetch_migrations
+      - name: Setup Test Database
+        run: make setup_test_db
       - name: Run Tests
-        run: go test ./...
+        run: make test
         env:
-          CLEAN_DATABASE: true
           DATABASE_URL: root:pass@/test

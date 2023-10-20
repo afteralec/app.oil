@@ -1,0 +1,25 @@
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
+env:
+	cp .env.example .env
+
+run:
+	go run cmd/main/main.go
+
+test:
+	go test -v ./...
+
+setup_test_db:
+	chmod u+x ./scripts/setup_test_db.sh
+	./scripts/setup_test_db.sh
+
+fetch_migrations:
+	chmod u+x ./scripts/fetch_migrations.sh
+	./scripts/fetch_migrations.sh
+
+cleanup_migrations:
+	chmod u+x ./scripts/cleanup_migrations.sh
+	./scripts/cleanup_migrations.sh

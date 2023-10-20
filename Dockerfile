@@ -6,7 +6,7 @@ ENV APP_NAME=$APP_NAME
 WORKDIR /app
 COPY . .
 RUN go mod download
-RUN go build -o /$APP_NAME
+RUN go build cmd/main/main.go -o /$APP_NAME
 
 FROM alpine:latest
 ARG APP_NAME
