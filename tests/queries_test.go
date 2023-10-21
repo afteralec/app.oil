@@ -1,4 +1,4 @@
-package test
+package integrationtest
 
 import (
 	"context"
@@ -13,6 +13,9 @@ import (
 )
 
 func TestPlayers(t *testing.T) {
+	if os.Getenv("RUN_INTEGRATION_TESTS") != "true" {
+		t.Skip("Skipping integration test; set RUN_INTEGRATION_TESTS to \"true\" to run.")
+	}
 	ctx := context.Background()
 	username := "alec"
 	pw := "test-pw-hash"

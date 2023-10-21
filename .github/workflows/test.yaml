@@ -31,6 +31,7 @@ jobs:
       - name: Setup Test Database
         run: make setup_test_db
       - name: Run Tests
-        run: make test
+        run: |
+          go test ./...
         env:
           DATABASE_URL: root:pass@/test

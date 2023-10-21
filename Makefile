@@ -9,9 +9,6 @@ env:
 run:
 	go run cmd/main/main.go
 
-test:
-	go test -v ./...
-
 setup_test_db:
 	chmod u+x ./scripts/setup_test_db.sh
 	./scripts/setup_test_db.sh
