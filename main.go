@@ -7,6 +7,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
+	html "github.com/gofiber/template/html/v2"
 	"github.com/joho/godotenv"
 )
 
@@ -31,10 +32,16 @@ func main() {
 		log.Fatalf("query: %v", err)
 	}
 
-	app := fiber.New()
+	engine := html.New("./web/views", ".html")
+
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString(hello)
+		return c.Render("index", fiber.Map{
+			"Title": "Hello, World!",
+		}, "layouts/main")
 	})
 
 	app.Listen(":3000")
