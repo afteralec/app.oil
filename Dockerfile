@@ -1,12 +1,12 @@
-ARG APP_NAME=oil-app
+ARG APP_NAME=petrichor-app
 
 FROM golang:1.21 as builder
 ARG APP_NAME
 ENV APP_NAME=$APP_NAME
-WORKDIR /app
+WORKDIR /
 COPY . .
 RUN go mod download
-RUN go build main.go -o /$APP_NAME
+RUN go build -o $APP_NAME main.go 
 
 FROM alpine:latest
 ARG APP_NAME
