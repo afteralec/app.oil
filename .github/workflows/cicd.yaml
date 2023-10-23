@@ -75,4 +75,4 @@ jobs:
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             docker stop app
             docker rm app
-            docker image pull registry.digitalocean.com/petrichor/app:$GITHUB_SHA
+            docker image pull registry.digitalocean.com/petrichor/app:$(echo $GITHUB_SHA | head -c7)
