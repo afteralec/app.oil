@@ -2,13 +2,18 @@ package main
 
 import (
 	"database/sql"
+  "net/http"
 	"log"
 	"os"
+  "embed"
 
 	_ "github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
 	html "github.com/gofiber/template/html/v2"
 )
+
+//go:embed web/views/*
+var viewsfs embed.FS
 
 func main() {
 	db, err := sql.Open("mysql", os.Getenv("DATABASE_URL"))
@@ -26,7 +31,7 @@ func main() {
 		log.Fatalf("query: %v", err)
 	}
 
-	engine := html.New("./web/views", ".html")
+  engine := html.NewFileSystem(http.FS(viewsfs), ".html")
 
 	app := fiber.New(fiber.Config{
 		Views: engine,
