@@ -20,3 +20,9 @@ fetch_migrations:
 cleanup_migrations:
 	chmod u+x ./scripts/cleanup_migrations.sh
 	./scripts/cleanup_migrations.sh
+
+twcss:
+	tailwindcss -i ./web/styles/tailwind.css -o ./web/static/styles.css
+
+dev:
+	DATABASE_URL=root:pass@/test go run main.go

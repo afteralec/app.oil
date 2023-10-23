@@ -2,10 +2,10 @@ package main
 
 import (
 	"database/sql"
-  "net/http"
+	"embed"
 	"log"
+	"net/http"
 	"os"
-  "embed"
 
 	_ "github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
@@ -31,7 +31,7 @@ func main() {
 		log.Fatalf("query: %v", err)
 	}
 
-  engine := html.NewFileSystem(http.FS(viewsfs), ".html")
+	engine := html.NewFileSystem(http.FS(viewsfs), ".html")
 
 	app := fiber.New(fiber.Config{
 		Views: engine,
@@ -42,6 +42,8 @@ func main() {
 			"Title": "Hello, World!",
 		}, "web/views/layouts/main")
 	})
+
+	app.Static("/", "./web/static")
 
 	app.Listen(":8008")
 }
