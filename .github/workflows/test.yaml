@@ -1,0 +1,40 @@
+name: Test
+on: [workflow_call]
+jobs:
+  test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE: test
+          MYSQL_ROOT_PASSWORD: pass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-start-period 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21.x
+      - name: Setup Atlas
+        uses: ariga/setup-atlas@v0
+      - name: Setup migrations
+        run: make fetch_migrations
+      - name: Setup Test Database
+        run: make setup_test_db
+      - name: Run Tests
+        run: |
+          go test ./...
+        env:
+          RUN_INTEGRATION_TESTS: true
+          DATABASE_URL: root:pass@/test
