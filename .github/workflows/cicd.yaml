@@ -83,7 +83,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           envs: IMAGE_NAME,REGISTRY,{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA
           script: |
-            export DATABASE_URL=${{ steps.create_password.outputs.username }}:${{ steps.create_password.outputs.password }}@tcp(${{ steps.create_password.outputs.hostname }})/main?tls=true
+            export DATABASE_URL="${{ steps.create_password.outputs.username }}:${{ steps.create_password.outputs.password }}@tcp(${{ steps.create_password.outputs.hostname }})/main?tls=true"
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             docker stop app
             docker rm app
