@@ -1,1 +1,36 @@
-<h2>Header</h2>
+<nav class="relative flex items-center px-6 py-2 justify-end">
+  <ul class="group flex flex-l list-none items-center justify-center space-x-[1.5]">
+    <li>
+      <button
+        aria-expanded="false"
+        class="
+          group
+          inline-flex 
+          h-10 
+          w-max 
+          items-center 
+          justify-center 
+          rounded-md 
+          bg-background 
+          px-4 
+          py-2 
+          text-sm 
+          font-medium 
+          transition-colors 
+          hover:bg-accent 
+          hover:text-accent-foreground 
+          focus:bg-accent 
+          focus:text-accent-foreground 
+          focus:outline-none 
+          disabled:pointer-events-none 
+          disabled:opacity-50 
+          data-[active]:bg-accent/50 
+          data-[state=open]:bg-accent/50 
+          cursor:pointer 
+        ">
+          Getting Started
+          {{ template "web/views/partials/arrow" .}}
+        </button>
+    </li>
+  </ul>
+</nav>
