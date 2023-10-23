@@ -64,6 +64,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-image
     steps:
+      - name: Create Database Password
+        uses: planetscale/create-branch-password-action@v3
+        id: create_password
+        with:
+          org_name: petrichormud
+          database_name: main
+          branch_name: main 
+          name: app
+        env:
+          PLANETSCALE_SERVICE_TOKEN_ID: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
+          PLANETSCALE_SERVICE_TOKEN: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
       - name: Deploy to Digital Ocean droplet via SSH action
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -72,6 +83,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           envs: IMAGE_NAME,REGISTRY,{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA
           script: |
+            export DATABASE_URL=${{ steps.create_password.outputs.username }}:${{ steps.create_password.outputs.password }}@tcp(${{ steps.create_password.outputs.hostname }})/main?tls=true
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             docker stop app
             docker rm app

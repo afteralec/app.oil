@@ -1,16 +1,13 @@
-ARG APP_NAME=petrichor-app
-
-FROM golang:1.21 as builder
-ARG APP_NAME
-ENV APP_NAME=$APP_NAME
-WORKDIR /
+FROM golang:1.21 AS builder
+# Next line is just for debug
+RUN ldd --version
+WORKDIR /build
 COPY . .
-RUN go mod download
-RUN go build -o $APP_NAME main.go 
+RUN go mod download && go mod verify
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go-binary
 
 FROM alpine:latest
-ARG APP_NAME
-ENV APP_NAME=$APP_NAME
-WORKDIR /usr/local/bin/
-COPY --from=builder /$APP_NAME ./
-CMD ./$APP_NAME
+RUN ldd; exit 0
+WORKDIR /
+COPY --from=builder /build/go-binary .
+ENTRYPOINT ["/go-binary"]
