@@ -4,6 +4,7 @@ jobs:
   test:
     name: Integration Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     services:
       mysql:
         image: mysql:8
@@ -39,6 +40,7 @@ jobs:
   build-image:
     name: Build and Push Image
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     needs: test
     env:
       IMAGE_NAME: app
@@ -62,6 +64,7 @@ jobs:
   deploy:
     name: Deploy to Droplet
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: build-image
     steps:
       - name: Deploy to Digital Ocean droplet via SSH action
