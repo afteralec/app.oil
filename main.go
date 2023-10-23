@@ -38,9 +38,9 @@ func main() {
 	})
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.Render("index", fiber.Map{
+		return c.Render("web/views/index", fiber.Map{
 			"Title": "Hello, World!",
-		}, "layouts/main")
+		}, "web/views/layouts/main")
 	})
 
 	app.Listen(":8008")
