@@ -40,4 +40,4 @@ minmain:
 	uglifyjs web/scripts/main.js -o web/static/main.min.js
 
 postcss:
-	bunx postcss web/styles/styles.css -d web/static
+	bunx postcss web/styles/styles.css -o web/static/styles.min.css
