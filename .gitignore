@@ -3,3 +3,6 @@
 # Database schema files required for codegen
 schema.hcl
 migrations/
+
+# ick
+node_modules

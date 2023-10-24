@@ -35,3 +35,9 @@ htmx:
 	curl -o \
 		web/static/htmx.min.js \
 		https://unpkg.com/htmx.org@1.9.6/dist/htmx.min.js
+
+minmain:
+	uglifyjs web/scripts/main.js -o web/static/main.min.js
+
+postcss:
+	bunx postcss web/styles/styles.css -d web/static
