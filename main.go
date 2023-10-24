@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+  "log"
 
 	_ "github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
@@ -29,7 +30,11 @@ func main() {
 
 	app.Get("/", handlers.Home)
 
-	app.Get("/request/:id", handlers.Request)
+  player := app.Group("player")
+  player.Post("/", handlers.NewPlayer)
 
-	app.Listen(":8008")
+  request := app.Group("request")
+	request.Get("/:id", handlers.Request)
+
+	log.Fatal(app.Listen(":8008"))
 }
