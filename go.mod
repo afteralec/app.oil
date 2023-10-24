@@ -1,4 +1,4 @@
-module oil/app
+module petrichormud.com/app
 
 go 1.21.1
 

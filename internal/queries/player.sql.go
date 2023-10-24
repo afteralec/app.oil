@@ -3,7 +3,7 @@
 //   sqlc v1.22.0
 // source: player.sql
 
-package odb
+package queries
 
 import (
 	"context"

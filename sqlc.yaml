@@ -2,9 +2,9 @@ version: 2
 sql:
   - engine: "mysql"
     queries: "queries"
-    schema: "../db/migrations"
+    schema: "migrations"
     gen:
       go:
-        package: "odb"
-        out: "odb"
+        package: "queries"
+        out: "internal/queries"
         emit_prepared_queries: true

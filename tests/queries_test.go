@@ -9,7 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/require"
 
-	"oil/app/odb"
+	"petrichormud.com/app/internal/queries"
 )
 
 func TestPlayers(t *testing.T) {
@@ -26,9 +26,9 @@ func TestPlayers(t *testing.T) {
 	}
 	defer db.Close()
 
-	queries := odb.New(db)
+	q := queries.New(db)
 
-	result, err := queries.CreatePlayer(ctx, odb.CreatePlayerParams{
+	result, err := q.CreatePlayer(ctx, queries.CreatePlayerParams{
 		Username: username,
 		PwHash:   pw,
 	})
@@ -41,7 +41,7 @@ func TestPlayers(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	player, err := queries.GetPlayer(ctx, playerId)
+	player, err := q.GetPlayer(ctx, playerId)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,7 +49,7 @@ func TestPlayers(t *testing.T) {
 	require.Equal(t, username, player.Username)
 	require.Equal(t, pw, player.PwHash)
 
-	player, err = queries.GetPlayerByUsername(ctx, username)
+	player, err = q.GetPlayerByUsername(ctx, username)
 	if err != nil {
 		t.Fatal(err)
 	}
