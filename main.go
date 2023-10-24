@@ -7,6 +7,8 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/queries"
+  "github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
@@ -14,6 +16,11 @@ func main() {
 	queries.Build()
 	config := configs.Fiber()
 	app := fiber.New(config)
+
+  app.Use(cors.New())
+  app.Use(logger.New())
+
+  app.Static("/", "./web/static")
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Render("web/views/index", fiber.Map{
@@ -37,7 +44,6 @@ func main() {
 		}, "web/views/layouts/main")
 	})
 
-	app.Static("/", "./web/static")
 
 	app.Listen(":8008")
 }
