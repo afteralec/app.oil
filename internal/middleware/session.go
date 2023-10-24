@@ -14,7 +14,8 @@ func Session() fiber.Handler {
   return func(c *fiber.Ctx) error {
     sess, err := store.Get(c)
     if err != nil {
-      log.Fatal(err)
+      log.Print(err)
+      return c.Next()
     }
     pid := sess.Get("pid")
     c.Locals("pid", pid)
