@@ -1,0 +1,24 @@
+package handlers
+
+import (
+  fiber "github.com/gofiber/fiber/v2"
+  "time"
+)
+
+type Player struct {
+  Username string `form:"username"`
+  Password string `form:"password"`
+}
+
+func NewPlayer(c *fiber.Ctx) error {
+  p := new(Player)
+
+  if err := c.BodyParser(p); err != nil {
+    return err
+  }
+
+  return c.Render("web/views/index", fiber.Map{
+    "CopyrightYear": time.Now().Year(),
+    "Title": "Sup",
+  })
+}

@@ -25,3 +25,13 @@ twcss:
 
 dev:
 	DATABASE_URL=root:pass@/test go run main.go
+
+alpine:
+	curl -o \
+		web/static/alpine.min.js \
+		https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js
+
+htmx:
+	curl -o \
+		web/static/htmx.min.js \
+		https://unpkg.com/htmx.org@1.x.x/dist/htmx.min.js
