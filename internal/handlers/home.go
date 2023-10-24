@@ -9,6 +9,6 @@ import (
 func Home(c *fiber.Ctx) error {
 	return c.Render("web/views/index", fiber.Map{
 		"CopyrightYear": time.Now().Year(),
-		"Title":         "Hello, World!",
-	}, "web/views/layouts/main")
+		"Title":         "Petrichor",
+	})
 }

@@ -18,5 +18,5 @@ func Request(c *fiber.Ctx) error {
 		"Class":            "Crafting",
 		"Origin":           "LowQuarter",
 		"Gender":           "Male",
-	}, "web/views/layouts/main")
+	})
 }

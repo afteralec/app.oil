@@ -19,6 +19,7 @@ func Fiber(viewsfs embed.FS) fiber.Config {
 
 	return fiber.Config{
 		Views:       views,
+		ViewsLayout: "web/views/layouts/main",
 		ReadTimeout: readTimeout,
 	}
 }
