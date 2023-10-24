@@ -11,9 +11,7 @@ import (
 	html "github.com/gofiber/template/html/v2"
 )
 
-var viewsfs embed.FS
-
-func Fiber() fiber.Config {
+func Fiber(viewsfs embed.FS) fiber.Config {
 	readTimeoutSecondsCount, _ := strconv.Atoi(os.Getenv("SERVER_READ_TIMEOUT"))
 	readTimeout := time.Second * time.Duration(readTimeoutSecondsCount)
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"time"
+  "embed"
 
 	_ "github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
@@ -11,10 +12,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
+//go:embed web/views/*
+var viewsfs embed.FS
+
 func main() {
 	queries.Connect()
 	queries.Build()
-	config := configs.Fiber()
+	config := configs.Fiber(viewsfs)
 	app := fiber.New(config)
 
   app.Use(cors.New())
