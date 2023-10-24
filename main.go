@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+  "time"
 
 	_ "github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
@@ -39,9 +40,25 @@ func main() {
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Render("web/views/index", fiber.Map{
+      "CopyrightYear": time.Now().Year(),
 			"Title": "Hello, World!",
 		}, "web/views/layouts/main")
 	})
+
+  app.Get("/request/:id", func(c *fiber.Ctx) error {
+    return c.Render("web/views/request", fiber.Map{
+      "CopyrightYear": time.Now().Year(),
+      "ID": c.Params("id"),
+      "Status": "Ready",
+      "Name": "Test Character",
+      "Backstory": "This is a tragic backstory.\nWith a newline.",
+      "ShortDescription": "test, testerly man",
+      "Description": "This is a test description.",
+      "Class": "Crafting",
+      "Origin": "LowQuarter",
+      "Gender": "Male",
+    }, "web/views/layouts/main")
+  })
 
 	app.Static("/", "./web/static")
 
