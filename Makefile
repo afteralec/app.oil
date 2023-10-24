@@ -34,4 +34,4 @@ alpine:
 htmx:
 	curl -o \
 		web/static/htmx.min.js \
-		https://unpkg.com/htmx.org@1.x.x/dist/htmx.min.js
+		https://unpkg.com/htmx.org@1.9.6/dist/htmx.min.js
