@@ -1,6 +1,5 @@
 <li x-data="{ 'showModal': false }">
   <button
-    aria-expanded="false"
     class="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 cursor:pointer"
     @click="showModal = true"
   >
@@ -11,10 +10,13 @@
     x-cloak
     x-show="showModal"
   >
-    <div 
-      class="max-w-3xl px-6 py-4 mx-auto text-left bg-white rounded shadow-lg"
-      @click.away="showModal = false"> 
-      Please Log In
-    </div>
+  </div>
+  <div
+    class="fixed left-[50%] top-[50%] z-3 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] border bg-background p-6 shadow-lg sm:rounded-lg"
+    @click.away="showModal = false"
+    x-cloak
+    x-show="showModal"
+  >
+    Please Log In
   </div>
 </li>
