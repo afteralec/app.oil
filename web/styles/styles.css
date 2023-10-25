@@ -66,6 +66,10 @@
   }
 }
 
+[x-cloak] {
+  display: none !important;
+}
+
 @layer base {
   * {
     @apply border-border;

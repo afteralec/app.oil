@@ -28,6 +28,9 @@ dev:
 
 alpine:
 	curl -o \
+		web/static/alpine-focus.min.js \
+		https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js
+	curl -o \
 		web/static/alpine.min.js \
 		https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js
 
