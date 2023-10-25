@@ -12,16 +12,4 @@ func Apply(a *fiber.App) {
 	a.Use(cors.New())
 	a.Use(logger.New())
 	a.Use(Session())
-	// a.Use(csrf.New(csrf.Config{
-	// 	KeyLookup:         "header:" + HeaderName,
-	// 	CookieName:        "csrf_",
-	// 	CookieSameSite:    "Lax",
-	// 	CookieSessionOnly: true,
-	// 	CookieHTTPOnly:    true,
-	// 	Expiration:        1 * time.Hour,
-	// 	KeyGenerator:      utils.UUIDv4,
-	// 	Session:           Sessions,
-	// 	SessionKey:        "fiber.csrf.token",
-	// 	HandlerContextKey: "fiber.csrf.handler",
-	// }))
 }
