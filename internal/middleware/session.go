@@ -1,24 +1,24 @@
 package middleware
 
 import (
-  "log"
+	"log"
 
-  fiber "github.com/gofiber/fiber/v2"
-  "github.com/gofiber/fiber/v2/middleware/session"
+	fiber "github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-var store *session.Store
+var Store *session.Store
 
 func Session() fiber.Handler {
-  store = session.New()
-  return func(c *fiber.Ctx) error {
-    sess, err := store.Get(c)
-    if err != nil {
-      log.Print(err)
-      return c.Next()
-    }
-    pid := sess.Get("pid")
-    c.Locals("pid", pid)
-    return c.Next()
-  }
+	Store = session.New()
+	return func(c *fiber.Ctx) error {
+		sess, err := Store.Get(c)
+		if err != nil {
+			log.Print(err)
+			return c.Next()
+		}
+		pid := sess.Get("pid")
+		c.Locals("pid", pid)
+		return c.Next()
+	}
 }

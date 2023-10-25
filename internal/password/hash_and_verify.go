@@ -24,7 +24,7 @@ type params struct {
 	keyLength   uint32
 }
 
-func HashPassword(password string) (encodedHash string, err error) {
+func Hash(password string) (encodedHash string, err error) {
 	p := &params{
 		memory:      64 * 1024,
 		iterations:  3,
@@ -56,7 +56,7 @@ func HashPassword(password string) (encodedHash string, err error) {
 	return encodedHash, nil
 }
 
-func VerifyPassword(password, encodedHash string) (match bool, err error) {
+func Verify(password, encodedHash string) (match bool, err error) {
 	p, salt, hash, err := DecodeHash(encodedHash)
 	if err != nil {
 		return false, err
