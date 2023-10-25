@@ -40,7 +40,7 @@ htmx:
 		https://unpkg.com/htmx.org@1.9.6/dist/htmx.min.js
 
 minmain:
-	uglifyjs web/scripts/main.js -o web/static/main.min.js
+	uglifyjs --module --webkit web/scripts/main.mjs -o web/static/main.min.js
 
 postcss:
 	bunx postcss web/styles/styles.css -o web/static/styles.min.css

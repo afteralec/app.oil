@@ -47,6 +47,11 @@
         'username': '',
         'password': '',
         'confirmPassword': '',
+        pwLen: false,
+        pwMixedCase: false,
+        pwNum: false,
+        pwSpecialChar: false,
+        pwEvalStrengths: false,
       }"
     >
       <div class="space-y-2">
@@ -84,6 +89,14 @@
         <input
           type="password"
           id="register-password"
+          @input="
+            evalPasswordStrengths = true;
+            const strengths = getPasswordStrengths(password);
+            pwLen = strengths.len;
+            pwMixedCase = strengths.mixedCase;
+            pwSpecialChar = strengths.specialChar;
+            pwNum = strengths.num;
+          "
           x-model="password"
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
@@ -114,6 +127,7 @@
       </div>
       <div class="flex justify-end">
         <button
+          :disabled="isUsernameValid(username) && isPasswordValid(password) && password === confirmPassword"
           class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
           type="submit"
         >
