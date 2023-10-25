@@ -11,6 +11,7 @@ func Apply(a *fiber.App) {
 
 	player := a.Group("player")
 	player.Post("/new", NewPlayer)
+	player.Post("/reserved", PlayerReserved)
 
 	request := a.Group("request")
 	request.Get("/:id", Request)

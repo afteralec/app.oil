@@ -66,7 +66,12 @@
           name="username"
           aria-describedby="register-username-desc"
           aria-invalid="false"
+          hx-post="/player/reserved"
+          hx-params="username"
+          hx-trigger="keyup changed delay:100ms"
+          hx-target="#username-reserved"
         />
+        <div id="username-reserved"></div>
         <p
           id="register-username-desc"
           class="text-xs leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

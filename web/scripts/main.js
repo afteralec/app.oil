@@ -55,23 +55,16 @@ export function sanitizeUsername(u) {
 }
 
 export function isUsernameValid(u) {
-  console.log(u);
   if (u.length < 4) return false;
-  console.log("username long enough");
   if (u.length > 16) return false;
-  console.log("username short enough");
   const regex = new RegExp("[^a-z0-9_-]+", "g");
   if (regex.test(u)) return false;
-  console.log("username passes regex test");
   return true;
 }
 
 export function isPasswordValid(pw) {
-  console.log(pw);
   if (pw.length < 8) return false;
-  console.log("pw long enough");
   if (pw.length > 255) return false;
-  console.log("pw short enough");
   return true;
 }
 

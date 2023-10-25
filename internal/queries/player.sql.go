@@ -55,3 +55,13 @@ func (q *Queries) GetPlayerPWHash(ctx context.Context, id int64) (string, error)
 	err := row.Scan(&pw_hash)
 	return pw_hash, err
 }
+
+const getPlayerUsername = `-- name: GetPlayerUsername :one
+SELECT (username) FROM players WHERE username = ?
+`
+
+func (q *Queries) GetPlayerUsername(ctx context.Context, username string) (string, error) {
+	row := q.queryRow(ctx, q.getPlayerUsernameStmt, getPlayerUsername, username)
+	err := row.Scan(&username)
+	return username, err
+}

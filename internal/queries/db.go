@@ -36,6 +36,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getPlayerPWHashStmt, err = db.PrepareContext(ctx, getPlayerPWHash); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayerPWHash: %w", err)
 	}
+	if q.getPlayerUsernameStmt, err = db.PrepareContext(ctx, getPlayerUsername); err != nil {
+		return nil, fmt.Errorf("error preparing query GetPlayerUsername: %w", err)
+	}
 	return &q, nil
 }
 
@@ -59,6 +62,11 @@ func (q *Queries) Close() error {
 	if q.getPlayerPWHashStmt != nil {
 		if cerr := q.getPlayerPWHashStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPlayerPWHashStmt: %w", cerr)
+		}
+	}
+	if q.getPlayerUsernameStmt != nil {
+		if cerr := q.getPlayerUsernameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getPlayerUsernameStmt: %w", cerr)
 		}
 	}
 	return err
@@ -104,6 +112,7 @@ type Queries struct {
 	getPlayerStmt           *sql.Stmt
 	getPlayerByUsernameStmt *sql.Stmt
 	getPlayerPWHashStmt     *sql.Stmt
+	getPlayerUsernameStmt   *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -114,5 +123,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getPlayerStmt:           q.getPlayerStmt,
 		getPlayerByUsernameStmt: q.getPlayerByUsernameStmt,
 		getPlayerPWHashStmt:     q.getPlayerPWHashStmt,
+		getPlayerUsernameStmt:   q.getPlayerUsernameStmt,
 	}
 }
