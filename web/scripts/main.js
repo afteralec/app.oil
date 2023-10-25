@@ -7,7 +7,7 @@ export function sanitizeUsername(s) {
 export function isUsernameValid(s) {
   if (s.length < 4) return false;
 
-  if (s.length > 8) return false;
+  if (s.length > 16) return false;
 
   const regex = new RegExp("[^a-z0-9_-]+", "g");
   if (regex.test(s)) return false;

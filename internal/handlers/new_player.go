@@ -4,6 +4,8 @@ import (
 	"time"
 
 	fiber "github.com/gofiber/fiber/v2"
+
+	"petrichormud.com/app/internal/username"
 )
 
 type Player struct {
@@ -16,6 +18,13 @@ func NewPlayer(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(p); err != nil {
 		return err
+	}
+
+	u := username.Sanitize(p.Username)
+
+	if !username.Validate(u) {
+		c.Status(fiber.StatusBadRequest)
+		return nil
 	}
 
 	return c.Render("web/views/index", fiber.Map{

@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestPassword(t *testing.T) {
+func TestHashAndVerify(t *testing.T) {
 	password := "test"
 
 	hash, err := HashPassword(password)
