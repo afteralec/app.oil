@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"time"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -70,9 +69,6 @@ func NewPlayer(c *fiber.Ctx) error {
 		return nil
 	}
 
-	return c.Render("web/views/index", fiber.Map{
-		"CopyrightYear": time.Now().Year(),
-		"MetaContent":   "Petrichor MUD - a modern take on a classic MUD style of game.",
-		"Title":         "Sup",
-	})
+	c.Status(fiber.StatusCreated)
+	return nil
 }

@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"log"
 	"time"
 
 	fiber "github.com/gofiber/fiber/v2"
 )
 
 func Home(c *fiber.Ctx) error {
+	log.Print(c.Locals("pid"))
 	return c.Render("web/views/index", fiber.Map{
 		"CopyrightYear": time.Now().Year(),
 		"Title":         "Petrichor",
