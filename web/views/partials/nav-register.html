@@ -45,22 +45,7 @@
       <span class="sr-only">Close</span>
     </button>
     <p class="space-y-1.5">Create an account:</p>
-    <form
-      class="space-y-4 px-4"
-      x-data="{
-        'username': '',
-        'password': '',
-        'confirmPassword': '',
-        pwLen: false,
-        pwEvalLen: false,
-        pwMixedCase: false,
-        pwEvalMixedCase: false,
-        pwNum: false,
-        pwEvalNum: false,
-        pwSpecialChar: false,
-        pwEvalSpecialChar: false,
-      }"
-    >
+    <form class="space-y-4 px-4" x-data="getRegisterData()">
       <div class="space-y-2">
         <label
           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

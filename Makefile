@@ -20,6 +20,9 @@ fetch_migrations:
 cleanup_migrations:
 	./scripts/cleanup_migrations.sh
 
+test:
+	DATABASE_URL=root:pass@/test RUN_INTEGRATION_TESTS=true go test -v ./tests/...
+
 twcss:
 	tailwindcss -i ./web/styles/styles.css -o ./web/static/styles.css
 

@@ -3,6 +3,7 @@ module petrichormud.com/app
 go 1.21.1
 
 require (
+	github.com/VividCortex/mysqlerr v1.0.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gofiber/fiber/v2 v2.50.0
 	github.com/gofiber/template/html/v2 v2.0.5

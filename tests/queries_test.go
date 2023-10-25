@@ -6,7 +6,8 @@ import (
 	"os"
 	"testing"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/VividCortex/mysqlerr"
+	mysql "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/queries"
@@ -39,6 +40,19 @@ func TestPlayers(t *testing.T) {
 	playerId, err := result.LastInsertId()
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	_, err = q.CreatePlayer(ctx, queries.CreatePlayerParams{
+		Username: username,
+		PwHash:   pw,
+	})
+	if driverErr, ok := err.(*mysql.MySQLError); ok {
+		t.Log("Coerced to driver error")
+		if driverErr.Number == mysqlerr.ER_DUP_ENTRY {
+			t.Log("Captured duplicate error")
+		} else {
+			t.Fatal(err)
+		}
 	}
 
 	player, err := q.GetPlayer(ctx, playerId)

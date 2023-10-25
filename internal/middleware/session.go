@@ -7,12 +7,12 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-var Store *session.Store
+var Sessions *session.Store
 
 func Session() fiber.Handler {
-	Store = session.New()
+	Sessions = session.New()
 	return func(c *fiber.Ctx) error {
-		sess, err := Store.Get(c)
+		sess, err := Sessions.Get(c)
 		if err != nil {
 			log.Print(err)
 			return c.Next()
