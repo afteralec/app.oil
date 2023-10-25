@@ -3,7 +3,11 @@
     class="cursor:pointer group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50"
     @click="
       showModal = true;
-      $focus.focus(document.getElementById('register-username'));
+      $nextTick(() => {
+        setTimeout(() => {
+          document.getElementById('register-username').focus();
+        }, 50);
+      });
     "
   >
     Create Account
@@ -65,15 +69,14 @@
           Username
         </label>
         <input
+          id="register-username"
           :value="username"
           @input="username = sanitizeUsername(event.target.value)"
-          id="register-username"
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="username"
           aria-describedby="register-username-desc"
           aria-invalid="false"
-          value=""
         />
         <p
           id="register-username-desc"
@@ -229,7 +232,7 @@
       </div>
       <div class="flex justify-end">
         <button
-          :disabled="isUsernameValid(username) && isPasswordValid(password) && password === confirmPassword"
+          :disabled="!isUsernameValid(username) || !isPasswordValid(password) || password !== confirmPassword"
           class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
           type="submit"
         >
