@@ -95,4 +95,60 @@ export function getPasswordStrengths(pw) {
   return strengths;
 }
 
+export function getLoginData() {
+  return {
+    username: "",
+    password: "",
+    submitLogin,
+    sanitizeUsername,
+  };
+}
+
+export async function submitLogin(u, pw) {
+  try {
+    const body = new FormData();
+    body.append("username", u);
+    body.append("password", pw);
+    const res = await fetch("/login", {
+      method: "POST",
+      body,
+    });
+
+    if (res.status != 200) {
+      // TODO: Handle this error
+      return;
+    }
+
+    window.location.reload();
+  } catch {
+    // TODO: Handle this error
+    return;
+  }
+}
+
+export function getLogoutData() {
+  return {
+    logout,
+  };
+}
+
+export async function logout() {
+  try {
+    const res = await fetch("/logout", {
+      method: "POST",
+    });
+
+    if (res.status !== 200) {
+      // TODO: Something went wrong with destroying the session
+      return;
+    }
+
+    window.location.reload();
+  } catch {
+    // TODO: Handle this error case here - backend is unreachable
+  }
+}
+
 window.getRegisterData = getRegisterData;
+window.getLoginData = getLoginData;
+window.getLogoutData = getLogoutData;

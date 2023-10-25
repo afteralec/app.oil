@@ -2,8 +2,13 @@
   <ul
     class="flex-l group flex list-none items-center justify-center space-x-[1.5]"
   >
-    {{ template "web/views/partials/nav-dropdown" "Getting Started" }} {{
-    template "web/views/partials/nav-login" }} {{ template
-    "web/views/partials/nav-register" }}
+    <!-- prettier-ignore -->
+    {{ template "web/views/partials/nav-dropdown" "Getting Started" }}
+    {{ if .PID -}}
+    {{ template "web/views/partials/nav-logout" }}
+    {{ else -}}
+    {{ template "web/views/partials/nav-login" }}
+    {{ template "web/views/partials/nav-register" }}
+    {{ end -}}
   </ul>
 </nav>

@@ -45,7 +45,11 @@
       <span class="sr-only">Close</span>
     </button>
     <p class="space-y-1.5">Please log in:</p>
-    <form class="space-y-4 px-4">
+    <form
+      x-data="getLoginData()"
+      @submit.prevent="submitLogin(username, password)"
+      class="space-y-4 px-4"
+    >
       <div class="space-y-2">
         <label
           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -55,6 +59,8 @@
         </label>
         <input
           id="login-username"
+          :value="username"
+          @input="username = sanitizeUsername(event.target.value)"
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="username"
@@ -72,6 +78,8 @@
         <input
           type="password"
           id="login-password"
+          :value="password"
+          @input="password = event.target.value"
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="password"

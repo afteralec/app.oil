@@ -9,6 +9,9 @@ func Apply(a *fiber.App) {
 
 	a.Get("/", Home)
 
+	a.Post("/login", Login)
+	a.Post("/logout", Logout)
+
 	player := a.Group("player")
 	player.Post("/new", NewPlayer)
 	player.Post("/reserved", PlayerReserved)
