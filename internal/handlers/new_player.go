@@ -2,9 +2,8 @@ package handlers
 
 import (
 	"context"
+	"log"
 
-	"github.com/VividCortex/mysqlerr"
-	mysql "github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/middleware"
@@ -48,18 +47,14 @@ func NewPlayer(c *fiber.Ctx) error {
 		Username: u,
 		PwHash:   pw_hash,
 	})
-	if driverErr, ok := err.(*mysql.MySQLError); ok {
-		if driverErr.Number == mysqlerr.ER_DUP_ENTRY {
-			c.Status(fiber.StatusConflict)
-			return nil
-		} else {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
+	if err != nil {
+		c.Status(fiber.StatusConflict)
+		return nil
 	}
 
 	pid, err := result.LastInsertId()
 	if err != nil {
+		log.Print(err)
 		c.Status(fiber.StatusInternalServerError)
 		return nil
 	}

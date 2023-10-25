@@ -19,6 +19,7 @@ var viewsfs embed.FS
 func main() {
 	queries.Connect()
 	queries.Build()
+	defer queries.Disconnect()
 	config := configs.Fiber(viewsfs)
 	app := fiber.New(config)
 

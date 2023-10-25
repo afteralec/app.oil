@@ -10,7 +10,7 @@ func Apply(a *fiber.App) {
 	a.Get("/", Home)
 
 	player := a.Group("player")
-	player.Post("/", NewPlayer)
+	player.Post("/new", NewPlayer)
 
 	request := a.Group("request")
 	request.Get("/:id", Request)

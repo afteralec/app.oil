@@ -13,13 +13,16 @@ func Connect() {
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
 	}
-	defer db.Close()
 
 	if err := db.Ping(); err != nil {
 		log.Fatalf("failed to ping: %v", err)
 	}
 
 	Conn = db
+}
+
+func Disconnect() {
+	Conn.Close()
 }
 
 var Q *Queries
