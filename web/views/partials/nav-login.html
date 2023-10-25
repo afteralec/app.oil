@@ -1,7 +1,10 @@
 <li x-data="{ 'showModal': false }">
   <button
     class="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 cursor:pointer"
-    @click="showModal = true"
+    @click="
+      showModal = true;
+      $focus.focus(document.getElementById('login-username'));
+    "
   >
     Log In 
   </button>
@@ -13,7 +16,6 @@
   </div>
   <div
     class="fixed left-[50%] top-[50%] z-3 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] border bg-background p-6 shadow-lg sm:rounded-lg"
-    role="dialog"
     @click.away="showModal = false"
     x-cloak
     x-show="showModal"
