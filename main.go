@@ -6,8 +6,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/handlers"
@@ -24,19 +22,8 @@ func main() {
 	config := configs.Fiber(viewsfs)
 	app := fiber.New(config)
 
-	app.Use(cors.New())
-	app.Use(logger.New())
-	app.Use(middleware.Session())
-
-	app.Static("/", "./web/static")
-
-	app.Get("/", handlers.Home)
-
-	player := app.Group("player")
-	player.Post("/", handlers.NewPlayer)
-
-	request := app.Group("request")
-	request.Get("/:id", handlers.Request)
+	middleware.Apply(app)
+	handlers.Apply(app)
 
 	log.Fatal(app.Listen(":8008"))
 }
