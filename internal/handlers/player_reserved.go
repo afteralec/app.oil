@@ -19,8 +19,6 @@ func PlayerReserved(c *fiber.Ctx) error {
 		return err
 	}
 
-	log.Print(i.Username)
-
 	ctx := context.Background()
 	u, err := queries.Q.GetPlayerUsername(ctx, i.Username)
 	// TODO: Figure out getting the error code from these
@@ -28,8 +26,6 @@ func PlayerReserved(c *fiber.Ctx) error {
 		log.Print(err)
 		return c.Render("web/views/htmx/player-free", fiber.Map{}, "")
 	}
-
-	log.Print(u)
 
 	if i.Username == u {
 		return c.Render("web/views/htmx/player-reserved", fiber.Map{}, "")
