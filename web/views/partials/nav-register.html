@@ -3,10 +3,10 @@
     class="cursor:pointer group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50"
     @click="
       showModal = true;
-      $focus.focus(document.getElementById('login-username'));
+      $focus.focus(document.getElementById('register-username'));
     "
   >
-    Log In
+    Create Account
   </button>
   <div
     class="z-2 fixed inset-0 flex h-full w-full items-center justify-center overflow-auto bg-background/80 backdrop-blur-sm"
@@ -40,21 +40,44 @@
       </svg>
       <span class="sr-only">Close</span>
     </button>
-    <p class="space-y-1.5">Please log in:</p>
+    <p class="space-y-1.5">Create an account:</p>
     <form class="space-y-4 px-4">
       <div class="space-y-2">
         <label
           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          for="login-username"
+          for="register-username"
         >
           Username
         </label>
         <input
-          id="login-username"
+          id="register-username"
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="username"
           aria-describedby=":r0rg:-form-item-description"
+          aria-invalid="false"
+          value=""
+        />
+        <p
+          class="text-xs leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Must be lowercase alphanumeric, dash or underscore.
+        </p>
+      </div>
+      <div class="space-y-2">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="register-password"
+        >
+          Password
+        </label>
+        <input
+          type="password"
+          id="register-password"
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder=""
+          name="password"
+          aria-describedby=":r0rh:-form-item-description"
           aria-invalid="false"
           value=""
         />
@@ -64,11 +87,11 @@
           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           for="login-password"
         >
-          Password
+          Confirm Password
         </label>
         <input
           type="password"
-          id="login-password"
+          id="register-confirm-password"
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="password"
