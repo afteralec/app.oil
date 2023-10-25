@@ -9,6 +9,8 @@ import (
 func Request(c *fiber.Ctx) error {
 	return c.Render("web/views/request", fiber.Map{
 		"CopyrightYear":    time.Now().Year(),
+		"Title":            "Petrichor",
+		"MetaContent":      "Petrichor MUD - a modern take on a classic MUD style of game.",
 		"ID":               c.Params("id"),
 		"Status":           "Ready",
 		"Name":             "Test Character",
