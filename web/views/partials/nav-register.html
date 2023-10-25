@@ -48,10 +48,13 @@
         'password': '',
         'confirmPassword': '',
         pwLen: false,
+        pwEvalLen: false,
         pwMixedCase: false,
+        pwEvalMixedCase: false,
         pwNum: false,
+        pwEvalNum: false,
         pwSpecialChar: false,
-        pwEvalStrengths: false,
+        pwEvalSpecialChar: false,
       }"
     >
       <div class="space-y-2">
@@ -90,14 +93,17 @@
           type="password"
           id="register-password"
           @input="
-            evalPasswordStrengths = true;
-            const strengths = getPasswordStrengths(password);
+            const strengths = getPasswordStrengths(event.target.value);
             pwLen = strengths.len;
+            pwEvalLen = strengths.len ? true : pwEvalLen;
             pwMixedCase = strengths.mixedCase;
+            pwEvalMixedCase = strengths.mixedCase ? true : pwEvalMixedCase;
             pwSpecialChar = strengths.specialChar;
+            pwEvalSpecialChar = strengths.specialChar ? true : pwEvalSpecialChar;
             pwNum = strengths.num;
+            pwEvalNum = strengths.num ? true : pwEvalNum;
           "
-          x-model="password"
+          :value="password"
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="password"
@@ -105,6 +111,102 @@
           aria-invalid="false"
           value=""
         />
+        <div
+          class="flex items-center gap-2 text-xs text-muted-foreground"
+          x-cloak
+          x-show="!pwEvalLen"
+        >
+          <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
+          <div>Length</div>
+        </div>
+        <div
+          class="flex items-center gap-2 text-xs text-rose-800"
+          x-cloak
+          x-show="pwEvalLen && !pwLen"
+        >
+          <iconify-icon icon="fe:close" width="14" height="14"></iconify-icon>
+          <div>Too short</div>
+        </div>
+        <div
+          class="flex items-center gap-2 text-xs text-emerald-800"
+          x-cloak
+          x-show="pwEvalLen && pwLen"
+        >
+          <iconify-icon icon="fe:check" width="14" height="14"></iconify-icon>
+          <div>Strong length</div>
+        </div>
+        <div
+          class="flex items-center gap-2 text-xs text-muted-foreground"
+          x-cloak
+          x-show="!pwEvalMixedCase"
+        >
+          <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
+          <div>Mixed case</div>
+        </div>
+        <div
+          class="flex items-center gap-2 text-xs text-rose-800"
+          x-cloak
+          x-show="pwEvalMixedCase && !pwMixedCase"
+        >
+          <iconify-icon icon="fe:close" width="14" height="14"></iconify-icon>
+          <div>Is not mixed case</div>
+        </div>
+        <div
+          class="flex items-center gap-2 text-xs text-emerald-800"
+          x-cloak
+          x-show="pwEvalMixedCase && pwMixedCase"
+        >
+          <iconify-icon icon="fe:check" width="14" height="14"></iconify-icon>
+          <div>Is mixed case</div>
+        </div>
+        <div
+          class="flex items-center gap-2 text-xs text-muted-foreground"
+          x-cloak
+          x-show="!pwEvalNum"
+        >
+          <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
+          <div>Number</div>
+        </div>
+        <div
+          class="flex items-center gap-2 text-xs text-rose-800"
+          x-cloak
+          x-show="pwEvalNum && !pwNum"
+        >
+          <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
+          <div>Does not have a number</div>
+        </div>
+        <div
+          class="flex items-center gap-2 text-xs text-emerald-800"
+          x-cloak
+          x-show="pwEvalNum && pwNum"
+        >
+          <iconify-icon icon="fe:check" width="14" height="14"></iconify-icon>
+          <div>Has a number</div>
+        </div>
+        <div
+          class="flex items-center gap-2 text-xs text-muted-foreground"
+          x-cloak
+          x-show="!pwEvalSpecialChar"
+        >
+          <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
+          <div>Special Character</div>
+        </div>
+        <div
+          class="flex items-center gap-2 text-xs text-rose-800"
+          x-cloak
+          x-show="pwEvalSpecialChar && !pwSpecialChar"
+        >
+          <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
+          <div>Does not have a special character</div>
+        </div>
+        <div
+          class="flex items-center gap-2 text-xs text-emerald-800"
+          x-cloak
+          x-show="pwEvalSpecialChar && pwSpecialChar"
+        >
+          <iconify-icon icon="fe:check" width="14" height="14"></iconify-icon>
+          <div>Has a special character</div>
+        </div>
       </div>
       <div class="space-y-2">
         <label

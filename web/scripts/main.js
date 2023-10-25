@@ -1,3 +1,5 @@
+"use strict";
+
 export function sanitizeUsername(s) {
   return s.replace(/[^a-zA-Z0-9_\-]+/gi, "").toLowerCase();
 }
@@ -14,7 +16,7 @@ export function isUsernameValid(s) {
 }
 
 export function getPasswordStrengths(pw) {
-  const strengths = {
+  let strengths = {
     len: false,
     mixedCase: false,
     num: false,
@@ -37,6 +39,9 @@ export function getPasswordStrengths(pw) {
     strengths.specialChar = true;
   }
 
-  console.dir(strengths);
   return strengths;
 }
+
+window.sanitizeUsername = sanitizeUsername;
+window.isUsernameValid = isUsernameValid;
+window.getPasswordStrengths = getPasswordStrengths;

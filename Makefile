@@ -39,8 +39,20 @@ htmx:
 		web/static/htmx.min.js \
 		https://unpkg.com/htmx.org@1.9.6/dist/htmx.min.js
 
+iconify:
+	curl -o \
+		web/static/iconify-icon.min.js \
+		https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js
+
 minmain:
 	uglifyjs --module --webkit web/scripts/main.mjs -o web/static/main.min.js
 
 postcss:
 	bunx postcss web/styles/styles.css -o web/static/styles.min.css
+
+bunmain:
+	bun build web/scripts/main.js \
+		--outdir web/static \
+		--minify-whitespace \
+		--minify-syntax \
+		--entry-naming "[dir]/[name].min.[ext]"
