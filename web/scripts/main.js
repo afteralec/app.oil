@@ -71,7 +71,7 @@ export async function submitData(u, pw, confirmpw) {
 }
 
 export function sanitizeUsername(u) {
-  return u.replace(/[^a-zA-Z0-9_\-]+/gi, "").toLowerCase();
+  return u.replace(/[^a-zA-Z0-9_-]+/gi, "").toLowerCase();
 }
 
 export function isUsernameValid(u) {
