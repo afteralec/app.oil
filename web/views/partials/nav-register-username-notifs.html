@@ -1,0 +1,37 @@
+<div x-cloak x-show="uShowNotifs">
+  <div
+    class="flex items-center gap-1 text-xs text-muted-foreground"
+    x-cloak
+    x-show="!uEvalLen"
+  >
+    <div>Username should be between 4 and 8 characters long</div>
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs text-rose-800"
+    x-cloak
+    x-show="uEvalLen && username.length < 4"
+  >
+    <div>Username should be between 4 and 8 characters long</div>
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs text-emerald-800"
+    x-cloak
+    x-show="uEvalLen && username.length >= 4 && username.length <= 8"
+  >
+    <div>Username should be between 4 and 8 characters long</div>
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs text-rose-800"
+    x-cloak
+    x-show="uEvalLen && username.length > 8"
+  >
+    <div>Username should be between 4 and 8 characters long</div>
+  </div>
+  <div
+    id="register-username-desc"
+    class="text-xs leading-none text-muted-foreground"
+  >
+    Lower case letters, numbers, underscores and dashes only
+  </div>
+  <div id="username-reserved" x-cloak x-show="isUsernameValid(username)"></div>
+</div>
