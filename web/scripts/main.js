@@ -163,8 +163,7 @@ export async function submitLogin(errors, u, pw) {
 
     window.location.reload();
   } catch {
-    // TODO: Handle this error
-    return;
+    errors.disaster = true;
   }
 }
 
