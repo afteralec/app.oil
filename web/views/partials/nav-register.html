@@ -40,7 +40,12 @@
           id="register-username"
           :value="username"
           @focus="notifs.u = true"
-          @input="username = sanitizeUsername(event.target.value); eval.u.len = true;"
+          @input="
+            username = sanitizeUsername(event.target.value);
+            eval.u.len = true;
+            const reservedEl = document.getElementById('username-reserved');
+            reservedEl.classList.add('htmx-request');
+          "
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="username"
@@ -48,8 +53,9 @@
           aria-invalid="false"
           hx-post="/player/reserved"
           hx-params="username"
-          hx-trigger="keyup changed delay:100ms"
+          hx-trigger="keyup changed delay:500ms"
           hx-target="#username-reserved"
+          hx-indicator="#username-reserved"
         />
         {{ template "web/views/partials/nav-register-username-notifs" }}
       </div>

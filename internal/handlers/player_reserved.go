@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -23,7 +22,6 @@ func PlayerReserved(c *fiber.Ctx) error {
 	u, err := queries.Q.GetPlayerUsername(ctx, i.Username)
 	// TODO: Figure out getting the error code from these
 	if err != nil {
-		log.Print(err)
 		return c.Render("web/views/htmx/player-free", fiber.Map{}, "")
 	}
 
