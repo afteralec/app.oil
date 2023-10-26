@@ -5,6 +5,11 @@ export function getRegisterData() {
     username: "",
     password: "",
     confirmPassword: "",
+    notifs: {
+      u: false,
+      pw: false,
+      cpw: false,
+    },
     strengths: {
       len: false,
       mixedCase: false,
@@ -18,9 +23,7 @@ export function getRegisterData() {
       specialChar: false,
     },
     evalConfirmPassword: false,
-    uShowNotifs: false,
     uEvalLen: false,
-    pwShowNotifs: false,
     submitData,
     sanitizeUsername,
     isUsernameValid,
