@@ -26,7 +26,7 @@
     {{ template "web/views/partials/modal-form-header" "Please log in:"}}
     <form
       x-data="getLoginData()"
-      @submit.prevent="submitLogin(username, password)"
+      @submit.prevent="submitLogin(errors, username, password)"
       class="space-y-4 px-4"
     >
       <div class="space-y-2">

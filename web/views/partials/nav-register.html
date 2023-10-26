@@ -27,7 +27,7 @@
     <form
       class="space-y-4 px-4"
       x-data="getRegisterData()"
-      @submit.prevent="submitData(username, password, confirmPassword)"
+      @submit.prevent="submitData(errors, username, password, confirmPassword)"
     >
       <div class="space-y-2">
         <label

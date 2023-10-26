@@ -32,6 +32,11 @@ export function getRegisterData() {
       num: false,
       specialChar: false,
     },
+    errors: {
+      conflict: false,
+      internal: false,
+      disaster: false,
+    },
     submitData,
     sanitizeUsername,
     isUsernameValid,
@@ -41,7 +46,7 @@ export function getRegisterData() {
   };
 }
 
-export async function submitData(u, pw, confirmpw) {
+export async function submitData(errors, u, pw, confirmpw) {
   if (!isUsernameValid(u)) return;
   if (!isPasswordValid(pw)) return;
   if (pw !== confirmpw) return;
@@ -58,14 +63,18 @@ export async function submitData(u, pw, confirmpw) {
     });
 
     if (response.status !== 201) {
-      // TODO: Handle 409 here
-      // TODO: Handle 500 and 400 as server-side errors here
+      if (response.status === 409) {
+        errors.conflict = true;
+        return;
+      }
+
+      errors.internal = true;
       return;
     }
 
     window.location.reload();
   } catch (err) {
-    // TODO: Here, the fetch has failed - this is a network partition or the back end went down
+    errors.disaster = true;
     return;
   }
 }
@@ -122,12 +131,17 @@ export function getLoginData() {
   return {
     username: "",
     password: "",
+    errors: {
+      auth: false,
+      internal: false,
+      disaster: false,
+    },
     submitLogin,
     sanitizeUsername,
   };
 }
 
-export async function submitLogin(u, pw) {
+export async function submitLogin(errors, u, pw) {
   try {
     const body = new FormData();
     body.append("username", u);
@@ -138,7 +152,12 @@ export async function submitLogin(u, pw) {
     });
 
     if (res.status != 200) {
-      // TODO: Handle this error
+      if (res.status === 500) {
+        errors.internal = true;
+        return;
+      }
+
+      errors.auth = true;
       return;
     }
 
@@ -166,7 +185,7 @@ export async function logout() {
       return;
     }
 
-    window.relocation.reload();
+    window.location.reload();
   } catch {
     // TODO: Handle this error case here - backend is unreachable
   }
