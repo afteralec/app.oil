@@ -2,6 +2,7 @@
 
 export function getRegisterData() {
   return {
+    showModal: false,
     username: "",
     password: "",
     confirmPassword: "",
@@ -129,6 +130,7 @@ export function setEvalStrengths(evalStrengths, strengths) {
 
 export function getLoginData() {
   return {
+    showModal: false,
     username: "",
     password: "",
     errors: {
