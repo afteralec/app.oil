@@ -18,9 +18,6 @@ type Player struct {
 }
 
 func NewPlayer(c *fiber.Ctx) error {
-	c.Status(fiber.StatusInternalServerError)
-	return nil
-
 	p := new(Player)
 
 	if err := c.BodyParser(p); err != nil {
