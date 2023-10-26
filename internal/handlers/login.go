@@ -19,24 +19,25 @@ func Login(c *fiber.Ctx) error {
 	i := new(LoginInput)
 
 	if err := c.BodyParser(i); err != nil {
-		return err
+		c.Status(fiber.StatusUnauthorized)
+		return nil
 	}
 
 	ctx := context.Background()
 	p, err := queries.Q.GetPlayerByUsername(ctx, i.Username)
 	if err != nil {
-		c.Status(fiber.StatusForbidden)
+		c.Status(fiber.StatusUnauthorized)
 		return nil
 	}
 
 	v, err := password.Verify(i.Password, p.PwHash)
 	if err != nil {
-		c.Status(fiber.StatusForbidden)
+		c.Status(fiber.StatusUnauthorized)
 		return nil
 	}
 
 	if !v {
-		c.Status(fiber.StatusForbidden)
+		c.Status(fiber.StatusUnauthorized)
 		return nil
 	}
 
@@ -48,7 +49,7 @@ func Login(c *fiber.Ctx) error {
 
 	sess.Set("pid", p.ID)
 	if err = sess.Save(); err != nil {
-		c.Status(fiber.StatusInternalServerError)
+		c.Status(fiber.StatusUnauthorized)
 		return nil
 	}
 
