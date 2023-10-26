@@ -8,28 +8,28 @@
   <div
     class="flex items-center gap-1 text-xs leading-none text-muted-foreground"
     x-cloak
-    x-show="notifs.u && !isUsernameValid(username) && !eval.u.len"
+    x-show="!isUsernameValid(username) && !eval.u.len"
   >
     <p>Username should be between 4 and 8 characters long.</p>
   </div>
   <div
     class="flex items-center gap-1 text-xs leading-none text-rose-800"
     x-cloak
-    x-show="notifs.u && !isUsernameValid(username) && eval.u.len && username.length < 4"
+    x-show="!isUsernameValid(username) && eval.u.len && username.length < 4"
   >
     <p>Username should be between 4 and 8 characters long.</p>
   </div>
   <div
     class="flex items-center gap-1 text-xs leading-none text-emerald-800"
     x-cloak
-    x-show="notifs.u && !isUsernameValid(username) && eval.u.len && username.length >= 4 && username.length <= 8"
+    x-show="!isUsernameValid(username) && eval.u.len && username.length >= 4 && username.length <= 8"
   >
     <p>Username should be between 4 and 8 characters long.</p>
   </div>
   <div
     class="flex items-center gap-1 text-xs leading-none text-rose-800"
     x-cloak
-    x-show="notifs.u && !isUsernameValid(username) && eval.u.len && username.length > 8"
+    x-show="!isUsernameValid(username) && eval.u.len && username.length > 8"
   >
     <p>Username should be between 4 and 8 characters long.</p>
   </div>

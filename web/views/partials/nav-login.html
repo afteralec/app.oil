@@ -33,6 +33,14 @@
         <br />
         Please try again.
       </p>
+      <p
+        class="rounded-md bg-rose-100 px-4 py-3 text-sm text-rose-800"
+        x-cloak
+        x-show="errors.disaster"
+      >
+        Something's gone terribly wrong. Either the application is unreachable
+        or you aren't connected to the internet.
+      </p>
     </div>
     {{ template "web/views/partials/modal-form-header" "Please log in:"}}
     <form
@@ -84,10 +92,15 @@
       </div>
       <div class="flex justify-end">
         <button
+          :disabled="
+            const error = errors.auth || errors.disaster;
+            const fields = !username.length || !password.length;
+            return error || fields;
+          "
           class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
           type="submit"
         >
-          Submit
+          Log In
         </button>
       </div>
     </form>

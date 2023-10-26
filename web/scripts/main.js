@@ -34,6 +34,7 @@ export function getRegisterData() {
       specialChar: false,
     },
     errors: {
+      badRequest: false,
       conflict: false,
       internal: false,
       disaster: false,
@@ -64,11 +65,14 @@ export async function submitRegisterData(errors, u, pw, confirmpw) {
     });
 
     if (response.status !== 201) {
+      if (response.status === 400) {
+        errors.badRequest = true;
+        return;
+      }
       if (response.status === 409) {
         errors.conflict = true;
         return;
       }
-
       errors.internal = true;
       return;
     }
