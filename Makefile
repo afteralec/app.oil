@@ -47,10 +47,10 @@ main:
 		--entry-naming "[dir]/[name].min.[ext]"
 
 js:
-	alpine
-	htmx
-	icons
-	main
+	make alpine
+	make htmx
+	make icons
+	make main
 
 css:
 	bunx postcss web/styles/styles.css -o web/static/styles.min.css
