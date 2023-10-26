@@ -10,6 +10,7 @@ import (
 var Sessions *session.Store
 
 func Session() fiber.Handler {
+	// TODO: Update this config to be more secure. Will depend on environment.
 	Sessions = session.New()
 	return func(c *fiber.Ctx) error {
 		sess, err := Sessions.Get(c)

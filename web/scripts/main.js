@@ -133,7 +133,6 @@ export function getLoginData() {
     password: "",
     errors: {
       auth: false,
-      internal: false,
       disaster: false,
     },
     submitLogin,
@@ -152,11 +151,6 @@ export async function submitLogin(errors, u, pw) {
     });
 
     if (res.status != 200) {
-      if (res.status === 500) {
-        errors.internal = true;
-        return;
-      }
-
       errors.auth = true;
       return;
     }
