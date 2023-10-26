@@ -43,7 +43,7 @@ func Login(c *fiber.Ctx) error {
 
 	sess, err := middleware.Sessions.Get(c)
 	if err != nil {
-		c.Status(fiber.StatusInternalServerError)
+		c.Status(fiber.StatusUnauthorized)
 		return nil
 	}
 
