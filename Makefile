@@ -39,12 +39,20 @@ icons:
 		web/static/iconify-icon.min.js \
 		https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js
 
-css:
-	bunx postcss web/styles/styles.css -o web/static/styles.min.css
-
-js:
+main:
 	bun build web/scripts/main.js \
 		--outdir web/static \
 		--minify-whitespace \
 		--minify-syntax \
 		--entry-naming "[dir]/[name].min.[ext]"
+
+js:
+	alpine
+	htmx
+	icons
+	main
+
+css:
+	bunx postcss web/styles/styles.css -o web/static/styles.min.css
+
+
