@@ -21,19 +21,12 @@ export function getRegisterData() {
     uShowNotifs: false,
     uEvalLen: false,
     pwShowNotifs: false,
-    pwLen: false,
-    pwEvalLen: false,
-    pwMixedCase: false,
-    pwEvalMixedCase: false,
-    pwNum: false,
-    pwEvalNum: false,
-    pwSpecialChar: false,
-    pwEvalSpecialChar: false,
     submitData,
     sanitizeUsername,
     isUsernameValid,
     isPasswordValid,
-    getPasswordStrengths,
+    setStrengths,
+    setEvalStrengths,
   };
 }
 
@@ -84,31 +77,34 @@ export function isPasswordValid(pw) {
   return true;
 }
 
-export function getPasswordStrengths(pw) {
-  const strengths = {
-    len: false,
-    mixedCase: false,
-    num: false,
-    specialChar: false,
-  };
-
+export function setStrengths(strengths, pw) {
+  strengths.len = false;
   if (pw.length > 8) {
     strengths.len = true;
   }
 
+  strengths.mixedCase = false;
   if (pw.match(/[a-z]/) && pw.match(/[A-Z]/)) {
     strengths.mixedCase = true;
   }
 
+  strengths.num = false;
   if (pw.match(/[0-9]/)) {
     strengths.num = true;
   }
 
+  strengths.specialChar = false;
   if (pw.match(/[^a-zA-Z\d]/)) {
     strengths.specialChar = true;
   }
+}
 
-  return strengths;
+export function setEvalStrengths(evalStrengths, strengths) {
+  evalStrengths.len = strengths.len || evalStrengths.len;
+  evalStrengths.mixedCase = strengths.mixedCase || evalStrengths.mixedCase;
+  evalStrengths.num = strengths.num || evalStrengths.num;
+  evalStrengths.specialChar =
+    strengths.specialChar || evalStrengths.specialChar;
 }
 
 export function getLoginData() {

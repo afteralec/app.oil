@@ -65,11 +65,8 @@
           id="register-password"
           @focus="pwShowNotifs = true"
           @input="
-            strengths = getPasswordStrengths(event.target.value);
-            evalStrengths.len = strengths.len ? true : evalStrengths.len;
-            evalStrengths.mixedCase = strengths.mixedCase ? true : evalStrengths.mixedCase;
-            evalStrengths.specialChar = strengths.specialChar ? true : evalStrengths.specialChar;
-            evalStrengths.num = strengths.num ? true : evalStrengths.num;
+            setStrengths(strengths, event.target.value);
+            setEvalStrengths(evalStrengths, strengths);
             password = event.target.value;
           "
           :value="password"
