@@ -5,6 +5,18 @@ export function getRegisterData() {
     username: "",
     password: "",
     confirmPassword: "",
+    strengths: {
+      len: false,
+      mixedCase: false,
+      num: false,
+      specialChar: false,
+    },
+    evalStrengths: {
+      len: false,
+      mixedCase: false,
+      num: false,
+      specialChar: false,
+    },
     evalConfirmPassword: false,
     uShowNotifs: false,
     uEvalLen: false,
@@ -73,7 +85,7 @@ export function isPasswordValid(pw) {
 }
 
 export function getPasswordStrengths(pw) {
-  let strengths = {
+  const strengths = {
     len: false,
     mixedCase: false,
     num: false,

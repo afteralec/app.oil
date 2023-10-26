@@ -2,23 +2,23 @@
   <div
     class="flex items-center gap-1 text-xs text-muted-foreground"
     x-cloak
-    x-show="!pwEvalLen"
+    x-show="!evalStrengths.len"
   >
     <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
-    <div>Password should be at least 8 characters long</div>
+    <div>Password should be at least 8 characters long.</div>
   </div>
   <div
     class="flex items-center gap-1 text-xs text-rose-800"
     x-cloak
-    x-show="pwEvalLen && !pwLen"
+    x-show="evalStrengths.len && !strengths.len"
   >
     <iconify-icon icon="fe:close" width="14" height="14"></iconify-icon>
-    <div>Password should be at least 8 characters long</div>
+    <div>Password should be at least 8 characters long.</div>
   </div>
   <div
     class="flex items-center gap-1 text-xs text-emerald-800"
     x-cloak
-    x-show="pwEvalLen && pwLen"
+    x-show="evalStrengths.len && strengths.len"
   >
     <iconify-icon icon="fe:check" width="14" height="14"></iconify-icon>
     <div>Long passwords are strong passwords!</div>
@@ -26,79 +26,79 @@
   <div
     class="flex items-center gap-1 text-xs text-muted-foreground"
     x-cloak
-    x-show="!pwEvalMixedCase"
+    x-show="!evalStrengths.mixedCase"
   >
     <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
     <div>
-      Password should include at least one lower case and one upper case letter
+      Password should include at least one lower case and one upper case letter.
     </div>
   </div>
   <div
     class="flex items-center gap-1 text-xs text-rose-800"
     x-cloak
-    x-show="pwEvalMixedCase && !pwMixedCase"
+    x-show="evalStrengths.mixedCase && !strengths.mixedCase"
   >
     <iconify-icon icon="fe:close" width="14" height="14"></iconify-icon>
     <div>
-      Password should include at least one lower case and one upper case letter
+      Password should include at least one lower case and one upper case letter.
     </div>
   </div>
   <div
     class="flex items-center gap-1 text-xs text-emerald-800"
     x-cloak
-    x-show="pwEvalMixedCase && pwMixedCase"
+    x-show="evalStrengths.mixedCase && strengths.mixedCase"
   >
     <iconify-icon icon="fe:check" width="14" height="14"></iconify-icon>
     <div>
-      Password includes at least one lower case and one upper case letter
+      Password includes at least one lower case and one upper case letter.
     </div>
   </div>
   <div
     class="flex items-center gap-1 text-xs text-muted-foreground"
     x-cloak
-    x-show="!pwEvalNum"
+    x-show="!evalStrengths.num"
   >
     <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
-    <div>Password should include at least one number</div>
+    <div>Password should include at least one number.</div>
   </div>
   <div
     class="flex items-center gap-1 text-xs text-rose-800"
     x-cloak
-    x-show="pwEvalNum && !pwNum"
+    x-show="evalStrengths.num && !strengths.num"
   >
     <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
-    <div>Password should include at least one number</div>
+    <div>Password should include at least one number.</div>
   </div>
   <div
     class="flex items-center gap-1 text-xs text-emerald-800"
     x-cloak
-    x-show="pwEvalNum && pwNum"
+    x-show="evalStrengths.num && strengths.num"
   >
     <iconify-icon icon="fe:check" width="14" height="14"></iconify-icon>
-    <div>Password has at least one number</div>
+    <div>Password has at least one number.</div>
   </div>
   <div
     class="flex items-center gap-1 text-xs text-muted-foreground"
     x-cloak
-    x-show="!pwEvalSpecialChar"
+    x-show="!evalStrengths.specialChar"
   >
     <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
-    <div>Password should include at least one special character</div>
+    <div>Password should include at least one special character.</div>
   </div>
   <div
     class="flex items-center gap-1 text-xs text-rose-800"
     x-cloak
-    x-show="pwEvalSpecialChar && !pwSpecialChar"
+    x-show="evalStrengths.specialChar && !strengths.specialChar"
   >
     <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
-    <div>Password should include at least one special character</div>
+    <div>Password should include at least one special character.</div>
   </div>
   <div
     class="flex items-center gap-1 text-xs text-emerald-800"
     x-cloak
-    x-show="pwEvalSpecialChar && pwSpecialChar"
+    x-show="evalStrengths.specialChar && strengths.specialChar"
   >
     <iconify-icon icon="fe:check" width="14" height="14"></iconify-icon>
-    <div>Password has a special character</div>
+    <div>Password has a special character.</div>
   </div>
 </div>
