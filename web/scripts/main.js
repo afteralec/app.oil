@@ -37,7 +37,7 @@ export function getRegisterData() {
       internal: false,
       disaster: false,
     },
-    submitData,
+    submitRegisterData,
     sanitizeUsername,
     isUsernameValid,
     isPasswordValid,
@@ -46,7 +46,7 @@ export function getRegisterData() {
   };
 }
 
-export async function submitData(errors, u, pw, confirmpw) {
+export async function submitRegisterData(errors, u, pw, confirmpw) {
   if (!isUsernameValid(u)) return;
   if (!isPasswordValid(pw)) return;
   if (pw !== confirmpw) return;
@@ -135,12 +135,12 @@ export function getLoginData() {
       auth: false,
       disaster: false,
     },
-    submitLogin,
+    submitLoginData,
     sanitizeUsername,
   };
 }
 
-export async function submitLogin(errors, u, pw) {
+export async function submitLoginData(errors, u, pw) {
   try {
     const body = new FormData();
     body.append("username", u);
