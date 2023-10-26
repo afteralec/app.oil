@@ -76,7 +76,7 @@ export function sanitizeUsername(u) {
 
 export function isUsernameValid(u) {
   if (u.length < 4) return false;
-  if (u.length > 16) return false;
+  if (u.length > 8) return false;
   const regex = new RegExp("[^a-z0-9_-]+", "g");
   if (regex.test(u)) return false;
   return true;
@@ -166,7 +166,7 @@ export async function logout() {
       return;
     }
 
-    window.location.reload();
+    window.relocation.reload();
   } catch {
     // TODO: Handle this error case here - backend is unreachable
   }
