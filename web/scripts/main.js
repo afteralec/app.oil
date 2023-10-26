@@ -5,6 +5,7 @@ export function getRegisterData() {
     username: "",
     password: "",
     confirmPassword: "",
+    evalConfirmPassword: false,
     pwLen: false,
     pwEvalLen: false,
     pwMixedCase: false,

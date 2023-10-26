@@ -44,7 +44,7 @@
       </svg>
       <span class="sr-only">Close</span>
     </button>
-    <p class="space-y-1.5">Create an account:</p>
+    <p class="py-4">Create an account:</p>
     <form
       class="space-y-4 px-4"
       x-data="getRegisterData()"
@@ -71,13 +71,13 @@
           hx-trigger="keyup changed delay:100ms"
           hx-target="#username-reserved"
         />
-        <div id="username-reserved"></div>
         <p
           id="register-username-desc"
           class="text-xs leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
           Your username. Must be lowercase alphanumeric, dash or underscore.
         </p>
+        <div id="username-reserved"></div>
       </div>
       <div class="space-y-2">
         <label
@@ -109,102 +109,7 @@
           aria-invalid="false"
           value=""
         />
-        <div
-          class="flex items-center gap-2 text-xs text-muted-foreground"
-          x-cloak
-          x-show="!pwEvalLen"
-        >
-          <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
-          <div>Length</div>
-        </div>
-        <div
-          class="flex items-center gap-2 text-xs text-rose-800"
-          x-cloak
-          x-show="pwEvalLen && !pwLen"
-        >
-          <iconify-icon icon="fe:close" width="14" height="14"></iconify-icon>
-          <div>Too short</div>
-        </div>
-        <div
-          class="flex items-center gap-2 text-xs text-emerald-800"
-          x-cloak
-          x-show="pwEvalLen && pwLen"
-        >
-          <iconify-icon icon="fe:check" width="14" height="14"></iconify-icon>
-          <div>Strong length</div>
-        </div>
-        <div
-          class="flex items-center gap-2 text-xs text-muted-foreground"
-          x-cloak
-          x-show="!pwEvalMixedCase"
-        >
-          <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
-          <div>Mixed case</div>
-        </div>
-        <div
-          class="flex items-center gap-2 text-xs text-rose-800"
-          x-cloak
-          x-show="pwEvalMixedCase && !pwMixedCase"
-        >
-          <iconify-icon icon="fe:close" width="14" height="14"></iconify-icon>
-          <div>Is not mixed case</div>
-        </div>
-        <div
-          class="flex items-center gap-2 text-xs text-emerald-800"
-          x-cloak
-          x-show="pwEvalMixedCase && pwMixedCase"
-        >
-          <iconify-icon icon="fe:check" width="14" height="14"></iconify-icon>
-          <div>Is mixed case</div>
-        </div>
-        <div
-          class="flex items-center gap-2 text-xs text-muted-foreground"
-          x-cloak
-          x-show="!pwEvalNum"
-        >
-          <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
-          <div>Number</div>
-        </div>
-        <div
-          class="flex items-center gap-2 text-xs text-rose-800"
-          x-cloak
-          x-show="pwEvalNum && !pwNum"
-        >
-          <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
-          <div>Does not have a number</div>
-        </div>
-        <div
-          class="flex items-center gap-2 text-xs text-emerald-800"
-          x-cloak
-          x-show="pwEvalNum && pwNum"
-        >
-          <iconify-icon icon="fe:check" width="14" height="14"></iconify-icon>
-          <div>Has a number</div>
-        </div>
-        <div
-          class="flex items-center gap-2 text-xs text-muted-foreground"
-          x-cloak
-          x-show="!pwEvalSpecialChar"
-        >
-          <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
-          <div>Special Character</div>
-        </div>
-        <div
-          class="flex items-center gap-2 text-xs text-rose-800"
-          x-cloak
-          x-show="pwEvalSpecialChar && !pwSpecialChar"
-        >
-          <iconify-icon icon="fe:close" height="14" width="14"></iconify-icon>
-          <div>Does not have a special character</div>
-        </div>
-        <div
-          class="flex items-center gap-2 text-xs text-emerald-800"
-          x-cloak
-          x-show="pwEvalSpecialChar && pwSpecialChar"
-        >
-          <iconify-icon icon="fe:check" width="14" height="14"></iconify-icon>
-          <div>Has a special character</div>
-        </div>
+        {{ template "web/views/partials/nav-register-pw-notifs" }}
       </div>
       <div class="space-y-2">
         <label
@@ -216,7 +121,7 @@
         <input
           type="password"
           id="register-confirm-password"
-          @input="confirmPassword = event.target.value"
+          @input="confirmPassword = event.target.value; evalConfirmPassword = true;"
           :value="confirmPassword"
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
@@ -225,10 +130,26 @@
           aria-invalid="false"
           value=""
         />
+        <p
+          class="text-xs leading-none text-rose-800"
+          x-show="evalConfirmPassword && password !== confirmPassword"
+        >
+          Passwords don't match.
+        </p>
+        <p
+          class="text-xs leading-none text-emerald-800"
+          x-show="evalConfirmPassword && password === confirmPassword"
+        >
+          Passwords match!
+        </p>
       </div>
       <div class="flex justify-end">
         <button
-          :disabled="!isUsernameValid(username) || !isPasswordValid(password) || password !== confirmPassword"
+          :disabled="
+            const fields = !isUsernameValid(username) || !isPasswordValid(password) || password !== confirmPassword;
+            const el = document.getElementById('player-reserved');
+            return fields || el;
+          "
           class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
           type="submit"
         >
