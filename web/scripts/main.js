@@ -39,6 +39,7 @@ export function getRegisterData() {
       internal: false,
       disaster: false,
     },
+    resetErrors,
     submitRegisterData,
     sanitizeUsername,
     isUsernameValid,
@@ -141,6 +142,7 @@ export function getLoginData() {
       auth: false,
       disaster: false,
     },
+    resetErrors,
     submitLoginData,
     sanitizeUsername,
   };
@@ -187,6 +189,12 @@ export async function logout() {
     window.location.reload();
   } catch {
     // TODO: Handle this error case here - backend is unreachable
+  }
+}
+
+export function resetErrors(errors) {
+  for (const k in errors) {
+    errors[k] = false;
   }
 }
 
