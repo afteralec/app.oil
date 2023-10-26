@@ -1,8 +1,3 @@
-ifneq (,$(wildcard ./.env))
-    include .env
-    export
-endif
-
 run:
 	go run cmd/main/main.go
 
@@ -23,9 +18,6 @@ cleanup_migrations:
 test:
 	DATABASE_URL=root:pass@/test RUN_INTEGRATION_TESTS=true go test -v ./tests/...
 
-twcss:
-	tailwindcss -i ./web/styles/styles.css -o ./web/static/styles.css
-
 dev:
 	DATABASE_URL=root:pass@/test go run main.go
 
@@ -42,18 +34,15 @@ htmx:
 		web/static/htmx.min.js \
 		https://unpkg.com/htmx.org@1.9.6/dist/htmx.min.js
 
-iconify:
+icons:
 	curl -o \
 		web/static/iconify-icon.min.js \
 		https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js
 
-minmain:
-	uglifyjs --module --webkit web/scripts/main.mjs -o web/static/main.min.js
-
-postcss:
+css:
 	bunx postcss web/styles/styles.css -o web/static/styles.min.css
 
-bunmain:
+js:
 	bun build web/scripts/main.js \
 		--outdir web/static \
 		--minify-whitespace \
