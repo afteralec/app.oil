@@ -1,8 +1,9 @@
-.env
-
 # Database schema files required for codegen
 schema.hcl
 migrations/
+
+# Built js and css artifacts
+web/static
 
 # ick
 node_modules
