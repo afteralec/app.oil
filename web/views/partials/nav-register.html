@@ -50,7 +50,6 @@
           placeholder=""
           name="username"
           aria-describedby="register-username-desc"
-          aria-invalid="false"
           hx-post="/player/reserved"
           hx-params="username"
           hx-trigger="keyup changed delay:500ms"
@@ -79,7 +78,6 @@
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="password"
-          aria-invalid="false"
           value=""
         />
         {{ template "web/views/partials/nav-register-pw-notifs" }}
@@ -106,8 +104,6 @@
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="confirm-password"
-          aria-describedby=":r0rh:-form-item-description"
-          aria-invalid="false"
           value=""
         />
         <div x-cloak x-show="notifs.cpw">
