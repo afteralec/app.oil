@@ -40,7 +40,7 @@
           id="register-username"
           :value="username"
           @focus="notifs.u = true"
-          @input="username = sanitizeUsername(event.target.value); uEvalLen = true;"
+          @input="username = sanitizeUsername(event.target.value); eval.u.len = true;"
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="username"
@@ -66,7 +66,7 @@
           @focus="notifs.pw = true"
           @input="
             setStrengths(strengths, event.target.value);
-            setEvalStrengths(evalStrengths, strengths);
+            setEvalStrengths(eval.pw.strengths, strengths);
             password = event.target.value;
           "
           :value="password"
@@ -89,7 +89,12 @@
         <input
           type="password"
           id="register-confirm-password"
-          @input="confirmPassword = event.target.value; evalConfirmPassword = true;"
+          @input="
+            confirmPassword = event.target.value;
+            if (confirmPassword.len === password.len) {
+              eval.cpw.eq = true;
+            }
+          "
           :value="confirmPassword"
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
@@ -98,18 +103,29 @@
           aria-invalid="false"
           value=""
         />
-        <p
-          class="text-xs leading-none text-rose-800"
-          x-show="evalConfirmPassword && password !== confirmPassword"
-        >
-          Passwords don't match.
-        </p>
-        <p
-          class="text-xs leading-none text-emerald-800"
-          x-show="evalConfirmPassword && password === confirmPassword"
-        >
-          Passwords match!
-        </p>
+        <div x-cloak x-show="notifs.cpw">
+          <p
+            class="text-xs leading-none text-muted-foreground"
+            x-cloak
+            x-show="!eval.cpw.eq"
+          >
+            Passwords don't match.
+          </p>
+          <p
+            class="text-xs leading-none text-rose-800"
+            x-cloak
+            x-show="eval.cpw.eq && password !== confirmPassword"
+          >
+            Passwords don't match.
+          </p>
+          <p
+            class="text-xs leading-none text-emerald-800"
+            x-cloak
+            x-show="eval.cpw.eq && password === confirmPassword"
+          >
+            Passwords match!
+          </p>
+        </div>
       </div>
       <div class="flex justify-end">
         <button

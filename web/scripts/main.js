@@ -10,20 +10,28 @@ export function getRegisterData() {
       pw: false,
       cpw: false,
     },
+    eval: {
+      pw: {
+        strengths: {
+          len: false,
+          mixedCase: false,
+          num: false,
+          specialChar: false,
+        },
+      },
+      u: {
+        len: false,
+      },
+      cpw: {
+        eq: false,
+      },
+    },
     strengths: {
       len: false,
       mixedCase: false,
       num: false,
       specialChar: false,
     },
-    evalStrengths: {
-      len: false,
-      mixedCase: false,
-      num: false,
-      specialChar: false,
-    },
-    evalConfirmPassword: false,
-    uEvalLen: false,
     submitData,
     sanitizeUsername,
     isUsernameValid,
