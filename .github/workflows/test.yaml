@@ -4,7 +4,7 @@ jobs:
   test:
     name: Integration Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 10
     services:
       mysql:
         image: mysql:8
