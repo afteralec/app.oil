@@ -14,6 +14,7 @@ func New(s *session.Store) fiber.Handler {
 			log.Print(err)
 			return c.Next()
 		}
+
 		pid := sess.Get("pid")
 		c.Locals("pid", pid)
 		return c.Next()

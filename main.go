@@ -23,7 +23,9 @@ import (
 	newemail "petrichormud.com/app/internal/handlers/player/email/new"
 	newplayer "petrichormud.com/app/internal/handlers/player/new"
 	usernamereserved "petrichormud.com/app/internal/handlers/player/reserved"
+	viewplayer "petrichormud.com/app/internal/handlers/player/view"
 	"petrichormud.com/app/internal/middleware/sessiondata"
+	"petrichormud.com/app/internal/middleware/viewdata"
 	"petrichormud.com/app/internal/queries"
 )
 
@@ -65,6 +67,7 @@ func main() {
 	app.Use(cors.New())
 	app.Use(logger.New())
 	app.Use(sessiondata.New(s))
+	app.Use(viewdata.New())
 
 	app.Static("/", "./web/static")
 
@@ -75,6 +78,7 @@ func main() {
 
 	player := app.Group("/player")
 	player.Post("/new", newplayer.New(s, q))
+	player.Get("/:id", viewplayer.New())
 	player.Post("/reserved", usernamereserved.New(q))
 	email := player.Group("/email")
 	email.Post("/new", newemail.New(s, q, r))
