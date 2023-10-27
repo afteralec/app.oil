@@ -9,7 +9,6 @@ export function getRegisterData() {
     notifs: {
       u: false,
       pw: false,
-      cpw: false,
     },
     eval: {
       pw: {

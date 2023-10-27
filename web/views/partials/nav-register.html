@@ -129,7 +129,7 @@
           @input="
             resetErrors(errors);
             confirmPassword = event.target.value;
-            if (confirmPassword.len === password.len) {
+            if (confirmPassword.length === password.length) {
               eval.cpw.eq = true;
             }
           "
@@ -138,12 +138,12 @@
           name="confirm-password"
           value=""
         />
-        <div x-cloak x-show="notifs.cpw">
+        <div x-cloak x-show="notifs.pw">
           <p
             class="text-xs leading-none text-muted-foreground"
             :class="eval.cpw.eq ? 'text-rose-800' : 'text-muted-foreground'"
             x-cloak
-            x-show="password !== confirmPassword"
+            x-show="!eval.cpw.eq"
           >
             Passwords don't match.
           </p>
@@ -153,6 +153,13 @@
             x-show="eval.cpw.eq && password === confirmPassword"
           >
             Passwords match!
+          </p>
+          <p
+            class="text-xs leading-none text-rose-800"
+            x-cloak
+            x-show="eval.cpw.eq && password !== confirmPassword"
+          >
+            Passwords don't match.
           </p>
         </div>
       </div>
