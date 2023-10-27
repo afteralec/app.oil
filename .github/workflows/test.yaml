@@ -28,10 +28,14 @@ jobs:
           go-version: 1.21.x
       - name: Setup Atlas
         uses: ariga/setup-atlas@v0
-      - name: Setup migrations
-        run: make fetch_migrations
-      - name: Setup Test Database
-        run: make setup_test_db
+      - name: Setup SQLX
+        run: cargo install sqlx-cli
+      - name: Get migrations
+        run: |
+          git clone git@github.com:petrichormud/db.git .
+      - name: Migrate test Database
+        run: |
+          sqlx migrate run -D "mysql://root:pass@127.0.0.1/test"
       - name: Run Tests
         run: |
           go test ./...

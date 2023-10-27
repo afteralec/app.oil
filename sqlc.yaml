@@ -1,8 +1,8 @@
-version: 2
+version: "2"
 sql:
   - engine: "mysql"
     queries: "queries"
-    schema: "migrations"
+    schema: "../migrations"
     gen:
       go:
         package: "queries"

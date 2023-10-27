@@ -31,11 +31,11 @@ var viewsfs embed.FS
 func main() {
 	db, err := sql.Open("mysql", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Fatalf("failed to connect: %v", err)
+		log.Fatal(err)
 	}
 
 	if err := db.Ping(); err != nil {
-		log.Fatalf("failed to ping: %v", err)
+		log.Fatal(err)
 	}
 	defer db.Close()
 
