@@ -24,8 +24,8 @@ import (
 	newplayer "petrichormud.com/app/internal/handlers/player/new"
 	usernamereserved "petrichormud.com/app/internal/handlers/player/reserved"
 	viewplayer "petrichormud.com/app/internal/handlers/player/view"
+	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/sessiondata"
-	"petrichormud.com/app/internal/middleware/viewdata"
 	"petrichormud.com/app/internal/queries"
 )
 
@@ -67,7 +67,7 @@ func main() {
 	app.Use(cors.New())
 	app.Use(logger.New())
 	app.Use(sessiondata.New(s))
-	app.Use(viewdata.New())
+	app.Use(bind.New())
 
 	app.Static("/", "./web/static")
 

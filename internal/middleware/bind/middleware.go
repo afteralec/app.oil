@@ -1,4 +1,4 @@
-package viewdata
+package bind
 
 import (
 	"time"
