@@ -6,17 +6,13 @@ package queries
 
 import ()
 
-type Feature struct {
-	ID   int64
-	Flag string
-}
-
 type Player struct {
 	ID       int64
 	Username string
 	PwHash   string
 }
 
-type Request struct {
-	ID int64
+type PlayerEmail struct {
+	ID    int64
+	Email string
 }
