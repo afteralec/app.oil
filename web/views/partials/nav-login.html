@@ -12,11 +12,7 @@
   >
     Log In
   </button>
-  <div
-    class="z-2 fixed inset-0 flex h-full w-full items-center justify-center overflow-auto bg-background/80 backdrop-blur-sm"
-    x-cloak
-    x-show="showModal"
-  ></div>
+  {{ template "web/views/partials/modal-overlay" }}
   <div
     class="z-3 fixed left-[50%] top-[50%] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] border bg-background p-6 shadow-lg sm:rounded-lg"
     @click.away="showModal = false"
