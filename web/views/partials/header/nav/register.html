@@ -12,7 +12,7 @@
   >
     Create Account
   </button>
-  {{ template "web/views/partials/modal-overlay" }}
+  {{ template "web/views/partials/modal/overlay" }}
   <div
     class="z-3 fixed left-[50%] top-[50%] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] border bg-background p-6 shadow-lg sm:rounded-lg"
     @click.away="showModal = false"
@@ -53,7 +53,7 @@
         or you aren't connected to the internet.
       </p>
     </div>
-    {{ template "web/views/partials/modal-form-header" "Create an account:" }}
+    {{ template "web/views/partials/modal/form-header" "Create an account:" }}
     <form
       class="space-y-4 px-4 pt-4"
       @submit.prevent="submitRegisterData(errors, username, password, confirmPassword)"
@@ -86,7 +86,7 @@
           hx-target="#username-reserved"
           hx-indicator="#username-reserved"
         />
-        {{ template "web/views/partials/nav-register-username-notifs" }}
+        {{ template "web/views/partials/header/nav/register/username" }}
       </div>
       <div class="space-y-2">
         <label
@@ -111,7 +111,7 @@
           name="password"
           value=""
         />
-        {{ template "web/views/partials/nav-register-pw-notifs" }}
+        {{ template "web/views/partials/header/nav/register/password" }}
       </div>
       <div class="space-y-2">
         <label

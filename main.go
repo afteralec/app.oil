@@ -15,10 +15,12 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	html "github.com/gofiber/template/html/v2"
+	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/handlers/home"
 	"petrichormud.com/app/internal/handlers/login"
 	"petrichormud.com/app/internal/handlers/logout"
+	newemail "petrichormud.com/app/internal/handlers/player/email/new"
 	newplayer "petrichormud.com/app/internal/handlers/player/new"
 	usernamereserved "petrichormud.com/app/internal/handlers/player/reserved"
 	"petrichormud.com/app/internal/middleware/sessiondata"
@@ -41,11 +43,16 @@ func main() {
 
 	q := queries.New(db)
 
-	readTimeoutSecondsCount, _ := strconv.Atoi(os.Getenv("SERVER_READ_TIMEOUT"))
-	readTimeout := time.Second * time.Duration(readTimeoutSecondsCount)
+	r := redis.NewClient(&redis.Options{
+		Addr:     "127.0.0.1:6379",
+		Password: "",
+		DB:       0,
+		Protocol: 3,
+	})
 
 	views := html.NewFileSystem(http.FS(viewsfs), ".html")
-
+	readTimeoutSecondsCount, _ := strconv.Atoi(os.Getenv("SERVER_READ_TIMEOUT"))
+	readTimeout := time.Second * time.Duration(readTimeoutSecondsCount)
 	config := fiber.Config{
 		Views:       views,
 		ViewsLayout: "web/views/layouts/main",
@@ -69,6 +76,8 @@ func main() {
 	player := app.Group("/player")
 	player.Post("/new", newplayer.New(s, q))
 	player.Post("/reserved", usernamereserved.New(q))
+	email := player.Group("/email")
+	email.Post("/new", newemail.New(s, q, r))
 
 	log.Fatal(app.Listen(":8008"))
 }

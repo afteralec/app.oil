@@ -4,10 +4,10 @@
   >
     <!-- prettier-ignore -->
     {{ if .PID -}}
-    {{ template "web/views/partials/nav-logout" }}
+    {{ template "web/views/partials/header/nav/logout" }}
     {{ else -}}
-    {{ template "web/views/partials/nav-login" }}
-    {{ template "web/views/partials/nav-register" }}
+    {{ template "web/views/partials/header/nav/login" }}
+    {{ template "web/views/partials/header/nav/register" }}
     {{ end -}}
   </ul>
 </nav>

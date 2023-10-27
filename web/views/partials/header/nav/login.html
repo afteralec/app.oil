@@ -12,7 +12,7 @@
   >
     Log In
   </button>
-  {{ template "web/views/partials/modal-overlay" }}
+  {{ template "web/views/partials/modal/overlay" }}
   <div
     class="z-3 fixed left-[50%] top-[50%] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] border bg-background p-6 shadow-lg sm:rounded-lg"
     @click.away="showModal = false"
@@ -38,7 +38,7 @@
         or you aren't connected to the internet.
       </p>
     </div>
-    {{ template "web/views/partials/modal-form-header" "Please log in:"}}
+    {{ template "web/views/partials/modal/form-header" "Please log in:" }}
     <form
       @submit.prevent="submitLoginData(errors, username, password)"
       class="space-y-4 px-4 pt-4"
