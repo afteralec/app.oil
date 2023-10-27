@@ -1,4 +1,4 @@
-package middleware
+package sessiondata
 
 import (
 	"log"
@@ -7,13 +7,9 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-var Sessions *session.Store
-
-func Session() fiber.Handler {
-	// TODO: Update this config to be more secure. Will depend on environment.
-	Sessions = session.New()
+func New(s *session.Store) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		sess, err := Sessions.Get(c)
+		sess, err := s.Get(c)
 		if err != nil {
 			log.Print(err)
 			return c.Next()
