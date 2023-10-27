@@ -26,8 +26,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: 1.21.x
-      - name: Setup Atlas
-        uses: ariga/setup-atlas@v0
       - name: Setup SQLX
         run: cargo install sqlx-cli
       - name: Get migrations
