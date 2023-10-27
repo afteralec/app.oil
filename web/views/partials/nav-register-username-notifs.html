@@ -1,7 +1,7 @@
 <div>
   <div
     id="register-username-desc"
-    class="text-xs leading-none text-muted-foreground"
+    class="pb-1 text-xs leading-none text-muted-foreground"
   >
     Lower case letters, numbers, underscores and dashes only.
   </div>
@@ -33,12 +33,7 @@
   >
     <p>Username should be between 4 and 8 characters long.</p>
   </div>
-  <div
-    id="username-reserved"
-    class="flex items-center gap-1 text-xs leading-none"
-    x-cloak
-    x-show="isUsernameValid(username)"
-  >
+  <div id="username-reserved" x-cloak x-show="isUsernameValid(username)">
     <p id="username-reserved-status" class="text-xs leading-none">
       Nice! This username is available.
     </p>
