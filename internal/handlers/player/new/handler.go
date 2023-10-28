@@ -7,6 +7,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/permissions"
@@ -19,7 +20,7 @@ type Player struct {
 	Password string `form:"password"`
 }
 
-func New(db *sql.DB, s *session.Store, q *queries.Queries) fiber.Handler {
+func New(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		p := new(Player)
 
@@ -85,6 +86,8 @@ func New(db *sql.DB, s *session.Store, q *queries.Queries) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
+
+		permissions.Cache(r, permissions.Key(pid), perms[:])
 
 		sess, err := s.Get(c)
 		if err != nil {

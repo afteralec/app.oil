@@ -78,11 +78,11 @@ func main() {
 
 	app.Get("/", home.New())
 
-	app.Post("/login", login.New(s, q))
+	app.Post("/login", login.New(s, q, r))
 	app.Post("/logout", logout.New(s))
 
 	player := app.Group("/player")
-	player.Post("/new", newplayer.New(db, s, q))
+	player.Post("/new", newplayer.New(db, s, q, r))
 	player.Get("/:id", viewplayer.New(q, r))
 	player.Post("/reserved", usernamereserved.New(q))
 	email := player.Group("/email")

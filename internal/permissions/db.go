@@ -37,9 +37,13 @@ func List(q *queries.Queries, r *redis.Client, pid int64) ([]string, error) {
 			perms = append(perms, record.Permission)
 		}
 
-		r.SAdd(context.Background(), key, strings.Join(perms, " "), TwoHoursInSeconds)
+		Cache(r, key, perms)
 		return perms, nil
 	}
+}
+
+func Cache(r *redis.Client, key string, perms []string) {
+	r.SAdd(context.Background(), key, strings.Join(perms, " "), TwoHoursInSeconds)
 }
 
 func Key(pid int64) string {
