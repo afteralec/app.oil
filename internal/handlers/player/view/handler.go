@@ -1,9 +1,14 @@
 package viewplayer
 
 import (
+	"log"
+	"slices"
+	"strconv"
+
 	fiber "github.com/gofiber/fiber/v2"
 	redis "github.com/redis/go-redis/v9"
 
+	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 )
 
@@ -12,10 +17,26 @@ func New(q *queries.Queries, r *redis.Client) fiber.Handler {
 		pid := c.Locals("pid")
 
 		if pid == nil {
+			log.Println("pid is nil")
 			return c.Redirect("/")
 		}
 
-		id := c.Params("id")
+		perms := c.Locals("perms")
+		if perms == nil {
+			log.Println("perms are nil")
+			return c.Redirect("/")
+		}
+
+		id, err := strconv.ParseInt(c.Params("id"), 10, 64)
+		if err != nil {
+			log.Print(err)
+			return c.Redirect("/")
+		}
+
+		if id != pid && !slices.Contains(perms.([]string), permissions.ViewPlayer) {
+			return c.Redirect("/")
+		}
+
 		b := c.Locals("bind").(fiber.Map)
 		b["ID"] = id
 

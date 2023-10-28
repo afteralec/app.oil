@@ -41,6 +41,11 @@ func main() {
 	if err := db.Ping(); err != nil {
 		log.Fatal(err)
 	}
+
+	_, err = db.Exec("SET GLOBAL local_infile=true;")
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer db.Close()
 
 	q := queries.New(db)

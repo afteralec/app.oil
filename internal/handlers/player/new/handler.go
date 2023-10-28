@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 
 	"petrichormud.com/app/internal/password"
+	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/username"
 )
@@ -63,15 +64,24 @@ func New(db *sql.DB, s *session.Store, q *queries.Queries) fiber.Handler {
 			return nil
 		}
 
-		err = tx.Commit()
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
 		pid, err := result.LastInsertId()
 		if err != nil {
 			log.Print(err)
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		perms := permissions.DefaultSet()
+		_, err = qtx.CreatePlayerPermissions(
+			context.Background(),
+			permissions.MakeParams(perms[:], pid),
+		)
+		if err != nil {
+			log.Print(err)
+			return nil
+		}
+
+		err = tx.Commit()
+		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}

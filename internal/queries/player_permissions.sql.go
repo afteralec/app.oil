@@ -7,20 +7,15 @@ package queries
 
 import (
 	"context"
-	"database/sql"
 )
 
-const createPlayerPermission = `-- name: CreatePlayerPermission :execresult
+const createPlayerPermissions = `-- name: CreatePlayerPermissions :copyfrom
 INSERT INTO player_permissions (pid, permission) VALUES (?, ?)
 `
 
-type CreatePlayerPermissionParams struct {
+type CreatePlayerPermissionsParams struct {
 	Pid        int64
 	Permission string
-}
-
-func (q *Queries) CreatePlayerPermission(ctx context.Context, arg CreatePlayerPermissionParams) (sql.Result, error) {
-	return q.exec(ctx, q.createPlayerPermissionStmt, createPlayerPermission, arg.Pid, arg.Permission)
 }
 
 const listPlayerPermissions = `-- name: ListPlayerPermissions :many
