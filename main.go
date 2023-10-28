@@ -46,7 +46,7 @@ func main() {
 	q := queries.New(db)
 
 	r := redis.NewClient(&redis.Options{
-		Addr:     "127.0.0.1:6379",
+		Addr:     os.Getenv("REDIS_ADDR"),
 		Password: "",
 		DB:       0,
 		Protocol: 3,

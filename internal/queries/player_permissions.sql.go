@@ -24,22 +24,22 @@ func (q *Queries) CreatePlayerPermission(ctx context.Context, arg CreatePlayerPe
 }
 
 const listPlayerPermissions = `-- name: ListPlayerPermissions :many
-SELECT (id, pid, permission) FROM player_permissions WHERE pid = ?
+SELECT id, pid, permission FROM player_permissions WHERE pid = ?
 `
 
-func (q *Queries) ListPlayerPermissions(ctx context.Context, pid int64) ([]interface{}, error) {
+func (q *Queries) ListPlayerPermissions(ctx context.Context, pid int64) ([]PlayerPermission, error) {
 	rows, err := q.query(ctx, q.listPlayerPermissionsStmt, listPlayerPermissions, pid)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []interface{}
+	var items []PlayerPermission
 	for rows.Next() {
-		var column_1 interface{}
-		if err := rows.Scan(&column_1); err != nil {
+		var i PlayerPermission
+		if err := rows.Scan(&i.ID, &i.Pid, &i.Permission); err != nil {
 			return nil, err
 		}
-		items = append(items, column_1)
+		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

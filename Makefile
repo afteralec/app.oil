@@ -2,10 +2,10 @@ run:
 	go run cmd/main/main.go
 
 test:
-	DATABASE_URL=root:pass@/test RUN_INTEGRATION_TESTS=true go test -v ./tests/...
+	DATABASE_URL=root:pass@/test REDIS_ADDR=127.0.0.1:6379 RUN_INTEGRATION_TESTS=true go test -v ./tests/...
 
 dev:
-	DATABASE_URL=root:pass@/test go run main.go
+	DATABASE_URL=root:pass@/test REDIS_ADDR=127.0.0.1:6379 go run main.go
 
 alpine:
 	curl -o \
