@@ -66,7 +66,7 @@ func main() {
 	s := session.New()
 	app.Use(cors.New())
 	app.Use(logger.New())
-	app.Use(sessiondata.New(s))
+	app.Use(sessiondata.New(s, q, r))
 	app.Use(bind.New())
 
 	app.Static("/", "./web/static")
@@ -78,7 +78,7 @@ func main() {
 
 	player := app.Group("/player")
 	player.Post("/new", newplayer.New(s, q))
-	player.Get("/:id", viewplayer.New())
+	player.Get("/:id", viewplayer.New(q, r))
 	player.Post("/reserved", usernamereserved.New(q))
 	email := player.Group("/email")
 	email.Post("/new", newemail.New(s, q, r))
