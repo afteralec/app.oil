@@ -2,6 +2,7 @@ package newplayer
 
 import (
 	"context"
+	"database/sql"
 	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -17,7 +18,7 @@ type Player struct {
 	Password string `form:"password"`
 }
 
-func New(s *session.Store, q *queries.Queries) fiber.Handler {
+func New(db *sql.DB, s *session.Store, q *queries.Queries) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		p := new(Player)
 
@@ -44,13 +45,26 @@ func New(s *session.Store, q *queries.Queries) fiber.Handler {
 			return nil
 		}
 
+		tx, err := db.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+
+		qtx := q.WithTx(tx)
 		ctx := context.Background()
-		result, err := q.CreatePlayer(ctx, queries.CreatePlayerParams{
+		result, err := qtx.CreatePlayer(ctx, queries.CreatePlayerParams{
 			Username: u,
 			PwHash:   pw_hash,
 		})
 		if err != nil {
 			c.Status(fiber.StatusConflict)
+			return nil
+		}
+		err = tx.Commit()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
