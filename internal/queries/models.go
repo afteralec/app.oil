@@ -16,3 +16,9 @@ type PlayerEmail struct {
 	ID    int64
 	Email string
 }
+
+type PlayerPermission struct {
+	ID         int64
+	Pid        int64
+	Permission string
+}

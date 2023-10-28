@@ -27,6 +27,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createPlayerStmt, err = db.PrepareContext(ctx, createPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePlayer: %w", err)
 	}
+	if q.createPlayerPermissionStmt, err = db.PrepareContext(ctx, createPlayerPermission); err != nil {
+		return nil, fmt.Errorf("error preparing query CreatePlayerPermission: %w", err)
+	}
 	if q.getPlayerStmt, err = db.PrepareContext(ctx, getPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayer: %w", err)
 	}
@@ -39,6 +42,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getPlayerUsernameStmt, err = db.PrepareContext(ctx, getPlayerUsername); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayerUsername: %w", err)
 	}
+	if q.listPlayerPermissionsStmt, err = db.PrepareContext(ctx, listPlayerPermissions); err != nil {
+		return nil, fmt.Errorf("error preparing query ListPlayerPermissions: %w", err)
+	}
 	return &q, nil
 }
 
@@ -47,6 +53,11 @@ func (q *Queries) Close() error {
 	if q.createPlayerStmt != nil {
 		if cerr := q.createPlayerStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPlayerStmt: %w", cerr)
+		}
+	}
+	if q.createPlayerPermissionStmt != nil {
+		if cerr := q.createPlayerPermissionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createPlayerPermissionStmt: %w", cerr)
 		}
 	}
 	if q.getPlayerStmt != nil {
@@ -67,6 +78,11 @@ func (q *Queries) Close() error {
 	if q.getPlayerUsernameStmt != nil {
 		if cerr := q.getPlayerUsernameStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPlayerUsernameStmt: %w", cerr)
+		}
+	}
+	if q.listPlayerPermissionsStmt != nil {
+		if cerr := q.listPlayerPermissionsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listPlayerPermissionsStmt: %w", cerr)
 		}
 	}
 	return err
@@ -106,23 +122,27 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                      DBTX
-	tx                      *sql.Tx
-	createPlayerStmt        *sql.Stmt
-	getPlayerStmt           *sql.Stmt
-	getPlayerByUsernameStmt *sql.Stmt
-	getPlayerPWHashStmt     *sql.Stmt
-	getPlayerUsernameStmt   *sql.Stmt
+	db                         DBTX
+	tx                         *sql.Tx
+	createPlayerStmt           *sql.Stmt
+	createPlayerPermissionStmt *sql.Stmt
+	getPlayerStmt              *sql.Stmt
+	getPlayerByUsernameStmt    *sql.Stmt
+	getPlayerPWHashStmt        *sql.Stmt
+	getPlayerUsernameStmt      *sql.Stmt
+	listPlayerPermissionsStmt  *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                      tx,
-		tx:                      tx,
-		createPlayerStmt:        q.createPlayerStmt,
-		getPlayerStmt:           q.getPlayerStmt,
-		getPlayerByUsernameStmt: q.getPlayerByUsernameStmt,
-		getPlayerPWHashStmt:     q.getPlayerPWHashStmt,
-		getPlayerUsernameStmt:   q.getPlayerUsernameStmt,
+		db:                         tx,
+		tx:                         tx,
+		createPlayerStmt:           q.createPlayerStmt,
+		createPlayerPermissionStmt: q.createPlayerPermissionStmt,
+		getPlayerStmt:              q.getPlayerStmt,
+		getPlayerByUsernameStmt:    q.getPlayerByUsernameStmt,
+		getPlayerPWHashStmt:        q.getPlayerPWHashStmt,
+		getPlayerUsernameStmt:      q.getPlayerUsernameStmt,
+		listPlayerPermissionsStmt:  q.listPlayerPermissionsStmt,
 	}
 }
