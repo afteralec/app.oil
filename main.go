@@ -77,11 +77,11 @@ func main() {
 	app.Post("/logout", logout.New(s))
 
 	player := app.Group("/player")
-	player.Post("/new", newplayer.New(s, q))
+	player.Post("/new", newplayer.New(db, s, q))
 	player.Get("/:id", viewplayer.New(q, r))
 	player.Post("/reserved", usernamereserved.New(q))
 	email := player.Group("/email")
-	email.Post("/new", newemail.New(s, q, r))
+	email.Post("/new", newemail.New(db, s, q, r))
 
 	log.Fatal(app.Listen(":8008"))
 }

@@ -62,6 +62,7 @@ func New(db *sql.DB, s *session.Store, q *queries.Queries) fiber.Handler {
 			c.Status(fiber.StatusConflict)
 			return nil
 		}
+
 		err = tx.Commit()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
