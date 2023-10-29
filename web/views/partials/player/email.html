@@ -1,1 +1,78 @@
-<div class="border p-2">{{ .Email }}</div>
+<div
+  id="{{ .Email }}"
+  x-data="{ loadEmail: '{{ .Email }}', email: '{{ .Email }}', editMode: false }"
+>
+  <form x-cloak x-show="editMode" class="flex gap-2">
+    <input
+      id="edit-email-{{ .Email }}"
+      x-model="email"
+      class="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      placeholder=""
+      name="email-{{ .Email }}"
+    />
+    <div class="flex flex-col items-start gap-1 pt-2">
+      <button
+        type="submit"
+        class="bg-none text-xs leading-none text-muted-foreground hover:text-primary hover:underline"
+      >
+        Save
+      </button>
+      <button
+        type="button"
+        @click="
+          editMode = false;
+          email = loadEmail;
+        "
+        class="bg-none text-xs leading-none text-muted-foreground hover:text-primary hover:underline"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+  <div
+    class="flex h-12 items-center overflow-hidden rounded-md border bg-card px-3"
+    x-show="!editMode"
+  >
+    <p>{{ .Email }}</p>
+    <div
+      class="ml-auto flex items-center justify-end gap-2 text-xs text-muted-foreground"
+    >
+      <button
+        type="button"
+        class="border-none bg-none text-xs text-muted-foreground hover:text-primary hover:underline"
+        @click="
+          editMode = true;
+          $nextTick(() => {
+            setTimeout(() => {
+              document.getElementById('edit-email-{{ .Email }}').focus();
+            }, 50);
+          });
+        "
+      >
+        Edit
+      </button>
+      <button
+        type="button"
+        class="border-none bg-none text-xs text-muted-foreground hover:text-rose-900 hover:underline"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+{{ if .Verified }}
+<!-- prettier-ignore -->
+{{- else }}
+<div class="pb-2 pl-6 pt-1">
+  <div class="rounded-md bg-amber-100 px-4 py-3 text-sm text-amber-800">
+    This email hasn't been verified.
+    <br />
+    <button
+      type="button"
+      class="cursor-pointer border-none bg-none font-semibold underline hover:text-amber-900"
+    >
+      Resend verification link
+    </button>
+  </div>
+</div>
+{{- end }}
