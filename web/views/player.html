@@ -1,8 +1,17 @@
 <main class="flex flex-col items-center justify-center">
-  <div
-    class="w-full rounded-lg border bg-card text-card-foreground shadow-sm md:w-[750px] lg:w-[1000px]"
-  >
-    <h1>Player Profile</h1>
-    <p>{{ .ID }}</p>
+  <div class="w-full text-foreground md:w-[750px] lg:w-[1000px]">
+    <header class="p-4">
+      <h1 class="text-lg font-semibold leading-none">Player Profile</h1>
+    </header>
+    <article class="px-4 pb-4">
+      <div class="flex flex-col gap-1 pt-2">
+        <h2 class="text-base font-semibold leading-none">Email</h2>
+        {{ if .Email -}}
+        <p class="text-sm leading-none text-muted-foreground">{{ .Email }}</p>
+        {{ else -}}
+        <p class="text-sm leading-none text-muted-foreground">None</p>
+        {{ end -}}
+      </div>
+    </article>
   </div>
 </main>

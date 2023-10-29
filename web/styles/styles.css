@@ -94,3 +94,19 @@ body {
 #username-reserved.htmx-request > #username-reserved-indicator {
   display: default;
 }
+
+.dropdown .dropdown-content {
+  display: none;
+}
+
+.dropdown .icon {
+  transition: transform 250ms;
+}
+
+.dropdown:hover .icon {
+  transform: rotate(-180deg);
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
