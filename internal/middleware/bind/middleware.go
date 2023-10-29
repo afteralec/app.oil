@@ -14,6 +14,7 @@ func New() fiber.Handler {
 			"Title":         "Petrichor",
 			"MetaContent":   "Petrichor MUD - a modern take on a classic MUD style of game.",
 			"AccountView":   c.Path() == "/player",
+			"HomeView":      c.Path() == "/",
 		})
 
 		return c.Next()

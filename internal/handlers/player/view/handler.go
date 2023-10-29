@@ -42,6 +42,11 @@ func New(q *queries.Queries, r *redis.Client) fiber.Handler {
 	}
 }
 
+type PlayerEmail struct {
+	Email    string
+	Verified bool
+}
+
 func NewWithoutParams(q *queries.Queries, r *redis.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
@@ -56,6 +61,13 @@ func NewWithoutParams(q *queries.Queries, r *redis.Client) fiber.Handler {
 		}
 
 		b := c.Locals("bind").(fiber.Map)
+
+		emails := []PlayerEmail{}
+		b["Emails"] = emails
+
+		if len(emails) == 0 {
+			b["NoEmails"] = true
+		}
 
 		return c.Render("web/views/player", b)
 	}

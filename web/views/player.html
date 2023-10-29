@@ -7,14 +7,17 @@
     </header>
     <article>
       <div class="flex flex-col gap-2 py-2">
-        <h2 class="text-base font-semibold leading-none">Email Address</h2>
-        {{ if .Email -}}
-        <p class="text-sm leading-none text-muted-foreground">{{ .Email }}</p>
-        {{ else -}}
+        <h2 class="text-base font-semibold leading-none">Email</h2>
+        {{ if .NoEmail }}
         <div class="flex py-2">
           {{ template "web/views/partials/player/no-email" . }}
         </div>
-        {{ end -}}
+        {{- end }}
+        <div>
+          {{- range .Emails }}
+          <div>{{ .Email }}</div>
+          {{- end }}
+        </div>
       </div>
     </article>
   </div>
