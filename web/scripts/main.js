@@ -197,6 +197,15 @@ export function resetErrors(errors) {
   }
 }
 
+export function getPlayerEmailData(email) {
+  return {
+    loadEmail: email,
+    email,
+    editMode: false,
+  };
+}
+
 window.getRegisterData = getRegisterData;
 window.getLoginData = getLoginData;
 window.getLogoutData = getLogoutData;
+window.getPlayerEmailData = getPlayerEmailData;
