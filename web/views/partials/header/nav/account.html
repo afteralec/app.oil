@@ -21,15 +21,27 @@
       tabindex="-1"
     >
       <div role="none">
+        {{ if .AccountView -}}
         <a
           href="/player"
-          class="block cursor-pointer bg-background px-4 py-2 text-sm hover:bg-muted"
+          class="block bg-muted px-4 py-2 text-sm"
           role="menuitem"
           tabindex="-1"
           id="account-menu-0"
         >
           Account
         </a>
+        {{ else -}}
+        <a
+          href="/player"
+          class="block bg-background px-4 py-2 text-sm hover:bg-muted"
+          role="menuitem"
+          tabindex="-1"
+          id="account-menu-0"
+        >
+          Account
+        </a>
+        {{ end -}}
       </div>
       <div role="none">
         <a

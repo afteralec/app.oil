@@ -1,14 +1,18 @@
-<nav class="relative flex items-center justify-end px-6 py-2">
-  <ul
-    class="flex-l group flex list-none items-center justify-center space-x-[1.5]"
+<header class="flex items-center justify-center">
+  <nav
+    class="relative flex w-full max-w-[1600px] items-center justify-end px-6 py-2"
   >
-    <!-- prettier-ignore -->
-    {{ if .PID -}}
-    {{ template "web/views/partials/header/nav/account" }}
+    <ul
+      class="flex-l group flex list-none items-center justify-center space-x-[1.5]"
+    >
+      <!-- prettier-ignore -->
+      {{ if .PID -}}
+    {{ template "web/views/partials/header/nav/account" . }}
     {{ template "web/views/partials/header/nav/logout" }}
     {{ else -}}
     {{ template "web/views/partials/header/nav/login" }}
     {{ template "web/views/partials/header/nav/register" }}
     {{ end -}}
-  </ul>
-</nav>
+    </ul>
+  </nav>
+</header>

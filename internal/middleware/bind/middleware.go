@@ -13,7 +13,7 @@ func New() fiber.Handler {
 			"CopyrightYear": time.Now().Year(),
 			"Title":         "Petrichor",
 			"MetaContent":   "Petrichor MUD - a modern take on a classic MUD style of game.",
-			"Path":          c.Path(),
+			"AccountView":   c.Path() == "/player",
 		})
 
 		return c.Next()
