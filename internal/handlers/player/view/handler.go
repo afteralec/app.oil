@@ -62,7 +62,10 @@ func NewWithoutParams(q *queries.Queries, r *redis.Client) fiber.Handler {
 
 		b := c.Locals("bind").(fiber.Map)
 
-		emails := []PlayerEmail{}
+		emails := []PlayerEmail{
+			{Email: "test@test.com", Verified: true},
+			{Email: "othertest@quack.ninja", Verified: false},
+		}
 		b["Emails"] = emails
 
 		if len(emails) == 0 {

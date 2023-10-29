@@ -8,16 +8,28 @@
     <article>
       <div class="flex flex-col gap-2 py-2">
         <h2 class="text-base font-semibold leading-none">Email</h2>
-        {{ if .NoEmail }}
+        {{ if .NoEmails }}
         <div class="flex py-2">
-          {{ template "web/views/partials/player/no-email" . }}
+          <div class="rounded-md bg-amber-100 px-4 py-3 text-sm text-amber-800">
+            You don't have any email addresses set. Without one, you won't be
+            able to recover your account.
+            <br />
+            <div class="font-semibold underline hover:text-amber-900">
+              Add an email address
+            </div>
+          </div>
+        </div>
+        {{- else }}
+        <div class="flex py-2">
+          <div class="flex flex-col gap-2">
+            {{ range .Emails }}
+            <div class="border bg-card p-2 text-muted-foreground">
+              {{ .Email }}
+            </div>
+            {{- end }}
+          </div>
         </div>
         {{- end }}
-        <div>
-          {{- range .Emails }}
-          <div>{{ .Email }}</div>
-          {{- end }}
-        </div>
       </div>
     </article>
   </div>
