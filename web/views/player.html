@@ -11,7 +11,9 @@
         {{ if .Email -}}
         <p class="text-sm leading-none text-muted-foreground">{{ .Email }}</p>
         {{ else -}}
-        <p class="text-sm leading-none text-muted-foreground">None</p>
+        <div class="flex py-2">
+          {{ template "web/views/partials/player/no-email" . }}
+        </div>
         {{ end -}}
       </div>
     </article>
