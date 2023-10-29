@@ -1,0 +1,57 @@
+<li
+  class="relative"
+  x-data="{ menuOpen: false, menuTimeout: null }"
+  @mouseover="
+    clearTimeout(menuTimeout);
+    menuOpen = true;
+  "
+  @mouseover.away="
+    menuTimeout = setTimeout(() => {
+      menuOpen = false;
+    }, 500);
+  "
+>
+  <button
+    class="cursor:pointer group inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50"
+    @click="menuOpen = !menuOpen"
+  >
+    Account
+    <iconify-icon
+      icon="tabler:chevron-down"
+      height="16"
+      width="16"
+    ></iconify-icon>
+  </button>
+  <!-- TODO: Plug divide-gray-100 into the theming variables -->
+  <div
+    class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-background shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none"
+    x-cloak
+    x-show="menuOpen"
+    role="menu"
+    aria-orientation="vertical"
+    aria-labelledby="menu-button"
+    tabindex="-1"
+  >
+    <div role="none">
+      <a
+        href="/player"
+        class="block cursor-pointer bg-background px-4 py-2 text-sm hover:bg-muted"
+        role="menuitem"
+        tabindex="-1"
+        id="account-menu-0"
+      >
+        Account
+      </a>
+    </div>
+    <div role="none">
+      <a
+        href="#"
+        class="block px-4 py-2 text-sm hover:bg-muted"
+        role="menuitem"
+        tabindex="-1"
+        id="menu-item-1"
+        >Logout</a
+      >
+    </div>
+  </div>
+</li>

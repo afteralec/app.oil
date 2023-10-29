@@ -17,13 +17,11 @@ func New(q *queries.Queries, r *redis.Client) fiber.Handler {
 		pid := c.Locals("pid")
 
 		if pid == nil {
-			log.Println("pid is nil")
 			return c.Redirect("/")
 		}
 
 		perms := c.Locals("perms")
 		if perms == nil {
-			log.Println("perms are nil")
 			return c.Redirect("/")
 		}
 
@@ -39,6 +37,25 @@ func New(q *queries.Queries, r *redis.Client) fiber.Handler {
 
 		b := c.Locals("bind").(fiber.Map)
 		b["ID"] = id
+
+		return c.Render("web/views/player", b)
+	}
+}
+
+func NewWithoutParams(q *queries.Queries, r *redis.Client) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		pid := c.Locals("pid")
+
+		if pid == nil {
+			return c.Redirect("/")
+		}
+
+		perms := c.Locals("perms")
+		if perms == nil {
+			return c.Redirect("/")
+		}
+
+		b := c.Locals("bind").(fiber.Map)
 
 		return c.Render("web/views/player", b)
 	}

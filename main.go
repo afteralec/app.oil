@@ -83,6 +83,7 @@ func main() {
 
 	player := app.Group("/player")
 	player.Post("/new", newplayer.New(db, s, q, r))
+	player.Get("/", viewplayer.NewWithoutParams(q, r))
 	player.Get("/:id", viewplayer.New(q, r))
 	player.Post("/reserved", usernamereserved.New(q))
 	email := player.Group("/email")
