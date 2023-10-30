@@ -205,7 +205,15 @@ export function getPlayerEmailData(email) {
   };
 }
 
+export function getPlayerData() {
+  return {
+    addEmailMode: false,
+    addEmail: "",
+  };
+}
+
 window.getRegisterData = getRegisterData;
 window.getLoginData = getLoginData;
 window.getLogoutData = getLogoutData;
+window.getPlayerData = getPlayerData;
 window.getPlayerEmailData = getPlayerEmailData;

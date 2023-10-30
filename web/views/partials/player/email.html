@@ -31,6 +31,21 @@
     x-show="!editMode"
   >
     <p>{{ .Email }}</p>
+    {{ if .Verified }}
+    <!-- prettier-ignore -->
+    {{- else }}
+    <div class="pl-1">
+      <div
+        class="flex items-center justify-center rounded-[50%] bg-amber-100 text-amber-800"
+      >
+        <iconify-icon
+          icon="ant-design:exclamation-circle-outlined"
+          height="24"
+          width="24"
+        ></iconify-icon>
+      </div>
+    </div>
+    {{- end }}
     <div
       class="ml-auto flex items-center justify-end gap-2 text-xs text-muted-foreground"
     >
@@ -56,20 +71,20 @@
       </button>
     </div>
   </div>
-</div>
-{{ if .Verified }}
-<!-- prettier-ignore -->
-{{- else }}
-<div class="pb-2 pl-6 pt-1">
-  <div class="rounded-md bg-amber-100 px-4 py-3 text-sm text-amber-800">
-    This email hasn't been verified.
-    <br />
-    <button
-      type="button"
-      class="cursor-pointer border-none bg-none font-semibold underline hover:text-amber-900"
-    >
-      Resend verification link
-    </button>
+  {{ if .Verified }}
+  <!-- prettier-ignore -->
+  {{- else }}
+  <div class="pb-2 pl-6 pt-1">
+    <div class="rounded-md bg-amber-100 px-4 py-3 text-sm text-amber-800">
+      This email hasn't been verified.
+      <br />
+      <button
+        type="button"
+        class="cursor-pointer border-none bg-none font-semibold underline hover:text-amber-900"
+      >
+        Resend verification link
+      </button>
+    </div>
   </div>
+  {{- end }}
 </div>
-{{- end }}
