@@ -8,6 +8,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 	redis "github.com/redis/go-redis/v9"
 
+	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 )
@@ -73,6 +74,8 @@ func NewWithoutParams(q *queries.Queries, r *redis.Client) fiber.Handler {
 		if len(emails) == 0 {
 			b["NoEmails"] = true
 		}
+
+		b["GravatarHash"] = email.GravatarHash("after.alec@gmail.com")
 
 		return c.Render("web/views/player", b)
 	}

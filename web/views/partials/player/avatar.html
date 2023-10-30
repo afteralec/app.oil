@@ -1,6 +1,8 @@
 <article
   class="flex flex-col border-b py-4"
-  x-data="{ avatarSource: 'gravatar' }"
+  x-data="
+    getProfileAvatarData('gravatar', '{{ .GravatarHash }}', 'afteralec');
+  "
 >
   <h2 class="text-base font-semibold leading-none">Avatar</h2>
   <div class="flex gap-4 pt-4">

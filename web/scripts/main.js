@@ -212,8 +212,34 @@ export function getProfileEmailData() {
   };
 }
 
+export function getProfileAvatarData(
+  avatarSource,
+  gravatarHash,
+  githubUsername,
+) {
+  return {
+    avatarSource,
+    gravatarHash,
+    githubUsername,
+    getProfileAvatarSrc,
+  };
+}
+
+export function getProfileAvatarSrc(
+  avatarSource,
+  gravatarHash,
+  githubUsername,
+) {
+  if (avatarSource === "github") {
+    return `https://github.com/${githubUsername}.png`;
+  } else {
+    return `https://gravatar.com/avatar/${gravatarHash}.jpeg?s=256&d=retro`;
+  }
+}
+
 window.getRegisterData = getRegisterData;
 window.getLoginData = getLoginData;
 window.getLogoutData = getLogoutData;
 window.getProfileEmailData = getProfileEmailData;
 window.getEmailData = getEmailData;
+window.getProfileAvatarData = getProfileAvatarData;

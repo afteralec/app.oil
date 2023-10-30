@@ -2,5 +2,6 @@
   ><img
     class="aspect-square h-full w-full"
     alt="@test"
-    src="https://github.com/afteralec.png"
+    src="https://gravatar.com/avatar/{{ .GravatarHash }}.jpeg?s=256&d=retro"
+    :src="getProfileAvatarSrc(avatarSource, gravatarHash, githubUsername)"
 /></span>
