@@ -1,4 +1,14 @@
-<div class="relative" x-data="{ selectedEmail: 'test@test.com' }">
+<h2
+  x-show="avatarSource === 'gravatar'"
+  class="whitespace-nowrap text-base font-semibold leading-3"
+>
+  Gravatar Email
+</h2>
+<div
+  class="relative"
+  x-show="avatarSource === 'gravatar'"
+  x-data="{ selectedEmail: 'test@test.com' }"
+>
   <button
     id="gravatar-email-button"
     type="button"
