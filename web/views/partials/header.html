@@ -7,12 +7,11 @@
     >
       <!-- prettier-ignore -->
       {{ if .PID -}}
-    {{ template "web/views/partials/header/nav/account" . }}
-    {{ template "web/views/partials/header/nav/logout" }}
-    {{ else -}}
-    {{ template "web/views/partials/header/nav/login" }}
-    {{ template "web/views/partials/header/nav/register" }}
-    {{ end -}}
+        {{ template "web/views/partials/header/nav/account" . }}
+      {{ else -}}
+        {{ template "web/views/partials/header/nav/login" }}
+        {{ template "web/views/partials/header/nav/register" }}
+      {{ end -}}
     </ul>
   </nav>
 </header>

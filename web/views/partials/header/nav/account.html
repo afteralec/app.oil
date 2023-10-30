@@ -44,14 +44,17 @@
         {{ end -}}
       </div>
       <div role="none">
-        <a
-          href="#"
-          class="block px-4 py-2 text-sm hover:bg-muted"
+        <button
+          type="button"
+          class="cursor-ponter block w-full bg-card px-4 py-2 text-left text-sm hover:bg-muted"
+          x-data="getLogoutData()"
+          @click="logout()"
           role="menuitem"
           tabindex="-1"
           id="menu-item-1"
-          >Logout</a
         >
+          Logout
+        </button>
       </div>
     </div>
   </div>
