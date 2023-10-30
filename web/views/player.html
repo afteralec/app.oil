@@ -34,7 +34,7 @@
               @keyup.escape="
                 addEmailMode = false;
                 addEmail = '';
-            "
+              "
               placeholder=""
               name="add-email"
             />
@@ -77,12 +77,10 @@
           </div>
         </div>
         {{- else }}
-        <div class="flex w-[50%] flex-col gap-3">
-          <!-- prettier-ignore -->
-          {{ range .Emails }}
-            {{ template "web/views/partials/player/email" . }}
-          {{- end }}
-        </div>
+        <!-- prettier-ignore -->
+        {{ range .Emails }}
+          {{ template "web/views/partials/player/new-email" . }}
+        {{- end }}
       </div>
       {{- end }}
     </article>
