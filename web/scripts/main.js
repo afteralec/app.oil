@@ -197,7 +197,7 @@ export function resetErrors(errors) {
   }
 }
 
-export function getPlayerEmailData(email) {
+export function getEmailData(email) {
   return {
     loadEmail: email,
     email,
@@ -205,7 +205,7 @@ export function getPlayerEmailData(email) {
   };
 }
 
-export function getPlayerData() {
+export function getProfileEmailData() {
   return {
     addEmailMode: false,
     addEmail: "",
@@ -215,5 +215,5 @@ export function getPlayerData() {
 window.getRegisterData = getRegisterData;
 window.getLoginData = getLoginData;
 window.getLogoutData = getLogoutData;
-window.getPlayerData = getPlayerData;
-window.getPlayerEmailData = getPlayerEmailData;
+window.getProfileEmailData = getProfileEmailData;
+window.getEmailData = getEmailData;
