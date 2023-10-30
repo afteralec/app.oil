@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "@happy-dom/global-registrator": "^12.10.1",
+    "@tailwindcss/forms": "^0.5.6",
     "add": "^2.0.6",
     "autoprefixer": "^10.4.16",
     "bun": "^1.0.7",
