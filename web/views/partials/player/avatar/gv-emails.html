@@ -1,9 +1,12 @@
-<h2
-  x-show="avatarSource === 'gravatar'"
-  class="whitespace-nowrap text-base font-semibold leading-3"
+<!-- <h2 -->
+<!--   x-show="avatarSource === 'gravatar'" -->
+<!--   class="whitespace-nowrap pt-4 text-base font-semibold leading-3" -->
+<!-- > -->
+<!--   Gravatar Email -->
+<!-- </h2> -->
+<label class="text-base font-semibold" x-show="avatarSource === 'gravatar'"
+  >Gravatar Email</label
 >
-  Gravatar Email
-</h2>
 <div
   class="relative"
   x-show="avatarSource === 'gravatar'"
