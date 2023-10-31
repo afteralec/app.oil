@@ -10,7 +10,7 @@ import (
 	"petrichormud.com/app/internal/queries"
 )
 
-const TwoHoursInSeconds = 120 * 60
+const TwoHoursInNanoseconds = 2 * 60 * 60 * 1000 * 1000 * 1000
 
 func List(q *queries.Queries, r *redis.Client, pid int64) ([]string, error) {
 	key := Key(pid)
@@ -43,7 +43,7 @@ func List(q *queries.Queries, r *redis.Client, pid int64) ([]string, error) {
 }
 
 func Cache(r *redis.Client, key string, perms []string) {
-	r.SAdd(context.Background(), key, strings.Join(perms, " "), TwoHoursInSeconds)
+	r.SAdd(context.Background(), key, strings.Join(perms, " "), TwoHoursInNanoseconds)
 }
 
 func Key(pid int64) string {
