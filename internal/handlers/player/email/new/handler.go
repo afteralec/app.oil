@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"net/mail"
 
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -27,16 +28,15 @@ func New(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fibe
 			return nil
 		}
 
-		emailCount, err := q.CountPlayerEmails(context.Background(), pid.(int64))
+		ec, err := q.CountPlayerEmails(context.Background(), pid.(int64))
 		if err != nil {
-			log.Print(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		if emailCount >= MaxEmailCount {
-			c.Status(400)
-			return nil
+		if ec >= MaxEmailCount {
+			c.Append("HX-Retarget", "#add-email-error")
+			return c.Render("web/views/partials/profile/email/err-too-many-emails", &fiber.Map{}, "")
 		}
 
 		i := new(NewEmailInput)
@@ -45,9 +45,15 @@ func New(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fibe
 			return nil
 		}
 
+		email, err := mail.ParseAddress(i.Email)
+		if err != nil {
+			c.Append("HX-Retarget", "#add-email-error")
+			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
+		}
+
 		result, err := q.CreatePlayerEmail(
 			context.Background(),
-			queries.CreatePlayerEmailParams{Pid: pid.(int64), Email: i.Email},
+			queries.CreatePlayerEmailParams{Pid: pid.(int64), Email: email.Address},
 		)
 		if err != nil {
 			log.Print(err)
@@ -62,9 +68,9 @@ func New(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fibe
 		}
 
 		c.Status(fiber.StatusCreated)
-		return c.Render("web/views/partials/profile/email/unverified-email", &fiber.Map{
+		return c.Render("web/views/partials/profile/email/new-email", &fiber.Map{
 			"ID":    id,
-			"Email": i.Email,
+			"Email": email.Address,
 		}, "")
 	}
 }
