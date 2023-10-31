@@ -14,8 +14,8 @@ type Player struct {
 
 type PlayerEmail struct {
 	Email    string
-	Hash     string
 	Verified bool
+	Pid      int64
 	ID       int64
 }
 

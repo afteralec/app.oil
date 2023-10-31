@@ -24,8 +24,14 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.countPlayerEmailsStmt, err = db.PrepareContext(ctx, countPlayerEmails); err != nil {
+		return nil, fmt.Errorf("error preparing query CountPlayerEmails: %w", err)
+	}
 	if q.createPlayerStmt, err = db.PrepareContext(ctx, createPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePlayer: %w", err)
+	}
+	if q.createPlayerEmailStmt, err = db.PrepareContext(ctx, createPlayerEmail); err != nil {
+		return nil, fmt.Errorf("error preparing query CreatePlayerEmail: %w", err)
 	}
 	if q.createPlayerPermissionsStmt, err = db.PrepareContext(ctx, createPlayerPermissions); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePlayerPermissions: %w", err)
@@ -42,6 +48,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getPlayerUsernameStmt, err = db.PrepareContext(ctx, getPlayerUsername); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayerUsername: %w", err)
 	}
+	if q.listPlayerEmailsStmt, err = db.PrepareContext(ctx, listPlayerEmails); err != nil {
+		return nil, fmt.Errorf("error preparing query ListPlayerEmails: %w", err)
+	}
 	if q.listPlayerPermissionsStmt, err = db.PrepareContext(ctx, listPlayerPermissions); err != nil {
 		return nil, fmt.Errorf("error preparing query ListPlayerPermissions: %w", err)
 	}
@@ -50,9 +59,19 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.countPlayerEmailsStmt != nil {
+		if cerr := q.countPlayerEmailsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countPlayerEmailsStmt: %w", cerr)
+		}
+	}
 	if q.createPlayerStmt != nil {
 		if cerr := q.createPlayerStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPlayerStmt: %w", cerr)
+		}
+	}
+	if q.createPlayerEmailStmt != nil {
+		if cerr := q.createPlayerEmailStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createPlayerEmailStmt: %w", cerr)
 		}
 	}
 	if q.createPlayerPermissionsStmt != nil {
@@ -78,6 +97,11 @@ func (q *Queries) Close() error {
 	if q.getPlayerUsernameStmt != nil {
 		if cerr := q.getPlayerUsernameStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPlayerUsernameStmt: %w", cerr)
+		}
+	}
+	if q.listPlayerEmailsStmt != nil {
+		if cerr := q.listPlayerEmailsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listPlayerEmailsStmt: %w", cerr)
 		}
 	}
 	if q.listPlayerPermissionsStmt != nil {
@@ -124,12 +148,15 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db                          DBTX
 	tx                          *sql.Tx
+	countPlayerEmailsStmt       *sql.Stmt
 	createPlayerStmt            *sql.Stmt
+	createPlayerEmailStmt       *sql.Stmt
 	createPlayerPermissionsStmt *sql.Stmt
 	getPlayerStmt               *sql.Stmt
 	getPlayerByUsernameStmt     *sql.Stmt
 	getPlayerPWHashStmt         *sql.Stmt
 	getPlayerUsernameStmt       *sql.Stmt
+	listPlayerEmailsStmt        *sql.Stmt
 	listPlayerPermissionsStmt   *sql.Stmt
 }
 
@@ -137,12 +164,15 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
 		db:                          tx,
 		tx:                          tx,
+		countPlayerEmailsStmt:       q.countPlayerEmailsStmt,
 		createPlayerStmt:            q.createPlayerStmt,
+		createPlayerEmailStmt:       q.createPlayerEmailStmt,
 		createPlayerPermissionsStmt: q.createPlayerPermissionsStmt,
 		getPlayerStmt:               q.getPlayerStmt,
 		getPlayerByUsernameStmt:     q.getPlayerByUsernameStmt,
 		getPlayerPWHashStmt:         q.getPlayerPWHashStmt,
 		getPlayerUsernameStmt:       q.getPlayerUsernameStmt,
+		listPlayerEmailsStmt:        q.listPlayerEmailsStmt,
 		listPlayerPermissionsStmt:   q.listPlayerPermissionsStmt,
 	}
 }

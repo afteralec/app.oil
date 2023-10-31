@@ -2,8 +2,9 @@
   <header>
     <h1 class="text-xl font-semibold leading-none">Email</h1>
   </header>
-  <!-- prettier-ignore -->
   {{ template "web/views/partials/profile/email/add-email" . }}
+  <div id="emails" class="flex flex-col gap-2">
+    <!-- prettier-ignore -->
     {{ if .NoEmails }}
       {{ template "web/views/partials/profile/email/no-email" }}
     {{- else }}
@@ -15,4 +16,5 @@
         {{- end}}
       {{- end }}
     {{- end }}
+  </div>
 </article>

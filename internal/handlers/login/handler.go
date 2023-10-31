@@ -21,14 +21,12 @@ type LoginInput struct {
 func New(s *session.Store, q *queries.Queries, r *redis.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		i := new(LoginInput)
-
 		if err := c.BodyParser(i); err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			return nil
 		}
 
-		ctx := context.Background()
-		p, err := q.GetPlayerByUsername(ctx, i.Username)
+		p, err := q.GetPlayerByUsername(context.Background(), i.Username)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			return nil
