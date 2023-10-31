@@ -197,6 +197,13 @@ export function resetErrors(errors) {
   }
 }
 
+export function getProfileEmailData() {
+  return {
+    addEmailMode: false,
+    addEmail: "",
+  };
+}
+
 export function getEmailData(email) {
   return {
     loadEmail: email,
@@ -205,10 +212,9 @@ export function getEmailData(email) {
   };
 }
 
-export function getProfileEmailData() {
+export function getGravatarEmailData(selectedEmail) {
   return {
-    addEmailMode: false,
-    addEmail: "",
+    selectedEmail,
   };
 }
 
@@ -242,4 +248,5 @@ window.getLoginData = getLoginData;
 window.getLogoutData = getLogoutData;
 window.getProfileEmailData = getProfileEmailData;
 window.getEmailData = getEmailData;
+window.getGravatarEmailData = getGravatarEmailData;
 window.getProfileAvatarData = getProfileAvatarData;

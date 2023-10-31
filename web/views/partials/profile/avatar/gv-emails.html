@@ -4,7 +4,7 @@
 <div
   class="relative"
   x-show="avatarSource === 'gravatar'"
-  x-data="{ selectedEmail: 'test@test.com' }"
+  x-data="getGravatarEmailData('{{ .GravatarEmail }}')"
 >
   <button
     id="gravatar-email-button"
@@ -47,32 +47,10 @@
         Email
       </div>
       <div class="pb-1"></div>
-      <div
-        id="gravatar-email-option-1"
-        class="block cursor-pointer px-4 py-2 text-sm hover:bg-muted"
-        @click="
-          selectedEmail = 'test@test.ninja';
-          open = false;
-        "
-        role="menuitem"
-        tabindex="-1"
-        id="menu-item-0"
-      >
-        test@test.ninja
-      </div>
-      <div
-        id="gravatar-email-option-2"
-        class="block cursor-pointer px-4 py-2 text-sm hover:bg-muted"
-        @click="
-          selectedEmail = 'test@test.com';
-          open = false;
-        "
-        role="menuitem"
-        tabindex="-1"
-        id="menu-item-0"
-      >
-        test@test.com
-      </div>
+      <!-- prettier-ignore -->
+      {{ range .VerifiedEmails }}
+        {{ template "web/views/partials/profile/avatar/gv-email" . }}
+      {{- end }}
     </div>
   </div>
 </div>

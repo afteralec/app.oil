@@ -65,6 +65,7 @@ func NewWithoutParams(q *queries.Queries, r *redis.Client) fiber.Handler {
 		}
 		b["Emails"] = emails
 		b["VerifiedEmails"] = email.Verified(emails)
+		b["GravatarEmail"] = "othertest@quack.ninja"
 
 		if len(emails) == 0 {
 			b["NoEmails"] = true
