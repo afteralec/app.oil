@@ -23,7 +23,7 @@ import (
 	newemail "petrichormud.com/app/internal/handlers/player/email/new"
 	newplayer "petrichormud.com/app/internal/handlers/player/new"
 	usernamereserved "petrichormud.com/app/internal/handlers/player/reserved"
-	viewplayer "petrichormud.com/app/internal/handlers/player/view"
+	"petrichormud.com/app/internal/handlers/profile"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/sessiondata"
 	"petrichormud.com/app/internal/queries"
@@ -83,11 +83,12 @@ func main() {
 
 	player := app.Group("/player")
 	player.Post("/new", newplayer.New(db, s, q, r))
-	player.Get("/", viewplayer.NewWithoutParams(q, r))
-	player.Get("/:id", viewplayer.New(q, r))
+	player.Get("/:id", profile.New(q, r))
 	player.Post("/reserved", usernamereserved.New(q))
 	email := player.Group("/email")
 	email.Post("/new", newemail.New(db, s, q, r))
+
+	app.Get("/profile", profile.NewWithoutParams(q, r))
 
 	log.Fatal(app.Listen(":8008"))
 }

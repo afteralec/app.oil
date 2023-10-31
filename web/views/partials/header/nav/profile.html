@@ -21,25 +21,25 @@
       tabindex="-1"
     >
       <div role="none">
-        {{ if .AccountView -}}
+        {{ if .ProfileView -}}
         <a
-          href="/player"
+          href="/profile"
           class="block bg-muted px-4 py-2 text-sm"
           role="menuitem"
           tabindex="-1"
           id="account-menu-0"
         >
-          Account
+          Profile
         </a>
         {{ else -}}
         <a
-          href="/player"
+          href="/profile"
           class="block bg-background px-4 py-2 text-sm hover:bg-muted"
           role="menuitem"
           tabindex="-1"
           id="account-menu-0"
         >
-          Account
+          Profile
         </a>
         {{ end -}}
       </div>

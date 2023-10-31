@@ -1,4 +1,4 @@
-package viewplayer
+package profile
 
 import (
 	"log"
@@ -39,7 +39,7 @@ func New(q *queries.Queries, r *redis.Client) fiber.Handler {
 		b := c.Locals("bind").(fiber.Map)
 		b["ID"] = id
 
-		return c.Render("web/views/player", b)
+		return c.Render("web/views/profile", b)
 	}
 }
 
@@ -77,6 +77,6 @@ func NewWithoutParams(q *queries.Queries, r *redis.Client) fiber.Handler {
 
 		b["GravatarHash"] = email.GravatarHash("after.alec@gmail.com")
 
-		return c.Render("web/views/player", b)
+		return c.Render("web/views/profile", b)
 	}
 }

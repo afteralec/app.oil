@@ -7,7 +7,7 @@
   <h2 class="text-base font-semibold leading-none">Avatar</h2>
   <div class="flex gap-4 pt-4">
     <div class="flex flex-col items-center justify-center">
-      {{ template "web/views/partials/player/avatar/avatar" . }}
+      {{ template "web/views/partials/profile/avatar/avatar" . }}
     </div>
     <div class="flex flex-col">
       <div>
@@ -57,13 +57,13 @@
     </div>
     <div class="relative flex flex-col gap-2 pl-4" x-data="{ open: false }">
       <!-- prettier-ignore -->
-      {{ template "web/views/partials/player/avatar/gv-emails" . }}
-      {{ template "web/views/partials/player/avatar/gh-username" . }}
+      {{ template "web/views/partials/profile/avatar/gv-emails" . }}
+      {{ template "web/views/partials/profile/avatar/gh-username" . }}
     </div>
     <div class="pl-8">
       <!-- prettier-ignore -->
-      {{ template "web/views/partials/player/avatar/gv-desc" }}
-      {{ template "web/views/partials/player/avatar/gh-desc" }}
+      {{ template "web/views/partials/profile/avatar/gv-desc" }}
+      {{ template "web/views/partials/profile/avatar/gh-desc" }}
     </div>
   </div>
   <div class="flex items-center gap-2 px-1 pt-3">
