@@ -54,6 +54,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listPlayerPermissionsStmt, err = db.PrepareContext(ctx, listPlayerPermissions); err != nil {
 		return nil, fmt.Errorf("error preparing query ListPlayerPermissions: %w", err)
 	}
+	if q.markEmailVerifiedStmt, err = db.PrepareContext(ctx, markEmailVerified); err != nil {
+		return nil, fmt.Errorf("error preparing query MarkEmailVerified: %w", err)
+	}
 	return &q, nil
 }
 
@@ -109,6 +112,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listPlayerPermissionsStmt: %w", cerr)
 		}
 	}
+	if q.markEmailVerifiedStmt != nil {
+		if cerr := q.markEmailVerifiedStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing markEmailVerifiedStmt: %w", cerr)
+		}
+	}
 	return err
 }
 
@@ -158,6 +166,7 @@ type Queries struct {
 	getPlayerUsernameStmt       *sql.Stmt
 	listPlayerEmailsStmt        *sql.Stmt
 	listPlayerPermissionsStmt   *sql.Stmt
+	markEmailVerifiedStmt       *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -174,5 +183,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getPlayerUsernameStmt:       q.getPlayerUsernameStmt,
 		listPlayerEmailsStmt:        q.listPlayerEmailsStmt,
 		listPlayerPermissionsStmt:   q.listPlayerPermissionsStmt,
+		markEmailVerifiedStmt:       q.markEmailVerifiedStmt,
 	}
 }

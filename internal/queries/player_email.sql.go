@@ -65,3 +65,11 @@ func (q *Queries) ListPlayerEmails(ctx context.Context, pid int64) ([]PlayerEmai
 	}
 	return items, nil
 }
+
+const markEmailVerified = `-- name: MarkEmailVerified :execresult
+UPDATE player_emails SET verified = true WHERE id = ?
+`
+
+func (q *Queries) MarkEmailVerified(ctx context.Context, id int64) (sql.Result, error) {
+	return q.exec(ctx, q.markEmailVerifiedStmt, markEmailVerified, id)
+}

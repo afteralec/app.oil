@@ -78,6 +78,10 @@ func main() {
 
 	app.Get("/", home.New())
 
+	app.Get("/test", func(c *fiber.Ctx) error {
+		return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+	})
+
 	app.Post("/login", login.New(s, q, r))
 	app.Post("/logout", logout.New(s))
 
