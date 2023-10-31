@@ -7,18 +7,20 @@ package queries
 import ()
 
 type Player struct {
-	ID       int64
-	Username string
 	PwHash   string
+	Username string
+	ID       int64
 }
 
 type PlayerEmail struct {
-	ID    int64
-	Email string
+	Email    string
+	Hash     string
+	Verified bool
+	ID       int64
 }
 
 type PlayerPermission struct {
-	ID         int64
-	Pid        int64
 	Permission string
+	Pid        int64
+	ID         int64
 }

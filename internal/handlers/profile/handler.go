@@ -43,12 +43,6 @@ func New(q *queries.Queries, r *redis.Client) fiber.Handler {
 	}
 }
 
-type PlayerEmail struct {
-	Email    string
-	Verified bool
-	ID       int64
-}
-
 func NewWithoutParams(q *queries.Queries, r *redis.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
@@ -64,13 +58,13 @@ func NewWithoutParams(q *queries.Queries, r *redis.Client) fiber.Handler {
 
 		b := c.Locals("bind").(fiber.Map)
 
-		emails := []PlayerEmail{
+		emails := []queries.PlayerEmail{
 			{ID: 1, Email: "test@test.com", Verified: false},
 			{ID: 2, Email: "othertest@quack.ninja", Verified: true},
 			{ID: 3, Email: "tests@testes.com", Verified: true},
 		}
 		b["Emails"] = emails
-		b["VerifiedEmails"] = emails
+		b["VerifiedEmails"] = email.Verified(emails)
 
 		if len(emails) == 0 {
 			b["NoEmails"] = true

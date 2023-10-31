@@ -24,24 +24,24 @@ func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (sql
 }
 
 const getPlayer = `-- name: GetPlayer :one
-SELECT id, username, pw_hash FROM players WHERE id = ?
+SELECT pw_hash, username, id FROM players WHERE id = ?
 `
 
 func (q *Queries) GetPlayer(ctx context.Context, id int64) (Player, error) {
 	row := q.queryRow(ctx, q.getPlayerStmt, getPlayer, id)
 	var i Player
-	err := row.Scan(&i.ID, &i.Username, &i.PwHash)
+	err := row.Scan(&i.PwHash, &i.Username, &i.ID)
 	return i, err
 }
 
 const getPlayerByUsername = `-- name: GetPlayerByUsername :one
-SELECT id, username, pw_hash FROM players WHERE username = ?
+SELECT pw_hash, username, id FROM players WHERE username = ?
 `
 
 func (q *Queries) GetPlayerByUsername(ctx context.Context, username string) (Player, error) {
 	row := q.queryRow(ctx, q.getPlayerByUsernameStmt, getPlayerByUsername, username)
 	var i Player
-	err := row.Scan(&i.ID, &i.Username, &i.PwHash)
+	err := row.Scan(&i.PwHash, &i.Username, &i.ID)
 	return i, err
 }
 

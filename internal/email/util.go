@@ -1,13 +1,11 @@
 package email
 
-type PlayerEmail struct {
-	Email    string
-	Verified bool
-	ID       int64
-}
+import (
+	"petrichormud.com/app/internal/queries"
+)
 
-func Verified(emails []PlayerEmail) []PlayerEmail {
-	verifiedEmails := []PlayerEmail{}
+func Verified(emails []queries.PlayerEmail) []queries.PlayerEmail {
+	verifiedEmails := []queries.PlayerEmail{}
 	for i := range emails {
 		if emails[i].Verified {
 			verifiedEmails = append(verifiedEmails, emails[i])
