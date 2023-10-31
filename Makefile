@@ -12,6 +12,9 @@ alpine:
 		web/static/alpine-focus.min.js \
 		https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js
 	curl -o \
+		web/static/alpine-morph.min.js \
+		https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.x.x/dist/cdn.min.js
+	curl -o \
 		web/static/alpine.min.js \
 		https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js
 
@@ -19,6 +22,9 @@ htmx:
 	curl -o \
 		web/static/htmx.min.js \
 		https://unpkg.com/htmx.org@1.9.6/dist/htmx.min.js
+	curl -o \
+		web/static/htmx-morph.js \
+		https://unpkg.com/htmx.org@1.9.6/dist/ext/alpine-morph.js
 
 icons:
 	curl -o \

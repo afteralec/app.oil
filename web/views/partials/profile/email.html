@@ -2,19 +2,17 @@
   <header>
     <h1 class="text-xl font-semibold leading-none">Email</h1>
   </header>
+  <!-- prettier-ignore -->
   {{ template "web/views/partials/profile/email/add-email" . }}
+  {{ template "web/views/partials/profile/email/no-email" }}
   <div id="emails" class="flex flex-col gap-2">
     <!-- prettier-ignore -->
-    {{ if .NoEmails }}
-      {{ template "web/views/partials/profile/email/no-email" }}
-    {{- else }}
-      {{ range .Emails }}
-        {{ if .Verified }}
-          {{ template "web/views/partials/profile/email/verified-email" . }}
-        {{- else }}
-          {{ template "web/views/partials/profile/email/unverified-email" . }}
-        {{- end}}
-      {{- end }}
+    {{ range .Emails }}
+      {{ if .Verified }}
+        {{ template "web/views/partials/profile/email/verified-email" . }}
+      {{- else }}
+        {{ template "web/views/partials/profile/email/unverified-email" . }}
+      {{- end}}
     {{- end }}
   </div>
 </article>

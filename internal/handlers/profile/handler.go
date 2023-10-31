@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"context"
 	"log"
 	"slices"
 	"strconv"
@@ -58,19 +59,15 @@ func NewWithoutParams(q *queries.Queries, r *redis.Client) fiber.Handler {
 
 		b := c.Locals("bind").(fiber.Map)
 
-		emails := []queries.PlayerEmail{
-			{ID: 1, Email: "test@test.com", Verified: false},
-			{ID: 2, Email: "othertest@quack.ninja", Verified: true},
-			{ID: 3, Email: "tests@testes.com", Verified: true},
+		emails, err := q.ListPlayerEmails(context.Background(), pid.(int64))
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
 		}
+
 		b["Emails"] = emails
 		b["VerifiedEmails"] = email.Verified(emails)
 		b["GravatarEmail"] = "othertest@quack.ninja"
-
-		if len(emails) == 0 {
-			b["NoEmails"] = true
-		}
-
 		b["GravatarHash"] = email.GravatarHash("after.alec@gmail.com")
 
 		return c.Render("web/views/profile", b)
