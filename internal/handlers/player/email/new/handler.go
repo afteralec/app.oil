@@ -10,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 	redis "github.com/redis/go-redis/v9"
 
+	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/queries"
 )
 
@@ -45,7 +46,7 @@ func New(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fibe
 			return nil
 		}
 
-		email, err := mail.ParseAddress(i.Email)
+		e, err := mail.ParseAddress(i.Email)
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
@@ -53,7 +54,7 @@ func New(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fibe
 
 		result, err := q.CreatePlayerEmail(
 			context.Background(),
-			queries.CreatePlayerEmailParams{Pid: pid.(int64), Email: email.Address},
+			queries.CreatePlayerEmailParams{Pid: pid.(int64), Email: e.Address},
 		)
 		if err != nil {
 			log.Print(err)
@@ -67,10 +68,16 @@ func New(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fibe
 			return nil
 		}
 
+		err = email.Verify(r, id, e.Address)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
 		c.Status(fiber.StatusCreated)
 		return c.Render("web/views/partials/profile/email/new-email", &fiber.Map{
 			"ID":    id,
-			"Email": email.Address,
+			"Email": e.Address,
 		}, "")
 	}
 }

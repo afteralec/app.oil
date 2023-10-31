@@ -7,6 +7,9 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gofiber/fiber/v2 v2.50.0
 	github.com/gofiber/template/html/v2 v2.0.5
+	github.com/google/uuid v1.4.0
+	github.com/hexon/mysqltsv v0.1.0
+	github.com/redis/go-redis/v9 v9.2.1
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/crypto v0.14.0
 
@@ -19,8 +22,6 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/gofiber/template v1.8.2 // indirect
 	github.com/gofiber/utils v1.1.0 // indirect
-	github.com/google/uuid v1.3.1 // indirect
-	github.com/hexon/mysqltsv v0.1.0 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
@@ -28,7 +29,7 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/redis/go-redis/v9 v9.2.1 // indirect
+	github.com/resendlabs/resend-go v1.7.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.50.0 // indirect
