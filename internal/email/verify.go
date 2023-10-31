@@ -3,7 +3,6 @@ package email
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/google/uuid"
@@ -11,25 +10,19 @@ import (
 	resend "github.com/resendlabs/resend-go"
 )
 
-const ThirtyMinutesInNanoseconds = 30 * 60 * 1000 * 1000
+const ThirtyMinutesInNanoseconds = 30 * 60 * 1000 * 1000 * 1000
 
 func Verify(r *redis.Client, id int64, email string) error {
 	key := uuid.NewString()
-	Cache(r, key, id)
-	// _, err := SendEmail(key, email)
-	// if err != nil {
-	// 	return err
-	// }
-	// client := resend.NewClient(os.Getenv("RESEND_API_KEY"))
-	url := fmt.Sprintf("https://petrichormud.com/verify?t=%s", key)
-	params := &resend.SendEmailRequest{
-		To:      []string{email},
-		From:    "verify@petrichormud.com",
-		Text:    fmt.Sprintf("Welcome to PetrichorMUD! Please <a href=%q>click here</a> to verify your email address.", url),
-		Subject: fmt.Sprintf("[PetrichorMUD] Verify %s", email),
-		ReplyTo: "support@petrichormud.com",
+
+	err := Cache(r, key, id)
+	if err != nil {
+		return err
 	}
-	log.Print(params)
+	_, err = SendEmail(key, email)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -40,14 +33,13 @@ func SendEmail(key string, email string) (resend.SendEmailResponse, error) {
 	params := &resend.SendEmailRequest{
 		To:      []string{email},
 		From:    "verify@petrichormud.com",
-		Text:    fmt.Sprintf("Welcome to PetrichorMUD! Please <a href=%q>click here</a> to verify your email address.", url),
+		Html:    fmt.Sprintf("Welcome to PetrichorMUD! Please <a href=%q>click here</a> to verify your email address.", url),
 		Subject: fmt.Sprintf("[PetrichorMUD] Verify %s", email),
 		ReplyTo: "support@petrichormud.com",
 	}
-	log.Print(params)
 	return client.Emails.Send(params)
 }
 
-func Cache(r *redis.Client, key string, id int64) {
-	r.Set(context.Background(), key, id, ThirtyMinutesInNanoseconds)
+func Cache(r *redis.Client, key string, id int64) error {
+	return r.Set(context.Background(), key, id, ThirtyMinutesInNanoseconds).Err()
 }

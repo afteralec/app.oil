@@ -70,6 +70,7 @@ func New(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fibe
 
 		err = email.Verify(r, id, e.Address)
 		if err != nil {
+			log.Print(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
