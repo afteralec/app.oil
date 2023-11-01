@@ -2,12 +2,12 @@ package handlers
 
 import (
 	fiber "github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
+	"petrichormud.com/app/internal/shared"
 )
 
-func Logout(s *session.Store) fiber.Handler {
+func Logout(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		sess, err := s.Get(c)
+		sess, err := i.Sessions.Get(c)
 		if err != nil {
 			c.Status(500)
 			return nil

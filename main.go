@@ -20,7 +20,7 @@ import (
 	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/sessiondata"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/shared"
 )
 
 //go:embed web/views/*
@@ -42,14 +42,17 @@ func main() {
 	}
 	defer db.Close()
 
-	q := queries.New(db)
-
 	r := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_ADDR"),
 		Password: "",
 		DB:       0,
 		Protocol: 3,
 	})
+
+	// TODO: Update this config to be more secure. Will depend on environment.
+	s := session.New()
+
+	i := shared.InterfacesBuilder().Database(db).Redis(r).Sessions(s).Build()
 
 	views := html.NewFileSystem(http.FS(viewsfs), ".html")
 	readTimeoutSecondsCount, _ := strconv.Atoi(os.Getenv("SERVER_READ_TIMEOUT"))
@@ -61,58 +64,28 @@ func main() {
 	}
 	app := fiber.New(config)
 
-	// TODO: Update this config to be more secure. Will depend on environment.
-	s := session.New()
 	app.Use(cors.New())
 	app.Use(logger.New())
-	app.Use(sessiondata.New(s, q, r))
+	app.Use(sessiondata.New(&i))
 	app.Use(bind.New())
 
 	app.Static("/", "./web/static")
 
 	app.Get("/", handlers.Home())
 
-	app.Post("/login", handlers.Login(s, q, r))
-	app.Post("/logout", handlers.Logout(s))
+	app.Post("/login", handlers.Login(&i))
+	app.Post("/logout", handlers.Logout(&i))
 
 	player := app.Group("/player")
-	player.Post("/new", handlers.CreatePlayer(db, s, q, r))
-	player.Post("/reserved", handlers.UsernameReserved(q))
+	player.Post("/new", handlers.CreatePlayer(&i))
+	player.Post("/reserved", handlers.UsernameReserved(&i))
 	email := player.Group("/email")
-	email.Post("/new", handlers.AddEmail(db, s, q, r))
+	email.Post("/new", handlers.AddEmail(&i))
 
-	app.Get("/verify", handlers.Verify(q, r))
-	app.Post("/verify", handlers.VerifyEmail(q, r))
+	app.Get("/verify", handlers.Verify(&i))
+	app.Post("/verify", handlers.VerifyEmail(&i))
 
-	app.Get("/profile", handlers.Profile(q, r))
+	app.Get("/profile", handlers.Profile(&i))
 
 	log.Fatal(app.Listen(":8008"))
-}
-
-type Shared struct {
-	Database *sql.DB
-	Redis    *redis.Client
-	Queries  *queries.Queries
-	Sessions *session.Store
-}
-
-type SharedBuilder struct {
-	Shared Shared
-}
-
-func (builder *SharedBuilder) Database(db *sql.DB) {
-	builder.Shared.Database = db
-	builder.Shared.Queries = queries.New(db)
-}
-
-func (builder *SharedBuilder) Redis(r *redis.Client) {
-	builder.Shared.Redis = r
-}
-
-func (builder *SharedBuilder) Sessions(s *session.Store) {
-	builder.Shared.Sessions = s
-}
-
-func (builder *SharedBuilder) Build() Shared {
-	return builder.Shared
 }

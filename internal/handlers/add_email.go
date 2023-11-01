@@ -2,25 +2,23 @@ package handlers
 
 import (
 	"context"
-	"database/sql"
 	"log"
 	"net/mail"
 
 	fiber "github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
-	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/shared"
 )
 
 const MaxEmailCount = 3
 
-type NewEmailInput struct {
-	Email string `form:"email"`
-}
+func AddEmail(i *shared.Interfaces) fiber.Handler {
+	type request struct {
+		Email string `form:"email"`
+	}
 
-func AddEmail(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -29,7 +27,7 @@ func AddEmail(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client)
 			return nil
 		}
 
-		ec, err := q.CountPlayerEmails(context.Background(), pid.(int64))
+		ec, err := i.Queries.CountPlayerEmails(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -40,24 +38,23 @@ func AddEmail(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client)
 			return c.Render("web/views/partials/profile/email/err-too-many-emails", &fiber.Map{}, "")
 		}
 
-		i := new(NewEmailInput)
-		if err := c.BodyParser(i); err != nil {
+		r := new(request)
+		if err := c.BodyParser(r); err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			return nil
 		}
 
-		e, err := mail.ParseAddress(i.Email)
+		e, err := mail.ParseAddress(r.Email)
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
 		}
 
-		result, err := q.CreatePlayerEmail(
+		result, err := i.Queries.CreatePlayerEmail(
 			context.Background(),
 			queries.CreatePlayerEmailParams{Pid: pid.(int64), Email: e.Address},
 		)
 		if err != nil {
-			log.Print(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -68,7 +65,7 @@ func AddEmail(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client)
 			return nil
 		}
 
-		err = email.Verify(r, id, e.Address)
+		err = email.Verify(i.Redis, id, e.Address)
 		if err != nil {
 			log.Print(err)
 			c.Status(fiber.StatusInternalServerError)

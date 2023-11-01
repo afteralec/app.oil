@@ -7,16 +7,15 @@ import (
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
-	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/shared"
 )
 
-func Verify(q *queries.Queries, r *redis.Client) fiber.Handler {
+func Verify(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		token := c.Query("t")
-		exists, err := r.Exists(context.Background(), token).Result()
+		exists, err := i.Redis.Exists(context.Background(), token).Result()
 		if err != nil {
 			return c.Redirect("/")
 		}
@@ -29,7 +28,7 @@ func Verify(q *queries.Queries, r *redis.Client) fiber.Handler {
 			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
-		perms, err := permissions.List(q, r, pid.(int64))
+		perms, err := permissions.List(i.Queries, i.Redis, pid.(int64))
 		if err != nil {
 			return c.Redirect("/")
 		}
@@ -45,7 +44,7 @@ func Verify(q *queries.Queries, r *redis.Client) fiber.Handler {
 	}
 }
 
-func VerifyEmail(q *queries.Queries, r *redis.Client) fiber.Handler {
+func VerifyEmail(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {
@@ -54,7 +53,7 @@ func VerifyEmail(q *queries.Queries, r *redis.Client) fiber.Handler {
 			return nil
 		}
 
-		perms, err := permissions.List(q, r, pid.(int64))
+		perms, err := permissions.List(i.Queries, i.Redis, pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -70,7 +69,7 @@ func VerifyEmail(q *queries.Queries, r *redis.Client) fiber.Handler {
 			return nil
 		}
 
-		eid, err := r.Get(context.Background(), key).Result()
+		eid, err := i.Redis.Get(context.Background(), key).Result()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -82,13 +81,13 @@ func VerifyEmail(q *queries.Queries, r *redis.Client) fiber.Handler {
 			return nil
 		}
 
-		_, err = q.MarkEmailVerified(context.Background(), id)
+		_, err = i.Queries.MarkEmailVerified(context.Background(), id)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		err = r.Del(context.Background(), key).Err()
+		err = i.Redis.Del(context.Background(), key).Err()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil

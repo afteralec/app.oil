@@ -4,13 +4,12 @@ import (
 	"context"
 
 	fiber "github.com/gofiber/fiber/v2"
-	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/email"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/shared"
 )
 
-func Profile(q *queries.Queries, r *redis.Client) fiber.Handler {
+func Profile(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -20,7 +19,7 @@ func Profile(q *queries.Queries, r *redis.Client) fiber.Handler {
 
 		b := c.Locals("bind").(fiber.Map)
 
-		emails, err := q.ListPlayerEmails(context.Background(), pid.(int64))
+		emails, err := i.Queries.ListPlayerEmails(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil

@@ -2,16 +2,14 @@ package handlers
 
 import (
 	"context"
-	"database/sql"
 	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
-	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
 )
 
@@ -20,7 +18,7 @@ type Player struct {
 	Password string `form:"password"`
 }
 
-func CreatePlayer(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fiber.Handler {
+func CreatePlayer(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		p := new(Player)
 
@@ -47,14 +45,14 @@ func CreatePlayer(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Cli
 			return nil
 		}
 
-		tx, err := db.Begin()
+		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 		defer tx.Rollback()
 
-		qtx := q.WithTx(tx)
+		qtx := i.Queries.WithTx(tx)
 		ctx := context.Background()
 		result, err := qtx.CreatePlayer(ctx, queries.CreatePlayerParams{
 			Username: u,
@@ -87,9 +85,9 @@ func CreatePlayer(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Cli
 			return nil
 		}
 
-		permissions.Cache(r, permissions.Key(pid), perms[:])
+		permissions.Cache(i.Redis, permissions.Key(pid), perms[:])
 
-		sess, err := s.Get(c)
+		sess, err := i.Sessions.Get(c)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
