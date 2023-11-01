@@ -1,0 +1,22 @@
+<main
+  class="flex h-screen w-screen items-center justify-center"
+  x-data="getLoginData()"
+>
+  <div
+    class="flex w-full max-w-lg flex-col items-center justify-center rounded-md border px-6 py-12"
+  >
+    <h1 class="text-base leading-none">
+      Hello, <span class="font-semibold">{{ .Username }}</span>!
+    </h1>
+    <div class="p-2"></div>
+    <button
+      class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      hx-post="/verify?t={{ .VerifyToken }}"
+      hx-target="this"
+      hx-swap="outerHTML"
+      type="button"
+    >
+      Click here to verify {{ .Email }}
+    </button>
+  </div>
+</main>

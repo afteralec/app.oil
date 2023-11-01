@@ -29,7 +29,8 @@ func Verify(r *redis.Client, id int64, email string) error {
 
 func SendEmail(key string, email string) (resend.SendEmailResponse, error) {
 	client := resend.NewClient(os.Getenv("RESEND_API_KEY"))
-	url := fmt.Sprintf("https://petrichormud.com/verify?t=%s", key)
+	base := os.Getenv("BASE_URL")
+	url := fmt.Sprintf("%s/verify?t=%s", base, key)
 	params := &resend.SendEmailRequest{
 		To:      []string{email},
 		From:    "verify@petrichormud.com",

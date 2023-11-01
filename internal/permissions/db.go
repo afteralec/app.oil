@@ -3,7 +3,6 @@ package permissions
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	redis "github.com/redis/go-redis/v9"
 
@@ -37,13 +36,20 @@ func List(q *queries.Queries, r *redis.Client, pid int64) ([]string, error) {
 			perms = append(perms, record.Permission)
 		}
 
-		Cache(r, key, perms)
+		err = Cache(r, key, perms)
+		if err != nil {
+			return nil, err
+		}
 		return perms, nil
 	}
 }
 
-func Cache(r *redis.Client, key string, perms []string) {
-	r.SAdd(context.Background(), key, strings.Join(perms, " "), TwoHoursInNanoseconds)
+func Cache(r *redis.Client, key string, perms []string) error {
+	err := r.SAdd(context.Background(), key, perms).Err()
+	if err != nil {
+		return err
+	}
+	return r.Expire(context.Background(), key, TwoHoursInNanoseconds).Err()
 }
 
 func Key(pid int64) string {

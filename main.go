@@ -24,6 +24,7 @@ import (
 	newplayer "petrichormud.com/app/internal/handlers/player/new"
 	usernamereserved "petrichormud.com/app/internal/handlers/player/reserved"
 	"petrichormud.com/app/internal/handlers/profile"
+	"petrichormud.com/app/internal/handlers/verify"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/sessiondata"
 	"petrichormud.com/app/internal/queries"
@@ -79,7 +80,11 @@ func main() {
 	app.Get("/", home.New())
 
 	app.Get("/test", func(c *fiber.Ctx) error {
-		return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+		b := c.Locals("bind").(fiber.Map)
+		b["Username"] = "alec"
+		b["Email"] = "after.alec@gmail.com"
+		b["VerifyToken"] = c.Params("t")
+		return c.Render("web/views/verify", c.Locals("bind"), "web/views/layouts/standalone")
 	})
 
 	app.Post("/login", login.New(s, q, r))
@@ -91,6 +96,9 @@ func main() {
 	player.Post("/reserved", usernamereserved.New(q))
 	email := player.Group("/email")
 	email.Post("/new", newemail.New(db, s, q, r))
+
+	app.Get("/verify", verify.New(q, r))
+	app.Post("/verify", verify.NewVerify(q, r))
 
 	app.Get("/profile", profile.NewWithoutParams(q, r))
 

@@ -2,6 +2,7 @@ package verify
 
 import (
 	"context"
+	"log"
 	"slices"
 	"strconv"
 
@@ -14,10 +15,18 @@ import (
 
 func New(q *queries.Queries, r *redis.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		token := c.Query("t")
+		exists, err := r.Exists(context.Background(), token).Result()
+		if err != nil {
+			return c.Redirect("/")
+		}
+		if exists != 1 {
+			return c.Redirect("/")
+		}
+
 		pid := c.Locals("pid")
 		if pid == nil {
-			// TODO: Here, the user isn't logged in - return a login page that redirects to or hx-boosts the verify page
-			return c.Redirect("/")
+			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
 		perms, err := permissions.List(q, r, pid.(int64))
@@ -28,8 +37,11 @@ func New(q *queries.Queries, r *redis.Client) fiber.Handler {
 			return c.Redirect("/")
 		}
 
-		// TODO: Here, the user is logged in and has perms - send the page that has the function for verifying your email
-		return c.Redirect("/")
+		b := c.Locals("bind").(fiber.Map)
+		b["VerifyToken"] = c.Query("t")
+		log.Print(b["VerifyToken"])
+
+		return c.Render("web/views/verify", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -38,18 +50,21 @@ func NewVerify(q *queries.Queries, r *redis.Client) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
+			// TODO: This should redirect them back to the login page for this token
 			return nil
 		}
 
 		perms, err := permissions.List(q, r, pid.(int64))
 		if err != nil {
-			return c.Redirect("/")
+			c.Status(fiber.StatusInternalServerError)
+			return nil
 		}
 		if !slices.Contains(perms, permissions.AddEmail) {
-			return c.Redirect("/")
+			c.Status(fiber.StatusForbidden)
+			return nil
 		}
 
-		key := c.Params("t")
+		key := c.Query("t")
 		if len(key) == 0 {
 			c.Status(fiber.StatusBadRequest)
 			return nil
@@ -79,6 +94,6 @@ func NewVerify(q *queries.Queries, r *redis.Client) fiber.Handler {
 			return nil
 		}
 
-		return nil
+		return c.Render("web/views/partials/verify/success", &fiber.Map{}, "")
 	}
 }

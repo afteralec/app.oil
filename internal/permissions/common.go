@@ -1,19 +1,21 @@
 package permissions
 
-import "petrichormud.com/app/internal/queries"
+import (
+	"petrichormud.com/app/internal/queries"
+)
 
 const (
-	Login       = "Login"
-	VerifyEmail = "VerifyEmail"
-	ViewPlayer  = "ViewPlayer"
+	Login      = "Login"
+	AddEmail   = "AddEmail"
+	ViewPlayer = "ViewPlayer"
 )
 
 func DefaultSet() [2]string {
-	return [2]string{Login, VerifyEmail}
+	return [2]string{Login, AddEmail}
 }
 
 func AdminSet() [3]string {
-	return [3]string{Login, VerifyEmail, ViewPlayer}
+	return [3]string{Login, AddEmail, ViewPlayer}
 }
 
 func MakeParams(p []string, pid int64) []queries.CreatePlayerPermissionsParams {
