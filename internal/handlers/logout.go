@@ -1,11 +1,11 @@
-package logout
+package handlers
 
 import (
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-func New(s *session.Store) fiber.Handler {
+func Logout(s *session.Store) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		sess, err := s.Get(c)
 		if err != nil {

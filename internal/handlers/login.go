@@ -1,4 +1,4 @@
-package login
+package handlers
 
 import (
 	"context"
@@ -18,7 +18,7 @@ type LoginInput struct {
 	Password string `form:"password"`
 }
 
-func New(s *session.Store, q *queries.Queries, r *redis.Client) fiber.Handler {
+func Login(s *session.Store, q *queries.Queries, r *redis.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		i := new(LoginInput)
 		if err := c.BodyParser(i); err != nil {

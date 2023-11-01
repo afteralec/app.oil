@@ -1,4 +1,4 @@
-package verify
+package handlers
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/queries"
 )
 
-func New(q *queries.Queries, r *redis.Client) fiber.Handler {
+func Verify(q *queries.Queries, r *redis.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		token := c.Query("t")
 		exists, err := r.Exists(context.Background(), token).Result()
@@ -45,7 +45,7 @@ func New(q *queries.Queries, r *redis.Client) fiber.Handler {
 	}
 }
 
-func NewVerify(q *queries.Queries, r *redis.Client) fiber.Handler {
+func VerifyEmail(q *queries.Queries, r *redis.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {

@@ -17,14 +17,7 @@ import (
 	html "github.com/gofiber/template/html/v2"
 	redis "github.com/redis/go-redis/v9"
 
-	"petrichormud.com/app/internal/handlers/home"
-	"petrichormud.com/app/internal/handlers/login"
-	"petrichormud.com/app/internal/handlers/logout"
-	newemail "petrichormud.com/app/internal/handlers/player/email/new"
-	newplayer "petrichormud.com/app/internal/handlers/player/new"
-	usernamereserved "petrichormud.com/app/internal/handlers/player/reserved"
-	"petrichormud.com/app/internal/handlers/profile"
-	"petrichormud.com/app/internal/handlers/verify"
+	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/sessiondata"
 	"petrichormud.com/app/internal/queries"
@@ -77,30 +70,49 @@ func main() {
 
 	app.Static("/", "./web/static")
 
-	app.Get("/", home.New())
+	app.Get("/", handlers.Home())
 
-	app.Get("/test", func(c *fiber.Ctx) error {
-		b := c.Locals("bind").(fiber.Map)
-		b["Username"] = "alec"
-		b["Email"] = "after.alec@gmail.com"
-		b["VerifyToken"] = c.Params("t")
-		return c.Render("web/views/verify", c.Locals("bind"), "web/views/layouts/standalone")
-	})
-
-	app.Post("/login", login.New(s, q, r))
-	app.Post("/logout", logout.New(s))
+	app.Post("/login", handlers.Login(s, q, r))
+	app.Post("/logout", handlers.Logout(s))
 
 	player := app.Group("/player")
-	player.Post("/new", newplayer.New(db, s, q, r))
-	player.Get("/:id", profile.New(q, r))
-	player.Post("/reserved", usernamereserved.New(q))
+	player.Post("/new", handlers.CreatePlayer(db, s, q, r))
+	player.Post("/reserved", handlers.UsernameReserved(q))
 	email := player.Group("/email")
-	email.Post("/new", newemail.New(db, s, q, r))
+	email.Post("/new", handlers.AddEmail(db, s, q, r))
 
-	app.Get("/verify", verify.New(q, r))
-	app.Post("/verify", verify.NewVerify(q, r))
+	app.Get("/verify", handlers.Verify(q, r))
+	app.Post("/verify", handlers.VerifyEmail(q, r))
 
-	app.Get("/profile", profile.NewWithoutParams(q, r))
+	app.Get("/profile", handlers.Profile(q, r))
 
 	log.Fatal(app.Listen(":8008"))
+}
+
+type Shared struct {
+	Database *sql.DB
+	Redis    *redis.Client
+	Queries  *queries.Queries
+	Sessions *session.Store
+}
+
+type SharedBuilder struct {
+	Shared Shared
+}
+
+func (builder *SharedBuilder) Database(db *sql.DB) {
+	builder.Shared.Database = db
+	builder.Shared.Queries = queries.New(db)
+}
+
+func (builder *SharedBuilder) Redis(r *redis.Client) {
+	builder.Shared.Redis = r
+}
+
+func (builder *SharedBuilder) Sessions(s *session.Store) {
+	builder.Shared.Sessions = s
+}
+
+func (builder *SharedBuilder) Build() Shared {
+	return builder.Shared
 }

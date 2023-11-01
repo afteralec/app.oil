@@ -1,4 +1,4 @@
-package newplayer
+package handlers
 
 import (
 	"context"
@@ -20,7 +20,7 @@ type Player struct {
 	Password string `form:"password"`
 }
 
-func New(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fiber.Handler {
+func CreatePlayer(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		p := new(Player)
 

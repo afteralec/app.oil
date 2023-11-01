@@ -1,4 +1,4 @@
-package newemail
+package handlers
 
 import (
 	"context"
@@ -20,7 +20,7 @@ type NewEmailInput struct {
 	Email string `form:"email"`
 }
 
-func New(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fiber.Handler {
+func AddEmail(db *sql.DB, s *session.Store, q *queries.Queries, r *redis.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 

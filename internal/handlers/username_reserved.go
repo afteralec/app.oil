@@ -1,4 +1,4 @@
-package usernamereserved
+package handlers
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type Input struct {
 	Username string `form:"username"`
 }
 
-func New(q *queries.Queries) fiber.Handler {
+func UsernameReserved(q *queries.Queries) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		i := new(Input)
 		if err := c.BodyParser(i); err != nil {
