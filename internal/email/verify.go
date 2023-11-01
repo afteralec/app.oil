@@ -19,6 +19,10 @@ func Verify(r *redis.Client, id int64, email string) error {
 	if err != nil {
 		return err
 	}
+
+	if os.Getenv("DISABLE_RESEND") == "true" {
+		return nil
+	}
 	_, err = SendEmail(key, email)
 	if err != nil {
 		return err
