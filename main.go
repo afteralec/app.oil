@@ -70,6 +70,7 @@ func main() {
 	app.Use(bind.New())
 
 	app.Static("/", "./web/static")
+	app.Static("/loaders", "./web/svg/loaders")
 
 	app.Get("/", handlers.Home())
 

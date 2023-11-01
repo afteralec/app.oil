@@ -95,6 +95,18 @@ body {
   display: default;
 }
 
+.htmx-trade-indicator:not(.htmx-request) > .htmx-trade-indicator-in {
+  display: none;
+}
+
+.htmx-trade-indicator.htmx-request > .htmx-trade-indicator-out {
+  display: none;
+}
+
+.htmx-trade-indicator.htmx-request > .htmx-trade-indicator-in {
+  display: default;
+}
+
 .dropdown .dropdown-content {
   display: none;
 }
