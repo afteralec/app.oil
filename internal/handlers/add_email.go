@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"log"
 	"net/mail"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -67,7 +66,6 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 
 		err = email.Verify(i.Redis, id, e.Address)
 		if err != nil {
-			log.Print(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}

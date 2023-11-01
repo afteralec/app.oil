@@ -84,6 +84,7 @@ func main() {
 	email.Post("/new", handlers.AddEmail(&i))
 	email.Delete("/:id", handlers.DeleteEmail(&i))
 	email.Put("/:id", handlers.EditEmail(&i))
+	email.Post("/:id/resend", handlers.ResendEmailVerification(&i))
 
 	// TODO: Move this behind the email group
 	app.Get("/verify", handlers.Verify(&i))
