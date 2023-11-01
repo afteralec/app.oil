@@ -36,6 +36,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createPlayerPermissionsStmt, err = db.PrepareContext(ctx, createPlayerPermissions); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePlayerPermissions: %w", err)
 	}
+	if q.getEmailStmt, err = db.PrepareContext(ctx, getEmail); err != nil {
+		return nil, fmt.Errorf("error preparing query GetEmail: %w", err)
+	}
 	if q.getPlayerStmt, err = db.PrepareContext(ctx, getPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayer: %w", err)
 	}
@@ -80,6 +83,11 @@ func (q *Queries) Close() error {
 	if q.createPlayerPermissionsStmt != nil {
 		if cerr := q.createPlayerPermissionsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPlayerPermissionsStmt: %w", cerr)
+		}
+	}
+	if q.getEmailStmt != nil {
+		if cerr := q.getEmailStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getEmailStmt: %w", cerr)
 		}
 	}
 	if q.getPlayerStmt != nil {
@@ -160,6 +168,7 @@ type Queries struct {
 	createPlayerStmt            *sql.Stmt
 	createPlayerEmailStmt       *sql.Stmt
 	createPlayerPermissionsStmt *sql.Stmt
+	getEmailStmt                *sql.Stmt
 	getPlayerStmt               *sql.Stmt
 	getPlayerByUsernameStmt     *sql.Stmt
 	getPlayerPWHashStmt         *sql.Stmt
@@ -177,6 +186,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createPlayerStmt:            q.createPlayerStmt,
 		createPlayerEmailStmt:       q.createPlayerEmailStmt,
 		createPlayerPermissionsStmt: q.createPlayerPermissionsStmt,
+		getEmailStmt:                q.getEmailStmt,
 		getPlayerStmt:               q.getPlayerStmt,
 		getPlayerByUsernameStmt:     q.getPlayerByUsernameStmt,
 		getPlayerPWHashStmt:         q.getPlayerPWHashStmt,

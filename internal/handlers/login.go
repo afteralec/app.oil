@@ -9,6 +9,7 @@ import (
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/username"
 )
 
 func Login(i *shared.Interfaces) fiber.Handler {
@@ -47,6 +48,12 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 		if !slices.Contains(perms, permissions.Login) {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		err = username.Cache(i.Redis, pid, p.Username)
+		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			return nil
 		}

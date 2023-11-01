@@ -22,6 +22,10 @@ func List(i *shared.Interfaces, pid int64) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
+		err = i.Redis.Expire(context.Background(), key, TwoHoursInNanoseconds).Err()
+		if err != nil {
+			return nil, err
+		}
 		return perms, nil
 	} else {
 		records, err := i.Queries.ListPlayerPermissions(context.Background(), pid)
@@ -35,7 +39,7 @@ func List(i *shared.Interfaces, pid int64) ([]string, error) {
 			perms = append(perms, record.Permission)
 		}
 
-		err = Cache(i.Redis, key, perms)
+		err = Cache(i.Redis, pid, perms)
 		if err != nil {
 			return nil, err
 		}
@@ -43,7 +47,8 @@ func List(i *shared.Interfaces, pid int64) ([]string, error) {
 	}
 }
 
-func Cache(r *redis.Client, key string, perms []string) error {
+func Cache(r *redis.Client, pid int64, perms []string) error {
+	key := Key(pid)
 	err := r.SAdd(context.Background(), key, perms).Err()
 	if err != nil {
 		return err
@@ -52,5 +57,5 @@ func Cache(r *redis.Client, key string, perms []string) error {
 }
 
 func Key(pid int64) string {
-	return fmt.Sprintf("perm:%v", pid)
+	return fmt.Sprintf("perm:%d", pid)
 }

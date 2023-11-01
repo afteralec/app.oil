@@ -9,6 +9,7 @@ import (
 
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/username"
 )
 
 func Verify(i *shared.Interfaces) fiber.Handler {
@@ -27,6 +28,20 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
+		eid, err := i.Redis.Get(context.Background(), token).Result()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		id, err := strconv.ParseInt(eid, 10, 64)
+		if err != nil {
+			return c.Redirect("/")
+		}
+		e, err := i.Queries.GetEmail(context.Background(), id)
+		if err != nil {
+			return c.Redirect("/")
+		}
+
 		perms, err := permissions.List(i, pid.(int64))
 		if err != nil {
 			return c.Redirect("/")
@@ -35,9 +50,14 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 			return c.Redirect("/")
 		}
 
-		// TODO: Get Username and Email here for this page
+		un, err := username.Get(i.Redis, pid.(int64))
+		if err != nil {
+			return c.Redirect("/")
+		}
 		b := c.Locals("bind").(fiber.Map)
 		b["VerifyToken"] = c.Query("t")
+		b["Email"] = e.Email
+		b["Username"] = un
 
 		return c.Render("web/views/verify", b, "web/views/layouts/standalone")
 	}

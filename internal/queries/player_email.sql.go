@@ -34,6 +34,22 @@ func (q *Queries) CreatePlayerEmail(ctx context.Context, arg CreatePlayerEmailPa
 	return q.exec(ctx, q.createPlayerEmailStmt, createPlayerEmail, arg.Pid, arg.Email)
 }
 
+const getEmail = `-- name: GetEmail :one
+SELECT email, verified, pid, id FROM player_emails WHERE id = ?
+`
+
+func (q *Queries) GetEmail(ctx context.Context, id int64) (PlayerEmail, error) {
+	row := q.queryRow(ctx, q.getEmailStmt, getEmail, id)
+	var i PlayerEmail
+	err := row.Scan(
+		&i.Email,
+		&i.Verified,
+		&i.Pid,
+		&i.ID,
+	)
+	return i, err
+}
+
 const listPlayerEmails = `-- name: ListPlayerEmails :many
 SELECT email, verified, pid, id FROM player_emails WHERE pid = ?
 `

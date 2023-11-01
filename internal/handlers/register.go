@@ -85,7 +85,8 @@ func CreatePlayer(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		permissions.Cache(i.Redis, permissions.Key(pid), perms[:])
+		username.Cache(i.Redis, pid, p.Username)
+		permissions.Cache(i.Redis, pid, perms[:])
 
 		sess, err := i.Sessions.Get(c)
 		if err != nil {
