@@ -1,8 +1,12 @@
 <div class="flex w-full flex-col px-3 py-2 md:w-[60%] md:px-0">
   <div id="add-email-error" class="my-0"></div>
-  <div class="flex h-12 items-center" x-show="!addEmailMode">
+  <div
+    id="add-email-button"
+    class="htmx-trade-indicator flex h-12 items-center"
+    x-show="!addEmailMode"
+  >
     <button
-      class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      class="htmx-trade-indicator-out htmx-trade-indicator-out htmx-trade-indicator-out htmx-trade-indicator-out htmx-trade-indicator-out htmx-trade-indicator-out htmx-trade-indicator-out htmx-trade-indicator-out htmx-trade-indicator-out inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       type="button"
       :disabled="document.getElementById('emails').childElementCount >= 3"
       @click="
@@ -15,6 +19,13 @@
       "
     >
       Add Email
+    </button>
+    <button
+      type="button"
+      class="htmx-trade-indicator-in inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      :disabled="document.getElementById('emails').childElementCount >= 3"
+    >
+      <img class="h-8 w-8" src="/loaders/three-dots.svg" alt="loading" />
     </button>
   </div>
   <form
@@ -30,6 +41,7 @@
     hx-trigger="submit"
     hx-target="#emails"
     hx-swap="beforeend"
+    hx-indicator="#add-email-button"
     x-cloak
     x-show="addEmailMode"
   >
@@ -45,19 +57,20 @@
       placeholder=""
       name="email"
     />
-    <div class="flex flex-col items-start gap-1 pt-2">
+    <div class="htmx-trade-indicator flex flex-col items-start gap-1">
       <button
         type="submit"
-        class="bg-none text-xs leading-none text-muted-foreground hover:text-primary hover:underline"
+        class="htmx-trade-indicator-out inline-flex h-8 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        :disabled="document.getElementById('emails').childElementCount >= 3"
       >
-        Save
+        Add
       </button>
       <button
         type="button"
         @click="
-              addEmailMode = false;
-              addEmail = '';
-            "
+          addEmailMode = false;
+          addEmail = '';
+        "
         class="bg-none text-xs leading-none text-muted-foreground hover:text-primary hover:underline"
       >
         Cancel

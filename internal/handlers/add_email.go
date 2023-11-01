@@ -72,8 +72,9 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 
 		c.Status(fiber.StatusCreated)
 		return c.Render("web/views/partials/profile/email/new-email", &fiber.Map{
-			"ID":    id,
-			"Email": e.Address,
+			"ID":      id,
+			"Email":   e.Address,
+			"Created": true,
 		}, "")
 	}
 }

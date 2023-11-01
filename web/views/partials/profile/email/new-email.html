@@ -1,2 +1,64 @@
-{{ template "web/views/partials/profile/email/unverified-email" . }}
+<div
+  id="email-{{ .ID }}"
+  class="w-full md:w-[60%]"
+  x-data="getEmailData('{{ .Email }}')"
+>
+  <div
+    id="email-inner-{{ .ID }}"
+    class="border bg-card px-2 md:rounded-md md:px-3"
+    x-show="!editMode && !deleteMode"
+  >
+    <div class="flex h-12 items-center">
+      <p>{{ .Email }}</p>
+      <div
+        class="ml-auto flex items-center justify-end gap-2 text-xs text-muted-foreground"
+      >
+        <button
+          type="button"
+          class="border-none bg-none text-xs text-muted-foreground hover:text-rose-900 hover:underline"
+          @click="deleteMode = true"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+    <div
+      id="email-verified-status-container-{{ .ID }}"
+      class="htmx-trade-indicator pb-3"
+    >
+      <!-- prettier-ignore -->
+      {{ template "web/views/partials/profile/email/resend-created" . }}
+      {{ template "web/views/partials/profile/email/resend-indicator" . }}
+    </div>
+  </div>
+  <div
+    class="flex h-12 items-center rounded-md bg-rose-100 px-3"
+    x-cloak
+    x-show="deleteMode"
+  >
+    <p class="text-sm leading-none text-rose-800">
+      Are you sure you want to delete
+      <span class="font-semibold">{{ .Email }}</span>?
+    </p>
+    <div
+      class="ml-auto flex items-center justify-end gap-2 text-xs text-muted-foreground"
+    >
+      <button
+        type="button"
+        class="border-none bg-none text-xs text-primary hover:text-primary/90 hover:underline"
+        @click="deleteMode = false"
+      >
+        Go Back
+      </button>
+      <button
+        type="button"
+        class="border-none bg-none text-xs text-muted-foreground text-rose-800 hover:text-rose-900 hover:underline"
+        hx-delete="/player/email/{{ .ID }}"
+        hx-target="#email-{{ .ID }}"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
 <div id="no-email" hx-swap-oob="delete"></div>
