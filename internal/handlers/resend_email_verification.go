@@ -39,8 +39,9 @@ func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 
 		e, err := qtx.GetEmail(context.Background(), id)
 		if err != nil {
-			c.Status(fiber.StatusNotFound)
-			return nil
+			return c.Render("web/views/partials/profile/email/resend-404", &fiber.Map{
+				"ID": id,
+			}, "")
 		}
 		if e.Verified {
 			return c.Render("web/views/partials/profile/email/resend-conflict", &fiber.Map{}, "")
