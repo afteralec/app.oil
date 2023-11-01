@@ -1,11 +1,15 @@
-<div id="email-{{ .ID }}" class="w-[60%]" x-data="getEmailData('{{ .Email }}')">
+<div
+  id="email-{{ .ID }}"
+  class="w-full md:w-[60%]"
+  x-data="getEmailData('{{ .Email }}')"
+>
   <div
     id="email-inner-{{ .ID }}"
     class="h-14 w-full items-center"
     x-show="!editMode"
   >
     <div
-      class="flex h-12 items-center rounded-md border bg-card px-3"
+      class="flex h-12 items-center border bg-card px-2 md:rounded-md md:px-3"
       x-show="!deleteMode"
     >
       <p>{{ .Email }}</p>
