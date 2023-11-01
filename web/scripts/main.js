@@ -209,6 +209,7 @@ export function getEmailData(email) {
     loadEmail: email,
     email,
     editMode: false,
+    deleteMode: false,
   };
 }
 
