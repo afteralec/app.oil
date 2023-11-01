@@ -46,8 +46,7 @@ func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 		if e.Verified {
-			c.Status(fiber.StatusBadRequest)
-			return nil
+			return c.Render("web/views/partials/profile/email/resend-conflict", &fiber.Map{}, "")
 		}
 		if e.Pid != pid.(int64) {
 			c.Status(fiber.StatusForbidden)
@@ -60,6 +59,6 @@ func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		return c.Render("web/views/partials/profile/email/resent", &fiber.Map{}, "")
+		return c.Render("web/views/partials/profile/email/resend-success", &fiber.Map{}, "")
 	}
 }
