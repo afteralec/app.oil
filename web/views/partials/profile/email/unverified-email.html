@@ -1,9 +1,9 @@
-<div
-  id="player-email-{{ .ID }}"
-  class="w-[60%]"
-  x-data="getEmailData('{{ .Email }}')"
->
-  <div class="rounded-md border bg-card px-3" x-show="!editMode">
+<div id="email-{{ .ID }}" class="w-[60%]" x-data="getEmailData('{{ .Email }}')">
+  <div
+    id="email-inner-{{ .ID }}"
+    class="rounded-md border bg-card px-3"
+    x-show="!editMode && !deleteMode"
+  >
     <div class="flex h-12 items-center">
       <p>{{ .Email }}</p>
       <div
@@ -12,11 +12,13 @@
         <button
           type="button"
           class="border-none bg-none text-xs text-muted-foreground hover:text-rose-900 hover:underline"
+          @click="deleteMode = true"
         >
           Delete
         </button>
       </div>
     </div>
+
     <div class="pb-3">
       <div
         class="flex items-center rounded-md bg-amber-100 px-4 py-3 text-sm text-amber-800"
@@ -41,6 +43,35 @@
           </button>
         </div>
       </div>
+    </div>
+  </div>
+  <div
+    class="flex h-12 items-center rounded-md bg-rose-100 px-3"
+    x-cloak
+    x-show="deleteMode"
+  >
+    <p class="text-sm leading-none text-rose-800">
+      Are you sure you want to delete
+      <span class="font-semibold">{{ .Email }}</span>?
+    </p>
+    <div
+      class="ml-auto flex items-center justify-end gap-2 text-xs text-muted-foreground"
+    >
+      <button
+        type="button"
+        class="border-none bg-none text-xs text-primary hover:text-primary/90 hover:underline"
+        @click="deleteMode = false"
+      >
+        Go Back
+      </button>
+      <button
+        type="button"
+        class="border-none bg-none text-xs text-muted-foreground text-rose-800 hover:text-rose-900 hover:underline"
+        hx-delete="/player/email/{{ .ID }}"
+        hx-target="#email-{{ .ID }}"
+      >
+        Delete
+      </button>
     </div>
   </div>
 </div>
