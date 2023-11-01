@@ -21,20 +21,17 @@ func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 
 		eid := c.Params("id")
 		if len(eid) == 0 {
-			c.Status(fiber.StatusBadRequest)
-			return nil
+			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
 		}
 
 		id, err := strconv.ParseInt(eid, 10, 64)
 		if err != nil {
-			c.Status(fiber.StatusBadRequest)
-			return nil
+			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
 		}
 		defer tx.Rollback()
 
@@ -55,8 +52,7 @@ func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 
 		err = email.Verify(i.Redis, id, e.Email)
 		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
 		}
 
 		return c.Render("web/views/partials/profile/email/resend-success", &fiber.Map{}, "")
