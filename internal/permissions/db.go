@@ -5,27 +5,26 @@ import (
 	"fmt"
 
 	redis "github.com/redis/go-redis/v9"
-
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/shared"
 )
 
 const TwoHoursInNanoseconds = 2 * 60 * 60 * 1000 * 1000 * 1000
 
-func List(q *queries.Queries, r *redis.Client, pid int64) ([]string, error) {
+func List(i *shared.Interfaces, pid int64) ([]string, error) {
 	key := Key(pid)
-	exists, err := r.Exists(context.Background(), key).Result()
+	exists, err := i.Redis.Exists(context.Background(), key).Result()
 	if err != nil {
 		return nil, err
 	}
 
 	if exists == 1 {
-		perms, err := r.SMembers(context.Background(), key).Result()
+		perms, err := i.Redis.SMembers(context.Background(), key).Result()
 		if err != nil {
 			return nil, err
 		}
 		return perms, nil
 	} else {
-		records, err := q.ListPlayerPermissions(context.Background(), pid)
+		records, err := i.Queries.ListPlayerPermissions(context.Background(), pid)
 		if err != nil {
 			return nil, err
 		}
@@ -36,7 +35,7 @@ func List(q *queries.Queries, r *redis.Client, pid int64) ([]string, error) {
 			perms = append(perms, record.Permission)
 		}
 
-		err = Cache(r, key, perms)
+		err = Cache(i.Redis, key, perms)
 		if err != nil {
 			return nil, err
 		}

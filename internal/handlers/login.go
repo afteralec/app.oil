@@ -41,7 +41,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 		}
 
 		pid := p.ID
-		perms, err := permissions.List(i.Queries, i.Redis, pid)
+		perms, err := permissions.List(i, pid)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			return nil

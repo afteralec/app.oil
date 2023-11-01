@@ -23,7 +23,7 @@ func New(i *shared.Interfaces) fiber.Handler {
 		if pid != nil {
 			c.Locals("pid", pid)
 
-			perms, err := permissions.List(i.Queries, i.Redis, pid.(int64))
+			perms, err := permissions.List(i, pid.(int64))
 			if err != nil {
 				return c.Next()
 			}

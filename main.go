@@ -79,6 +79,7 @@ func main() {
 	player := app.Group("/player")
 	player.Post("/new", handlers.CreatePlayer(&i))
 	player.Post("/reserved", handlers.UsernameReserved(&i))
+
 	email := player.Group("/email")
 	email.Post("/new", handlers.AddEmail(&i))
 

@@ -28,7 +28,7 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
-		perms, err := permissions.List(i.Queries, i.Redis, pid.(int64))
+		perms, err := permissions.List(i, pid.(int64))
 		if err != nil {
 			return c.Redirect("/")
 		}
@@ -53,7 +53,7 @@ func VerifyEmail(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		perms, err := permissions.List(i.Queries, i.Redis, pid.(int64))
+		perms, err := permissions.List(i, pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
