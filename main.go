@@ -82,7 +82,9 @@ func main() {
 
 	email := player.Group("/email")
 	email.Post("/new", handlers.AddEmail(&i))
+	email.Delete("/:id", handlers.DeleteEmail(&i))
 
+	// TODO: Move this behind the email group
 	app.Get("/verify", handlers.Verify(&i))
 	app.Post("/verify", handlers.VerifyEmail(&i))
 

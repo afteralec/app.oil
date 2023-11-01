@@ -1,5 +1,9 @@
-<div class="w-[60%]" x-data="getEmailData('{{ .Email }}')">
-  <div class="h-14 w-full items-center" x-show="!editMode">
+<div id="email-{{ .ID }}" class="w-[60%]" x-data="getEmailData('{{ .Email }}')">
+  <div
+    id="email-inner-{{ .ID }}"
+    class="h-14 w-full items-center"
+    x-show="!editMode"
+  >
     <div
       class="flex h-12 items-center rounded-md border bg-card px-3"
       x-show="!deleteMode"
@@ -53,6 +57,8 @@
         <button
           type="button"
           class="border-none bg-none text-xs text-muted-foreground text-rose-800 hover:text-rose-900 hover:underline"
+          hx-delete="/player/email/{{ .ID }}"
+          hx-target="#email-inner-{{ .ID }}"
         >
           Delete
         </button>

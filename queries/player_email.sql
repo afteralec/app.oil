@@ -12,3 +12,6 @@ SELECT * FROM player_emails WHERE pid = ?;
 
 -- name: CountPlayerEmails :one
 SELECT COUNT(*) FROM player_emails WHERE pid = ?;
+
+-- name: DeleteEmail :execresult
+DELETE FROM player_emails WHERE id = ?;

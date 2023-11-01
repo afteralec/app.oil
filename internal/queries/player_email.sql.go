@@ -34,6 +34,14 @@ func (q *Queries) CreatePlayerEmail(ctx context.Context, arg CreatePlayerEmailPa
 	return q.exec(ctx, q.createPlayerEmailStmt, createPlayerEmail, arg.Pid, arg.Email)
 }
 
+const deleteEmail = `-- name: DeleteEmail :execresult
+DELETE FROM player_emails WHERE id = ?
+`
+
+func (q *Queries) DeleteEmail(ctx context.Context, id int64) (sql.Result, error) {
+	return q.exec(ctx, q.deleteEmailStmt, deleteEmail, id)
+}
+
 const getEmail = `-- name: GetEmail :one
 SELECT email, verified, pid, id FROM player_emails WHERE id = ?
 `
