@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"log"
 	"slices"
 	"strconv"
 
@@ -36,9 +35,9 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 			return c.Redirect("/")
 		}
 
+		// TODO: Get Username and Email here for this page
 		b := c.Locals("bind").(fiber.Map)
 		b["VerifyToken"] = c.Query("t")
-		log.Print(b["VerifyToken"])
 
 		return c.Render("web/views/verify", b, "web/views/layouts/standalone")
 	}
