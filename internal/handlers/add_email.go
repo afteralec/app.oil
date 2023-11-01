@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"net/mail"
+	"time"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -69,6 +70,8 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
+
+		time.Sleep(3 * time.Second)
 
 		c.Status(fiber.StatusCreated)
 		return c.Render("web/views/partials/profile/email/new-email", &fiber.Map{
