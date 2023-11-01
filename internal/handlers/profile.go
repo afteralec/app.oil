@@ -14,7 +14,7 @@ func Profile(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 
 		if pid == nil {
-			return c.Redirect("/")
+			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
 		b := c.Locals("bind").(fiber.Map)

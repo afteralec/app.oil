@@ -1,0 +1,13 @@
+<div
+  id="email-verified-status-loading-{{ .ID }}"
+  class="htmx-trade-indicator-in flex items-center rounded-md bg-gray-100 px-4 py-3 text-sm text-primary"
+>
+  <div class="pr-2 text-primary">
+    <img class="h-8 w-8" src="/loaders/puff.svg" alt="loading" />
+  </div>
+  <div>
+    Please wait while we resend the verification link to
+    <br />
+    <span class="font-semibold">{{ .Email }}</span>.
+  </div>
+</div>

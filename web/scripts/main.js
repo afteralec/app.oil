@@ -168,29 +168,6 @@ export async function submitLoginData(errors, u, pw) {
   }
 }
 
-export function getLogoutData() {
-  return {
-    logout,
-  };
-}
-
-export async function logout() {
-  try {
-    const res = await fetch("/logout", {
-      method: "POST",
-    });
-
-    if (res.status !== 200) {
-      // TODO: Something went wrong with destroying the session
-      return;
-    }
-
-    window.location.reload();
-  } catch {
-    // TODO: Handle this error case here - backend is unreachable
-  }
-}
-
 export function resetErrors(errors) {
   for (const k in errors) {
     errors[k] = false;
@@ -246,7 +223,6 @@ export function getProfileAvatarSrc(
 
 window.getRegisterData = getRegisterData;
 window.getLoginData = getLoginData;
-window.getLogoutData = getLogoutData;
 window.getProfileEmailData = getProfileEmailData;
 window.getEmailData = getEmailData;
 window.getGravatarEmailData = getGravatarEmailData;

@@ -15,7 +15,7 @@ func Logout(i *shared.Interfaces) fiber.Handler {
 
 		sess.Destroy()
 
-		c.Status(200)
+		c.Append("HX-Redirect", "/")
 		return nil
 	}
 }

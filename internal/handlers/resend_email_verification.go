@@ -10,12 +10,11 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-// TODO: Do error partials for the unhappy paths here
 func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {
-			c.Status(fiber.StatusUnauthorized)
+			c.Append("HX-Refresh", "true")
 			return nil
 		}
 
@@ -47,8 +46,7 @@ func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/resend-conflict", &fiber.Map{}, "")
 		}
 		if e.Pid != pid.(int64) {
-			c.Status(fiber.StatusForbidden)
-			return nil
+			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
 		}
 
 		err = email.Verify(i.Redis, id, e.Email)
