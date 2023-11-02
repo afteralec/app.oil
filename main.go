@@ -93,7 +93,7 @@ func main() {
 	app.Static("/", "./web/static")
 	app.Static("/loaders", "./web/svg/loaders")
 
-	app.Get("/", handlers.Home())
+	app.Get(handlers.HomeRoute, handlers.Home())
 
 	app.Post("/login", handlers.Login(&i))
 	app.Post("/logout", handlers.Logout(&i))
