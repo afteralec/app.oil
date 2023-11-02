@@ -35,9 +35,9 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		}
 
 		if ec >= MaxEmailCount {
-			return c.Render("web/views/partials/profile/email/err-too-many-emails", &fiber.Map{
-				"CSRF": c.Locals("csrf"),
-			}, "web/views/partials/csrf")
+			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
+			return c.Render("web/views/partials/profile/email/err-too-many-emails", &fiber.Map{}, "")
 		}
 
 		r := new(request)
@@ -50,9 +50,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")
-			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{
-				"CSRF": c.Locals("csrf"),
-			}, "web/views/partials/csrf")
+			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
 		}
 
 		result, err := i.Queries.CreatePlayerEmail(
@@ -64,10 +62,9 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 				if me.Number == mysqlerr.ER_DUP_ENTRY {
 					c.Append("HX-Retarget", "#add-email-error")
 					c.Append("HX-Reswap", "innerHTML")
-					return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{
-						"CSRF":  c.Locals("csrf"),
+					return c.Render("web/views/partials/profile/email/err-conflict", &fiber.Map{
 						"Email": e.Address,
-					}, "web/views/partials/csrf")
+					}, "")
 				}
 			}
 			c.Status(fiber.StatusInternalServerError)
@@ -88,10 +85,9 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 
 		c.Status(fiber.StatusCreated)
 		return c.Render("web/views/partials/profile/email/new-email", &fiber.Map{
-			"CSRF":    c.Locals("csrf"),
 			"ID":      id,
 			"Email":   e.Address,
 			"Created": true,
-		}, "web/views/layouts/csrf")
+		}, "")
 	}
 }

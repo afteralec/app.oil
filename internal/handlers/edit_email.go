@@ -93,10 +93,9 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 		}
 
 		return c.Render("web/views/partials/profile/email/unverified-email", &fiber.Map{
-			"CSRF":     c.Locals("CSRF"),
 			"ID":       id,
 			"Email":    r.Email,
 			"Verified": false,
-		}, "web/views/layouts/csrf")
+		}, "")
 	}
 }

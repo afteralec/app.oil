@@ -20,23 +20,17 @@ func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 
 		eid := c.Params("id")
 		if len(eid) == 0 {
-			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{
-				"CSRF": c.Locals("csrf"),
-			}, "web/views/layouts/csrf")
+			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
 		}
 
 		id, err := strconv.ParseInt(eid, 10, 64)
 		if err != nil {
-			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{
-				"CSRF": c.Locals("csrf"),
-			}, "web/views/layouts/csrf")
+			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
-			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{
-				"CSRF": c.Locals("csrf"),
-			}, "web/views/layouts/csrf")
+			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
 		}
 		defer tx.Rollback()
 
@@ -45,30 +39,21 @@ func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 		e, err := qtx.GetEmail(context.Background(), id)
 		if err != nil {
 			return c.Render("web/views/partials/profile/email/resend-404", &fiber.Map{
-				"CSRF": c.Locals("csrf"),
-				"ID":   id,
-			}, "web/views/layouts/csrf")
+				"ID": id,
+			}, "")
 		}
 		if e.Verified {
-			return c.Render("web/views/partials/profile/email/resend-conflict", &fiber.Map{
-				"CSRF": c.Locals("csrf"),
-			}, "web/views/layouts/csrf")
+			return c.Render("web/views/partials/profile/email/resend-conflict", &fiber.Map{}, "")
 		}
 		if e.Pid != pid.(int64) {
-			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{
-				"CSRF": c.Locals("csrf"),
-			}, "web/views/layouts/csrf")
+			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
 		}
 
 		err = email.Verify(i.Redis, id, e.Email)
 		if err != nil {
-			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{
-				"CSRF": c.Locals("csrf"),
-			}, "web/views/layouts/csrf")
+			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
 		}
 
-		return c.Render("web/views/partials/profile/email/resend-success", &fiber.Map{
-			"CSRF": c.Locals("csrf"),
-		}, "web/views/layouts/csrf")
+		return c.Render("web/views/partials/profile/email/resend-success", &fiber.Map{}, "")
 	}
 }
