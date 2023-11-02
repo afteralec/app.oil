@@ -37,6 +37,7 @@ export function getRegisterData() {
       specialChar: false,
     },
     errors: {
+      reserved: false,
       badRequest: false,
       conflict: false,
       internal: false,
