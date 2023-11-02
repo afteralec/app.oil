@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"bytes"
+	"fmt"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -27,14 +29,10 @@ func TestLogin(t *testing.T) {
 
 	app.Post(LoginRoute, Login(&i))
 
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("username", "testify")
-	writer.WriteField("password", "T3sted_tested")
-	writer.Close()
+	body, contentType := LoginTestFormData()
 
 	req := httptest.NewRequest(http.MethodPost, "http://petrichormud.com/login", body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Header.Set("Content-Type", contentType)
 	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -48,4 +46,52 @@ func SetupTestLogin(i *shared.Interfaces, t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestLoginSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	SetupTestRegister(&i, t)
+
+	views := html.New("../..", ".html")
+	config := configs.Fiber(views)
+	app := fiber.New(config)
+
+	app.Post(LoginRoute, Login(&i))
+	app.Post(RegisterRoute, Register(&i))
+
+	body, contentType := LoginTestFormData()
+
+	// TODO: Extract this test url to a constant?
+	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", contentType)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusCreated, res.StatusCode)
+
+	body, contentType = LoginTestFormData()
+
+	url = fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
+	req = httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", contentType)
+	res, err = app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func LoginTestFormData() (io.Reader, string) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("username", "testify")
+	writer.WriteField("password", "T3sted_tested")
+	writer.Close()
+	return body, writer.FormDataContentType()
 }
