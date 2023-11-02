@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"log"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -40,6 +41,8 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 
 		e, err := qtx.GetEmail(context.Background(), id)
 		if err != nil {
+			// TODO: Distinguish between an actual not found error and other errors here
+			log.Print(err)
 			c.Status(fiber.StatusNotFound)
 			return nil
 		}
@@ -62,9 +65,8 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 		}
 
 		return c.Render("web/views/partials/profile/email/deleted-email", &fiber.Map{
-			"CSRF":  c.Locals("csrf"),
-			"ID":    e.ID,
-			"Email": e.Address,
+			"ID":      e.ID,
+			"Address": e.Address,
 		}, "")
 	}
 }

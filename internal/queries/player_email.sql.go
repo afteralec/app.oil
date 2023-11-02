@@ -60,6 +60,24 @@ func (q *Queries) GetEmail(ctx context.Context, id int64) (Email, error) {
 	return i, err
 }
 
+const getVerifiedEmailByAddress = `-- name: GetVerifiedEmailByAddress :one
+SELECT address, created_at, updated_at, verified, pid, id FROM emails WHERE address = ? AND verified = true
+`
+
+func (q *Queries) GetVerifiedEmailByAddress(ctx context.Context, address string) (Email, error) {
+	row := q.queryRow(ctx, q.getVerifiedEmailByAddressStmt, getVerifiedEmailByAddress, address)
+	var i Email
+	err := row.Scan(
+		&i.Address,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Verified,
+		&i.Pid,
+		&i.ID,
+	)
+	return i, err
+}
+
 const listEmails = `-- name: ListEmails :many
 SELECT address, created_at, updated_at, verified, pid, id FROM emails WHERE pid = ?
 `

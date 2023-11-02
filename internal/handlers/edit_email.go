@@ -96,7 +96,7 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 
 		return c.Render("web/views/partials/profile/email/unverified-email", &fiber.Map{
 			"ID":       id,
-			"Email":    r.Email,
+			"Address":  r.Email,
 			"Verified": false,
 		}, "")
 	}

@@ -1,7 +1,7 @@
 <div
   id="email-{{ .ID }}"
   class="w-full md:w-[60%]"
-  x-data="getEmailData('{{ .Email }}')"
+  x-data="getEmailData('{{ .Address }}')"
 >
   <div
     id="email-inner-{{ .ID }}"
@@ -9,7 +9,7 @@
     x-show="!editMode && !deleteMode"
   >
     <div class="flex h-12 items-center">
-      <p>{{ .Email }}</p>
+      <p>{{ .Address }}</p>
       <div
         class="ml-auto flex items-center justify-end gap-2 text-xs text-muted-foreground"
       >
@@ -38,7 +38,7 @@
   >
     <p class="text-sm leading-none text-rose-800">
       Are you sure you want to delete
-      <span class="font-semibold">{{ .Email }}</span>?
+      <span class="font-semibold">{{ .Address }}</span>?
     </p>
     <div
       class="ml-auto flex items-center justify-end gap-2 text-xs text-muted-foreground"

@@ -54,6 +54,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getPlayerUsernameStmt, err = db.PrepareContext(ctx, getPlayerUsername); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayerUsername: %w", err)
 	}
+	if q.getVerifiedEmailByAddressStmt, err = db.PrepareContext(ctx, getVerifiedEmailByAddress); err != nil {
+		return nil, fmt.Errorf("error preparing query GetVerifiedEmailByAddress: %w", err)
+	}
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
 	}
@@ -118,6 +121,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getPlayerUsernameStmt: %w", cerr)
 		}
 	}
+	if q.getVerifiedEmailByAddressStmt != nil {
+		if cerr := q.getVerifiedEmailByAddressStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getVerifiedEmailByAddressStmt: %w", cerr)
+		}
+	}
 	if q.listEmailsStmt != nil {
 		if cerr := q.listEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listEmailsStmt: %w", cerr)
@@ -170,39 +178,41 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                          DBTX
-	tx                          *sql.Tx
-	countEmailsStmt             *sql.Stmt
-	createEmailStmt             *sql.Stmt
-	createPlayerStmt            *sql.Stmt
-	createPlayerPermissionsStmt *sql.Stmt
-	deleteEmailStmt             *sql.Stmt
-	getEmailStmt                *sql.Stmt
-	getPlayerStmt               *sql.Stmt
-	getPlayerByUsernameStmt     *sql.Stmt
-	getPlayerPWHashStmt         *sql.Stmt
-	getPlayerUsernameStmt       *sql.Stmt
-	listEmailsStmt              *sql.Stmt
-	listPlayerPermissionsStmt   *sql.Stmt
-	markEmailVerifiedStmt       *sql.Stmt
+	db                            DBTX
+	tx                            *sql.Tx
+	countEmailsStmt               *sql.Stmt
+	createEmailStmt               *sql.Stmt
+	createPlayerStmt              *sql.Stmt
+	createPlayerPermissionsStmt   *sql.Stmt
+	deleteEmailStmt               *sql.Stmt
+	getEmailStmt                  *sql.Stmt
+	getPlayerStmt                 *sql.Stmt
+	getPlayerByUsernameStmt       *sql.Stmt
+	getPlayerPWHashStmt           *sql.Stmt
+	getPlayerUsernameStmt         *sql.Stmt
+	getVerifiedEmailByAddressStmt *sql.Stmt
+	listEmailsStmt                *sql.Stmt
+	listPlayerPermissionsStmt     *sql.Stmt
+	markEmailVerifiedStmt         *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                          tx,
-		tx:                          tx,
-		countEmailsStmt:             q.countEmailsStmt,
-		createEmailStmt:             q.createEmailStmt,
-		createPlayerStmt:            q.createPlayerStmt,
-		createPlayerPermissionsStmt: q.createPlayerPermissionsStmt,
-		deleteEmailStmt:             q.deleteEmailStmt,
-		getEmailStmt:                q.getEmailStmt,
-		getPlayerStmt:               q.getPlayerStmt,
-		getPlayerByUsernameStmt:     q.getPlayerByUsernameStmt,
-		getPlayerPWHashStmt:         q.getPlayerPWHashStmt,
-		getPlayerUsernameStmt:       q.getPlayerUsernameStmt,
-		listEmailsStmt:              q.listEmailsStmt,
-		listPlayerPermissionsStmt:   q.listPlayerPermissionsStmt,
-		markEmailVerifiedStmt:       q.markEmailVerifiedStmt,
+		db:                            tx,
+		tx:                            tx,
+		countEmailsStmt:               q.countEmailsStmt,
+		createEmailStmt:               q.createEmailStmt,
+		createPlayerStmt:              q.createPlayerStmt,
+		createPlayerPermissionsStmt:   q.createPlayerPermissionsStmt,
+		deleteEmailStmt:               q.deleteEmailStmt,
+		getEmailStmt:                  q.getEmailStmt,
+		getPlayerStmt:                 q.getPlayerStmt,
+		getPlayerByUsernameStmt:       q.getPlayerByUsernameStmt,
+		getPlayerPWHashStmt:           q.getPlayerPWHashStmt,
+		getPlayerUsernameStmt:         q.getPlayerUsernameStmt,
+		getVerifiedEmailByAddressStmt: q.getVerifiedEmailByAddressStmt,
+		listEmailsStmt:                q.listEmailsStmt,
+		listPlayerPermissionsStmt:     q.listPlayerPermissionsStmt,
+		markEmailVerifiedStmt:         q.markEmailVerifiedStmt,
 	}
 }

@@ -2,7 +2,7 @@
   id="gravatar-email-option-{{ .ID }}"
   class="no-select block cursor-default px-4 py-2 text-sm hover:bg-muted"
   :class="
-    if (selectedEmail === '{{ .Email }}') {
+    if (selectedEmail === '{{ .Address }}') {
       return 'bg-muted';
     } else {
       return 'cursor-pointer';
@@ -10,11 +10,11 @@
   "
   @click="
     open = false;
-    if (selectedEmail === '{{ .Email }}') return;
-    selectedEmail = '{{ .Email }}';
+    if (selectedEmail === '{{ .Address }}') return;
+    selectedEmail = '{{ .Address }}';
   "
   role="menuitem"
   tabindex="-1"
 >
-  {{ .Email }}
+  {{ .Address }}
 </div>

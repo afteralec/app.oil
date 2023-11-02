@@ -57,7 +57,7 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 		}
 		b := c.Locals("bind").(fiber.Map)
 		b["VerifyToken"] = c.Query("t")
-		b["Email"] = e.Address
+		b["Address"] = e.Address
 		b["Username"] = un
 
 		return c.Render("web/views/verify", b, "web/views/layouts/standalone")

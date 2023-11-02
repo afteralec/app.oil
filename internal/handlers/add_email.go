@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
 	"net/mail"
 
 	"github.com/VividCortex/mysqlerr"
@@ -53,6 +54,21 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
 		}
 
+		_, err = i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
+		if err != nil {
+			if err != sql.ErrNoRows {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+		if err == nil {
+			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
+			return c.Render("web/views/partials/profile/email/err-conflict", &fiber.Map{
+				"Address": e.Address,
+			}, "")
+		}
+
 		result, err := i.Queries.CreateEmail(
 			context.Background(),
 			queries.CreateEmailParams{Pid: pid.(int64), Address: e.Address},
@@ -63,7 +79,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 					c.Append("HX-Retarget", "#add-email-error")
 					c.Append("HX-Reswap", "innerHTML")
 					return c.Render("web/views/partials/profile/email/err-conflict", &fiber.Map{
-						"Email": e.Address,
+						"Address": e.Address,
 					}, "")
 				}
 			}
@@ -86,7 +102,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		c.Status(fiber.StatusCreated)
 		return c.Render("web/views/partials/profile/email/new-email", &fiber.Map{
 			"ID":      id,
-			"Email":   e.Address,
+			"Address": e.Address,
 			"Created": true,
 		}, "")
 	}
