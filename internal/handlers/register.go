@@ -54,11 +54,13 @@ func Register(i *shared.Interfaces) fiber.Handler {
 		defer tx.Rollback()
 
 		qtx := i.Queries.WithTx(tx)
-		ctx := context.Background()
-		result, err := qtx.CreatePlayer(ctx, queries.CreatePlayerParams{
-			Username: u,
-			PwHash:   pw_hash,
-		})
+		result, err := qtx.CreatePlayer(
+			context.Background(),
+			queries.CreatePlayerParams{
+				Username: u,
+				PwHash:   pw_hash,
+			},
+		)
 		if err != nil {
 			// TODO: Distinguish between "already exists" and a connection error
 			c.Status(fiber.StatusConflict)

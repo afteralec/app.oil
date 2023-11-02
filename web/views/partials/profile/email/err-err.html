@@ -12,22 +12,14 @@
       </div>
     </div>
     <div>
-      <span class="font-semibold">{{ .Address }}</span> is already in use.
-      Please use a different address.
+      Something's gone terribly wrong.
       <br />
       <button
         type="button"
         class="cursor-pointer border-none bg-none font-semibold underline hover:text-amber-900"
-        @click="
-          addEmailMode = true;
-          $nextTick(() => {
-            setTimeout(() => {
-              document.getElementById('add-email').focus();
-            }, 50);
-          });
-        "
+        @click="window.location.reload()"
       >
-        Click here to add an email address.
+        Click here to refresh the page.
       </button>
     </div>
   </div>

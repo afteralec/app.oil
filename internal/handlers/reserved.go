@@ -20,8 +20,7 @@ func Reserved(i *shared.Interfaces) fiber.Handler {
 			return err
 		}
 
-		ctx := context.Background()
-		u, err := i.Queries.GetPlayerUsername(ctx, r.Username)
+		u, err := i.Queries.GetPlayerUsername(context.Background(), r.Username)
 		if err != nil {
 			// TODO: Distinguish between "not found" and a connection error
 			c.Append("HX-Trigger-After-Swap", "username-reserved")

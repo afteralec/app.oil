@@ -27,8 +27,11 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 
 		if pid == nil {
+			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
-			return nil
+			return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
 		}
 
 		ec, err := i.Queries.CountEmails(context.Background(), pid.(int64))
@@ -63,8 +66,11 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		_, err = i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
 		if err != nil {
 			if err != sql.ErrNoRows {
+				c.Append("HX-Retarget", "#add-email-error")
+				c.Append("HX-Reswap", "innerHTML")
+				c.Append(shared.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusInternalServerError)
-				return nil
+				return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
 			}
 		}
 		if err == nil {
@@ -93,20 +99,29 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 					}, "")
 				}
 			}
+			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
 		}
 
 		id, err := result.LastInsertId()
 		if err != nil {
+			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
 		}
 
 		err = email.Verify(i.Redis, id, e.Address)
 		if err != nil {
+			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
 		}
 
 		c.Status(fiber.StatusCreated)
