@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
 	"slices"
 	"strconv"
 
@@ -41,6 +42,18 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			// TODO: Distinguish between "not found" and a connection error
 			return c.Redirect("/")
+		}
+
+		_, err = i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
+		if err != nil {
+			if err != sql.ErrNoRows {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+		if err == nil {
+			c.Status(fiber.StatusConflict)
+			return nil
 		}
 
 		perms, err := permissions.List(i, pid.(int64))
@@ -98,6 +111,26 @@ func VerifyEmail(i *shared.Interfaces) fiber.Handler {
 		id, err := strconv.ParseInt(eid, 10, 64)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		// TODO: This same block of code is reused across a couple of email operations; peel it out?
+		e, err := i.Queries.GetEmail(context.Background(), id)
+		if err != nil {
+			// TODO: Distinguish between "not found" and other errors
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		_, err = i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
+		if err != nil {
+			if err != sql.ErrNoRows {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+		if err == nil {
+			c.Status(fiber.StatusConflict)
 			return nil
 		}
 

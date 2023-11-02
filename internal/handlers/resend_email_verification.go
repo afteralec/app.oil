@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -42,6 +43,19 @@ func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 				"ID": id,
 			}, "")
 		}
+
+		_, err = qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
+		if err != nil {
+			if err != sql.ErrNoRows {
+				return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
+			}
+		}
+		if err == nil {
+			// TODO: This is a new error state - it means another user has claimed and verified the email before you
+			c.Status(fiber.StatusConflict)
+			return nil
+		}
+
 		if e.Verified {
 			return c.Render("web/views/partials/profile/email/resend-conflict", &fiber.Map{}, "")
 		}
