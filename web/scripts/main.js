@@ -233,8 +233,31 @@ export function getProfileAvatarSrc(
   }
 }
 
+// TODO: Configure this to be injected from Go template?
+const HEADER_CSRF_TOKEN = "X-CSRF-Token";
+const HEADER_HX_ACCEPTABLE = "X-HX-Acceptable";
+const HX_ACCEPTABLE_STATUSES = {
+  400: true,
+  401: true,
+  403: true,
+  404: true,
+  409: true,
+  500: true,
+};
+
 document.body.addEventListener("htmx:configRequest", (event) => {
-  event.detail.headers["X-CSRF-Token"] = getCSRFToken();
+  event.detail.headers[HEADER_CSRF_TOKEN] = getCSRFToken();
+});
+
+document.body.addEventListener("htmx:beforeOnLoad", (event) => {
+  if (event.detail.xhr.getResponseHeader(HEADER_HX_ACCEPTABLE) !== "true") {
+    return;
+  }
+
+  if (HX_ACCEPTABLE_STATUSES[event.detail.xhr.status]) {
+    event.detail.shouldSwap = true;
+    event.detail.isError = false;
+  }
 });
 
 window.getCSRFToken = getCSRFToken;

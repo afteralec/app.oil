@@ -40,6 +40,8 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		if ec >= MaxEmailCount {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusConflict)
 			return c.Render("web/views/partials/profile/email/err-too-many-emails", &fiber.Map{}, "")
 		}
 
@@ -53,6 +55,8 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusBadRequest)
 			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
 		}
 
@@ -66,6 +70,8 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		if err == nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusConflict)
 			return c.Render("web/views/partials/profile/email/err-conflict", &fiber.Map{
 				"Address": e.Address,
 			}, "")
@@ -80,6 +86,8 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 				if me.Number == mysqlerr.ER_DUP_ENTRY {
 					c.Append("HX-Retarget", "#add-email-error")
 					c.Append("HX-Reswap", "innerHTML")
+					c.Append(shared.HeaderHXAcceptable, "true")
+					c.Status(fiber.StatusConflict)
 					return c.Render("web/views/partials/profile/email/err-conflict", &fiber.Map{
 						"Address": e.Address,
 					}, "")

@@ -32,6 +32,8 @@ func Reserved(i *shared.Interfaces) fiber.Handler {
 
 		if r.Username == u {
 			c.Append("HX-Trigger-After-Swap", "username-reserved")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusConflict)
 			return c.Render("web/views/htmx/player-reserved", fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, "web/views/layouts/csrf")
