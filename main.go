@@ -45,7 +45,7 @@ func main() {
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.ReservedRoute, handlers.Reserved(&i))
 
-	app.Post("/player/email/new", handlers.AddEmail(&i))
+	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
 	app.Delete("/player/email/:id", handlers.DeleteEmail(&i))
 	app.Put("player/email/:id", handlers.EditEmail(&i))
 	app.Post("/player/email/:id/resend", handlers.ResendEmailVerification(&i))

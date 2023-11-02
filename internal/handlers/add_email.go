@@ -14,6 +14,8 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+const AddEmailRoute = "/player/email/new"
+
 const MaxEmailCount = 3
 
 func AddEmail(i *shared.Interfaces) fiber.Handler {
@@ -43,7 +45,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 
 		r := new(request)
 		if err := c.BodyParser(r); err != nil {
-			c.Status(fiber.StatusUnauthorized)
+			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
 
