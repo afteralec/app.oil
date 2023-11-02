@@ -62,6 +62,7 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 		}
 
 		return c.Render("web/views/partials/profile/email/deleted-email", &fiber.Map{
+			"CSRF":  c.Locals("csrf"),
 			"ID":    e.ID,
 			"Email": e.Email,
 		}, "")

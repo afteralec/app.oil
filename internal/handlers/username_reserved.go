@@ -22,13 +22,19 @@ func UsernameReserved(i *shared.Interfaces) fiber.Handler {
 		u, err := i.Queries.GetPlayerUsername(ctx, r.Username)
 		// TODO: Figure out getting the error code from these
 		if err != nil {
-			return c.Render("web/views/htmx/player-free", fiber.Map{}, "")
+			return c.Render("web/views/htmx/player-free", fiber.Map{
+				"CSRF": c.Locals("csrf"),
+			}, "web/views/layouts/csrf")
 		}
 
 		if r.Username == u {
-			return c.Render("web/views/htmx/player-reserved", fiber.Map{}, "")
+			return c.Render("web/views/htmx/player-reserved", fiber.Map{
+				"CSRF": c.Locals("csrf"),
+			}, "web/views/layouts/csrf")
 		} else {
-			return c.Render("web/views/htmx/player-free", fiber.Map{}, "")
+			return c.Render("web/views/htmx/player-free", fiber.Map{
+				"CSRF": c.Locals("csrf"),
+			}, "web/views/layouts/csrf")
 		}
 	}
 }

@@ -64,6 +64,9 @@ export async function submitRegisterData(errors, u, pw, confirmpw) {
 
   try {
     const response = await fetch("/player/new", {
+      headers: {
+        "X-CSRF-Token": getCSRFToken(),
+      },
       method: "POST",
       body,
     });

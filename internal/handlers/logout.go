@@ -2,6 +2,7 @@ package handlers
 
 import (
 	fiber "github.com/gofiber/fiber/v2"
+
 	"petrichormud.com/app/internal/shared"
 )
 

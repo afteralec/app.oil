@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"net/mail"
-	"time"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -35,7 +34,9 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 
 		if ec >= MaxEmailCount {
 			c.Append("HX-Retarget", "#add-email-error")
-			return c.Render("web/views/partials/profile/email/err-too-many-emails", &fiber.Map{}, "")
+			return c.Render("web/views/partials/profile/email/err-too-many-emails", &fiber.Map{
+				"CSRF": c.Locals("csrf"),
+			}, "")
 		}
 
 		r := new(request)
@@ -47,7 +48,9 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		e, err := mail.ParseAddress(r.Email)
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
-			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
+			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{
+				"CSRF": c.Locals("csrf"),
+			}, "")
 		}
 
 		result, err := i.Queries.CreatePlayerEmail(
@@ -71,10 +74,9 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		time.Sleep(3 * time.Second)
-
 		c.Status(fiber.StatusCreated)
 		return c.Render("web/views/partials/profile/email/new-email", &fiber.Map{
+			"CSRF":    c.Locals("csrf"),
 			"ID":      id,
 			"Email":   e.Address,
 			"Created": true,

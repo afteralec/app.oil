@@ -112,6 +112,8 @@ func VerifyEmail(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		return c.Render("web/views/partials/verify/success", &fiber.Map{}, "")
+		return c.Render("web/views/partials/verify/success", &fiber.Map{
+			"CSRF": c.Locals("csrf"),
+		}, "web/views/layouts/csrf")
 	}
 }
