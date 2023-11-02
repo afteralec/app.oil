@@ -12,6 +12,8 @@ import (
 	"petrichormud.com/app/internal/username"
 )
 
+const LoginRoute = "/login"
+
 func Login(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Username string `form:"username"`
