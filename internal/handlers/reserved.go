@@ -7,7 +7,9 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func UsernameReserved(i *shared.Interfaces) fiber.Handler {
+const ReservedRoute = "/player/reserved"
+
+func Reserved(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Username string `form:"username"`
 	}

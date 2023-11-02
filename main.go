@@ -43,7 +43,7 @@ func main() {
 	app.Get(handlers.LogoutRoute, handlers.LogoutPage())
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post("/player/reserved", handlers.UsernameReserved(&i))
+	app.Post(handlers.ReservedRoute, handlers.Reserved(&i))
 
 	app.Post("/player/email/new", handlers.AddEmail(&i))
 	app.Delete("/player/email/:id", handlers.DeleteEmail(&i))
