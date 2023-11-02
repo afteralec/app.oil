@@ -38,7 +38,7 @@ func main() {
 
 	app.Get(handlers.HomeRoute, handlers.Home())
 
-	app.Post("/login", handlers.Login(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
 	app.Post("/logout", handlers.Logout(&i))
 	app.Get("/logout", handlers.LogoutPage())
 

@@ -2,17 +2,13 @@ package handlers
 
 import (
 	"bytes"
-	"database/sql"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
 	html "github.com/gofiber/template/html/v2"
-	redis "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
@@ -20,25 +16,10 @@ import (
 )
 
 func TestLogin(t *testing.T) {
-	db, err := sql.Open("mysql", os.Getenv("DATABASE_URL"))
-	if err != nil {
-		t.Fatal(err)
-	}
+	i := shared.SetupInterfaces()
+	defer i.Close()
 
-	_, err = db.Exec("SET GLOBAL local_infile=true;")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer db.Close()
-
-	opts := configs.Redis()
-	r := redis.NewClient(&opts)
-	defer r.Close()
-
-	// TODO: Update this config to be more secure. Will depend on environment.
-	s := session.New()
-
-	i := shared.InterfacesBuilder().Database(db).Redis(r).Sessions(s).Build()
+	SetupTestLogin(&i, t)
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
@@ -60,4 +41,11 @@ func TestLogin(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func SetupTestLogin(i *shared.Interfaces, t *testing.T) {
+	_, err := i.Database.Exec("DELETE FROM players WHERE username = 'testify';")
+	if err != nil {
+		t.Fatal(err)
+	}
 }
