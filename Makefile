@@ -2,10 +2,10 @@ run:
 	go run cmd/main/main.go
 
 test:
-	SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test REDIS_ADDR=127.0.0.1:6379 RUN_INTEGRATION_TESTS=true go test -v ./tests/...
+	BASE_URL=http://localhost:8008 SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=true go test -v ./...
 
 dev:
-	BASE_URL=http://localhost:8008 DATABASE_URL=root:pass@/test?parseTime=true REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=true go run main.go
+	BASE_URL=http://localhost:8008 SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=true go run main.go
 
 alpine:
 	curl -o \

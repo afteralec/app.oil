@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"embed"
 	"log"
@@ -49,6 +50,11 @@ func main() {
 		DB:       0,
 		Protocol: 3,
 	})
+	defer r.Close()
+
+	if err := r.Ping(context.Background()); err != nil {
+		log.Fatal(err)
+	}
 
 	// TODO: Update this config to be more secure. Will depend on environment.
 	s := session.New()
