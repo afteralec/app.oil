@@ -57,7 +57,7 @@ func TestReserved(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, fiber.StatusOK, res.StatusCode)
+	require.Equal(t, fiber.StatusConflict, res.StatusCode)
 }
 
 func SetupTestReserved(i *shared.Interfaces, t *testing.T) {

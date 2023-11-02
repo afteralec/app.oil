@@ -18,6 +18,8 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+const TestAddress = "testify@test.com"
+
 func TestAddEmailWithoutLogin(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
@@ -34,7 +36,7 @@ func TestAddEmailWithoutLogin(t *testing.T) {
 	app.Post(RegisterRoute, Register(&i))
 	app.Post(AddEmailRoute, AddEmail(&i))
 
-	body, contentType := AddEmailTestFormData()
+	body, contentType := AddEmailTestFormData(TestAddress)
 
 	url := fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
@@ -87,7 +89,7 @@ func TestAddEmailSuccess(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	body, contentType = AddEmailTestFormData()
+	body, contentType = AddEmailTestFormData(TestAddress)
 
 	url = fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
 	req = httptest.NewRequest(http.MethodPost, url, body)
@@ -101,6 +103,61 @@ func TestAddEmailSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusCreated, res.StatusCode)
 }
 
+func TestAddEmailInvalidAddress(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	SetupTestAddEmail(t, &i)
+
+	views := html.New("../..", ".html")
+	config := configs.Fiber(views)
+	app := fiber.New(config)
+
+	app.Use(sessiondata.New(&i))
+
+	app.Post(LoginRoute, Login(&i))
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(AddEmailRoute, AddEmail(&i))
+
+	body, contentType := RegisterTestFormData()
+
+	// TODO: Extract this test url to a constant?
+	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", contentType)
+	_, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	body, contentType = LoginTestFormData()
+
+	url = fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
+	req = httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", contentType)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cookies := res.Cookies()
+	sessionCookie := cookies[0]
+
+	// TODO: Add more test cases for possible inputs here
+	body, contentType = AddEmailTestFormData("invalid")
+
+	url = fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
+	req = httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", contentType)
+	req.AddCookie(sessionCookie)
+	res, err = app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
 func SetupTestAddEmail(t *testing.T, i *shared.Interfaces) {
 	_, err := i.Database.Exec("DELETE FROM players WHERE username = 'testify';")
 	if err != nil {
@@ -112,10 +169,10 @@ func SetupTestAddEmail(t *testing.T, i *shared.Interfaces) {
 	}
 }
 
-func AddEmailTestFormData() (io.Reader, string) {
+func AddEmailTestFormData(address string) (io.Reader, string) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("email", "testify@test.com")
+	writer.WriteField("email", address)
 	writer.Close()
 	return body, writer.FormDataContentType()
 }
