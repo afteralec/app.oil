@@ -28,7 +28,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		ec, err := i.Queries.CountPlayerEmails(context.Background(), pid.(int64))
+		ec, err := i.Queries.CountEmails(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -53,9 +53,9 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
 		}
 
-		result, err := i.Queries.CreatePlayerEmail(
+		result, err := i.Queries.CreateEmail(
 			context.Background(),
-			queries.CreatePlayerEmailParams{Pid: pid.(int64), Email: e.Address},
+			queries.CreateEmailParams{Pid: pid.(int64), Address: e.Address},
 		)
 		if err != nil {
 			if me, ok := err.(*mysql.MySQLError); ok {

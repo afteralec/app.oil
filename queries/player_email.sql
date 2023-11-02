@@ -1,17 +1,17 @@
--- name: CreatePlayerEmail :execresult
-INSERT INTO player_emails (email, pid, verified) VALUES (?, ?, false);
+-- name: CreateEmail :execresult
+INSERT INTO emails (address, pid, verified) VALUES (?, ?, false);
 
 -- name: MarkEmailVerified :execresult
-UPDATE player_emails SET verified = true WHERE id = ?;
+UPDATE emails SET verified = true WHERE id = ?;
 
 -- name: GetEmail :one
-SELECT * FROM player_emails WHERE id = ?;
+SELECT * FROM emails WHERE id = ?;
 
--- name: ListPlayerEmails :many
-SELECT * FROM player_emails WHERE pid = ?;
+-- name: ListEmails :many
+SELECT * FROM emails WHERE pid = ?;
 
--- name: CountPlayerEmails :one
-SELECT COUNT(*) FROM player_emails WHERE pid = ?;
+-- name: CountEmails :one
+SELECT COUNT(*) FROM emails WHERE pid = ?;
 
 -- name: DeleteEmail :execresult
-DELETE FROM player_emails WHERE id = ?;
+DELETE FROM emails WHERE id = ?;

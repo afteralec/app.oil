@@ -10,12 +10,12 @@ import (
 )
 
 const createPlayerPermissions = `-- name: CreatePlayerPermissions :copyfrom
-INSERT INTO player_permissions (pid, permission) VALUES (?, ?)
+INSERT INTO player_permissions (permission, pid) VALUES (?, ?)
 `
 
 type CreatePlayerPermissionsParams struct {
-	Pid        int64
 	Permission string
+	Pid        int64
 }
 
 const listPlayerPermissions = `-- name: ListPlayerPermissions :many

@@ -19,7 +19,7 @@ func Profile(i *shared.Interfaces) fiber.Handler {
 
 		b := c.Locals("bind").(fiber.Map)
 
-		emails, err := i.Queries.ListPlayerEmails(context.Background(), pid.(int64))
+		emails, err := i.Queries.ListEmails(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil

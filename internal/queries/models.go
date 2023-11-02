@@ -8,20 +8,20 @@ import (
 	"database/sql"
 )
 
+type Email struct {
+	Address   string
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+	Verified  bool
+	Pid       int64
+	ID        int64
+}
+
 type Player struct {
 	PwHash    string
 	Username  string
 	CreatedAt sql.NullTime
 	UpdatedAt sql.NullTime
-	ID        int64
-}
-
-type PlayerEmail struct {
-	Email     string
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
-	Verified  bool
-	Pid       int64
 	ID        int64
 }
 

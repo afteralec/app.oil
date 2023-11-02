@@ -10,32 +10,32 @@ import (
 	"database/sql"
 )
 
-const countPlayerEmails = `-- name: CountPlayerEmails :one
-SELECT COUNT(*) FROM player_emails WHERE pid = ?
+const countEmails = `-- name: CountEmails :one
+SELECT COUNT(*) FROM emails WHERE pid = ?
 `
 
-func (q *Queries) CountPlayerEmails(ctx context.Context, pid int64) (int64, error) {
-	row := q.queryRow(ctx, q.countPlayerEmailsStmt, countPlayerEmails, pid)
+func (q *Queries) CountEmails(ctx context.Context, pid int64) (int64, error) {
+	row := q.queryRow(ctx, q.countEmailsStmt, countEmails, pid)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
 }
 
-const createPlayerEmail = `-- name: CreatePlayerEmail :execresult
-INSERT INTO player_emails (email, pid, verified) VALUES (?, ?, false)
+const createEmail = `-- name: CreateEmail :execresult
+INSERT INTO emails (address, pid, verified) VALUES (?, ?, false)
 `
 
-type CreatePlayerEmailParams struct {
-	Email string
-	Pid   int64
+type CreateEmailParams struct {
+	Address string
+	Pid     int64
 }
 
-func (q *Queries) CreatePlayerEmail(ctx context.Context, arg CreatePlayerEmailParams) (sql.Result, error) {
-	return q.exec(ctx, q.createPlayerEmailStmt, createPlayerEmail, arg.Email, arg.Pid)
+func (q *Queries) CreateEmail(ctx context.Context, arg CreateEmailParams) (sql.Result, error) {
+	return q.exec(ctx, q.createEmailStmt, createEmail, arg.Address, arg.Pid)
 }
 
 const deleteEmail = `-- name: DeleteEmail :execresult
-DELETE FROM player_emails WHERE id = ?
+DELETE FROM emails WHERE id = ?
 `
 
 func (q *Queries) DeleteEmail(ctx context.Context, id int64) (sql.Result, error) {
@@ -43,14 +43,14 @@ func (q *Queries) DeleteEmail(ctx context.Context, id int64) (sql.Result, error)
 }
 
 const getEmail = `-- name: GetEmail :one
-SELECT email, created_at, updated_at, verified, pid, id FROM player_emails WHERE id = ?
+SELECT address, created_at, updated_at, verified, pid, id FROM emails WHERE id = ?
 `
 
-func (q *Queries) GetEmail(ctx context.Context, id int64) (PlayerEmail, error) {
+func (q *Queries) GetEmail(ctx context.Context, id int64) (Email, error) {
 	row := q.queryRow(ctx, q.getEmailStmt, getEmail, id)
-	var i PlayerEmail
+	var i Email
 	err := row.Scan(
-		&i.Email,
+		&i.Address,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Verified,
@@ -60,21 +60,21 @@ func (q *Queries) GetEmail(ctx context.Context, id int64) (PlayerEmail, error) {
 	return i, err
 }
 
-const listPlayerEmails = `-- name: ListPlayerEmails :many
-SELECT email, created_at, updated_at, verified, pid, id FROM player_emails WHERE pid = ?
+const listEmails = `-- name: ListEmails :many
+SELECT address, created_at, updated_at, verified, pid, id FROM emails WHERE pid = ?
 `
 
-func (q *Queries) ListPlayerEmails(ctx context.Context, pid int64) ([]PlayerEmail, error) {
-	rows, err := q.query(ctx, q.listPlayerEmailsStmt, listPlayerEmails, pid)
+func (q *Queries) ListEmails(ctx context.Context, pid int64) ([]Email, error) {
+	rows, err := q.query(ctx, q.listEmailsStmt, listEmails, pid)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []PlayerEmail
+	var items []Email
 	for rows.Next() {
-		var i PlayerEmail
+		var i Email
 		if err := rows.Scan(
-			&i.Email,
+			&i.Address,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Verified,
@@ -95,7 +95,7 @@ func (q *Queries) ListPlayerEmails(ctx context.Context, pid int64) ([]PlayerEmai
 }
 
 const markEmailVerified = `-- name: MarkEmailVerified :execresult
-UPDATE player_emails SET verified = true WHERE id = ?
+UPDATE emails SET verified = true WHERE id = ?
 `
 
 func (q *Queries) MarkEmailVerified(ctx context.Context, id int64) (sql.Result, error) {

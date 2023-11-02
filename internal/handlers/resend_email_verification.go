@@ -49,7 +49,7 @@ func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
 		}
 
-		err = email.Verify(i.Redis, id, e.Email)
+		err = email.Verify(i.Redis, id, e.Address)
 		if err != nil {
 			return c.Render("web/views/partials/profile/email/resend-err", &fiber.Map{}, "")
 		}

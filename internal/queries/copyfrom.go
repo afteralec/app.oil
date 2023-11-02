@@ -20,8 +20,8 @@ var readerHandlerSequenceForCreatePlayerPermissions uint32 = 1
 func convertRowsForCreatePlayerPermissions(w *io.PipeWriter, arg []CreatePlayerPermissionsParams) {
 	e := mysqltsv.NewEncoder(w, 2, nil)
 	for _, row := range arg {
-		e.AppendValue(row.Pid)
 		e.AppendString(row.Permission)
+		e.AppendValue(row.Pid)
 	}
 	w.CloseWithError(e.Close())
 }
@@ -43,7 +43,7 @@ func (q *Queries) CreatePlayerPermissions(ctx context.Context, arg []CreatePlaye
 	go convertRowsForCreatePlayerPermissions(pw, arg)
 	// The string interpolation is necessary because LOAD DATA INFILE requires
 	// the file name to be given as a literal string.
-	result, err := q.db.ExecContext(ctx, fmt.Sprintf("LOAD DATA LOCAL INFILE '%s' INTO TABLE `player_permissions` %s (pid, permission)", "Reader::"+rh, mysqltsv.Escaping))
+	result, err := q.db.ExecContext(ctx, fmt.Sprintf("LOAD DATA LOCAL INFILE '%s' INTO TABLE `player_permissions` %s (permission, pid)", "Reader::"+rh, mysqltsv.Escaping))
 	if err != nil {
 		return 0, err
 	}

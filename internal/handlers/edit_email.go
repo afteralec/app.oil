@@ -73,9 +73,9 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		result, err := qtx.CreatePlayerEmail(context.Background(), queries.CreatePlayerEmailParams{
-			Email: r.Email,
-			Pid:   pid.(int64),
+		result, err := qtx.CreateEmail(context.Background(), queries.CreateEmailParams{
+			Address: r.Email,
+			Pid:     pid.(int64),
 		})
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
