@@ -11,9 +11,10 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/csrf"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/gofiber/fiber/v2/utils"
 	html "github.com/gofiber/template/html/v2"
 	redis "github.com/redis/go-redis/v9"
 
@@ -64,8 +65,22 @@ func main() {
 	}
 	app := fiber.New(config)
 
-	app.Use(cors.New())
 	app.Use(logger.New())
+	app.Use(csrf.New(
+		csrf.Config{
+			KeyLookup:         "header:X-CSRF-Token",
+			CookieName:        "csrf_",
+			CookieSameSite:    "Lax",
+			CookieSessionOnly: true,
+			CookieHTTPOnly:    true,
+			Expiration:        1 * time.Hour,
+			KeyGenerator:      utils.UUIDv4,
+			Session:           s,
+			SessionKey:        "fiber.csrf.token",
+			ContextKey:        "csrf",
+			HandlerContextKey: "fiber.csrf.handler",
+		},
+	))
 	app.Use(sessiondata.New(&i))
 	app.Use(bind.New())
 
@@ -76,6 +91,7 @@ func main() {
 
 	app.Post("/login", handlers.Login(&i))
 	app.Post("/logout", handlers.Logout(&i))
+	app.Get("/logout", handlers.LogoutPage())
 
 	player := app.Group("/player")
 	player.Post("/new", handlers.CreatePlayer(&i))

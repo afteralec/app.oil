@@ -9,6 +9,7 @@ import (
 func New() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		c.Locals("bind", fiber.Map{
+			"CSRF":          c.Locals("csrf"),
 			"PID":           c.Locals("pid"),
 			"CopyrightYear": time.Now().Year(),
 			"Title":         "Petrichor",

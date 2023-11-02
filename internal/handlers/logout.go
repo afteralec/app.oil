@@ -15,7 +15,13 @@ func Logout(i *shared.Interfaces) fiber.Handler {
 
 		sess.Destroy()
 
-		c.Append("HX-Redirect", "/")
+		c.Append("HX-Redirect", "/logout")
 		return nil
+	}
+}
+
+func LogoutPage() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.Render("web/views/logout", c.Locals("b"), "web/views/layouts/standalone")
 	}
 }

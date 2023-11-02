@@ -1,5 +1,9 @@
 "use strict";
 
+export function getCSRFToken() {
+  return document.querySelector('meta[name="csrf_"]').content;
+}
+
 export function getRegisterData() {
   return {
     showModal: false,
@@ -148,11 +152,15 @@ export function getLoginData() {
 }
 
 export async function submitLoginData(errors, u, pw) {
+  const csrfToken = getCSRFToken();
   try {
     const body = new FormData();
     body.append("username", u);
     body.append("password", pw);
     const res = await fetch("/login", {
+      headers: {
+        "X-CSRF-Token": csrfToken,
+      },
       method: "POST",
       body,
     });
@@ -221,6 +229,11 @@ export function getProfileAvatarSrc(
   }
 }
 
+document.body.addEventListener("htmx:configRequest", (event) => {
+  event.detail.headers["X-CSRF-Token"] = getCSRFToken();
+});
+
+window.getCSRFToken = getCSRFToken;
 window.getRegisterData = getRegisterData;
 window.getLoginData = getLoginData;
 window.getProfileEmailData = getProfileEmailData;
