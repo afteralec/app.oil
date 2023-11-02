@@ -6,14 +6,15 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+const LogoutRoute = "/logout"
+
 func Logout(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		sess, err := i.Sessions.Get(c)
 		if err != nil {
-			c.Status(500)
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-
 		sess.Destroy()
 
 		c.Append("HX-Redirect", "/logout")

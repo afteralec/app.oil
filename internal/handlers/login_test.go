@@ -41,18 +41,11 @@ func TestLogin(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func SetupTestLogin(i *shared.Interfaces, t *testing.T) {
-	_, err := i.Database.Exec("DELETE FROM players WHERE username = 'testify';")
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
 func TestLoginSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestRegister(&i, t)
+	SetupTestLogin(&i, t)
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
@@ -85,6 +78,13 @@ func TestLoginSuccess(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func SetupTestLogin(i *shared.Interfaces, t *testing.T) {
+	_, err := i.Database.Exec("DELETE FROM players WHERE username = 'testify';")
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func LoginTestFormData() (io.Reader, string) {

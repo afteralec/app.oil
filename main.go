@@ -39,8 +39,8 @@ func main() {
 	app.Get(handlers.HomeRoute, handlers.Home())
 
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post("/logout", handlers.Logout(&i))
-	app.Get("/logout", handlers.LogoutPage())
+	app.Post(handlers.LogoutRoute, handlers.Logout(&i))
+	app.Get(handlers.LogoutRoute, handlers.LogoutPage())
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post("/player/reserved", handlers.UsernameReserved(&i))
