@@ -3,7 +3,7 @@
   x-data="getLoginData()"
 >
   <div class="w-full max-w-lg rounded-md border p-6">
-    {{ template "web/views/partials/modal/form-header" "Please log in:" }}
+    <p class="pt-4">Please log in:</p>
     <form
       @submit.prevent="submitLoginData(errors, username, password)"
       class="space-y-4 px-4 pt-4"
