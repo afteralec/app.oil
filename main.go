@@ -42,15 +42,13 @@ func main() {
 	app.Post("/logout", handlers.Logout(&i))
 	app.Get("/logout", handlers.LogoutPage())
 
-	player := app.Group("/player")
-	player.Post("/new", handlers.CreatePlayer(&i))
-	player.Post("/reserved", handlers.UsernameReserved(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post("/player/reserved", handlers.UsernameReserved(&i))
 
-	email := player.Group("/email")
-	email.Post("/new", handlers.AddEmail(&i))
-	email.Delete("/:id", handlers.DeleteEmail(&i))
-	email.Put("/:id", handlers.EditEmail(&i))
-	email.Post("/:id/resend", handlers.ResendEmailVerification(&i))
+	app.Post("/player/email/new", handlers.AddEmail(&i))
+	app.Delete("/player/email/:id", handlers.DeleteEmail(&i))
+	app.Put("player/email/:id", handlers.EditEmail(&i))
+	app.Post("/player/email/:id/resend", handlers.ResendEmailVerification(&i))
 
 	// TODO: Move this behind the email group
 	app.Get("/verify", handlers.Verify(&i))

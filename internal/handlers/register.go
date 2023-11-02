@@ -12,12 +12,14 @@ import (
 	"petrichormud.com/app/internal/username"
 )
 
+const RegisterRoute = "/player/new"
+
 type Player struct {
 	Username string `form:"username"`
 	Password string `form:"password"`
 }
 
-func CreatePlayer(i *shared.Interfaces) fiber.Handler {
+func Register(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		p := new(Player)
 
