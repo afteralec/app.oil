@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -19,7 +18,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func TestAddEmail(t *testing.T) {
+func TestAddEmailWithoutLogin(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -35,7 +34,36 @@ func TestAddEmail(t *testing.T) {
 	app.Post(RegisterRoute, Register(&i))
 	app.Post(AddEmailRoute, AddEmail(&i))
 
-	body, contentType := LoginTestFormData()
+	body, contentType := AddEmailTestFormData()
+
+	url := fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", contentType)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestAddEmailSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	SetupTestAddEmail(t, &i)
+
+	views := html.New("../..", ".html")
+	config := configs.Fiber(views)
+	app := fiber.New(config)
+
+	app.Use(sessiondata.New(&i))
+
+	app.Post(LoginRoute, Login(&i))
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(AddEmailRoute, AddEmail(&i))
+
+	body, contentType := RegisterTestFormData()
 
 	// TODO: Extract this test url to a constant?
 	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
@@ -58,7 +86,6 @@ func TestAddEmail(t *testing.T) {
 
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
-	log.Print(sessionCookie)
 
 	body, contentType = AddEmailTestFormData()
 

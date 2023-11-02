@@ -27,7 +27,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 
 		if pid == nil {
-			c.Status(fiber.StatusUnauthorized)
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 

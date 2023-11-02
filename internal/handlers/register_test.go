@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -28,16 +29,12 @@ func TestRegister(t *testing.T) {
 
 	app.Post(RegisterRoute, Register(&i))
 
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("username", "testify")
-	writer.WriteField("password", "T3sted_tested")
-	writer.Close()
+	body, contentType := RegisterTestFormData()
 
 	// TODO: Extract this test url to a constant?
 	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Header.Set("Content-Type", contentType)
 	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -51,4 +48,13 @@ func SetupTestRegister(i *shared.Interfaces, t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func RegisterTestFormData() (io.Reader, string) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("username", "testify")
+	writer.WriteField("password", "T3sted_tested")
+	writer.Close()
+	return body, writer.FormDataContentType()
 }
