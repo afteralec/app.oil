@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -59,13 +58,13 @@ func CreatePlayer(i *shared.Interfaces) fiber.Handler {
 			PwHash:   pw_hash,
 		})
 		if err != nil {
+			// TODO: Distinguish between "already exists" and a connection error
 			c.Status(fiber.StatusConflict)
 			return nil
 		}
 
 		pid, err := result.LastInsertId()
 		if err != nil {
-			log.Print(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -75,7 +74,7 @@ func CreatePlayer(i *shared.Interfaces) fiber.Handler {
 			permissions.MakeParams(perms[:], pid),
 		)
 		if err != nil {
-			log.Print(err)
+			// TODO: Distinguish between error types here?
 			return nil
 		}
 

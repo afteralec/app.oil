@@ -51,6 +51,7 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 
 		e, err := qtx.GetEmail(context.Background(), id)
 		if err != nil {
+			// TODO: Distinguish between a "not found" error and a connection error
 			c.Status(fiber.StatusNotFound)
 			return nil
 		}
@@ -67,6 +68,7 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 
 		_, err = qtx.DeleteEmail(context.Background(), id)
 		if err != nil {
+			// TODO: Distinguish between a "not found" error and a connection error
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}

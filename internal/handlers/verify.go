@@ -39,6 +39,7 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 		}
 		e, err := i.Queries.GetEmail(context.Background(), id)
 		if err != nil {
+			// TODO: Distinguish between "not found" and a connection error
 			return c.Redirect("/")
 		}
 
@@ -102,6 +103,7 @@ func VerifyEmail(i *shared.Interfaces) fiber.Handler {
 
 		_, err = i.Queries.MarkEmailVerified(context.Background(), id)
 		if err != nil {
+			// TODO: Distinguish between a "not found" error and a connection error
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
