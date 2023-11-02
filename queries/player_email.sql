@@ -1,5 +1,5 @@
 -- name: CreatePlayerEmail :execresult
-INSERT INTO player_emails (pid, email, verified) VALUES (?, ?, false);
+INSERT INTO player_emails (email, pid, verified) VALUES (?, ?, false);
 
 -- name: MarkEmailVerified :execresult
 UPDATE player_emails SET verified = true WHERE id = ?;

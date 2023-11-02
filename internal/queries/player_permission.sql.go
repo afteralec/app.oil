@@ -19,7 +19,7 @@ type CreatePlayerPermissionsParams struct {
 }
 
 const listPlayerPermissions = `-- name: ListPlayerPermissions :many
-SELECT permission, pid, id FROM player_permissions WHERE pid = ?
+SELECT permission, created_at, updated_at, pid, id FROM player_permissions WHERE pid = ?
 `
 
 func (q *Queries) ListPlayerPermissions(ctx context.Context, pid int64) ([]PlayerPermission, error) {
@@ -31,7 +31,13 @@ func (q *Queries) ListPlayerPermissions(ctx context.Context, pid int64) ([]Playe
 	var items []PlayerPermission
 	for rows.Next() {
 		var i PlayerPermission
-		if err := rows.Scan(&i.Permission, &i.Pid, &i.ID); err != nil {
+		if err := rows.Scan(
+			&i.Permission,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Pid,
+			&i.ID,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

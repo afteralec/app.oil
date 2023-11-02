@@ -4,23 +4,31 @@
 
 package queries
 
-import ()
+import (
+	"database/sql"
+)
 
 type Player struct {
-	PwHash   string
-	Username string
-	ID       int64
+	PwHash    string
+	Username  string
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+	ID        int64
 }
 
 type PlayerEmail struct {
-	Email    string
-	Verified bool
-	Pid      int64
-	ID       int64
+	Email     string
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+	Verified  bool
+	Pid       int64
+	ID        int64
 }
 
 type PlayerPermission struct {
 	Permission string
+	CreatedAt  sql.NullTime
+	UpdatedAt  sql.NullTime
 	Pid        int64
 	ID         int64
 }
