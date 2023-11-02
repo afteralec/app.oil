@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/mail"
 
+	"github.com/VividCortex/mysqlerr"
+	"github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/email"
@@ -33,10 +35,9 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		}
 
 		if ec >= MaxEmailCount {
-			c.Append("HX-Retarget", "#add-email-error")
 			return c.Render("web/views/partials/profile/email/err-too-many-emails", &fiber.Map{
 				"CSRF": c.Locals("csrf"),
-			}, "")
+			}, "web/views/partials/csrf")
 		}
 
 		r := new(request)
@@ -48,9 +49,10 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		e, err := mail.ParseAddress(r.Email)
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
 			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{
 				"CSRF": c.Locals("csrf"),
-			}, "")
+			}, "web/views/partials/csrf")
 		}
 
 		result, err := i.Queries.CreatePlayerEmail(
@@ -58,6 +60,16 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			queries.CreatePlayerEmailParams{Pid: pid.(int64), Email: e.Address},
 		)
 		if err != nil {
+			if me, ok := err.(*mysql.MySQLError); ok {
+				if me.Number == mysqlerr.ER_DUP_ENTRY {
+					c.Append("HX-Retarget", "#add-email-error")
+					c.Append("HX-Reswap", "innerHTML")
+					return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{
+						"CSRF":  c.Locals("csrf"),
+						"Email": e.Address,
+					}, "web/views/partials/csrf")
+				}
+			}
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -80,6 +92,6 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			"ID":      id,
 			"Email":   e.Address,
 			"Created": true,
-		}, "")
+		}, "web/views/layouts/csrf")
 	}
 }

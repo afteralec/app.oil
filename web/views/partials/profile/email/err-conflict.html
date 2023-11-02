@@ -1,11 +1,6 @@
-<div
-  id="no-email"
-  class="w-[60%] pt-2"
-  x-cloak
-  x-show="document.getElementById('emails').childElementCount === 0"
->
+<div class="pb-2">
   <div
-    class="flex items-center rounded-md bg-amber-100 px-6 py-3 text-sm text-amber-800"
+    class="flex items-center rounded-md bg-rose-100 px-6 py-3 text-sm text-rose-800"
   >
     <div class="pr-2">
       <div class="flex items-center justify-center rounded-[50%]">
@@ -17,20 +12,20 @@
       </div>
     </div>
     <div>
-      You haven't added any emails. Without one, you won't be able to recover
-      your account.
+      <span class="font-semibold">{{ .Email }}</span> is already in use. Please
+      use a different address.
       <br />
       <button
         type="button"
         class="cursor-pointer border-none bg-none font-semibold underline hover:text-amber-900"
         @click="
-          addEmailMode = true;
-          $nextTick(() => {
-            setTimeout(() => {
-              document.getElementById('add-email').focus();
-            }, 50);
-          });
-        "
+        addEmailMode = true;
+        $nextTick(() => {
+          setTimeout(() => {
+            document.getElementById('add-email').focus();
+          }, 50);
+        });
+      "
       >
         Click here to add an email address.
       </button>
