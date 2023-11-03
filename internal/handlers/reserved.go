@@ -25,7 +25,7 @@ func Reserved(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			// TODO: Distinguish between "not found" and a connection error
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
-			return c.Render("web/views/htmx/player-free", fiber.Map{
+			return c.Render("web/views/partials/register/player-free", fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, "web/views/layouts/csrf")
 		}
@@ -34,12 +34,12 @@ func Reserved(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusConflict)
-			return c.Render("web/views/htmx/player-reserved", fiber.Map{
+			return c.Render("web/views/partials/register/player-reserved", fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, "web/views/layouts/csrf")
 		} else {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
-			return c.Render("web/views/htmx/player-free", fiber.Map{
+			return c.Render("web/views/partials/register/player-free", fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, "web/views/layouts/csrf")
 		}
