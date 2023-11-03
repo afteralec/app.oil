@@ -17,6 +17,8 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+// TODO: Add operation for revoking and adding permissions
+
 func TestLoginPage(t *testing.T) {
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
@@ -34,7 +36,7 @@ func TestLoginPage(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestLogin(t *testing.T) {
+func TestLoginNonExistantUser(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -136,6 +138,45 @@ func TestLoginWithWrongPassword(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
+func TestLoginWithMalformedFormData(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	SetupTestLogin(&i, t)
+
+	views := html.New("../..", ".html")
+	config := configs.Fiber(views)
+	app := fiber.New(config)
+
+	app.Post(LoginRoute, Login(&i))
+	app.Post(RegisterRoute, Register(&i))
+
+	body, contentType := LoginTestFormData()
+
+	// TODO: Extract this test url to a constant?
+	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", contentType)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusCreated, res.StatusCode)
+
+	body, contentType = LoginTestMalformedFormData()
+
+	url = fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
+	req = httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", contentType)
+	res, err = app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
 func SetupTestLogin(i *shared.Interfaces, t *testing.T) {
 	_, err := i.Database.Exec("DELETE FROM players WHERE username = 'testify';")
 	if err != nil {
@@ -148,6 +189,14 @@ func LoginTestFormData() (io.Reader, string) {
 	writer := multipart.NewWriter(body)
 	writer.WriteField("username", "testify")
 	writer.WriteField("password", "T3sted_tested")
+	writer.Close()
+	return body, writer.FormDataContentType()
+}
+
+func LoginTestMalformedFormData() (io.Reader, string) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("username", "testify")
 	writer.Close()
 	return body, writer.FormDataContentType()
 }
