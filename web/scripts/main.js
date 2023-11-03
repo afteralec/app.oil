@@ -10,6 +10,7 @@ export function getRegisterData() {
     username: "",
     password: "",
     confirmPassword: "",
+    usernameReserved: false,
     notifs: {
       u: false,
       pw: false,

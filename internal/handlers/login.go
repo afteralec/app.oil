@@ -104,6 +104,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/login/err-invalid", &fiber.Map{}, "")
 		}
 
+		// TODO: Refine this and let it always pass along all Params
 		redirect := c.Query("redirect")
 		if redirect == "home" {
 			c.Append("HX-Redirect", "/")
@@ -120,7 +121,6 @@ func Login(i *shared.Interfaces) fiber.Handler {
 		c.Status(fiber.StatusOK)
 		// TODO: Put this event name behind a shared constant
 		c.Append("HX-Trigger-After-Swap", "ptrcr:login-success")
-		// TODO: Return the success button here
 		return nil
 	}
 }
