@@ -19,45 +19,17 @@
     x-cloak
     x-show="showModal"
   >
-    <div
-      class="pt-4"
-      x-cloak
-      x-show="errors.badRequest || errors.conflict || errors.internal || errors.disaster"
-    >
-      <p
-        class="rounded-md bg-rose-100 px-4 py-3 text-sm text-rose-800"
-        x-cloak
-        x-show="errors.conflict"
-      >
-        Sorry! That username is already taken.
-      </p>
-      <div
-        class="rounded-md bg-rose-100 px-4 py-3 text-sm text-rose-800"
-        x-cloak
-        x-show="errors.badRequest || errors.internal"
-        @click="window.location.reload()"
-      >
-        Something's gone wrong. Please refresh the page and try again.
-        <p
-          class="cursor-pointer pt-1 text-sm leading-none text-rose-900 underline hover:text-rose-700"
-        >
-          Click here to refresh the page.
-        </p>
-      </div>
-      <p
-        class="rounded-md bg-rose-100 px-4 py-3 text-sm text-rose-800"
-        x-cloak
-        x-show="errors.disaster"
-      >
-        Something's gone terribly wrong. Either the application is unreachable
-        or you aren't connected to the internet.
-      </p>
-    </div>
+    <div id="register-error"></div>
     {{ template "web/views/partials/modal/close" }}
     <p class="pt-4">Create an account:</p>
     <form
       class="space-y-4 px-4 pt-4"
-      @submit.prevent="submitRegisterData(errors, username, password, confirmPassword)"
+      @submit.prevent="
+        document.addEventListener('ptrcr:register-success', () => {
+          window.location.reload();
+        })
+      "
+      hx-post="/player/new"
     >
       <div class="space-y-2">
         <label
@@ -72,15 +44,10 @@
           x-model="username"
           @focus="notifs.u = true"
           @input="
-            resetErrors(errors);
             username = sanitizeUsername(event.target.value);
             eval.u.len = true;
             const reservedEl = document.getElementById('username-reserved');
             reservedEl.classList.add('htmx-request');
-            errors.reserved = true;
-            document.addEventListener('username-reserved', () => {
-              errors.reserved = Boolean(document.getElementById('player-reserved'));
-            }, { once: 'true' });
           "
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
@@ -107,7 +74,6 @@
           x-model="password"
           @focus="notifs.pw = true"
           @input="
-            resetErrors(errors);
             setStrengths(strengths, event.target.value);
             setEvalStrengths(eval.pw.strengths, strengths);
             password = event.target.value;
@@ -133,7 +99,6 @@
           x-model="confirmPassword"
           @focus="notifs.cpw = true"
           @input="
-            resetErrors(errors);
             confirmPassword = event.target.value;
             if (confirmPassword.length === password.length) {
               eval.cpw.eq = true;
@@ -171,11 +136,7 @@
       </div>
       <div class="flex justify-end">
         <button
-          :disabled="
-            const error = errors.reserved || errors.conflict || errors.internal || errors.disaster;
-            const fields = !isUsernameValid(username) || !isPasswordValid(password) || password !== confirmPassword;
-            return error || fields;
-          "
+          :disabled="!isUsernameValid(username) || !isPasswordValid(password) || password !== confirmPassword"
           class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
           type="submit"
         >

@@ -23,7 +23,6 @@
           x-model="username"
           @input="
             username = sanitizeUsername(event.target.value);
-            resetErrors(errors);
           "
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
@@ -45,7 +44,6 @@
           x-model="password"
           @input="
             password = event.target.value;
-            resetErrors(errors);
           "
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
@@ -55,11 +53,7 @@
       </div>
       <div class="flex justify-end">
         <button
-          :disabled="
-            const error = errors.auth || errors.disaster;
-            const fields = !username.length || !password.length;
-            return error || fields;
-          "
+          :disabled="!username.length || !password.length"
           class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
           type="submit"
         >
