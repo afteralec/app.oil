@@ -17,14 +17,13 @@ func Profile(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
-		b := c.Locals("bind").(fiber.Map)
-
 		emails, err := i.Queries.ListEmails(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
+		b := c.Locals("bind").(fiber.Map)
 		b["Emails"] = emails
 		b["VerifiedEmails"] = email.Verified(emails)
 		b["GravatarEmail"] = "othertest@quack.ninja"

@@ -76,3 +76,9 @@ func Login(i *shared.Interfaces) fiber.Handler {
 		return nil
 	}
 }
+
+func LoginPage() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.Render("web/views/login", c.Locals("b"), "web/views/layouts/standalone")
+	}
+}
