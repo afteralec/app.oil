@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"slices"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -106,6 +107,12 @@ func Login(i *shared.Interfaces) fiber.Handler {
 		redirect := c.Query("redirect")
 		if redirect == "home" {
 			c.Append("HX-Redirect", "/")
+			c.Status(fiber.StatusOK)
+			return nil
+		}
+
+		if redirect == "verify" {
+			c.Append("HX-Redirect", fmt.Sprintf("/verify?t=%s", c.Query("t")))
 			c.Status(fiber.StatusOK)
 			return nil
 		}

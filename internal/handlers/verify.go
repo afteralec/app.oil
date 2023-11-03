@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"slices"
 	"strconv"
 
@@ -26,7 +27,8 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 
 		pid := c.Locals("pid")
 		if pid == nil {
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			lp := fmt.Sprintf("/login?redirect=verify&t=%s", c.Query("t"))
+			return c.Redirect(lp)
 		}
 
 		eid, err := i.Redis.Get(context.Background(), token).Result()
