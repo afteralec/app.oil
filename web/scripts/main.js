@@ -44,45 +44,6 @@ export function getRegisterData() {
   };
 }
 
-export async function submitRegisterData(errors, u, pw, confirmpw) {
-  if (!isUsernameValid(u)) return;
-  if (!isPasswordValid(pw)) return;
-  if (pw !== confirmpw) return;
-  const su = sanitizeUsername(u);
-
-  const body = new FormData();
-  body.append("username", su);
-  body.append("password", pw);
-
-  try {
-    const response = await fetch("/player/new", {
-      headers: {
-        "X-CSRF-Token": getCSRFToken(),
-      },
-      method: "POST",
-      body,
-    });
-
-    if (response.status !== 201) {
-      if (response.status === 400) {
-        errors.badRequest = true;
-        return;
-      }
-      if (response.status === 409) {
-        errors.conflict = true;
-        return;
-      }
-      errors.internal = true;
-      return;
-    }
-
-    window.location.reload();
-  } catch (err) {
-    errors.disaster = true;
-    return;
-  }
-}
-
 export function sanitizeUsername(u) {
   return u.replace(/[^a-zA-Z0-9_-]+/gi, "").toLowerCase();
 }
