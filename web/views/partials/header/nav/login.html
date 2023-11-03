@@ -19,30 +19,19 @@
     x-cloak
     x-show="showModal"
   >
-    <div class="pt-4" x-cloak x-show="errors.auth || errors.disaster">
-      <p
-        class="rounded-md bg-rose-100 px-4 py-3 text-sm text-rose-800"
-        x-cloak
-        x-show="errors.auth"
-      >
-        The username and password you entered couldn't be verified.
-        <br />
-        Please try again.
-      </p>
-      <p
-        class="rounded-md bg-rose-100 px-4 py-3 text-sm text-rose-800"
-        x-cloak
-        x-show="errors.disaster"
-      >
-        Something's gone terribly wrong. Either the application is unreachable
-        or you aren't connected to the internet.
-      </p>
-    </div>
+    <div id="login-error"></div>
     {{ template "web/views/partials/modal/close" }}
     <p class="pt-4">Please log in:</p>
+    <!-- TODO: Swap the authenticated nav instead of doing a reload -->
     <form
-      @submit.prevent="submitLoginData(errors, username, password)"
       class="space-y-4 px-4 pt-4"
+      @submit.prevent="
+        document.addEventListener('ptrcr:login-success', () => {
+          showModal = false;
+          window.location.reload();
+        }, { once: true });  
+      "
+      hx-post="/login"
     >
       <div class="space-y-2">
         <label

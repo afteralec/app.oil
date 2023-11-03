@@ -145,45 +145,8 @@ export function getLoginData() {
     showModal: false,
     username: "",
     password: "",
-    errors: {
-      auth: false,
-      disaster: false,
-    },
-    resetErrors,
-    submitLoginData,
     sanitizeUsername,
   };
-}
-
-export async function submitLoginData(errors, u, pw) {
-  const csrfToken = getCSRFToken();
-  try {
-    const body = new FormData();
-    body.append("username", u);
-    body.append("password", pw);
-    const res = await fetch("/login", {
-      headers: {
-        "X-CSRF-Token": csrfToken,
-      },
-      method: "POST",
-      body,
-    });
-
-    if (res.status != 200) {
-      errors.auth = true;
-      return;
-    }
-
-    window.location.reload();
-  } catch {
-    errors.disaster = true;
-  }
-}
-
-export function resetErrors(errors) {
-  for (const k in errors) {
-    errors[k] = false;
-  }
 }
 
 export function getProfileEmailData() {

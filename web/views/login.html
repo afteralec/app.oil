@@ -4,10 +4,12 @@
 >
   <!-- TODO: Get error components here -->
   <div class="w-full max-w-lg rounded-md border p-6">
+    <div id="login-error"></div>
     <p class="pt-4">Please log in:</p>
     <form
-      @submit.prevent="submitLoginData(errors, username, password)"
       class="space-y-4 px-4 pt-4"
+      @submit.prevent=""
+      hx-post="/login?redirect=home"
     >
       <div class="space-y-2">
         <label
