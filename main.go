@@ -36,9 +36,11 @@ func main() {
 	app.Static("/", "./web/static")
 	app.Static("/loaders", "./web/svg/loaders")
 
+	// TODO: Rename this to HomePage
 	app.Get(handlers.HomeRoute, handlers.Home())
 
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Get(handlers.LoginRoute, handlers.LoginPage())
 	app.Post(handlers.LogoutRoute, handlers.Logout(&i))
 	app.Get(handlers.LogoutRoute, handlers.LogoutPage())
 
@@ -51,6 +53,7 @@ func main() {
 	app.Post("/player/email/:id/resend", handlers.ResendEmailVerification(&i))
 
 	// TODO: Move this behind the email group
+	// TODO: Rename this to Verify and VerifyPage
 	app.Get("/verify", handlers.Verify(&i))
 	app.Post("/verify", handlers.VerifyEmail(&i))
 

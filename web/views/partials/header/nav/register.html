@@ -53,7 +53,8 @@
         or you aren't connected to the internet.
       </p>
     </div>
-    {{ template "web/views/partials/modal/form-header" "Create an account:" }}
+    {{ template "web/views/partials/modal/close" }}
+    <p class="pt-4">Create an account:</p>
     <form
       class="space-y-4 px-4 pt-4"
       @submit.prevent="submitRegisterData(errors, username, password, confirmPassword)"

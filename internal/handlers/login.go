@@ -12,7 +12,10 @@ import (
 	"petrichormud.com/app/internal/username"
 )
 
-const LoginRoute = "/login"
+const (
+	LoginRoute          = "/login"
+	LoginRouteWithParam = "/login/:route"
+)
 
 func Login(i *shared.Interfaces) fiber.Handler {
 	type request struct {
