@@ -22,16 +22,11 @@
     <div id="login-error"></div>
     {{ template "web/views/partials/modal/close" }}
     <p class="pt-4">Please log in:</p>
-    <!-- TODO: Swap the authenticated nav instead of doing a reload -->
     <form
       class="space-y-4 px-4 pt-4"
-      @submit.prevent="
-        document.addEventListener('ptrcr:login-success', () => {
-          showModal = false;
-          window.location.reload();
-        }, { once: true });  
-      "
+      @submit.prevent=""
       hx-post="/login"
+      hx-swap="none"
     >
       <div class="space-y-2">
         <label

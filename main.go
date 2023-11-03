@@ -57,7 +57,9 @@ func main() {
 	app.Get("/verify", handlers.Verify(&i))
 	app.Post("/verify", handlers.VerifyEmail(&i))
 
-	app.Get("/profile", handlers.Profile(&i))
+	app.Get("/profile", handlers.ProfilePage(&i))
+
+	app.Get(handlers.PermissionsRoute, handlers.PermissionsPage(&i))
 
 	log.Fatal(app.Listen(":8008"))
 }

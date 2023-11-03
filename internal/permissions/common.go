@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	Login      = "Login"
-	AddEmail   = "AddEmail"
-	ViewPlayer = "ViewPlayer"
+	Login           = "Login"
+	AddEmail        = "AddEmail"
+	ViewPermissions = "ViewPermissions"
 )
 
 func DefaultSet() [2]string {
@@ -15,7 +15,7 @@ func DefaultSet() [2]string {
 }
 
 func AdminSet() [3]string {
-	return [3]string{Login, AddEmail, ViewPlayer}
+	return [3]string{Login, AddEmail, ViewPermissions}
 }
 
 func MakeParams(p []string, pid int64) []queries.CreatePlayerPermissionsParams {

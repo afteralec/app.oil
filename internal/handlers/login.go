@@ -118,9 +118,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		c.Status(fiber.StatusOK)
-		// TODO: Put this event name behind a shared constant
-		c.Append("HX-Trigger-After-Swap", "ptrcr:login-success")
+		c.Append("HX-Refresh", "true")
 		return nil
 	}
 }

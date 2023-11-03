@@ -9,18 +9,19 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func Profile(i *shared.Interfaces) fiber.Handler {
+func ProfilePage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
 		if pid == nil {
+			c.Status(fiber.StatusUnauthorized)
 			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
 		emails, err := i.Queries.ListEmails(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
 		b := c.Locals("bind").(fiber.Map)

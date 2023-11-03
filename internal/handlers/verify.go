@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"slices"
 	"strconv"
 
@@ -19,57 +18,70 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 		token := c.Query("t")
 		exists, err := i.Redis.Exists(context.Background(), token).Result()
 		if err != nil {
-			return c.Redirect("/")
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 		if exists != 1 {
-			return c.Redirect("/")
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render("web/views/401", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
 		pid := c.Locals("pid")
 		if pid == nil {
-			lp := fmt.Sprintf("/login?redirect=verify&t=%s", c.Query("t"))
-			return c.Redirect(lp)
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
 		eid, err := i.Redis.Get(context.Background(), token).Result()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 		id, err := strconv.ParseInt(eid, 10, 64)
 		if err != nil {
-			return c.Redirect("/")
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 		e, err := i.Queries.GetEmail(context.Background(), id)
 		if err != nil {
-			// TODO: Distinguish between "not found" and a connection error
-			return c.Redirect("/")
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				// TODO: Make this a 404 page
+				return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
 		_, err = i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
 		if err != nil {
 			if err != sql.ErrNoRows {
 				c.Status(fiber.StatusInternalServerError)
-				return nil
+				return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
 			}
 		}
 		if err == nil {
 			c.Status(fiber.StatusConflict)
-			return nil
+			// TODO: Build an "already verified" page for this
+			return c.Render("web/views/401", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
 		perms, err := permissions.List(i, pid.(int64))
 		if err != nil {
-			return c.Redirect("/")
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 		if !slices.Contains(perms, permissions.AddEmail) {
-			return c.Redirect("/")
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render("web/views/401", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
 		un, err := username.Get(i.Redis, pid.(int64))
 		if err != nil {
-			return c.Redirect("/")
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
 		}
+
 		b := c.Locals("bind").(fiber.Map)
 		b["VerifyToken"] = c.Query("t")
 		b["Address"] = e.Address
