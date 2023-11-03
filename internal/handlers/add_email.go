@@ -34,10 +34,14 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
 		}
 
+		// TODO: Open a transaction up here
 		ec, err := i.Queries.CountEmails(context.Background(), pid.(int64))
 		if err != nil {
+			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
 		}
 
 		if ec >= MaxEmailCount {
@@ -50,8 +54,11 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 
 		r := new(request)
 		if err := c.BodyParser(r); err != nil {
+			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
 		}
 
 		e, err := mail.ParseAddress(r.Email)
