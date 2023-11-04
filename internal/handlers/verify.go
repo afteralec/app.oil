@@ -11,6 +11,8 @@ import (
 	"petrichormud.com/app/internal/username"
 )
 
+const VerifyRoute = "/verify"
+
 func VerifyPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		token := c.Query("t")
