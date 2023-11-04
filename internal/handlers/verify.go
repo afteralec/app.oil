@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/username"
 )
 
-func Verify(i *shared.Interfaces) fiber.Handler {
+func VerifyPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		token := c.Query("t")
 		exists, err := i.Redis.Exists(context.Background(), token).Result()
@@ -79,7 +79,7 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func VerifyEmail(i *shared.Interfaces) fiber.Handler {
+func Verify(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {

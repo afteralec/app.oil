@@ -9,6 +9,8 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+const ProfileRoute = "/profile"
+
 func ProfilePage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
