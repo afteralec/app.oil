@@ -34,6 +34,7 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 
 		eid, err := i.Redis.Get(context.Background(), token).Result()
 		if err != nil {
+			// TODO: Differentiate between "not found" error and connection error
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
 		}

@@ -16,6 +16,8 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+// TODO: To test this, grab the email id from the database - then, pull all the uuid tokens and match the right one
+
 func TestVerifyPage(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
