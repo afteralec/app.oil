@@ -3,7 +3,6 @@ package handlers
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -18,13 +17,13 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-const TestAddress = "testify@test.com"
+const TestEmailAddress = "testify@test.com"
 
 func TestAddEmailSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestAddEmail(t, &i)
+	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
@@ -40,12 +39,7 @@ func TestAddEmailSuccess(t *testing.T) {
 	res := CallLogin(t, app, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
-
-	body, contentType := AddEmailTestFormData(TestAddress)
-
-	url := fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
+	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
 	if err != nil {
@@ -59,7 +53,7 @@ func TestAddEmailWithoutLogin(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestAddEmail(t, &i)
+	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
@@ -69,11 +63,7 @@ func TestAddEmailWithoutLogin(t *testing.T) {
 
 	app.Post(AddEmailRoute, AddEmail(&i))
 
-	body, contentType := AddEmailTestFormData(TestAddress)
-
-	url := fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
+	req := AddEmailRequest(TestEmailAddress)
 	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -86,7 +76,7 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestAddEmail(t, &i)
+	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
@@ -105,11 +95,7 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 	sessionCookie := cookies[0]
 
 	// TODO: Add more test cases for possible inputs here
-	body, contentType := AddEmailTestFormData("invalid")
-
-	url := fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
+	req := AddEmailRequest("invalid")
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
 	if err != nil {
@@ -123,13 +109,12 @@ func TestAddEmailDBDisconnected(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestAddEmail(t, &i)
+	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
 	app := fiber.New(config)
 
-	// TODO: Extract all of this setup to its own functions?
 	app.Use(sessiondata.New(&i))
 
 	app.Post(LoginRoute, Login(&i))
@@ -140,15 +125,10 @@ func TestAddEmailDBDisconnected(t *testing.T) {
 	res := CallLogin(t, app, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
-
-	// TODO: Add more test cases for possible inputs here
-	body, contentType := AddEmailTestFormData(TestAddress)
+	req := AddEmailRequest(TestEmailAddress)
+	req.AddCookie(sessionCookie)
 
 	i.Close()
-	url := fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -161,7 +141,7 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestAddEmail(t, &i)
+	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
@@ -179,11 +159,14 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	body, contentType := AddEmailMalformedTestFormData()
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("notemail", "blahblahblah")
+	writer.Close()
 
 	url := fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
 	if err != nil {
@@ -193,29 +176,27 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func SetupTestAddEmail(t *testing.T, i *shared.Interfaces) {
-	_, err := i.Database.Exec("DELETE FROM players WHERE username = 'testify';")
+func SetupTestAddEmail(t *testing.T, i *shared.Interfaces, u string, e string) {
+	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
+	_, err := i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = i.Database.Exec("DELETE FROM emails WHERE address = 'testify@test.com';")
+	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s'", e)
+	_, err = i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func AddEmailMalformedTestFormData() (io.Reader, string) {
+func AddEmailRequest(e string) *http.Request {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("notemail", "blahblahblah")
+	writer.WriteField("email", e)
 	writer.Close()
-	return body, writer.FormDataContentType()
-}
 
-func AddEmailTestFormData(address string) (io.Reader, string) {
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("email", address)
-	writer.Close()
-	return body, writer.FormDataContentType()
+	url := fmt.Sprintf("%s%s", shared.TestURL, AddEmailRoute)
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	return req
 }

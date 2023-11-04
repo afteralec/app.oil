@@ -3,7 +3,6 @@ package handlers
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -16,8 +15,6 @@ import (
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/shared"
 )
-
-// TODO: Add operation for revoking and adding permissions
 
 func TestLoginPage(t *testing.T) {
 	views := html.New("../..", ".html")
@@ -66,7 +63,6 @@ func TestLoginSuccess(t *testing.T) {
 	app.Post(RegisterRoute, Register(&i))
 
 	CallRegister(t, app, TestUsername, TestPassword)
-
 	res := CallLogin(t, app, TestUsername, TestPassword)
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
@@ -85,7 +81,6 @@ func TestLoginWithWrongPassword(t *testing.T) {
 	app.Post(RegisterRoute, Register(&i))
 
 	CallRegister(t, app, TestUsername, TestPassword)
-
 	res := CallLogin(t, app, TestUsername, "wrongpassword")
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
@@ -144,13 +139,4 @@ func SetupTestLogin(t *testing.T, i *shared.Interfaces, u string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-}
-
-func LoginTestFormDataWithPW(pw string) (io.Reader, string) {
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("username", "testify")
-	writer.WriteField("password", pw)
-	writer.Close()
-	return body, writer.FormDataContentType()
 }
