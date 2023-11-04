@@ -24,9 +24,10 @@ func TestAddEmailSuccess(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	config := configs.Fiber(views)
-	app := fiber.New(config)
+	app := fiber.New(configs.Fiber(views))
+
 	app.Use(sessiondata.New(&i))
+
 	app.Post(RegisterRoute, Register(&i))
 	app.Post(LoginRoute, Login(&i))
 	app.Post(AddEmailRoute, AddEmail(&i))
