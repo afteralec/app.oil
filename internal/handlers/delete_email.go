@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"context"
-	"log"
+	"database/sql"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -10,6 +10,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+// TODO: This should return error snippets
 func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
@@ -41,9 +42,11 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 
 		e, err := qtx.GetEmail(context.Background(), id)
 		if err != nil {
-			// TODO: Distinguish between an actual not found error and other errors here
-			log.Print(err)
-			c.Status(fiber.StatusNotFound)
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
@@ -54,6 +57,7 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 
 		_, err = qtx.DeleteEmail(context.Background(), id)
 		if err != nil {
+			// TODO: Differentiate between not found and other errors
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}

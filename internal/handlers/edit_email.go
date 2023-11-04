@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -10,6 +11,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+// TODO: This needs to return error snippets
 func EditEmail(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Email string `form:"email"`
@@ -51,13 +53,17 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 
 		e, err := qtx.GetEmail(context.Background(), id)
 		if err != nil {
-			// TODO: Distinguish between a "not found" error and a connection error
-			c.Status(fiber.StatusNotFound)
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+
+			}
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
 		if !e.Verified {
-			c.Status(fiber.StatusBadRequest)
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
@@ -68,7 +74,12 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 
 		_, err = qtx.DeleteEmail(context.Background(), id)
 		if err != nil {
-			// TODO: Distinguish between a "not found" error and a connection error
+			// TODO: Confirm that this is the actual error returned
+			// TODO: This might just be an underlying MySQL err
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -78,7 +89,7 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 			Pid:     pid.(int64),
 		})
 		if err != nil {
-			c.Status(fiber.StatusBadRequest)
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
