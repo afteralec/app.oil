@@ -1,4 +1,4 @@
-package sessiondata
+package session
 
 import (
 	fiber "github.com/gofiber/fiber/v2"

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/middleware/sessiondata"
+	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -26,7 +26,7 @@ func TestAddEmailSuccess(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Use(sessiondata.New(&i))
+	app.Use(session.New(&i))
 
 	app.Post(RegisterRoute, Register(&i))
 	app.Post(LoginRoute, Login(&i))
@@ -55,7 +55,7 @@ func TestAddEmailWithoutLogin(t *testing.T) {
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
 	app := fiber.New(config)
-	app.Use(sessiondata.New(&i))
+	app.Use(session.New(&i))
 	app.Post(AddEmailRoute, AddEmail(&i))
 
 	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
@@ -79,8 +79,7 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 	config := configs.Fiber(views)
 	app := fiber.New(config)
 
-	// TODO: Extract all of this setup to its own functions?
-	app.Use(sessiondata.New(&i))
+	app.Use(session.New(&i))
 
 	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))
@@ -112,7 +111,7 @@ func TestAddEmailDBDisconnected(t *testing.T) {
 	config := configs.Fiber(views)
 	app := fiber.New(config)
 
-	app.Use(sessiondata.New(&i))
+	app.Use(session.New(&i))
 
 	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))
@@ -144,8 +143,7 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	config := configs.Fiber(views)
 	app := fiber.New(config)
 
-	// TODO: Extract all of this setup to its own functions?
-	app.Use(sessiondata.New(&i))
+	app.Use(session.New(&i))
 
 	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))

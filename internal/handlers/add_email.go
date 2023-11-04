@@ -14,9 +14,10 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-const AddEmailRoute = "/player/email/new"
-
-const MaxEmailCount = 3
+const (
+	AddEmailRoute = "/player/email/new"
+	MaxEmailCount = 3
+)
 
 func AddEmail(i *shared.Interfaces) fiber.Handler {
 	type request struct {

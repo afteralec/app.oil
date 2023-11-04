@@ -28,8 +28,7 @@ func TestRegister(t *testing.T) {
 	SetupTestRegister(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
-	config := configs.Fiber(views)
-	app := fiber.New(config)
+	app := fiber.New(configs.Fiber(views))
 
 	app.Post(RegisterRoute, Register(&i))
 

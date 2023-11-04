@@ -14,7 +14,7 @@ import (
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
-	"petrichormud.com/app/internal/middleware/sessiondata"
+	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -30,7 +30,7 @@ func main() {
 
 	app.Use(logger.New())
 	app.Use(csrf.New(configs.CSRF(i.Sessions)))
-	app.Use(sessiondata.New(&i))
+	app.Use(session.New(&i))
 	app.Use(bind.New())
 
 	app.Static("/", "./web/static")

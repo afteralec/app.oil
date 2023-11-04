@@ -18,8 +18,7 @@ func TestLogout(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	config := configs.Fiber(views)
-	app := fiber.New(config)
+	app := fiber.New(configs.Fiber(views))
 
 	app.Post(LogoutRoute, Logout(&i))
 
@@ -34,8 +33,7 @@ func TestLogout(t *testing.T) {
 
 func TestLogoutPage(t *testing.T) {
 	views := html.New("../..", ".html")
-	config := configs.Fiber(views)
-	app := fiber.New(config)
+	app := fiber.New(configs.Fiber(views))
 
 	app.Get(LogoutRoute, LogoutPage())
 

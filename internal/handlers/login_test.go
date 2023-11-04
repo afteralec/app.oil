@@ -56,8 +56,7 @@ func TestLoginSuccess(t *testing.T) {
 	SetupTestLogin(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
-	config := configs.Fiber(views)
-	app := fiber.New(config)
+	app := fiber.New(configs.Fiber(views))
 
 	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))
@@ -74,8 +73,7 @@ func TestLoginWithWrongPassword(t *testing.T) {
 	SetupTestLogin(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
-	config := configs.Fiber(views)
-	app := fiber.New(config)
+	app := fiber.New(configs.Fiber(views))
 
 	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))
@@ -92,8 +90,7 @@ func TestLoginWithMalformedFormData(t *testing.T) {
 	SetupTestLogin(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
-	config := configs.Fiber(views)
-	app := fiber.New(config)
+	app := fiber.New(configs.Fiber(views))
 
 	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))
