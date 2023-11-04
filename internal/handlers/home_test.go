@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -15,9 +16,9 @@ func TestHomePage(t *testing.T) {
 	config := configs.Fiber(views)
 	app := fiber.New(config)
 
-	app.Get(HomeRoute, Home())
+	app.Get(HomeRoute, HomePage())
 
-	req := httptest.NewRequest("GET", "http://petrichormud.com", nil)
+	req := httptest.NewRequest(http.MethodGet, "http://petrichormud.com", nil)
 	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)

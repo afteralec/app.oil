@@ -8,7 +8,6 @@ require (
 	github.com/gofiber/fiber/v2 v2.50.0
 	github.com/gofiber/template/html/v2 v2.0.5
 	github.com/google/uuid v1.4.0
-	github.com/hexon/mysqltsv v0.1.0
 	github.com/redis/go-redis/v9 v9.2.1
 	github.com/resendlabs/resend-go v1.7.0
 	github.com/stretchr/testify v1.8.4
