@@ -10,6 +10,7 @@ import (
 	html "github.com/gofiber/template/html/v2"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/middleware"
 	"petrichormud.com/app/internal/setup"
 	"petrichormud.com/app/internal/shared"
 )
@@ -25,7 +26,10 @@ func main() {
 	config := configs.Fiber(views)
 	app := fiber.New(config)
 
-	setup.App(app, &i)
+	middleware.Setup(app, &i)
+	app.Static("/", "./web/static")
+	app.Static("/loaders", "./web/svg/loaders")
+	setup.Handlers(app, &i)
 
 	log.Fatal(app.Listen(":8008"))
 }

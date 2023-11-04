@@ -23,22 +23,21 @@ func TestAddEmailSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
-
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
 	app := fiber.New(config)
-
 	app.Use(sessiondata.New(&i))
-
-	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
 	app.Post(AddEmailRoute, AddEmail(&i))
+
+	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
 	CallRegister(t, app, TestUsername, TestPassword)
 	res := CallLogin(t, app, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
+
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -52,16 +51,13 @@ func TestAddEmailSuccess(t *testing.T) {
 func TestAddEmailWithoutLogin(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
-
-	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
-
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
 	app := fiber.New(config)
-
 	app.Use(sessiondata.New(&i))
-
 	app.Post(AddEmailRoute, AddEmail(&i))
+
+	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
 	req := AddEmailRequest(TestEmailAddress)
 	res, err := app.Test(req)

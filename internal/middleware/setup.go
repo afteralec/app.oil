@@ -1,4 +1,4 @@
-package setup
+package middleware
 
 import (
 	fiber "github.com/gofiber/fiber/v2"
@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func Middleware(app *fiber.App, i *shared.Interfaces) {
+func Setup(app *fiber.App, i *shared.Interfaces) {
 	app.Use(logger.New())
 	app.Use(csrf.New(configs.CSRF(i.Sessions)))
 	app.Use(sessiondata.New(i))

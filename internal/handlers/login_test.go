@@ -37,13 +37,13 @@ func TestLoginNonExistantUser(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestLogin(t, &i, TestUsername)
-
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
 	app := fiber.New(config)
 
 	app.Post(LoginRoute, Login(&i))
+
+	SetupTestLogin(t, &i, TestUsername)
 
 	res := CallLogin(t, app, TestUsername, TestPassword)
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
