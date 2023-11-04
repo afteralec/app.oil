@@ -1,3 +1,6 @@
 package shared
 
-const HeaderHXAcceptable = "X-HX-Acceptable"
+const (
+	TestURL            = "http://petrichormud.com"
+	HeaderHXAcceptable = "X-HX-Acceptable"
+)

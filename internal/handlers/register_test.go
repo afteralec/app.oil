@@ -17,11 +17,16 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+const (
+	TestUsername = "testify"
+	TestPassword = "T3sted_tested"
+)
+
 func TestRegister(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestRegister(&i, t)
+	SetupTestRegister(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
@@ -29,28 +34,38 @@ func TestRegister(t *testing.T) {
 
 	app.Post(RegisterRoute, Register(&i))
 
-	body, contentType := RegisterTestFormData()
+	res := CallRegister(t, app, TestUsername, TestPassword)
 
-	// TODO: Extract this test url to a constant?
-	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
+	require.Equal(t, fiber.StatusCreated, res.StatusCode)
+}
+
+func CallRegister(t *testing.T, app *fiber.App, u string, pw string) *http.Response {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("username", u)
+	writer.WriteField("password", pw)
+	writer.Close()
+
+	url := fmt.Sprintf("%s%s", shared.TestURL, RegisterRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, fiber.StatusCreated, res.StatusCode)
+	return res
 }
 
-func SetupTestRegister(i *shared.Interfaces, t *testing.T) {
-	_, err := i.Database.Exec("DELETE FROM players WHERE username = 'testify';")
+func SetupTestRegister(t *testing.T, i *shared.Interfaces, u string) {
+	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
+	_, err := i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func RegisterTestFormData() (io.Reader, string) {
+func RegisterTestFormData(u string, pw string) (io.Reader, string) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("username", "testify")

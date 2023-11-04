@@ -36,7 +36,6 @@ func main() {
 	app.Static("/", "./web/static")
 	app.Static("/loaders", "./web/svg/loaders")
 
-	// TODO: Rename this to HomePage
 	app.Get(handlers.HomeRoute, handlers.HomePage())
 
 	app.Post(handlers.LoginRoute, handlers.Login(&i))

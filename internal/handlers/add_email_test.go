@@ -36,21 +36,12 @@ func TestAddEmailSuccess(t *testing.T) {
 	app.Post(RegisterRoute, Register(&i))
 	app.Post(AddEmailRoute, AddEmail(&i))
 
-	body, contentType := RegisterTestFormData()
+	CallRegister(t, app, TestUsername, TestPassword)
 
-	// TODO: Extract this test url to a constant?
-	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
+	body, contentType := LoginTestFormData()
+
+	url := fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	_, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	body, contentType = LoginTestFormData()
-
-	url = fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
-	req = httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", contentType)
 	res, err := app.Test(req)
 	if err != nil {
@@ -118,21 +109,12 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 	app.Post(RegisterRoute, Register(&i))
 	app.Post(AddEmailRoute, AddEmail(&i))
 
-	body, contentType := RegisterTestFormData()
+	CallRegister(t, app, TestUsername, TestPassword)
 
-	// TODO: Extract this test url to a constant?
-	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
+	body, contentType := LoginTestFormData()
+
+	url := fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	_, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	body, contentType = LoginTestFormData()
-
-	url = fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
-	req = httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", contentType)
 	res, err := app.Test(req)
 	if err != nil {
@@ -174,21 +156,12 @@ func TestAddEmailDBDisconnected(t *testing.T) {
 	app.Post(RegisterRoute, Register(&i))
 	app.Post(AddEmailRoute, AddEmail(&i))
 
-	body, contentType := RegisterTestFormData()
+	CallRegister(t, app, TestUsername, TestPassword)
 
-	// TODO: Extract this test url to a constant?
-	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
+	body, contentType := LoginTestFormData()
+
+	url := fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	_, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	body, contentType = LoginTestFormData()
-
-	url = fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
-	req = httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", contentType)
 	res, err := app.Test(req)
 	if err != nil {
@@ -231,21 +204,12 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	app.Post(RegisterRoute, Register(&i))
 	app.Post(AddEmailRoute, AddEmail(&i))
 
-	body, contentType := RegisterTestFormData()
+	CallRegister(t, app, TestUsername, TestPassword)
 
-	// TODO: Extract this test url to a constant?
-	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
+	body, contentType := LoginTestFormData()
+
+	url := fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	_, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	body, contentType = LoginTestFormData()
-
-	url = fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
-	req = httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", contentType)
 	res, err := app.Test(req)
 	if err != nil {
