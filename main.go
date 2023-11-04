@@ -59,7 +59,5 @@ func main() {
 
 	app.Get("/profile", handlers.ProfilePage(&i))
 
-	app.Get(handlers.PermissionsRoute, handlers.PermissionsPage(&i))
-
 	log.Fatal(app.Listen(":8008"))
 }

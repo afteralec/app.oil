@@ -6,8 +6,8 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/password"
-	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/roles"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
 )
@@ -75,6 +75,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			context.Background(),
 			queries.CreatePlayerParams{
 				Username: u,
+				Role:     roles.Player,
 				PwHash:   pw_hash,
 			},
 		)
@@ -95,19 +96,6 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("web/views/partials/register/err-internal", c.Locals("bind"), "")
 		}
-		perms := permissions.DefaultSet()
-		_, err = qtx.CreatePlayerPermissions(
-			context.Background(),
-			permissions.MakeParams(perms[:], pid),
-		)
-		if err != nil {
-			// TODO: Distinguish between error types here?
-			c.Append("HX-Retarget", "#register-error")
-			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
-			c.Status(fiber.StatusInternalServerError)
-			return c.Render("web/views/partials/register/err-internal", c.Locals("bind"), "")
-		}
 
 		err = tx.Commit()
 		if err != nil {
@@ -119,7 +107,6 @@ func Register(i *shared.Interfaces) fiber.Handler {
 		}
 
 		username.Cache(i.Redis, pid, p.Username)
-		permissions.Cache(i.Redis, pid, perms[:])
 
 		sess, err := i.Sessions.Get(c)
 		if err != nil {

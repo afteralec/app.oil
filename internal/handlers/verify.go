@@ -3,12 +3,10 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"slices"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
 )
@@ -66,16 +64,6 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/401", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
-		perms, err := permissions.List(i, pid.(int64))
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
-		}
-		if !slices.Contains(perms, permissions.AddEmail) {
-			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/401", c.Locals("bind"), "web/views/layouts/standalone")
-		}
-
 		un, err := username.Get(i.Redis, pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -97,16 +85,6 @@ func VerifyEmail(i *shared.Interfaces) fiber.Handler {
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
 			// TODO: This should redirect them back to the login page for this token
-			return nil
-		}
-
-		perms, err := permissions.List(i, pid.(int64))
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-		if !slices.Contains(perms, permissions.AddEmail) {
-			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 

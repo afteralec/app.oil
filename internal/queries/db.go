@@ -33,9 +33,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createPlayerStmt, err = db.PrepareContext(ctx, createPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePlayer: %w", err)
 	}
-	if q.createPlayerPermissionsStmt, err = db.PrepareContext(ctx, createPlayerPermissions); err != nil {
-		return nil, fmt.Errorf("error preparing query CreatePlayerPermissions: %w", err)
-	}
 	if q.deleteEmailStmt, err = db.PrepareContext(ctx, deleteEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteEmail: %w", err)
 	}
@@ -54,14 +51,14 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getPlayerUsernameStmt, err = db.PrepareContext(ctx, getPlayerUsername); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayerUsername: %w", err)
 	}
+	if q.getRoleStmt, err = db.PrepareContext(ctx, getRole); err != nil {
+		return nil, fmt.Errorf("error preparing query GetRole: %w", err)
+	}
 	if q.getVerifiedEmailByAddressStmt, err = db.PrepareContext(ctx, getVerifiedEmailByAddress); err != nil {
 		return nil, fmt.Errorf("error preparing query GetVerifiedEmailByAddress: %w", err)
 	}
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
-	}
-	if q.listPlayerPermissionsStmt, err = db.PrepareContext(ctx, listPlayerPermissions); err != nil {
-		return nil, fmt.Errorf("error preparing query ListPlayerPermissions: %w", err)
 	}
 	if q.markEmailVerifiedStmt, err = db.PrepareContext(ctx, markEmailVerified); err != nil {
 		return nil, fmt.Errorf("error preparing query MarkEmailVerified: %w", err)
@@ -84,11 +81,6 @@ func (q *Queries) Close() error {
 	if q.createPlayerStmt != nil {
 		if cerr := q.createPlayerStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPlayerStmt: %w", cerr)
-		}
-	}
-	if q.createPlayerPermissionsStmt != nil {
-		if cerr := q.createPlayerPermissionsStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createPlayerPermissionsStmt: %w", cerr)
 		}
 	}
 	if q.deleteEmailStmt != nil {
@@ -121,6 +113,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getPlayerUsernameStmt: %w", cerr)
 		}
 	}
+	if q.getRoleStmt != nil {
+		if cerr := q.getRoleStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getRoleStmt: %w", cerr)
+		}
+	}
 	if q.getVerifiedEmailByAddressStmt != nil {
 		if cerr := q.getVerifiedEmailByAddressStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getVerifiedEmailByAddressStmt: %w", cerr)
@@ -129,11 +126,6 @@ func (q *Queries) Close() error {
 	if q.listEmailsStmt != nil {
 		if cerr := q.listEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listEmailsStmt: %w", cerr)
-		}
-	}
-	if q.listPlayerPermissionsStmt != nil {
-		if cerr := q.listPlayerPermissionsStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listPlayerPermissionsStmt: %w", cerr)
 		}
 	}
 	if q.markEmailVerifiedStmt != nil {
@@ -183,16 +175,15 @@ type Queries struct {
 	countEmailsStmt               *sql.Stmt
 	createEmailStmt               *sql.Stmt
 	createPlayerStmt              *sql.Stmt
-	createPlayerPermissionsStmt   *sql.Stmt
 	deleteEmailStmt               *sql.Stmt
 	getEmailStmt                  *sql.Stmt
 	getPlayerStmt                 *sql.Stmt
 	getPlayerByUsernameStmt       *sql.Stmt
 	getPlayerPWHashStmt           *sql.Stmt
 	getPlayerUsernameStmt         *sql.Stmt
+	getRoleStmt                   *sql.Stmt
 	getVerifiedEmailByAddressStmt *sql.Stmt
 	listEmailsStmt                *sql.Stmt
-	listPlayerPermissionsStmt     *sql.Stmt
 	markEmailVerifiedStmt         *sql.Stmt
 }
 
@@ -203,16 +194,15 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		countEmailsStmt:               q.countEmailsStmt,
 		createEmailStmt:               q.createEmailStmt,
 		createPlayerStmt:              q.createPlayerStmt,
-		createPlayerPermissionsStmt:   q.createPlayerPermissionsStmt,
 		deleteEmailStmt:               q.deleteEmailStmt,
 		getEmailStmt:                  q.getEmailStmt,
 		getPlayerStmt:                 q.getPlayerStmt,
 		getPlayerByUsernameStmt:       q.getPlayerByUsernameStmt,
 		getPlayerPWHashStmt:           q.getPlayerPWHashStmt,
 		getPlayerUsernameStmt:         q.getPlayerUsernameStmt,
+		getRoleStmt:                   q.getRoleStmt,
 		getVerifiedEmailByAddressStmt: q.getVerifiedEmailByAddressStmt,
 		listEmailsStmt:                q.listEmailsStmt,
-		listPlayerPermissionsStmt:     q.listPlayerPermissionsStmt,
 		markEmailVerifiedStmt:         q.markEmailVerifiedStmt,
 	}
 }

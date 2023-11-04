@@ -1,8 +1,11 @@
 -- name: CreatePlayer :execresult
-INSERT INTO players (username, pw_hash) VALUES (?, ?);
+INSERT INTO players (username, role, pw_hash) VALUES (?, ?, ?);
 
 -- name: GetPlayer :one
 SELECT * FROM players WHERE id = ?;
+
+-- name: GetRole :one
+SELECT role FROM players WHERE id = ?;
 
 -- name: GetPlayerByUsername :one
 SELECT * FROM players WHERE username = ?;

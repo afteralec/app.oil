@@ -20,15 +20,8 @@ type Email struct {
 type Player struct {
 	PwHash    string
 	Username  string
+	Role      string
 	CreatedAt sql.NullTime
 	UpdatedAt sql.NullTime
 	ID        int64
-}
-
-type PlayerPermission struct {
-	Permission string
-	CreatedAt  sql.NullTime
-	UpdatedAt  sql.NullTime
-	Pid        int64
-	ID         int64
 }

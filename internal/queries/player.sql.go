@@ -11,20 +11,21 @@ import (
 )
 
 const createPlayer = `-- name: CreatePlayer :execresult
-INSERT INTO players (username, pw_hash) VALUES (?, ?)
+INSERT INTO players (username, role, pw_hash) VALUES (?, ?, ?)
 `
 
 type CreatePlayerParams struct {
 	Username string
+	Role     string
 	PwHash   string
 }
 
 func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (sql.Result, error) {
-	return q.exec(ctx, q.createPlayerStmt, createPlayer, arg.Username, arg.PwHash)
+	return q.exec(ctx, q.createPlayerStmt, createPlayer, arg.Username, arg.Role, arg.PwHash)
 }
 
 const getPlayer = `-- name: GetPlayer :one
-SELECT pw_hash, username, created_at, updated_at, id FROM players WHERE id = ?
+SELECT pw_hash, username, role, created_at, updated_at, id FROM players WHERE id = ?
 `
 
 func (q *Queries) GetPlayer(ctx context.Context, id int64) (Player, error) {
@@ -33,6 +34,7 @@ func (q *Queries) GetPlayer(ctx context.Context, id int64) (Player, error) {
 	err := row.Scan(
 		&i.PwHash,
 		&i.Username,
+		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ID,
@@ -41,7 +43,7 @@ func (q *Queries) GetPlayer(ctx context.Context, id int64) (Player, error) {
 }
 
 const getPlayerByUsername = `-- name: GetPlayerByUsername :one
-SELECT pw_hash, username, created_at, updated_at, id FROM players WHERE username = ?
+SELECT pw_hash, username, role, created_at, updated_at, id FROM players WHERE username = ?
 `
 
 func (q *Queries) GetPlayerByUsername(ctx context.Context, username string) (Player, error) {
@@ -50,6 +52,7 @@ func (q *Queries) GetPlayerByUsername(ctx context.Context, username string) (Pla
 	err := row.Scan(
 		&i.PwHash,
 		&i.Username,
+		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ID,
@@ -76,4 +79,15 @@ func (q *Queries) GetPlayerUsername(ctx context.Context, username string) (strin
 	row := q.queryRow(ctx, q.getPlayerUsernameStmt, getPlayerUsername, username)
 	err := row.Scan(&username)
 	return username, err
+}
+
+const getRole = `-- name: GetRole :one
+SELECT role FROM players WHERE id = ?
+`
+
+func (q *Queries) GetRole(ctx context.Context, id int64) (string, error) {
+	row := q.queryRow(ctx, q.getRoleStmt, getRole, id)
+	var role string
+	err := row.Scan(&role)
+	return role, err
 }

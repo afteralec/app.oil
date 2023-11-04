@@ -3,12 +3,10 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"slices"
 
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/password"
-	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
 )
@@ -58,25 +56,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/login/err-invalid", &fiber.Map{}, "")
 		}
 
-		// TODO: Get tests up around this
-		// TODO: Extract this behavior to a function in permissions?
 		pid := p.ID
-		perms, err := permissions.List(i, pid)
-		if err != nil {
-			c.Append("HX-Retarget", "#login-error")
-			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
-			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/partials/login/err-invalid", &fiber.Map{}, "")
-		}
-		if !slices.Contains(perms, permissions.Login) {
-			c.Append("HX-Retarget", "#login-error")
-			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
-			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/partials/login/err-invalid", &fiber.Map{}, "")
-		}
-
 		err = username.Cache(i.Redis, pid, p.Username)
 		if err != nil {
 			c.Append("HX-Retarget", "#login-error")
