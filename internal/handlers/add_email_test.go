@@ -37,27 +37,17 @@ func TestAddEmailSuccess(t *testing.T) {
 	app.Post(AddEmailRoute, AddEmail(&i))
 
 	CallRegister(t, app, TestUsername, TestPassword)
-
-	body, contentType := LoginTestFormData()
-
-	url := fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	res, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	res := CallLogin(t, app, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	body, contentType = AddEmailTestFormData(TestAddress)
+	body, contentType := AddEmailTestFormData(TestAddress)
 
-	url = fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
-	req = httptest.NewRequest(http.MethodPost, url, body)
+	url := fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
+	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", contentType)
 	req.AddCookie(sessionCookie)
-	res, err = app.Test(req)
+	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -110,28 +100,18 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 	app.Post(AddEmailRoute, AddEmail(&i))
 
 	CallRegister(t, app, TestUsername, TestPassword)
-
-	body, contentType := LoginTestFormData()
-
-	url := fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	res, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	res := CallLogin(t, app, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
 	// TODO: Add more test cases for possible inputs here
-	body, contentType = AddEmailTestFormData("invalid")
+	body, contentType := AddEmailTestFormData("invalid")
 
-	url = fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
-	req = httptest.NewRequest(http.MethodPost, url, body)
+	url := fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
+	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", contentType)
 	req.AddCookie(sessionCookie)
-	res, err = app.Test(req)
+	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -157,29 +137,19 @@ func TestAddEmailDBDisconnected(t *testing.T) {
 	app.Post(AddEmailRoute, AddEmail(&i))
 
 	CallRegister(t, app, TestUsername, TestPassword)
-
-	body, contentType := LoginTestFormData()
-
-	url := fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	res, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	res := CallLogin(t, app, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
 	// TODO: Add more test cases for possible inputs here
-	body, contentType = AddEmailTestFormData(TestAddress)
+	body, contentType := AddEmailTestFormData(TestAddress)
 
 	i.Close()
-	url = fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
-	req = httptest.NewRequest(http.MethodPost, url, body)
+	url := fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
+	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", contentType)
 	req.AddCookie(sessionCookie)
-	res, err = app.Test(req)
+	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -205,27 +175,17 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	app.Post(AddEmailRoute, AddEmail(&i))
 
 	CallRegister(t, app, TestUsername, TestPassword)
-
-	body, contentType := LoginTestFormData()
-
-	url := fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	res, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	res := CallLogin(t, app, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	body, contentType = AddEmailMalformedTestFormData()
+	body, contentType := AddEmailMalformedTestFormData()
 
-	url = fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
-	req = httptest.NewRequest(http.MethodPost, url, body)
+	url := fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
+	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", contentType)
 	req.AddCookie(sessionCookie)
-	res, err = app.Test(req)
+	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}

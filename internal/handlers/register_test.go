@@ -3,7 +3,6 @@ package handlers
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -63,13 +62,4 @@ func SetupTestRegister(t *testing.T, i *shared.Interfaces, u string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-}
-
-func RegisterTestFormData(u string, pw string) (io.Reader, string) {
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("username", "testify")
-	writer.WriteField("password", "T3sted_tested")
-	writer.Close()
-	return body, writer.FormDataContentType()
 }

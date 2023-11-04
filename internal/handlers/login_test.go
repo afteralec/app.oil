@@ -40,7 +40,7 @@ func TestLoginNonExistantUser(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestLogin(&i, t)
+	SetupTestLogin(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
@@ -48,15 +48,7 @@ func TestLoginNonExistantUser(t *testing.T) {
 
 	app.Post(LoginRoute, Login(&i))
 
-	body, contentType := LoginTestFormData()
-
-	req := httptest.NewRequest(http.MethodPost, "http://petrichormud.com/login", body)
-	req.Header.Set("Content-Type", contentType)
-	res, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	res := CallLogin(t, app, TestUsername, TestPassword)
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
@@ -64,7 +56,7 @@ func TestLoginSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestLogin(&i, t)
+	SetupTestLogin(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
@@ -73,29 +65,9 @@ func TestLoginSuccess(t *testing.T) {
 	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))
 
-	body, contentType := LoginTestFormData()
+	CallRegister(t, app, TestUsername, TestPassword)
 
-	// TODO: Extract this test url to a constant?
-	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	res, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusCreated, res.StatusCode)
-
-	body, contentType = LoginTestFormData()
-
-	url = fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
-	req = httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	res, err = app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	res := CallLogin(t, app, TestUsername, TestPassword)
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
@@ -103,7 +75,7 @@ func TestLoginWithWrongPassword(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestLogin(&i, t)
+	SetupTestLogin(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
@@ -112,29 +84,9 @@ func TestLoginWithWrongPassword(t *testing.T) {
 	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))
 
-	body, contentType := LoginTestFormData()
+	CallRegister(t, app, TestUsername, TestPassword)
 
-	// TODO: Extract this test url to a constant?
-	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	res, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusCreated, res.StatusCode)
-
-	body, contentType = LoginTestFormDataWithPW("wrongpassword")
-
-	url = fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
-	req = httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	res, err = app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	res := CallLogin(t, app, TestUsername, "wrongpassword")
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
@@ -142,7 +94,7 @@ func TestLoginWithMalformedFormData(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestLogin(&i, t)
+	SetupTestLogin(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
@@ -151,54 +103,47 @@ func TestLoginWithMalformedFormData(t *testing.T) {
 	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))
 
-	body, contentType := LoginTestFormData()
+	CallRegister(t, app, TestUsername, TestPassword)
 
-	// TODO: Extract this test url to a constant?
-	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("username", "testify")
+	writer.Close()
+
+	url := fmt.Sprintf("%s%s", shared.TestURL, LoginRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func CallLogin(t *testing.T, app *fiber.App, u string, pw string) *http.Response {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("username", u)
+	writer.WriteField("password", pw)
+	writer.Close()
+
+	url := fmt.Sprintf("%s%s", shared.TestURL, LoginRoute)
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, fiber.StatusCreated, res.StatusCode)
+	return res
+}
 
-	body, contentType = LoginTestMalformedFormData()
-
-	url = fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
-	req = httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", contentType)
-	res, err = app.Test(req)
+func SetupTestLogin(t *testing.T, i *shared.Interfaces, u string) {
+	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
+	_, err := i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
-}
-
-func SetupTestLogin(i *shared.Interfaces, t *testing.T) {
-	_, err := i.Database.Exec("DELETE FROM players WHERE username = 'testify';")
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func LoginTestFormData() (io.Reader, string) {
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("username", "testify")
-	writer.WriteField("password", "T3sted_tested")
-	writer.Close()
-	return body, writer.FormDataContentType()
-}
-
-func LoginTestMalformedFormData() (io.Reader, string) {
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("username", "testify")
-	writer.Close()
-	return body, writer.FormDataContentType()
 }
 
 func LoginTestFormDataWithPW(pw string) (io.Reader, string) {
