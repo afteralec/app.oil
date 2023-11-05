@@ -10,31 +10,35 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-// TODO: This should return error snippets
 func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return nil
+			return c.Render("web/views/partials/profile/email/delete/err-401", &fiber.Map{}, "")
+
 		}
 
 		eid := c.Params("id")
 		if len(eid) == 0 {
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			return c.Render("web/views/partials/profile/email/delete/err-internal", &fiber.Map{}, "")
 		}
 
 		id, err := strconv.ParseInt(eid, 10, 64)
 		if err != nil {
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			return c.Render("web/views/partials/profile/email/delete/err-internal", &fiber.Map{}, "")
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/deleted/err-internal", &fiber.Map{}, "")
 		}
 		defer tx.Rollback()
 
@@ -43,32 +47,37 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 		e, err := qtx.GetEmail(context.Background(), id)
 		if err != nil {
 			if err == sql.ErrNoRows {
+				c.Append(shared.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusNotFound)
-				return nil
+				return c.Render("web/views/partials/profile/email/deleted/err-internal", &fiber.Map{}, "")
 			}
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/deleted/err-internal", &fiber.Map{}, "")
 		}
 
 		if e.Pid != pid.(int64) {
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
-			return nil
+			return c.Render("web/views/partials/profile/email/deleted/err-internal", &fiber.Map{}, "")
 		}
 
 		_, err = qtx.DeleteEmail(context.Background(), id)
 		if err != nil {
 			// TODO: Differentiate between not found and other errors
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/deleted/err-internal", &fiber.Map{}, "")
 		}
 
 		err = tx.Commit()
 		if err != nil {
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/deleted/err-internal", &fiber.Map{}, "")
 		}
 
-		return c.Render("web/views/partials/profile/email/deleted-email", &fiber.Map{
+		return c.Render("web/views/partials/profile/email/deleted/success", &fiber.Map{
 			"ID":      e.ID,
 			"Address": e.Address,
 		}, "")

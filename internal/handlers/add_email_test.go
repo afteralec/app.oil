@@ -73,8 +73,6 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
-
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
 	app := fiber.New(config)
@@ -84,6 +82,8 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))
 	app.Post(AddEmailRoute, AddEmail(&i))
+
+	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
 	CallRegister(t, app, TestUsername, TestPassword)
 	res := CallLogin(t, app, TestUsername, TestPassword)
@@ -105,8 +105,6 @@ func TestAddEmailDBDisconnected(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
-
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
 	app := fiber.New(config)
@@ -116,6 +114,8 @@ func TestAddEmailDBDisconnected(t *testing.T) {
 	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))
 	app.Post(AddEmailRoute, AddEmail(&i))
+
+	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
 	CallRegister(t, app, TestUsername, TestPassword)
 	res := CallLogin(t, app, TestUsername, TestPassword)
@@ -137,8 +137,6 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
-
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
 	app := fiber.New(config)
@@ -148,6 +146,8 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	app.Post(LoginRoute, Login(&i))
 	app.Post(RegisterRoute, Register(&i))
 	app.Post(AddEmailRoute, AddEmail(&i))
+
+	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
 	CallRegister(t, app, TestUsername, TestPassword)
 	res := CallLogin(t, app, TestUsername, TestPassword)
