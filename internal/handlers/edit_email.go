@@ -20,32 +20,47 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		r := new(request)
 		if err := c.BodyParser(r); err != nil {
+			c.Append("HX-Retarget", "profile-email-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 
 		pid := c.Locals("pid")
 		if pid == nil {
+			c.Append("HX-Retarget", "profile-email-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return nil
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 
 		eid := c.Params("id")
 		if len(eid) == 0 {
+			c.Append("HX-Retarget", "profile-email-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 
 		id, err := strconv.ParseInt(eid, 10, 64)
 		if err != nil {
+			c.Append("HX-Retarget", "profile-email-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
+			c.Append("HX-Retarget", "profile-email-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 		defer tx.Rollback()
 
@@ -54,22 +69,33 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 		e, err := qtx.GetEmail(context.Background(), id)
 		if err != nil {
 			if err == sql.ErrNoRows {
+				c.Append("HX-Retarget", "profile-email-error")
+				c.Append("HX-Reswap", "outerHTML")
+				c.Append(shared.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusNotFound)
-				return nil
-
+				return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 			}
+			c.Append("HX-Retarget", "profile-email-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 
 		if !e.Verified {
+			c.Append("HX-Retarget", "profile-email-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
-			return nil
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 
 		if e.Pid != pid.(int64) {
+			c.Append("HX-Retarget", "profile-email-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
-			return nil
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 
 		_, err = qtx.DeleteEmail(context.Background(), id)
@@ -77,11 +103,17 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 			// TODO: Confirm that this is the actual error returned
 			// TODO: This might just be an underlying MySQL err
 			if err == sql.ErrNoRows {
+				c.Append("HX-Retarget", "profile-email-error")
+				c.Append("HX-Reswap", "outerHTML")
+				c.Append(shared.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusNotFound)
-				return nil
+				return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 			}
+			c.Append("HX-Retarget", "profile-email-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 
 		result, err := qtx.CreateEmail(context.Background(), queries.CreateEmailParams{
@@ -89,23 +121,32 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 			Pid:     pid.(int64),
 		})
 		if err != nil {
+			c.Append("HX-Retarget", "profile-email-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 
 		id, err = result.LastInsertId()
 		if err != nil {
+			c.Append("HX-Retarget", "profile-email-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 
 		err = tx.Commit()
 		if err != nil {
+			c.Append("HX-Retarget", "profile-email-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 
-		return c.Render("web/views/partials/profile/email/unverified-email", &fiber.Map{
+		return c.Render("web/views/partials/profile/email/unverified", &fiber.Map{
 			"ID":       id,
 			"Address":  r.Email,
 			"Verified": false,

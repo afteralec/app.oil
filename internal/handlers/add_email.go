@@ -32,7 +32,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
-			return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
+			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 		}
 
 		// TODO: Open a transaction up here
@@ -42,7 +42,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
+			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 		}
 
 		if ec >= MaxEmailCount {
@@ -78,7 +78,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 				c.Append("HX-Reswap", "innerHTML")
 				c.Append(shared.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
+				return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 			}
 		}
 		if err == nil {
@@ -111,7 +111,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
+			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 		}
 
 		id, err := result.LastInsertId()
@@ -120,7 +120,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
+			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 		}
 
 		err = email.Verify(i.Redis, id, e.Address)
@@ -129,11 +129,11 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("web/views/partials/profile/email/err-err", &fiber.Map{}, "")
+			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 		}
 
 		c.Status(fiber.StatusCreated)
-		return c.Render("web/views/partials/profile/email/new-email", &fiber.Map{
+		return c.Render("web/views/partials/profile/email/unverified/new", &fiber.Map{
 			"ID":      id,
 			"Address": e.Address,
 			"Created": true,

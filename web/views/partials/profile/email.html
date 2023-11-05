@@ -5,6 +5,7 @@
   <header class="pl-3 md:pl-0">
     <h1 class="text-xl font-semibold leading-none">Email</h1>
   </header>
+  <div id="profile-email-error" class="w-[60%]"></div>
   <!-- prettier-ignore -->
   {{ template "web/views/partials/profile/email/no-email" }}
   {{ template "web/views/partials/profile/email/add-email" . }}
@@ -12,9 +13,9 @@
     <!-- prettier-ignore -->
     {{ range .Emails }}
       {{ if .Verified }}
-        {{ template "web/views/partials/profile/email/verified-email" . }}
+        {{ template "web/views/partials/profile/email/verified" . }}
       {{- else }}
-        {{ template "web/views/partials/profile/email/unverified-email" . }}
+        {{ template "web/views/partials/profile/email/unverified" . }}
       {{- end}}
     {{- end }}
   </div>
