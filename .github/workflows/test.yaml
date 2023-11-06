@@ -45,7 +45,7 @@ jobs:
           sqlx migrate run -D "mysql://root:pass@127.0.0.1/test" --source ./db/migrations
       - name: Run Tests
         run: |
-          go test ./...
+          make test
         env:
           RUN_INTEGRATION_TESTS: true
           DATABASE_URL: root:pass@/test
