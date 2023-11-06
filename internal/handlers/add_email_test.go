@@ -3,7 +3,6 @@ package handlers
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -40,7 +39,6 @@ func TestAddEmailSuccess(t *testing.T) {
 
 	CallRegister(t, app, TestUsername, TestPassword)
 	res := CallLogin(t, app, TestUsername, TestPassword)
-	log.Print(res)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
