@@ -1,9 +1,17 @@
 <header class="flex items-center justify-center">
   <nav
-    class="relative flex w-full max-w-10xl items-center justify-end px-6 py-2"
+    class="relative flex w-full max-w-10xl items-center justify-start px-6 py-2"
   >
+    <a href="/">
+      <iconify-icon
+        icon="wi:raindrop"
+        class="mr-auto hover:text-primary/90"
+        height="48"
+        width="48"
+      ></iconify-icon>
+    </a>
     <ul
-      class="flex-l group flex list-none items-center justify-center space-x-[1.5]"
+      class="flex-l group ml-auto flex list-none items-center justify-center space-x-[1.5]"
     >
       <!-- prettier-ignore -->
       {{ if .PID -}}
