@@ -1,8 +1,5 @@
-run:
-	go run cmd/main/main.go
-
 test:
-	BASE_URL=http://localhost:8008 SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=true go test -v ./...
+	SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=true go test -v ./...
 
 dev:
 	BASE_URL=http://localhost:8008 SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=true go run main.go
