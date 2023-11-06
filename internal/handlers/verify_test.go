@@ -39,3 +39,38 @@ func TestVerifyPage(t *testing.T) {
 
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
+
+func TestVerifyUnauthorized(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+
+	app.Use(session.New(&i))
+	app.Use(bind.New())
+
+	app.Post(VerifyRoute, Verify(&i))
+
+	url := fmt.Sprintf("%s%s", shared.TestURL, VerifyRoute)
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func SetupTestVerify(t *testing.T, i *shared.Interfaces, u string, e string) {
+	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
+	_, err := i.Database.Exec(query)
+	if err != nil {
+		t.Fatal(err)
+	}
+	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s'", e)
+	_, err = i.Database.Exec(query)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

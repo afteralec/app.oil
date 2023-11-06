@@ -15,6 +15,12 @@ const VerifyRoute = "/verify"
 
 func VerifyPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		pid := c.Locals("pid")
+		if pid == nil {
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+		}
+
 		token := c.Query("t")
 		exists, err := i.Redis.Exists(context.Background(), token).Result()
 		if err != nil {
@@ -22,14 +28,9 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 		if exists != 1 {
-			c.Status(fiber.StatusUnauthorized)
+			c.Status(fiber.StatusNotFound)
+			// TODO: Make this a not-found response to this
 			return c.Render("web/views/401", c.Locals("bind"), "web/views/layouts/standalone")
-		}
-
-		pid := c.Locals("pid")
-		if pid == nil {
-			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
 		eid, err := i.Redis.Get(context.Background(), token).Result()
