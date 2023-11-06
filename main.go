@@ -49,7 +49,7 @@ func main() {
 	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
 	app.Delete(handlers.EmailRoute, handlers.DeleteEmail(&i))
 	app.Put(handlers.EmailRoute, handlers.EditEmail(&i))
-	app.Post("/player/email/:id/resend", handlers.ResendEmailVerification(&i))
+	app.Post(handlers.ResendRoute, handlers.Resend(&i))
 
 	app.Get(handlers.VerifyRoute, handlers.VerifyPage(&i))
 	app.Post(handlers.VerifyRoute, handlers.Verify(&i))
