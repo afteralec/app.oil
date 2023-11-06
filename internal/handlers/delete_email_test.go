@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -56,11 +57,7 @@ func TestDeleteEmailUnauthorized(t *testing.T) {
 
 	// TODO: Turn this route into a generator
 	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
-	req, err = http.NewRequest(http.MethodDelete, url, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	res, err = app.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -109,10 +106,7 @@ func TestDeleteEmailDBError(t *testing.T) {
 
 	// TODO: Turn this route into a generator
 	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
-	req, err = http.NewRequest(http.MethodDelete, url, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
 	i.Close()
@@ -178,10 +172,7 @@ func TestDeleteEmailUnowned(t *testing.T) {
 
 	// TODO: Turn this route into a generator
 	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
-	req, err = http.NewRequest(http.MethodDelete, url, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
 	res, err = app.Test(req)
@@ -215,13 +206,10 @@ func TestDeleteEmailInvalidID(t *testing.T) {
 	sessionCookie := cookies[0]
 
 	url := fmt.Sprintf("%s/player/email/%s", shared.TestURL, "invalid")
-	req, err := http.NewRequest(http.MethodDelete, url, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
-	res, err = app.Test(req)
+	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -269,10 +257,7 @@ func TestDeleteNonexistantEmail(t *testing.T) {
 
 	// TODO: Turn this route into a generator
 	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
-	req, err = http.NewRequest(http.MethodDelete, url, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
 	_, err = app.Test(req)
@@ -328,10 +313,7 @@ func TestDeleteEmailSuccess(t *testing.T) {
 
 	// TODO: Turn this route into a generator
 	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
-	req, err = http.NewRequest(http.MethodDelete, url, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
 	res, err = app.Test(req)
