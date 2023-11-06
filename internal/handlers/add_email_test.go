@@ -66,7 +66,7 @@ func TestAddEmailWithoutLogin(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
 func TestAddEmailInvalidAddress(t *testing.T) {

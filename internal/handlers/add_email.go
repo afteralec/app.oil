@@ -15,6 +15,7 @@ import (
 )
 
 const (
+	EmailRoute    = "/player/email/:id"
 	AddEmailRoute = "/player/email/new"
 	MaxEmailCount = 3
 )
@@ -31,7 +32,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
-			c.Status(fiber.StatusForbidden)
+			c.Status(fiber.StatusUnauthorized)
 			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 		}
 

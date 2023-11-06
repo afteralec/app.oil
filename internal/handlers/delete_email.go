@@ -19,7 +19,6 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render("web/views/partials/profile/email/delete/err-401", &fiber.Map{}, "")
-
 		}
 
 		eid := c.Params("id")
@@ -70,7 +69,6 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 		}
 
 		if e.Pid != pid.(int64) {
-			// TODO: Make this a 401 error
 			c.Append("HX-Retarget", "profile-email-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
