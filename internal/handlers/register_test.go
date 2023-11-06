@@ -17,8 +17,9 @@ import (
 )
 
 const (
-	TestUsername = "testify"
-	TestPassword = "T3sted_tested"
+	TestUsername    = "testify"
+	TestUsernameTwo = "testify2"
+	TestPassword    = "T3sted_tested"
 )
 
 func TestRegister(t *testing.T) {

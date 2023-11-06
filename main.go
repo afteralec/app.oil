@@ -51,10 +51,10 @@ func main() {
 	app.Put(handlers.EmailRoute, handlers.EditEmail(&i))
 	app.Post("/player/email/:id/resend", handlers.ResendEmailVerification(&i))
 
-	app.Get("/verify", handlers.VerifyPage(&i))
-	app.Post("/verify", handlers.Verify(&i))
+	app.Get(handlers.VerifyRoute, handlers.VerifyPage(&i))
+	app.Post(handlers.VerifyRoute, handlers.Verify(&i))
 
-	app.Get("/profile", handlers.ProfilePage(&i))
+	app.Get(handlers.ProfileRoute, handlers.ProfilePage(&i))
 	app.Get("/me", handlers.ProfilePage(&i))
 
 	log.Fatal(app.Listen(":8008"))
