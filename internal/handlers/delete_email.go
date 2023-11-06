@@ -45,7 +45,7 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("web/views/partials/profile/email/deleted/err-internal", &fiber.Map{}, "")
+			return c.Render("web/views/partials/profile/email/delete/err-internal", &fiber.Map{}, "")
 		}
 		defer tx.Rollback()
 
@@ -59,13 +59,13 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 				c.Append("HX-Reswap", "outerHTML")
 				c.Append(shared.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusNotFound)
-				return c.Render("web/views/partials/profile/email/deleted/err-internal", &fiber.Map{}, "")
+				return c.Render("web/views/partials/profile/email/delete/err-internal", &fiber.Map{}, "")
 			}
 			c.Append("HX-Retarget", "profile-email-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("web/views/partials/profile/email/deleted/err-internal", &fiber.Map{}, "")
+			return c.Render("web/views/partials/profile/email/delete/err-internal", &fiber.Map{}, "")
 		}
 
 		if e.Pid != pid.(int64) {
@@ -73,7 +73,7 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
-			return c.Render("web/views/partials/profile/email/deleted/err-internal", &fiber.Map{}, "")
+			return c.Render("web/views/partials/profile/email/delete/err-internal", &fiber.Map{}, "")
 		}
 
 		_, err = qtx.DeleteEmail(context.Background(), id)
@@ -83,7 +83,7 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("web/views/partials/profile/email/deleted/err-internal", &fiber.Map{}, "")
+			return c.Render("web/views/partials/profile/email/delete/err-internal", &fiber.Map{}, "")
 		}
 
 		err = tx.Commit()
@@ -92,10 +92,10 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("web/views/partials/profile/email/deleted/err-internal", &fiber.Map{}, "")
+			return c.Render("web/views/partials/profile/email/delete/err-internal", &fiber.Map{}, "")
 		}
 
-		return c.Render("web/views/partials/profile/email/deleted/success", &fiber.Map{
+		return c.Render("web/views/partials/profile/email/delete/success", &fiber.Map{
 			"ID":      e.ID,
 			"Address": e.Address,
 		}, "")
