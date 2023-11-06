@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"net/mail"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -22,6 +23,15 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 		if err := c.BodyParser(r); err != nil {
 			c.Append("HX-Retarget", "profile-email-error")
 			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusBadRequest)
+			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
+		}
+
+		ne, err := mail.ParseAddress(r.Email)
+		if err != nil {
+			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
 			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
@@ -117,7 +127,7 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 		}
 
 		result, err := qtx.CreateEmail(context.Background(), queries.CreateEmailParams{
-			Address: r.Email,
+			Address: ne.Address,
 			Pid:     pid.(int64),
 		})
 		if err != nil {

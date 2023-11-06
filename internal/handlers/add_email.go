@@ -50,7 +50,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
-			c.Status(fiber.StatusConflict)
+			c.Status(fiber.StatusForbidden)
 			return c.Render("web/views/partials/profile/email/err-too-many-emails", &fiber.Map{}, "")
 		}
 

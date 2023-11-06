@@ -17,7 +17,10 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-const TestEmailAddress = "testify@test.com"
+const (
+	TestEmailAddress    = "testify@test.com"
+	TestEmailAddressTwo = "testify2@test.com"
+)
 
 func TestAddEmailSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
