@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
+	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
@@ -35,7 +36,11 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 
 		eid, err := i.Redis.Get(context.Background(), token).Result()
 		if err != nil {
-			// TODO: Differentiate between "not found" error and connection error
+			if err == redis.Nil {
+				c.Status(fiber.StatusNotFound)
+				// TODO: Return a snippet here
+				return nil
+			}
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
 		}

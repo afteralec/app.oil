@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -15,8 +16,6 @@ import (
 	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
 )
-
-// TODO: To test this, grab the email id from the database - then, pull all the uuid tokens and match the right one
 
 func TestVerifyPage(t *testing.T) {
 	i := shared.SetupInterfaces()
@@ -89,6 +88,53 @@ func TestVerifyNoToken(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestVerifyExpiredToken(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+
+	app.Use(session.New(&i))
+	app.Use(bind.New())
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(EmailRoute, AddEmail(&i))
+	app.Post(VerifyRoute, Verify(&i))
+
+	CallRegister(t, app, TestUsername, TestPassword)
+	res := CallLogin(t, app, TestUsername, TestPassword)
+	sessionCookie := res.Cookies()[0]
+
+	req := AddEmailRequest(TestEmailAddress)
+	req.AddCookie(sessionCookie)
+	_, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
+	if err != nil {
+		t.Fatal(err)
+	}
+	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	email := emails[0]
+
+	url := fmt.Sprintf("%s/player/email/%d/resend?t=non-existant-key", shared.TestURL, email.ID)
+	req = httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err = app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
 func SetupTestVerify(t *testing.T, i *shared.Interfaces, u string, e string) {
