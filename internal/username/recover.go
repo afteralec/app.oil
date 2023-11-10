@@ -9,8 +9,6 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-const ThirtyMinutesInNanoseconds = 30 * 60 * 1000 * 1000 * 1000
-
 func RecoverUsername(i *shared.Interfaces, pid int64, email string) error {
 	username, err := i.Queries.GetPlayerUsernameById(context.Background(), pid)
 	if err != nil {
