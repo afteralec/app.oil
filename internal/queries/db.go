@@ -51,6 +51,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getPlayerUsernameStmt, err = db.PrepareContext(ctx, getPlayerUsername); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayerUsername: %w", err)
 	}
+	if q.getPlayerUsernameByIdStmt, err = db.PrepareContext(ctx, getPlayerUsernameById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetPlayerUsernameById: %w", err)
+	}
 	if q.getRoleStmt, err = db.PrepareContext(ctx, getRole); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRole: %w", err)
 	}
@@ -111,6 +114,11 @@ func (q *Queries) Close() error {
 	if q.getPlayerUsernameStmt != nil {
 		if cerr := q.getPlayerUsernameStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPlayerUsernameStmt: %w", cerr)
+		}
+	}
+	if q.getPlayerUsernameByIdStmt != nil {
+		if cerr := q.getPlayerUsernameByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getPlayerUsernameByIdStmt: %w", cerr)
 		}
 	}
 	if q.getRoleStmt != nil {
@@ -181,6 +189,7 @@ type Queries struct {
 	getPlayerByUsernameStmt       *sql.Stmt
 	getPlayerPWHashStmt           *sql.Stmt
 	getPlayerUsernameStmt         *sql.Stmt
+	getPlayerUsernameByIdStmt     *sql.Stmt
 	getRoleStmt                   *sql.Stmt
 	getVerifiedEmailByAddressStmt *sql.Stmt
 	listEmailsStmt                *sql.Stmt
@@ -200,6 +209,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getPlayerByUsernameStmt:       q.getPlayerByUsernameStmt,
 		getPlayerPWHashStmt:           q.getPlayerPWHashStmt,
 		getPlayerUsernameStmt:         q.getPlayerUsernameStmt,
+		getPlayerUsernameByIdStmt:     q.getPlayerUsernameByIdStmt,
 		getRoleStmt:                   q.getRoleStmt,
 		getVerifiedEmailByAddressStmt: q.getVerifiedEmailByAddressStmt,
 		listEmailsStmt:                q.listEmailsStmt,

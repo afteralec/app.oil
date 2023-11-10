@@ -81,6 +81,17 @@ func (q *Queries) GetPlayerUsername(ctx context.Context, username string) (strin
 	return username, err
 }
 
+const getPlayerUsernameById = `-- name: GetPlayerUsernameById :one
+SELECT (username) FROM players WHERE id = ?
+`
+
+func (q *Queries) GetPlayerUsernameById(ctx context.Context, id int64) (string, error) {
+	row := q.queryRow(ctx, q.getPlayerUsernameByIdStmt, getPlayerUsernameById, id)
+	var username string
+	err := row.Scan(&username)
+	return username, err
+}
+
 const getRole = `-- name: GetRole :one
 SELECT role FROM players WHERE id = ?
 `

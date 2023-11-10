@@ -13,5 +13,8 @@ SELECT * FROM players WHERE username = ?;
 -- name: GetPlayerUsername :one
 SELECT (username) FROM players WHERE username = ?;
 
+-- name: GetPlayerUsernameById :one
+SELECT (username) FROM players WHERE id = ?;
+
 -- name: GetPlayerPWHash :one
 SELECT (pw_hash) FROM players WHERE id = ?;
