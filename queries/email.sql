@@ -8,7 +8,7 @@ UPDATE emails SET verified = true WHERE id = ?;
 SELECT * FROM emails WHERE id = ?;
 
 -- name: GetVerifiedEmailByAddress :one
-SELECT id FROM emails WHERE address = ? AND verified = true;
+SELECT * FROM emails WHERE address = ? AND verified = true;
 
 -- name: ListEmails :many
 SELECT * FROM emails WHERE pid = ?;

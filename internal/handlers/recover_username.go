@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"context"
+	"database/sql"
 	"net/mail"
 
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/username"
 )
 
 const RecoverUsernameRoute = "/recover/username"
@@ -28,9 +31,22 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		_, err := mail.ParseAddress(r.Email)
+		e, err := mail.ParseAddress(r.Email)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		ve, err := i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				return nil
+			}
+			return nil
+		}
+
+		err = username.Recover(i, ve)
+		if err != nil {
 			return nil
 		}
 

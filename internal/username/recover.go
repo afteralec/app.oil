@@ -6,11 +6,12 @@ import (
 	"os"
 
 	resend "github.com/resendlabs/resend-go"
+	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/shared"
 )
 
-func RecoverUsername(i *shared.Interfaces, pid int64, email string) error {
-	username, err := i.Queries.GetPlayerUsernameById(context.Background(), pid)
+func Recover(i *shared.Interfaces, e queries.Email) error {
+	username, err := i.Queries.GetPlayerUsernameById(context.Background(), e.Pid)
 	if err != nil {
 		return err
 	}
@@ -19,7 +20,7 @@ func RecoverUsername(i *shared.Interfaces, pid int64, email string) error {
 		return nil
 	}
 
-	_, err = SendRecoverUsernameEmail(username, email)
+	_, err = SendRecoverUsernameEmail(username, e.Address)
 	if err != nil {
 		return err
 	}
@@ -31,10 +32,12 @@ func SendRecoverUsernameEmail(username string, email string) (resend.SendEmailRe
 	// TODO: Extract this so we aren't building a new client on each request
 	client := resend.NewClient(os.Getenv("RESEND_API_KEY"))
 	params := &resend.SendEmailRequest{
-		To:      []string{email},
-		From:    "verify@petrichormud.com",
+		To:   []string{email},
+		From: "verify@petrichormud.com",
+		// TODO: Add a doc for what to do if the user didn't request this
+		// TODO: Link to that doc here
 		Html:    fmt.Sprintf("You received this email as part of recovering your Username. Your username is: %s", username),
-		Subject: fmt.Sprintf("[PetrichorMUD] Username Recovery"),
+		Subject: "[PetrichorMUD] Username Recovery",
 		ReplyTo: "support@petrichormud.com",
 	}
 	return client.Emails.Send(params)
