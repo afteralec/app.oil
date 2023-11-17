@@ -1,0 +1,49 @@
+<main
+  class="flex h-screen w-screen items-center justify-center"
+  x-data="{ email: '' }"
+>
+  <div class="w-full max-w-lg rounded-md border p-6">
+    <div id="recover-username-error"></div>
+    <p class="pt-4">Username recovery:</p>
+    <form
+      class="space-y-4 px-4 pt-4"
+      @submit.prevent=""
+      hx-post="/recover/username"
+      hx-swap="none"
+    >
+      <!-- TODO: Do validation on this email address -->
+      <div class="space-y-2">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="recover-username-email"
+        >
+          Email Address
+        </label>
+        <input
+          id="recover-username-email"
+          x-model="email"
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder=""
+          name="email"
+          value=""
+          autofocus
+        />
+        <div
+          id="register-username-desc"
+          class="pb-1 text-xs leading-none text-muted-foreground"
+        >
+          Enter the email address associated with your account.
+        </div>
+      </div>
+      <div class="flex justify-end">
+        <button
+          :disabled="!email.length"
+          class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+          type="submit"
+        >
+          Send Recovery Email
+        </button>
+      </div>
+    </form>
+  </div>
+</main>

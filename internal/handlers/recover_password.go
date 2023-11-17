@@ -8,17 +8,18 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-const RecoverUsernameRoute = "/recover/username"
+const RecoverPasswordRoute = "/recover/password"
 
-func RecoverUsernamePage(i *shared.Interfaces) fiber.Handler {
+func RecoverPasswordPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("web/views/recover/username", c.Locals("bind"), "web/views/layouts/standalone")
+		return c.Render("web/views/recover/password", c.Locals("bind"), "web/views/layouts/standalone")
 	}
 }
 
-func RecoverUsername(i *shared.Interfaces) fiber.Handler {
+func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 	type request struct {
-		Email string `form:"email"`
+		Username string `form:"username"`
+		Email    string `form:"email"`
 	}
 
 	return func(c *fiber.Ctx) error {

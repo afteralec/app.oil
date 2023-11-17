@@ -57,5 +57,8 @@ func main() {
 	app.Get(handlers.ProfileRoute, handlers.ProfilePage(&i))
 	app.Get("/me", handlers.ProfilePage(&i))
 
+	app.Get(handlers.RecoverUsernameRoute, handlers.RecoverUsernamePage(&i))
+	app.Get(handlers.RecoverPasswordRoute, handlers.RecoverPasswordPage(&i))
+
 	log.Fatal(app.Listen(":8008"))
 }
