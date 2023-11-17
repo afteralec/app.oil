@@ -102,7 +102,7 @@ func TestVerifyExpiredToken(t *testing.T) {
 
 	app.Post(RegisterRoute, Register(&i))
 	app.Post(LoginRoute, Login(&i))
-	app.Post(EmailRoute, AddEmail(&i))
+	app.Post(AddEmailRoute, AddEmail(&i))
 	app.Post(VerifyRoute, Verify(&i))
 
 	CallRegister(t, app, TestUsername, TestPassword)

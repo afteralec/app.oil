@@ -63,6 +63,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
 	}
+	if q.listVerifiedEmailsStmt, err = db.PrepareContext(ctx, listVerifiedEmails); err != nil {
+		return nil, fmt.Errorf("error preparing query ListVerifiedEmails: %w", err)
+	}
 	if q.markEmailVerifiedStmt, err = db.PrepareContext(ctx, markEmailVerified); err != nil {
 		return nil, fmt.Errorf("error preparing query MarkEmailVerified: %w", err)
 	}
@@ -136,6 +139,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listEmailsStmt: %w", cerr)
 		}
 	}
+	if q.listVerifiedEmailsStmt != nil {
+		if cerr := q.listVerifiedEmailsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listVerifiedEmailsStmt: %w", cerr)
+		}
+	}
 	if q.markEmailVerifiedStmt != nil {
 		if cerr := q.markEmailVerifiedStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing markEmailVerifiedStmt: %w", cerr)
@@ -193,6 +201,7 @@ type Queries struct {
 	getRoleStmt                   *sql.Stmt
 	getVerifiedEmailByAddressStmt *sql.Stmt
 	listEmailsStmt                *sql.Stmt
+	listVerifiedEmailsStmt        *sql.Stmt
 	markEmailVerifiedStmt         *sql.Stmt
 }
 
@@ -213,6 +222,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getRoleStmt:                   q.getRoleStmt,
 		getVerifiedEmailByAddressStmt: q.getVerifiedEmailByAddressStmt,
 		listEmailsStmt:                q.listEmailsStmt,
+		listVerifiedEmailsStmt:        q.listVerifiedEmailsStmt,
 		markEmailVerifiedStmt:         q.markEmailVerifiedStmt,
 	}
 }

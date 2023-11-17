@@ -105,6 +105,40 @@ func (q *Queries) ListEmails(ctx context.Context, pid int64) ([]Email, error) {
 	return items, nil
 }
 
+const listVerifiedEmails = `-- name: ListVerifiedEmails :many
+SELECT address, created_at, updated_at, verified, pid, id FROM emails WHERE pid = ? AND verified = true
+`
+
+func (q *Queries) ListVerifiedEmails(ctx context.Context, pid int64) ([]Email, error) {
+	rows, err := q.query(ctx, q.listVerifiedEmailsStmt, listVerifiedEmails, pid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Email
+	for rows.Next() {
+		var i Email
+		if err := rows.Scan(
+			&i.Address,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Verified,
+			&i.Pid,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const markEmailVerified = `-- name: MarkEmailVerified :execresult
 UPDATE emails SET verified = true WHERE id = ?
 `

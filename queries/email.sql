@@ -13,6 +13,9 @@ SELECT id FROM emails WHERE address = ? AND verified = true;
 -- name: ListEmails :many
 SELECT * FROM emails WHERE pid = ?;
 
+-- name: ListVerifiedEmails :many
+SELECT * FROM emails WHERE pid = ? AND verified = true;
+
 -- name: CountEmails :one
 SELECT COUNT(*) FROM emails WHERE pid = ?;
 
