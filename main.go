@@ -67,6 +67,7 @@ func main() {
 
 	app.Get(handlers.ResetPasswordRoute, handlers.ResetPasswordPage())
 	app.Post(handlers.ResetPasswordRoute, handlers.ResetPassword(&i))
+	app.Get(handlers.ResetPasswordSuccessRoute, handlers.ResetPasswordSuccessPage())
 
 	log.Fatal(app.Listen(":8008"))
 }

@@ -33,6 +33,12 @@ func ResetPasswordPage() fiber.Handler {
 	}
 }
 
+func ResetPasswordSuccessPage() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.Render("web/views/reset/password/success", c.Locals("bind"), "web/views/layouts/standalone")
+	}
+}
+
 func ResetPassword(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Username        string `form:"username"`
