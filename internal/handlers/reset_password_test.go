@@ -74,7 +74,7 @@ func TestResetPasswordMissingBody(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
 func TestResetPasswordMalformedBody(t *testing.T) {
@@ -101,7 +101,7 @@ func TestResetPasswordMalformedBody(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
 func TestResetPasswordSuccess(t *testing.T) {

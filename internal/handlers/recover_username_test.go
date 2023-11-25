@@ -74,7 +74,7 @@ func TestRecoverUsernameMissingBody(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
 func TestRecoverUsernameMalformedBody(t *testing.T) {
@@ -101,7 +101,7 @@ func TestRecoverUsernameMalformedBody(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
 func TestRecoverUsernameSuccess(t *testing.T) {
