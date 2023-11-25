@@ -31,8 +31,9 @@ func TestReserved(t *testing.T) {
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("username", "testify")
-	writer.WriteField("password", "T3sted_tested")
+	writer.WriteField("username", TestUsername)
+	writer.WriteField("password", TestPassword)
+	writer.WriteField("confirmPassword", TestPassword)
 	writer.Close()
 
 	// TODO: Extract this test url to a constant?
@@ -46,7 +47,7 @@ func TestReserved(t *testing.T) {
 
 	body = new(bytes.Buffer)
 	writer = multipart.NewWriter(body)
-	writer.WriteField("username", "testify")
+	writer.WriteField("username", TestUsername)
 	writer.Close()
 
 	url = fmt.Sprintf("http://petrichormud.com%s", ReservedRoute)

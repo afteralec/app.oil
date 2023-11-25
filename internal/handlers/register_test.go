@@ -22,6 +22,7 @@ const (
 	TestPassword    = "T3sted_tested"
 )
 
+// TODO: Add failure tests here for bad inputs
 func TestRegister(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
@@ -43,6 +44,7 @@ func CallRegister(t *testing.T, app *fiber.App, u string, pw string) *http.Respo
 	writer := multipart.NewWriter(body)
 	writer.WriteField("username", u)
 	writer.WriteField("password", pw)
+	writer.WriteField("confirmPassword", pw)
 	writer.Close()
 
 	url := fmt.Sprintf("%s%s", shared.TestURL, RegisterRoute)

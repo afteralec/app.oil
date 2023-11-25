@@ -16,8 +16,9 @@ const RegisterRoute = "/player/new"
 
 func Register(i *shared.Interfaces) fiber.Handler {
 	type Player struct {
-		Username string `form:"username"`
-		Password string `form:"password"`
+		Username        string `form:"username"`
+		Password        string `form:"password"`
+		ConfirmPassword string `form:"confirmPassword"`
 	}
 
 	return func(c *fiber.Ctx) error {
@@ -44,6 +45,14 @@ func Register(i *shared.Interfaces) fiber.Handler {
 
 		// TODO: Return the reason the password is invalid
 		if !password.Validate(p.Password) {
+			c.Append("HX-Retarget", "#register-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusBadRequest)
+			return c.Render("web/views/partials/register/err-invalid", c.Locals("bind"), "")
+		}
+
+		if p.Password != p.ConfirmPassword {
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
