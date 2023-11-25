@@ -11,6 +11,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 	html "github.com/gofiber/template/html/v2"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
@@ -25,10 +26,12 @@ func TestResetPasswordPage(t *testing.T) {
 
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
+	app.Use(bind.New())
 
 	app.Get(ResetPasswordRoute, ResetPasswordPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, ResetPasswordRoute)
+	id := uuid.NewString()
+	url := fmt.Sprintf("%s%s?t=%s", shared.TestURL, ResetPasswordRoute, id)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {

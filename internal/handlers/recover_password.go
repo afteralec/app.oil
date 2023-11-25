@@ -13,11 +13,20 @@ import (
 	"petrichormud.com/app/internal/username"
 )
 
-const RecoverPasswordRoute = "/recover/password"
+const (
+	RecoverPasswordRoute        = "/recover/password"
+	RecoverPasswordSuccessRoute = "/recover/password/success"
+)
 
-func RecoverPasswordPage(i *shared.Interfaces) fiber.Handler {
+func RecoverPasswordPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		return c.Render("web/views/recover/password", c.Locals("bind"), "web/views/layouts/standalone")
+	}
+}
+
+func RecoverPasswordSuccessPage() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.Render("web/views/recover/password/success", c.Locals("bind"), "web/views/layouts/standalone")
 	}
 }
 

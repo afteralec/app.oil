@@ -11,11 +11,20 @@ import (
 	"petrichormud.com/app/internal/username"
 )
 
-const RecoverUsernameRoute = "/recover/username"
+const (
+	RecoverUsernameRoute        = "/recover/username"
+	RecoverUsernameSuccessRoute = "/recover/username/success"
+)
 
-func RecoverUsernamePage(i *shared.Interfaces) fiber.Handler {
+func RecoverUsernamePage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		return c.Render("web/views/recover/username", c.Locals("bind"), "web/views/layouts/standalone")
+	}
+}
+
+func RecoverUsernameSuccessPage() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.Render("web/views/recover/username/success", c.Locals("bind"), "web/views/layouts/standalone")
 	}
 }
 

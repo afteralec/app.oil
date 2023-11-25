@@ -57,10 +57,12 @@ func main() {
 	app.Get(handlers.ProfileRoute, handlers.ProfilePage(&i))
 	app.Get("/me", handlers.ProfilePage(&i))
 
-	app.Get(handlers.RecoverUsernameRoute, handlers.RecoverUsernamePage(&i))
+	app.Get(handlers.RecoverUsernameRoute, handlers.RecoverUsernamePage())
 	app.Post(handlers.RecoverUsernameRoute, handlers.RecoverUsername(&i))
-	app.Get(handlers.RecoverPasswordRoute, handlers.RecoverPasswordPage(&i))
+	app.Get(handlers.RecoverUsernameSuccessRoute, handlers.RecoverUsernameSuccessPage())
+	app.Get(handlers.RecoverPasswordRoute, handlers.RecoverPasswordPage())
 	app.Post(handlers.RecoverPasswordRoute, handlers.RecoverPassword(&i))
+	app.Get(handlers.RecoverPasswordSuccessRoute, handlers.RecoverPasswordSuccessPage())
 	app.Get(handlers.ResetPasswordRoute, handlers.ResetPasswordPage(&i))
 	app.Post(handlers.ResetPasswordRoute, handlers.ResetPassword(&i))
 

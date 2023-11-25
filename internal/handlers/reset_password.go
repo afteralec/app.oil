@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"log"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -13,7 +14,10 @@ import (
 	"petrichormud.com/app/internal/username"
 )
 
-const ResetPasswordRoute = "/reset/password"
+const (
+	ResetPasswordRoute        = "/reset/password"
+	ResetPasswordSuccessRoute = "/reset/password/route"
+)
 
 func ResetPasswordPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -61,6 +65,7 @@ func ResetPassword(i *shared.Interfaces) fiber.Handler {
 		}
 
 		tid := c.Query("t")
+		log.Println(tid)
 		if len(tid) == 0 {
 			c.Status(fiber.StatusBadRequest)
 			return nil

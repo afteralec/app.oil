@@ -20,15 +20,31 @@ import (
 )
 
 func TestRecoverPasswordPage(t *testing.T) {
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+
+	app.Get(RecoverPasswordRoute, RecoverPasswordPage())
+
+	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverPasswordRoute)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestRecoverPasswordSuccessPage(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Get(RecoverPasswordRoute, RecoverPasswordPage(&i))
+	app.Get(RecoverPasswordSuccessRoute, RecoverPasswordSuccessPage())
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverPasswordRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverPasswordSuccessRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
