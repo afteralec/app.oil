@@ -21,14 +21,11 @@ import (
 )
 
 func TestResetPasswordPage(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 	app.Use(bind.New())
 
-	app.Get(ResetPasswordRoute, ResetPasswordPage(&i))
+	app.Get(ResetPasswordRoute, ResetPasswordPage())
 
 	id := uuid.NewString()
 	url := fmt.Sprintf("%s%s?t=%s", shared.TestURL, ResetPasswordRoute, id)

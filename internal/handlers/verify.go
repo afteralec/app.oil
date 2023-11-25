@@ -22,6 +22,7 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
+		// TODO: Turn this into a colon-separated key
 		token := c.Query("t")
 		exists, err := i.Redis.Exists(context.Background(), token).Result()
 		if err != nil {
@@ -97,6 +98,7 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		// TODO: Move this into a colon-separated key
 		key := c.Query("t")
 		if len(key) == 0 {
 			c.Status(fiber.StatusBadRequest)
@@ -135,9 +137,14 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		err = i.Redis.Del(context.Background(), key).Err()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
 		_, err = i.Queries.MarkEmailVerified(context.Background(), id)
 		if err != nil {
-			// TODO: Distinguish between a "not found" error and a connection error
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}

@@ -19,7 +19,7 @@ const (
 	ResetPasswordSuccessRoute = "/reset/password/route"
 )
 
-func ResetPasswordPage(i *shared.Interfaces) fiber.Handler {
+func ResetPasswordPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tid := c.Query("t")
 		if len(tid) == 0 {
@@ -104,6 +104,14 @@ func ResetPassword(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
+
+		err = i.Redis.Del(context.Background(), key).Err()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		// TODO: Cache a new UUID here that represents a reference to an email to show on the success page
 
 		_, err = i.Queries.UpdatePlayerPassword(context.Background(), queries.UpdatePlayerPasswordParams{
 			ID:     pid,
