@@ -58,7 +58,11 @@ func main() {
 	app.Get("/me", handlers.ProfilePage(&i))
 
 	app.Get(handlers.RecoverUsernameRoute, handlers.RecoverUsernamePage(&i))
+	app.Post(handlers.RecoverUsernameRoute, handlers.RecoverUsername(&i))
 	app.Get(handlers.RecoverPasswordRoute, handlers.RecoverPasswordPage(&i))
+	app.Post(handlers.RecoverPasswordRoute, handlers.RecoverPassword(&i))
+	app.Get(handlers.ResetPasswordRoute, handlers.ResetPasswordPage(&i))
+	app.Post(handlers.ResetPasswordRoute, handlers.ResetPassword(&i))
 
 	log.Fatal(app.Listen(":8008"))
 }

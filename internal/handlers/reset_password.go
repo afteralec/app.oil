@@ -17,7 +17,15 @@ const ResetPasswordRoute = "/reset/password"
 
 func ResetPasswordPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("web/views/recover/password", c.Locals("bind"), "web/views/layouts/standalone")
+		tid := c.Query("t")
+		if len(tid) == 0 {
+			return c.Redirect("/")
+		}
+
+		b := c.Locals("bind").(fiber.Map)
+		b["ResetPasswordToken"] = tid
+
+		return c.Render("web/views/reset/password", b, "web/views/layouts/standalone")
 	}
 }
 
