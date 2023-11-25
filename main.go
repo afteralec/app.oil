@@ -57,6 +57,8 @@ func main() {
 	app.Get(handlers.ProfileRoute, handlers.ProfilePage(&i))
 	app.Get("/me", handlers.ProfilePage(&i))
 
+	app.Get(handlers.RecoverRoute, handlers.RecoverPage())
+
 	app.Get(handlers.RecoverUsernameRoute, handlers.RecoverUsernamePage())
 	app.Post(handlers.RecoverUsernameRoute, handlers.RecoverUsername(&i))
 	app.Get(handlers.RecoverUsernameSuccessRoute, handlers.RecoverUsernameSuccessPage(&i))
