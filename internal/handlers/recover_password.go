@@ -92,6 +92,8 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
+
+		c.Append("HX-Redirect", "/recover/username/success")
 		return nil
 	}
 }

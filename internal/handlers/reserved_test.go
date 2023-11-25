@@ -36,7 +36,7 @@ func TestReserved(t *testing.T) {
 	writer.WriteField("confirmPassword", TestPassword)
 	writer.Close()
 
-	// TODO: Extract this test url to a constant?
+	// TODO: Clean this up using the existing test utilities
 	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())

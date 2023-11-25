@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"mime/multipart"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -104,19 +106,51 @@ func TestRecoverUsernameSuccess(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Post(RecoverUsernameRoute, RecoverUsername(&i))
+	app.Use(session.New(&i))
 
 	SetupTestRecoverUsername(t, &i, TestUsername, TestEmailAddress)
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(AddEmailRoute, AddEmail(&i))
+	app.Post(RecoverUsernameRoute, RecoverUsername(&i))
+
+	CallRegister(t, app, TestUsername, TestPassword)
+	res := CallLogin(t, app, TestUsername, TestPassword)
+	cookies := res.Cookies()
+	sessionCookie := cookies[0]
+
+	req := AddEmailRequest(TestEmailAddress)
+	req.AddCookie(sessionCookie)
+	_, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// TODO: Extract this block of functionality to a helper
+	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
+	if err != nil {
+		t.Fatal(err)
+	}
+	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	email := emails[0]
+	_, err = i.Queries.MarkEmailVerified(context.Background(), email.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverUsernameRoute)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("email", TestEmailAddress)
 	writer.Close()
-	req := httptest.NewRequest(http.MethodPost, url, body)
+	req = httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	res, err := app.Test(req)
+	res, err = app.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}

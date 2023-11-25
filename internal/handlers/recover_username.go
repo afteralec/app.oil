@@ -49,16 +49,20 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 		ve, err := i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
 		if err != nil {
 			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
 				return nil
 			}
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
 		err = username.Recover(i, ve)
 		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
+		c.Append("HX-Redirect", "/recover/username/success")
 		return nil
 	}
 }
