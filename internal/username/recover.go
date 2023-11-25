@@ -5,27 +5,39 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/google/uuid"
 	resend "github.com/resendlabs/resend-go"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/shared"
 )
 
-func Recover(i *shared.Interfaces, e queries.Email) error {
+func Recover(i *shared.Interfaces, e queries.Email) (string, error) {
+	id := uuid.NewString()
+	key := SuccessKey(id)
+	err := CacheRecoverySuccessEmail(i.Redis, key, e.ID)
+	if err != nil {
+		return "", err
+	}
+
 	username, err := i.Queries.GetPlayerUsernameById(context.Background(), e.Pid)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if os.Getenv("DISABLE_RESEND") == "true" {
-		return nil
+		return id, nil
 	}
 
 	_, err = SendRecoverUsernameEmail(username, e.Address)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return id, nil
+}
+
+func SuccessKey(id string) string {
+	return fmt.Sprintf("rus:%s", id)
 }
 
 func SendRecoverUsernameEmail(username string, email string) (resend.SendEmailResponse, error) {

@@ -4,8 +4,12 @@
   >
     <h1 class="font-semibold leading-none">Success!</h1>
     <p class="leading-none">
-      An email has been sent to
+      Assuming it's verified, an email has been sent to
       <span class="font-semibold">{{ .EmailAddress }}</span> with your username.
+    </p>
+    <p class="muted-foreground text-sm leading-none">
+      If you haven't added or verified an email, that email wasn't sent, and we
+      can't tell you if it was.
     </p>
     <a
       href="/"

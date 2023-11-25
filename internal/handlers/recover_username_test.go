@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
 )
@@ -34,11 +35,15 @@ func TestRecoverUsernamePage(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestRecoverUsernameSuccessPage(t *testing.T) {
+func TestRecoverUsernameSuccessPageRedirectsWithoutToken(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
+	app.Use(bind.New())
 
-	app.Get(RecoverUsernameSuccessRoute, RecoverUsernameSuccessPage())
+	app.Get(RecoverUsernameSuccessRoute, RecoverUsernameSuccessPage(&i))
 
 	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverUsernameSuccessRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -47,7 +52,7 @@ func TestRecoverUsernameSuccessPage(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, fiber.StatusOK, res.StatusCode)
+	require.Equal(t, fiber.StatusFound, res.StatusCode)
 }
 
 func TestRecoverUsernameMissingBody(t *testing.T) {

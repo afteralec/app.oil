@@ -3,7 +3,9 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"net/mail"
+	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -22,9 +24,31 @@ func RecoverUsernamePage() fiber.Handler {
 	}
 }
 
-func RecoverUsernameSuccessPage() fiber.Handler {
+func RecoverUsernameSuccessPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("web/views/recover/username/success", c.Locals("bind"), "web/views/layouts/standalone")
+		t := c.Query("t")
+		if len(t) == 0 {
+			c.Redirect(HomeRoute)
+		}
+
+		key := username.RecoverySuccessKey(t)
+		ceid, err := i.Redis.Get(context.Background(), key).Result()
+		if err != nil {
+			c.Redirect(HomeRoute)
+		}
+		eid, err := strconv.ParseInt(ceid, 10, 64)
+		if err != nil {
+			c.Redirect(HomeRoute)
+		}
+		email, err := i.Queries.GetEmail(context.Background(), eid)
+		if err != nil {
+			c.Redirect(HomeRoute)
+		}
+
+		b := c.Locals("bind").(fiber.Map)
+		b["EmailAddress"] = email.Address
+
+		return c.Render("web/views/recover/username/success", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -56,13 +80,14 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		err = username.Recover(i, ve)
+		rusid, err := username.Recover(i, ve)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		c.Append("HX-Redirect", RecoverUsernameSuccessRoute)
+		path := fmt.Sprintf("%s?t=%s", RecoverUsernameSuccessRoute, rusid)
+		c.Append("HX-Redirect", path)
 		return nil
 	}
 }

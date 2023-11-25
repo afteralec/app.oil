@@ -59,7 +59,7 @@ func main() {
 
 	app.Get(handlers.RecoverUsernameRoute, handlers.RecoverUsernamePage())
 	app.Post(handlers.RecoverUsernameRoute, handlers.RecoverUsername(&i))
-	app.Get(handlers.RecoverUsernameSuccessRoute, handlers.RecoverUsernameSuccessPage())
+	app.Get(handlers.RecoverUsernameSuccessRoute, handlers.RecoverUsernameSuccessPage(&i))
 
 	app.Get(handlers.RecoverPasswordRoute, handlers.RecoverPasswordPage())
 	app.Post(handlers.RecoverPasswordRoute, handlers.RecoverPassword(&i))
