@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
 )
 
@@ -34,12 +35,14 @@ func Cache(r *redis.Client, pid int64, username string) error {
 	return nil
 }
 
-func CacheRecoverySuccessEmail(r *redis.Client, key string, eid int64) error {
-	err := r.Set(context.Background(), key, eid, FiveMinutesInNanoSeconds).Err()
+func CacheRecoverySuccessEmail(r *redis.Client, address string) (string, error) {
+	id := uuid.NewString()
+	key := RecoverySuccessKey(id)
+	err := r.Set(context.Background(), key, address, FiveMinutesInNanoSeconds).Err()
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return id, nil
 }
 
 func Key(pid int64) string {

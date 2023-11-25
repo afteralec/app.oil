@@ -5,16 +5,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/google/uuid"
 	resend "github.com/resendlabs/resend-go"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/shared"
 )
 
 func Recover(i *shared.Interfaces, e queries.Email) (string, error) {
-	id := uuid.NewString()
-	key := SuccessKey(id)
-	err := CacheRecoverySuccessEmail(i.Redis, key, e.ID)
+	id, err := CacheRecoverySuccessEmail(i.Redis, e.Address)
 	if err != nil {
 		return "", err
 	}
@@ -34,10 +31,6 @@ func Recover(i *shared.Interfaces, e queries.Email) (string, error) {
 	}
 
 	return id, nil
-}
-
-func SuccessKey(id string) string {
-	return fmt.Sprintf("rus:%s", id)
 }
 
 func SendRecoverUsernameEmail(username string, email string) (resend.SendEmailResponse, error) {

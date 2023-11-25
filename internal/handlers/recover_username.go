@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"net/mail"
-	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -32,21 +31,13 @@ func RecoverUsernameSuccessPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		key := username.RecoverySuccessKey(t)
-		ceid, err := i.Redis.Get(context.Background(), key).Result()
-		if err != nil {
-			c.Redirect(HomeRoute)
-		}
-		eid, err := strconv.ParseInt(ceid, 10, 64)
-		if err != nil {
-			c.Redirect(HomeRoute)
-		}
-		email, err := i.Queries.GetEmail(context.Background(), eid)
+		address, err := i.Redis.Get(context.Background(), key).Result()
 		if err != nil {
 			c.Redirect(HomeRoute)
 		}
 
 		b := c.Locals("bind").(fiber.Map)
-		b["EmailAddress"] = email.Address
+		b["EmailAddress"] = address
 
 		return c.Render("web/views/recover/username/success", b, "web/views/layouts/standalone")
 	}
@@ -60,33 +51,46 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		r := new(request)
 		if err := c.BodyParser(r); err != nil {
-			c.Status(fiber.StatusBadRequest)
-			return nil
+			c.Status(fiber.StatusUnauthorized)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render("web/views/partials/recover/username/err-invalid", c.Locals("bind"), "")
 		}
 
 		e, err := mail.ParseAddress(r.Email)
 		if err != nil {
-			c.Status(fiber.StatusBadRequest)
-			return nil
+			c.Status(fiber.StatusUnauthorized)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render("web/views/partials/recover/username/err-invalid", c.Locals("bind"), "")
 		}
 
 		ve, err := i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				c.Status(fiber.StatusNotFound)
+				rusid, err := username.CacheRecoverySuccessEmail(i.Redis, e.Address)
+				if err != nil {
+					c.Status(fiber.StatusUnauthorized)
+					c.Append(shared.HeaderHXAcceptable, "true")
+					return c.Render("web/views/partials/recover/username/err-internal", c.Locals("bind"), "")
+				}
+
+				path := fmt.Sprintf("%s?t=%s", RecoverUsernameSuccessRoute, rusid)
+				c.Append("HX-Redirect", path)
 				return nil
 			}
-			c.Status(fiber.StatusInternalServerError)
-			return nil
+			c.Status(fiber.StatusUnauthorized)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render("web/views/partials/recover/username/err", c.Locals("bind"), "")
 		}
 
 		rusid, err := username.Recover(i, ve)
 		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
+			c.Status(fiber.StatusUnauthorized)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render("web/views/partials/recover/username/err-internal", c.Locals("bind"), "")
 		}
 
 		path := fmt.Sprintf("%s?t=%s", RecoverUsernameSuccessRoute, rusid)
+		c.Append("HX-Reswap", "none")
 		c.Append("HX-Redirect", path)
 		return nil
 	}
