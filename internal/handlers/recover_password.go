@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"log"
 	"net/mail"
 	"slices"
 
@@ -73,8 +72,6 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 			email := emails[i]
 			emailAddresses = append(emailAddresses, email.Address)
 		}
-
-		log.Print(emailAddresses)
 
 		if !slices.Contains(emailAddresses, r.Email) {
 			c.Status(fiber.StatusForbidden)

@@ -3,10 +3,12 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/password"
+	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
 )
@@ -50,10 +52,26 @@ func ResetPassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		// TODO: Check the token in the URL here
+		tid := c.Query("t")
+		if len(tid) == 0 {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
 
-		// TODO: Transaction this up
-		_, err := i.Queries.GetPlayerByUsername(context.Background(), r.Username)
+		key := password.RecoveryKey(tid)
+		rpid, err := i.Redis.Get(context.Background(), key).Result()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		pid, err := strconv.ParseInt(rpid, 10, 64)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		p, err := i.Queries.GetPlayer(context.Background(), pid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -63,7 +81,26 @@ func ResetPassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		// TODO: Reset the password given the input here
+		if p.Username != r.Username {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		pwHash, err := password.Hash(r.Password)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		_, err = i.Queries.UpdatePlayerPassword(context.Background(), queries.UpdatePlayerPasswordParams{
+			ID:     pid,
+			PwHash: pwHash,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
 		return nil
 	}
 }

@@ -14,7 +14,7 @@ const ThirtyMinutesInNanoseconds = 30 * 60 * 1000 * 1000 * 1000
 
 func SetupRecovery(r *redis.Client, pid int64, email string) error {
 	id := uuid.NewString()
-	key := fmt.Sprintf("rp:%s", id)
+	key := RecoveryKey(id)
 
 	err := Cache(r, key, pid)
 	if err != nil {
@@ -24,12 +24,16 @@ func SetupRecovery(r *redis.Client, pid int64, email string) error {
 	if os.Getenv("DISABLE_RESEND") == "true" {
 		return nil
 	}
-	_, err = SendRecoveryEmail(key, email)
+	_, err = SendRecoveryEmail(id, email)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func RecoveryKey(id string) string {
+	return fmt.Sprintf("rp:%s", id)
 }
 
 func SendRecoveryEmail(key string, email string) (resend.SendEmailResponse, error) {

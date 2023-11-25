@@ -102,3 +102,16 @@ func (q *Queries) GetRole(ctx context.Context, id int64) (string, error) {
 	err := row.Scan(&role)
 	return role, err
 }
+
+const updatePlayerPassword = `-- name: UpdatePlayerPassword :execresult
+UPDATE players SET pw_hash = ? WHERE id = ?
+`
+
+type UpdatePlayerPasswordParams struct {
+	PwHash string
+	ID     int64
+}
+
+func (q *Queries) UpdatePlayerPassword(ctx context.Context, arg UpdatePlayerPasswordParams) (sql.Result, error) {
+	return q.exec(ctx, q.updatePlayerPasswordStmt, updatePlayerPassword, arg.PwHash, arg.ID)
+}

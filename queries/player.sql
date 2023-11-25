@@ -1,6 +1,9 @@
 -- name: CreatePlayer :execresult
 INSERT INTO players (username, role, pw_hash) VALUES (?, ?, ?);
 
+-- name: UpdatePlayerPassword :execresult
+UPDATE players SET pw_hash = ? WHERE id = ?;
+
 -- name: GetPlayer :one
 SELECT * FROM players WHERE id = ?;
 
