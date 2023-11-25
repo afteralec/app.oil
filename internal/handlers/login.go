@@ -94,7 +94,11 @@ func Login(i *shared.Interfaces) fiber.Handler {
 
 		if redirect == "verify" {
 			c.Append("HX-Redirect", fmt.Sprintf("/verify?t=%s", c.Query("t")))
-			c.Status(fiber.StatusOK)
+			return nil
+		}
+
+		if redirect == "home" {
+			c.Append("HX-Redirect", "/")
 			return nil
 		}
 

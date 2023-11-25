@@ -131,6 +131,7 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// TODO: Extract this block of functionality to a helper
 	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
 	if err != nil {
 		t.Fatal(err)
@@ -140,7 +141,6 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	e := emails[0]
-
 	_, err = i.Queries.MarkEmailVerified(context.Background(), e.ID)
 	if err != nil {
 		t.Fatal(err)

@@ -93,7 +93,7 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		c.Append("HX-Redirect", "/recover/username/success")
+		c.Append("HX-Redirect", RecoverPasswordSuccessRoute)
 		return nil
 	}
 }
