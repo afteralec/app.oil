@@ -45,6 +45,45 @@ export function getRegisterData() {
   };
 }
 
+export function getResetPasswordData() {
+  return {
+    username: "",
+    password: "",
+    confirmPassword: "",
+    notifs: {
+      u: true,
+      pw: false,
+    },
+    eval: {
+      pw: {
+        strengths: {
+          len: false,
+          mixedCase: false,
+          num: false,
+          specialChar: false,
+        },
+      },
+      u: {
+        len: false,
+      },
+      cpw: {
+        eq: false,
+      },
+    },
+    strengths: {
+      len: false,
+      mixedCase: false,
+      num: false,
+      specialChar: false,
+    },
+    sanitizeUsername,
+    isUsernameValid,
+    isPasswordValid,
+    setStrengths,
+    setEvalStrengths,
+  };
+}
+
 export function sanitizeUsername(u) {
   return u.replace(/[^a-zA-Z0-9_-]+/gi, "").toLowerCase();
 }
@@ -178,6 +217,7 @@ document.body.addEventListener("htmx:beforeOnLoad", (event) => {
 
 window.getCSRFToken = getCSRFToken;
 window.getRegisterData = getRegisterData;
+window.getResetPasswordData = getResetPasswordData;
 window.getLoginData = getLoginData;
 window.getProfileEmailData = getProfileEmailData;
 window.getEmailData = getEmailData;

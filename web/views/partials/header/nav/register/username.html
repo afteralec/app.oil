@@ -1,44 +1,35 @@
-<div>
-  <div
-    id="register-username-desc"
-    class="pb-1 text-xs leading-none text-muted-foreground"
-  >
-    Lower case letters, numbers, underscores and dashes only.
-  </div>
-  <div
-    class="flex items-center gap-1 text-xs leading-none text-muted-foreground"
-    x-cloak
-    x-show="!isUsernameValid(username) && !eval.u.len"
-  >
-    <p>Username should be between 4 and 8 characters long.</p>
-  </div>
-  <div
-    class="flex items-center gap-1 text-xs leading-none text-rose-800"
-    x-cloak
-    x-show="!isUsernameValid(username) && eval.u.len && username.length < 4"
-  >
-    <p>Username should be between 4 and 8 characters long.</p>
-  </div>
-  <div
-    class="flex items-center gap-1 text-xs leading-none text-emerald-800"
-    x-cloak
-    x-show="!isUsernameValid(username) && eval.u.len && username.length >= 4 && username.length <= 8"
-  >
-    <p>Username should be between 4 and 8 characters long.</p>
-  </div>
-  <div
-    class="flex items-center gap-1 text-xs leading-none text-rose-800"
-    x-cloak
-    x-show="!isUsernameValid(username) && eval.u.len && username.length > 8"
-  >
-    <p>Username should be between 4 and 8 characters long.</p>
-  </div>
-  <div id="username-reserved" x-cloak x-show="isUsernameValid(username)">
-    <p id="username-reserved-status" class="text-xs leading-none">
-      Nice! This username is available.
-    </p>
-    <p id="username-reserved-indicator" class="text-xs leading-none">
-      Checking...
-    </p>
-  </div>
+<!-- TODO: Move this to a central partial location instead of under header/nav -->
+<div
+  id="register-username-desc"
+  class="pb-1 text-xs leading-none text-muted-foreground"
+>
+  Lower case letters, numbers, underscores and dashes only.
+</div>
+<div
+  class="flex items-center gap-1 text-xs leading-none text-muted-foreground"
+  x-cloak
+  x-show="!isUsernameValid(username) && !eval.u.len"
+>
+  <p>Username should be between 4 and 8 characters long.</p>
+</div>
+<div
+  class="flex items-center gap-1 text-xs leading-none text-rose-800"
+  x-cloak
+  x-show="!isUsernameValid(username) && eval.u.len && username.length < 4"
+>
+  <p>Username should be between 4 and 8 characters long.</p>
+</div>
+<div
+  class="flex items-center gap-1 text-xs leading-none text-emerald-800"
+  x-cloak
+  x-show="!isUsernameValid(username) && eval.u.len && username.length >= 4 && username.length <= 8"
+>
+  <p>Username should be between 4 and 8 characters long.</p>
+</div>
+<div
+  class="flex items-center gap-1 text-xs leading-none text-rose-800"
+  x-cloak
+  x-show="!isUsernameValid(username) && eval.u.len && username.length > 8"
+>
+  <p>Username should be between 4 and 8 characters long.</p>
 </div>
