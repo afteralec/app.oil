@@ -25,3 +25,34 @@ type Player struct {
 	UpdatedAt sql.NullTime
 	ID        int64
 }
+
+type Request struct {
+	Type      string
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+	Vid       int64
+	Pid       int64
+	ID        int64
+}
+
+type RequestComment struct {
+	CreatedAt     sql.NullTime
+	UpdatedAt     sql.NullTime
+	DeletedAt     sql.NullTime
+	HiddenAt      sql.NullTime
+	RefersToField sql.NullString
+	Deleted       sql.NullBool
+	Hidden        sql.NullBool
+	ReplyToID     sql.NullInt64
+	Rid           int64
+	Vid           int64
+	Aid           int64
+	ID            int64
+}
+
+type RequestCommentContent struct {
+	CreatedAt sql.NullTime
+	Text      string
+	CommentID int64
+	ID        int64
+}
