@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"context"
+
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/shared"
@@ -17,6 +19,16 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
-		return c.Render("web/views/characters", c.Locals("bind"))
+		apps, err := i.Queries.ListCharacterApplicationsForPlayer(context.Background(), pid.(int64))
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("web/views/500", c.Locals("bind"))
+		}
+
+		b := c.Locals("bind").(fiber.Map)
+		b["CharacterApplications"] = apps
+		b["HasCharacterApplications"] = len(apps) > 0
+
+		return c.Render("web/views/characters", b)
 	}
 }

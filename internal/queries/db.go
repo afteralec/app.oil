@@ -54,14 +54,23 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getPlayerUsernameByIdStmt, err = db.PrepareContext(ctx, getPlayerUsernameById); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayerUsernameById: %w", err)
 	}
+	if q.getRequestStmt, err = db.PrepareContext(ctx, getRequest); err != nil {
+		return nil, fmt.Errorf("error preparing query GetRequest: %w", err)
+	}
 	if q.getRoleStmt, err = db.PrepareContext(ctx, getRole); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRole: %w", err)
 	}
 	if q.getVerifiedEmailByAddressStmt, err = db.PrepareContext(ctx, getVerifiedEmailByAddress); err != nil {
 		return nil, fmt.Errorf("error preparing query GetVerifiedEmailByAddress: %w", err)
 	}
+	if q.listCharacterApplicationsForPlayerStmt, err = db.PrepareContext(ctx, listCharacterApplicationsForPlayer); err != nil {
+		return nil, fmt.Errorf("error preparing query ListCharacterApplicationsForPlayer: %w", err)
+	}
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
+	}
+	if q.listRequestsForPlayerStmt, err = db.PrepareContext(ctx, listRequestsForPlayer); err != nil {
+		return nil, fmt.Errorf("error preparing query ListRequestsForPlayer: %w", err)
 	}
 	if q.listVerifiedEmailsStmt, err = db.PrepareContext(ctx, listVerifiedEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListVerifiedEmails: %w", err)
@@ -127,6 +136,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getPlayerUsernameByIdStmt: %w", cerr)
 		}
 	}
+	if q.getRequestStmt != nil {
+		if cerr := q.getRequestStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getRequestStmt: %w", cerr)
+		}
+	}
 	if q.getRoleStmt != nil {
 		if cerr := q.getRoleStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getRoleStmt: %w", cerr)
@@ -137,9 +151,19 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getVerifiedEmailByAddressStmt: %w", cerr)
 		}
 	}
+	if q.listCharacterApplicationsForPlayerStmt != nil {
+		if cerr := q.listCharacterApplicationsForPlayerStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listCharacterApplicationsForPlayerStmt: %w", cerr)
+		}
+	}
 	if q.listEmailsStmt != nil {
 		if cerr := q.listEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listEmailsStmt: %w", cerr)
+		}
+	}
+	if q.listRequestsForPlayerStmt != nil {
+		if cerr := q.listRequestsForPlayerStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listRequestsForPlayerStmt: %w", cerr)
 		}
 	}
 	if q.listVerifiedEmailsStmt != nil {
@@ -194,45 +218,51 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                            DBTX
-	tx                            *sql.Tx
-	countEmailsStmt               *sql.Stmt
-	createEmailStmt               *sql.Stmt
-	createPlayerStmt              *sql.Stmt
-	deleteEmailStmt               *sql.Stmt
-	getEmailStmt                  *sql.Stmt
-	getPlayerStmt                 *sql.Stmt
-	getPlayerByUsernameStmt       *sql.Stmt
-	getPlayerPWHashStmt           *sql.Stmt
-	getPlayerUsernameStmt         *sql.Stmt
-	getPlayerUsernameByIdStmt     *sql.Stmt
-	getRoleStmt                   *sql.Stmt
-	getVerifiedEmailByAddressStmt *sql.Stmt
-	listEmailsStmt                *sql.Stmt
-	listVerifiedEmailsStmt        *sql.Stmt
-	markEmailVerifiedStmt         *sql.Stmt
-	updatePlayerPasswordStmt      *sql.Stmt
+	db                                     DBTX
+	tx                                     *sql.Tx
+	countEmailsStmt                        *sql.Stmt
+	createEmailStmt                        *sql.Stmt
+	createPlayerStmt                       *sql.Stmt
+	deleteEmailStmt                        *sql.Stmt
+	getEmailStmt                           *sql.Stmt
+	getPlayerStmt                          *sql.Stmt
+	getPlayerByUsernameStmt                *sql.Stmt
+	getPlayerPWHashStmt                    *sql.Stmt
+	getPlayerUsernameStmt                  *sql.Stmt
+	getPlayerUsernameByIdStmt              *sql.Stmt
+	getRequestStmt                         *sql.Stmt
+	getRoleStmt                            *sql.Stmt
+	getVerifiedEmailByAddressStmt          *sql.Stmt
+	listCharacterApplicationsForPlayerStmt *sql.Stmt
+	listEmailsStmt                         *sql.Stmt
+	listRequestsForPlayerStmt              *sql.Stmt
+	listVerifiedEmailsStmt                 *sql.Stmt
+	markEmailVerifiedStmt                  *sql.Stmt
+	updatePlayerPasswordStmt               *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                            tx,
-		tx:                            tx,
-		countEmailsStmt:               q.countEmailsStmt,
-		createEmailStmt:               q.createEmailStmt,
-		createPlayerStmt:              q.createPlayerStmt,
-		deleteEmailStmt:               q.deleteEmailStmt,
-		getEmailStmt:                  q.getEmailStmt,
-		getPlayerStmt:                 q.getPlayerStmt,
-		getPlayerByUsernameStmt:       q.getPlayerByUsernameStmt,
-		getPlayerPWHashStmt:           q.getPlayerPWHashStmt,
-		getPlayerUsernameStmt:         q.getPlayerUsernameStmt,
-		getPlayerUsernameByIdStmt:     q.getPlayerUsernameByIdStmt,
-		getRoleStmt:                   q.getRoleStmt,
-		getVerifiedEmailByAddressStmt: q.getVerifiedEmailByAddressStmt,
-		listEmailsStmt:                q.listEmailsStmt,
-		listVerifiedEmailsStmt:        q.listVerifiedEmailsStmt,
-		markEmailVerifiedStmt:         q.markEmailVerifiedStmt,
-		updatePlayerPasswordStmt:      q.updatePlayerPasswordStmt,
+		db:                                     tx,
+		tx:                                     tx,
+		countEmailsStmt:                        q.countEmailsStmt,
+		createEmailStmt:                        q.createEmailStmt,
+		createPlayerStmt:                       q.createPlayerStmt,
+		deleteEmailStmt:                        q.deleteEmailStmt,
+		getEmailStmt:                           q.getEmailStmt,
+		getPlayerStmt:                          q.getPlayerStmt,
+		getPlayerByUsernameStmt:                q.getPlayerByUsernameStmt,
+		getPlayerPWHashStmt:                    q.getPlayerPWHashStmt,
+		getPlayerUsernameStmt:                  q.getPlayerUsernameStmt,
+		getPlayerUsernameByIdStmt:              q.getPlayerUsernameByIdStmt,
+		getRequestStmt:                         q.getRequestStmt,
+		getRoleStmt:                            q.getRoleStmt,
+		getVerifiedEmailByAddressStmt:          q.getVerifiedEmailByAddressStmt,
+		listCharacterApplicationsForPlayerStmt: q.listCharacterApplicationsForPlayerStmt,
+		listEmailsStmt:                         q.listEmailsStmt,
+		listRequestsForPlayerStmt:              q.listRequestsForPlayerStmt,
+		listVerifiedEmailsStmt:                 q.listVerifiedEmailsStmt,
+		markEmailVerifiedStmt:                  q.markEmailVerifiedStmt,
+		updatePlayerPasswordStmt:               q.updatePlayerPasswordStmt,
 	}
 }

@@ -1,10 +1,35 @@
-<main>
-  <h2
-    class="scroll-m-20 py-2 text-3xl font-extrabold tracking-tight lg:text-4xl"
-  >
-    Character Applications
-  </h2>
-  <p class="pb-2 leading-7 text-muted-foreground">
-    All of your character applications
-  </p>
+<main class="flex flex-col items-center justify-center">
+  <div class="w-full max-w-10xl">
+    <header class="pl-6 pt-2">
+      <h2
+        class="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl"
+      >
+        Character Applications
+      </h2>
+      <p class="leading-7 text-muted-foreground">
+        All of your character applications
+      </p>
+    </header>
+
+    <section
+      class="flex flex-col items-center justify-center gap-2 pl-6 md:flex-row md:flex-wrap md:justify-start"
+    >
+      <!-- prettier-ignore -->
+      {{ if .HasCharacterApplications -}}
+        {{ range .CharacterApplications -}}
+          {{ template "web/views/partials/characters/summary-card" . }}
+        {{ end -}}
+      {{ else -}}
+        You don't have any open character applications
+      {{ end -}}
+    </section>
+    <div class="pl-6 pt-2">
+      <a
+        href="/characters/new"
+        class="htmx-trade-indicator-out inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      >
+        Create a Character
+      </a>
+    </div>
+  </div>
 </main>
