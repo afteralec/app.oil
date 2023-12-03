@@ -37,6 +37,7 @@ func main() {
 	app.Static("/loaders", "./web/svg/loaders")
 
 	app.Get(handlers.HomeRoute, handlers.HomePage())
+	app.Get(handlers.CharactersRoute, handlers.CharactersPage(&i))
 
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
 	app.Get(handlers.LoginRoute, handlers.LoginPage())

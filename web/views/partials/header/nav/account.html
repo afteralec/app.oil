@@ -21,12 +21,34 @@
       tabindex="-1"
     >
       <div role="none">
-        {{ if .ProfileView -}}
+        {{ if .CharactersView -}}
         <p
           class="block bg-muted px-4 py-2 text-sm"
           role="menuitem"
           tabindex="-1"
           id="account-menu-0"
+        >
+          Characters
+        </p>
+        {{ else -}}
+        <a
+          href="/characters"
+          class="block bg-background px-4 py-2 text-sm hover:bg-muted"
+          role="menuitem"
+          tabindex="-1"
+          id="account-menu-0"
+        >
+          Characters
+        </a>
+        {{ end -}}
+      </div>
+      <div role="none">
+        {{ if .ProfileView -}}
+        <p
+          class="block bg-muted px-4 py-2 text-sm"
+          role="menuitem"
+          tabindex="-1"
+          id="account-menu-profile"
         >
           Profile
         </p>
@@ -36,7 +58,7 @@
           class="block bg-background px-4 py-2 text-sm hover:bg-muted"
           role="menuitem"
           tabindex="-1"
-          id="account-menu-0"
+          id="account-menu-profile"
         >
           Profile
         </a>
@@ -49,7 +71,7 @@
           hx-post="/logout"
           role="menuitem"
           tabindex="-1"
-          id="menu-item-1"
+          id="account-menu-logout"
         >
           Logout
         </button>
