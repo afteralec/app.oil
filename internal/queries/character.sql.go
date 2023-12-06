@@ -112,14 +112,13 @@ func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, 
 
 const updateCharacterApplicationContent = `-- name: UpdateCharacterApplicationContent :execresult
 UPDATE 
-  character_application_content_history
+  character_application_content
 SET 
   gender = ?,
   name = ?,
   sdesc = ?,
   description = ?,
-  backstory = ?,
-  vid = ?
+  backstory = ?
 WHERE
   id = ?
 `
@@ -130,7 +129,6 @@ type UpdateCharacterApplicationContentParams struct {
 	Sdesc       string
 	Description string
 	Backstory   string
-	Vid         int64
 	ID          int64
 }
 
@@ -141,7 +139,6 @@ func (q *Queries) UpdateCharacterApplicationContent(ctx context.Context, arg Upd
 		arg.Sdesc,
 		arg.Description,
 		arg.Backstory,
-		arg.Vid,
 		arg.ID,
 	)
 }

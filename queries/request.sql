@@ -8,5 +8,5 @@ SELECT * FROM requests WHERE id = ?;
 SELECT * FROM requests WHERE pid = ? AND type = 'CharacterApplication';
 
 -- name: CreateRequest :execresult
-INSERT INTO requests (pid) VALUES (?);
+INSERT INTO requests (type, pid) VALUES (?, ?);
 

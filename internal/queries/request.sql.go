@@ -11,11 +11,16 @@ import (
 )
 
 const createRequest = `-- name: CreateRequest :execresult
-INSERT INTO requests (pid) VALUES (?)
+INSERT INTO requests (type, pid) VALUES (?, ?)
 `
 
-func (q *Queries) CreateRequest(ctx context.Context, pid int64) (sql.Result, error) {
-	return q.exec(ctx, q.createRequestStmt, createRequest, pid)
+type CreateRequestParams struct {
+	Type string
+	Pid  int64
+}
+
+func (q *Queries) CreateRequest(ctx context.Context, arg CreateRequestParams) (sql.Result, error) {
+	return q.exec(ctx, q.createRequestStmt, createRequest, arg.Type, arg.Pid)
 }
 
 const getRequest = `-- name: GetRequest :one
