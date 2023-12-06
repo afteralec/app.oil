@@ -32,3 +32,16 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 		return c.Render("web/views/characters", b)
 	}
 }
+
+func NewCharacter(i *shared.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		pid := c.Locals("pid")
+
+		if pid == nil {
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+		}
+
+		return nil
+	}
+}

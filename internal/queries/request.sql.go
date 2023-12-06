@@ -7,7 +7,16 @@ package queries
 
 import (
 	"context"
+	"database/sql"
 )
+
+const createRequest = `-- name: CreateRequest :execresult
+INSERT INTO requests (pid) VALUES (?)
+`
+
+func (q *Queries) CreateRequest(ctx context.Context, pid int64) (sql.Result, error) {
+	return q.exec(ctx, q.createRequestStmt, createRequest, pid)
+}
 
 const getRequest = `-- name: GetRequest :one
 SELECT type, created_at, updated_at, vid, pid, id FROM requests WHERE id = ?

@@ -8,6 +8,31 @@ import (
 	"database/sql"
 )
 
+type CharacterApplicationContent struct {
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	Gender      string
+	Name        string
+	Sdesc       string
+	Description string
+	Backstory   string
+	Rid         int64
+	ID          int64
+}
+
+type CharacterApplicationContentHistory struct {
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	Gender      string
+	Name        string
+	Sdesc       string
+	Description string
+	Backstory   string
+	Vid         int64
+	Rid         int64
+	ID          int64
+}
+
 type Email struct {
 	Address   string
 	CreatedAt sql.NullTime
@@ -36,23 +61,29 @@ type Request struct {
 }
 
 type RequestComment struct {
-	CreatedAt     sql.NullTime
-	UpdatedAt     sql.NullTime
-	DeletedAt     sql.NullTime
-	HiddenAt      sql.NullTime
-	RefersToField sql.NullString
-	Deleted       sql.NullBool
-	Hidden        sql.NullBool
-	ReplyToID     sql.NullInt64
-	Rid           int64
-	Vid           int64
-	Aid           int64
-	ID            int64
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+	DeletedAt sql.NullTime
+	Field     sql.NullString
+	Deleted   sql.NullBool
+	Cid       sql.NullInt64
+	Rid       int64
+	Vid       int64
+	Pid       int64
+	ID        int64
 }
 
 type RequestCommentContent struct {
 	CreatedAt sql.NullTime
 	Text      string
-	CommentID int64
+	Cid       int64
+	ID        int64
+}
+
+type RequestCommentContentHistory struct {
+	CreatedAt sql.NullTime
+	Text      string
+	Cid       int64
+	Vid       int64
 	ID        int64
 }
