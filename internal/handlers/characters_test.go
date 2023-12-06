@@ -69,6 +69,37 @@ func TestCharactersPageSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
+func TestCharactersPageFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+	app.Use(bind.New())
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Get(CharactersRoute, CharactersPage(&i))
+
+	SetupTestCharacters(t, &i, TestUsername)
+
+	CallRegister(t, app, TestUsername, TestPassword)
+	res := CallLogin(t, app, TestUsername, TestPassword)
+	cookies := res.Cookies()
+	sessionCookie := cookies[0]
+
+	i.Close()
+	url := fmt.Sprintf("%s%s", shared.TestURL, CharactersRoute)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
 func TestNewCharacter(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
@@ -222,6 +253,32 @@ func TestCharacterNamePageNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
+func TestCharacterNamePageFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+	app.Use(bind.New())
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Get(NewCharacterNameRoute, CharacterNamePage(&i))
+
+	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	i.Close()
+	url := fmt.Sprintf("%s/characters/new/%d/name", shared.TestURL, rid)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
 func TestCharacterGenderPage(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
@@ -294,6 +351,33 @@ func TestCharacterGenderPageNotFound(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestCharacterGenderPageFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+	app.Use(bind.New())
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Get(NewCharacterGenderRoute, CharacterGenderPage(&i))
+
+	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	i.Close()
+	// TODO: Get this in a generator
+	url := fmt.Sprintf("%s/characters/new/%d/gender", shared.TestURL, rid)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
 func TestCharacterSdescPage(t *testing.T) {
@@ -370,6 +454,33 @@ func TestCharacterSdescPageNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
+func TestCharacterSdescPageFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+	app.Use(bind.New())
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Get(NewCharacterSdescRoute, CharacterSdescPage(&i))
+
+	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	i.Close()
+	// TODO: Get this in a generator
+	url := fmt.Sprintf("%s/characters/new/%d/sdesc", shared.TestURL, rid+1)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
 func TestCharacterDescriptionPage(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
@@ -444,6 +555,33 @@ func TestCharacterDescriptionPageNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
+func TestCharacterDescriptionPageFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+	app.Use(bind.New())
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Get(NewCharacterDescriptionRoute, CharacterDescriptionPage(&i))
+
+	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	i.Close()
+	// TODO: Get this in a generator
+	url := fmt.Sprintf("%s/characters/new/%d/description", shared.TestURL, rid)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
 func TestCharacterBackstoryPage(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
@@ -516,6 +654,33 @@ func TestCharacterBackstoryPageNotFound(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestCharacterBackstoryPageFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+	app.Use(bind.New())
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Get(NewCharacterBackstoryRoute, CharacterBackstoryPage(&i))
+
+	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	i.Close()
+	// TODO: Get this in a generator
+	url := fmt.Sprintf("%s/characters/new/%d/backstory", shared.TestURL, rid)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
 func SetupTestCharacters(t *testing.T, i *shared.Interfaces, u string) {
