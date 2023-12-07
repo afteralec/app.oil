@@ -16,6 +16,7 @@ type CharacterApplicationContent struct {
 	Sdesc       string
 	Description string
 	Backstory   string
+	Vid         int64
 	Rid         int64
 	ID          int64
 }

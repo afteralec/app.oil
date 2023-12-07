@@ -26,6 +26,7 @@ SET
   name = ?,
   sdesc = ?,
   description = ?,
-  backstory = ?
+  backstory = ?,
+  vid = ?
 WHERE
-  id = ?;
+  rid = ?;

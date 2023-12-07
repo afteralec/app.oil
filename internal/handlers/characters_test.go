@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"fmt"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -181,6 +183,136 @@ func TestNewCharacterFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
+func TestUpdateCharacterApplication(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(bind.New())
+	app.Use(session.New(&i))
+
+	app.Put(CharacterRoute, UpdateCharacterApplication(&i))
+
+	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterRoute)
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterRoute, UpdateCharacterApplication(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d", shared.TestURL, "/characters/", rid)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("name", "test")
+	writer.WriteField("gender", "NonBinary")
+	writer.WriteField("sdesc", "test, testerly person")
+	writer.WriteField("description", "This is a test character application.")
+	writer.WriteField("backstory", "This is a tragic backtory.")
+	writer.Close()
+	req := httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterRoute, UpdateCharacterApplication(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d", shared.TestURL, "/characters/", rid+1)
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterRoute, UpdateCharacterApplication(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	i.Close()
+	url := fmt.Sprintf("%s%s%d", shared.TestURL, "/characters/", rid)
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationMissingBody(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterRoute, UpdateCharacterApplication(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d", shared.TestURL, "/characters/", rid)
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
 func TestCharacterNamePage(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
@@ -215,7 +347,7 @@ func TestCharacterNamePageSuccess(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterNameRoute, CharacterNamePage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s/characters/new/%d/name", shared.TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -241,7 +373,7 @@ func TestCharacterNamePageNotFound(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterNameRoute, CharacterNamePage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s/characters/new/%d/name", shared.TestURL, rid+1)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -266,7 +398,7 @@ func TestCharacterNamePageFatal(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterNameRoute, CharacterNamePage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
 	url := fmt.Sprintf("%s/characters/new/%d/name", shared.TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -313,7 +445,7 @@ func TestCharacterGenderPageSuccess(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterGenderRoute, CharacterGenderPage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/characters/new/%d/gender", shared.TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -340,7 +472,7 @@ func TestCharacterGenderPageNotFound(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterGenderRoute, CharacterGenderPage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/characters/new/%d/gender", shared.TestURL, rid+1)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -366,7 +498,7 @@ func TestCharacterGenderPageFatal(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterGenderRoute, CharacterGenderPage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/characters/new/%d/gender", shared.TestURL, rid)
@@ -414,7 +546,7 @@ func TestCharacterSdescPageSuccess(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterSdescRoute, CharacterSdescPage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/characters/new/%d/sdesc", shared.TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -441,7 +573,7 @@ func TestCharacterSdescPageNotFound(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterSdescRoute, CharacterSdescPage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/characters/new/%d/sdesc", shared.TestURL, rid+1)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -467,7 +599,7 @@ func TestCharacterSdescPageFatal(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterSdescRoute, CharacterSdescPage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/characters/new/%d/sdesc", shared.TestURL, rid+1)
@@ -515,7 +647,7 @@ func TestCharacterDescriptionPageSuccess(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterDescriptionRoute, CharacterDescriptionPage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/characters/new/%d/description", shared.TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -542,7 +674,7 @@ func TestCharacterDescriptionPageNotFound(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterDescriptionRoute, CharacterDescriptionPage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/characters/new/%d/description", shared.TestURL, rid+1)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -568,7 +700,7 @@ func TestCharacterDescriptionPageFatal(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterDescriptionRoute, CharacterDescriptionPage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/characters/new/%d/description", shared.TestURL, rid)
@@ -616,7 +748,7 @@ func TestCharacterBackstoryPageSuccess(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterBackstoryRoute, CharacterBackstoryPage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/characters/new/%d/backstory", shared.TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -643,7 +775,7 @@ func TestCharacterBackstoryPageNotFound(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterBackstoryRoute, CharacterBackstoryPage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/characters/new/%d/backstory", shared.TestURL, rid+1)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -669,7 +801,7 @@ func TestCharacterBackstoryPageFatal(t *testing.T) {
 	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
 	app.Get(NewCharacterBackstoryRoute, CharacterBackstoryPage(&i))
 
-	rid, sessionCookie := CharacterPageRID(t, &i, app)
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/characters/new/%d/backstory", shared.TestURL, rid)
@@ -722,7 +854,7 @@ func SetupTestCharacters(t *testing.T, i *shared.Interfaces, u string) {
 	}
 }
 
-func CharacterPageRID(t *testing.T, i *shared.Interfaces, app *fiber.App) (int64, *http.Cookie) {
+func CharacterApplicationRID(t *testing.T, i *shared.Interfaces, app *fiber.App) (int64, *http.Cookie) {
 	SetupTestCharacters(t, i, TestUsername)
 	CallRegister(t, app, TestUsername, TestPassword)
 	res := CallLogin(t, app, TestUsername, TestPassword)

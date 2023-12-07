@@ -69,7 +69,7 @@ func (q *Queries) CreateCharacterApplicationContentHistory(ctx context.Context, 
 }
 
 const getCharacterApplicationContent = `-- name: GetCharacterApplicationContent :one
-SELECT created_at, updated_at, gender, name, sdesc, description, backstory, rid, id FROM character_application_content WHERE id = ?
+SELECT created_at, updated_at, gender, name, sdesc, description, backstory, vid, rid, id FROM character_application_content WHERE id = ?
 `
 
 func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) (CharacterApplicationContent, error) {
@@ -83,6 +83,7 @@ func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) 
 		&i.Sdesc,
 		&i.Description,
 		&i.Backstory,
+		&i.Vid,
 		&i.Rid,
 		&i.ID,
 	)
@@ -90,7 +91,7 @@ func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) 
 }
 
 const getCharacterApplicationContentForRequest = `-- name: GetCharacterApplicationContentForRequest :one
-SELECT created_at, updated_at, gender, name, sdesc, description, backstory, rid, id FROM character_application_content WHERE rid = ?
+SELECT created_at, updated_at, gender, name, sdesc, description, backstory, vid, rid, id FROM character_application_content WHERE rid = ?
 `
 
 func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, rid int64) (CharacterApplicationContent, error) {
@@ -104,6 +105,7 @@ func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, 
 		&i.Sdesc,
 		&i.Description,
 		&i.Backstory,
+		&i.Vid,
 		&i.Rid,
 		&i.ID,
 	)
@@ -118,9 +120,10 @@ SET
   name = ?,
   sdesc = ?,
   description = ?,
-  backstory = ?
+  backstory = ?,
+  vid = ?
 WHERE
-  id = ?
+  rid = ?
 `
 
 type UpdateCharacterApplicationContentParams struct {
@@ -129,7 +132,8 @@ type UpdateCharacterApplicationContentParams struct {
 	Sdesc       string
 	Description string
 	Backstory   string
-	ID          int64
+	Vid         int64
+	Rid         int64
 }
 
 func (q *Queries) UpdateCharacterApplicationContent(ctx context.Context, arg UpdateCharacterApplicationContentParams) (sql.Result, error) {
@@ -139,6 +143,7 @@ func (q *Queries) UpdateCharacterApplicationContent(ctx context.Context, arg Upd
 		arg.Sdesc,
 		arg.Description,
 		arg.Backstory,
-		arg.ID,
+		arg.Vid,
+		arg.Rid,
 	)
 }

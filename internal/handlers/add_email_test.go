@@ -162,7 +162,7 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	writer.WriteField("notemail", "blahblahblah")
 	writer.Close()
 
-	url := fmt.Sprintf("http://petrichormud.com%s", AddEmailRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, AddEmailRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)

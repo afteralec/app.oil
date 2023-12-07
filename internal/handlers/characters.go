@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -15,6 +14,7 @@ import (
 
 const (
 	CharactersRoute              = "/characters"
+	CharacterRoute               = "/characters/:id"
 	NewCharacterRoute            = "/characters/new"
 	NewCharacterNameRoute        = "/characters/new/:id/name"
 	NewCharacterGenderRoute      = "/characters/new/:id/gender"
@@ -246,15 +246,12 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			log.Println("Error creating request")
-			log.Println(err)
 			return nil
 		}
 
 		rid, err := result.LastInsertId()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			log.Println("Error getting LastInsertId")
 			return nil
 		}
 
@@ -269,7 +266,6 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			log.Println("Error creating content")
 			return nil
 		}
 
@@ -277,6 +273,85 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		// TODO: Get this in a generator
 		path := fmt.Sprintf("/character/new/%d/name", rid)
 		c.Append("HX-Redirect", path)
+		return nil
+	}
+}
+
+func UpdateCharacterApplication(i *shared.Interfaces) fiber.Handler {
+	// TODO: Validate this input for length on the way in
+	type request struct {
+		Name        string `form:"name"`
+		Gender      string `form:"gender"`
+		Sdesc       string `form:"sdesc"`
+		Description string `form:"description"`
+		Backstory   string `form:"backstory"`
+	}
+	return func(c *fiber.Ctx) error {
+		pid := c.Locals("pid")
+
+		if pid == nil {
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+		}
+
+		prid := c.Params("id")
+		if len(prid) == 0 {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+		rid, err := strconv.ParseInt(prid, 10, 64)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO: Pull the request here and if the type isn't CharacterApplication, send back a 400
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		_, err = i.Queries.CreateCharacterApplicationContentHistory(context.Background(), queries.CreateCharacterApplicationContentHistoryParams{
+			Gender:      app.Gender,
+			Name:        app.Name,
+			Sdesc:       app.Sdesc,
+			Description: app.Description,
+			Backstory:   app.Backstory,
+			Vid:         app.Vid,
+			Rid:         app.Rid,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		r := new(request)
+		if err := c.BodyParser(r); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		_, err = i.Queries.UpdateCharacterApplicationContent(context.Background(), queries.UpdateCharacterApplicationContentParams{
+			// TODO: Get gender into a constant
+			Gender:      r.Gender,
+			Name:        r.Name,
+			Sdesc:       r.Sdesc,
+			Description: r.Description,
+			Backstory:   r.Backstory,
+			Vid:         app.Vid,
+			Rid:         app.Rid,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		c.Status(fiber.StatusOK)
 		return nil
 	}
 }
