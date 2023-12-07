@@ -10,6 +10,22 @@ import (
 	"database/sql"
 )
 
+const countOpenRequests = `-- name: CountOpenRequests :one
+SELECT
+  COUNT(*)
+FROM
+  requests
+WHERE
+  pid = ? AND status != "Archived" AND status != "Canceled"
+`
+
+func (q *Queries) CountOpenRequests(ctx context.Context, pid int64) (int64, error) {
+	row := q.queryRow(ctx, q.countOpenRequestsStmt, countOpenRequests, pid)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createRequest = `-- name: CreateRequest :execresult
 INSERT INTO requests (type, pid) VALUES (?, ?)
 `

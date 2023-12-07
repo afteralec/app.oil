@@ -18,7 +18,7 @@ INSERT INTO
 VALUES
   (?, ?, ?, ?, ?, ?, ?);
 
--- name: UpdateCharacterApplicationContent :execresult
+-- name: UpdateCharacterApplicationContent :exec
 UPDATE 
   character_application_content
 SET 
@@ -30,3 +30,22 @@ SET
   vid = ?
 WHERE
   rid = ?;
+
+-- name: UpdateCharacterApplicationContentName :exec
+UPDATE character_application_content SET name = ? WHERE rid = ?;
+
+-- name: UpdateCharacterApplicationContentGender :exec
+UPDATE character_application_content SET gender = ? WHERE rid = ?;
+
+-- name: UpdateCharacterApplicationContentSdesc :exec
+UPDATE character_application_content SET sdesc = ? WHERE rid = ?;
+
+-- name: UpdateCharacterApplicationContentDescription :exec
+UPDATE character_application_content SET description = ? WHERE rid = ?;
+
+-- name: UpdateCharacterApplicationContentBackstory :exec
+UPDATE character_application_content SET backstory = ? WHERE rid = ?;
+
+-- name: UpdateCharacterApplicationContentVersion :exec
+UPDATE character_application_content SET vid = ? WHERE rid = ?;
+

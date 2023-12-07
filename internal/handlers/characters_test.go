@@ -313,6 +313,641 @@ func TestUpdateCharacterApplicationMissingBody(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
+func TestUpdateCharacterApplicationName(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(bind.New())
+	app.Use(session.New(&i))
+
+	app.Patch(CharacterApplicationNameRoute, UpdateCharacterApplicationName(&i))
+
+	// TODO: Put this in a generator
+	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationNameRoute)
+	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationNameSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Patch(CharacterApplicationNameRoute, UpdateCharacterApplicationName(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/name")
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("name", "test")
+	writer.Close()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationNameNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Patch(CharacterApplicationNameRoute, UpdateCharacterApplicationName(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid+1, "/name")
+	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationNameFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterApplicationNameRoute, UpdateCharacterApplicationName(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	i.Close()
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/name")
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationNameMissingBody(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterApplicationNameRoute, UpdateCharacterApplicationName(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/name")
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationGender(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(bind.New())
+	app.Use(session.New(&i))
+
+	app.Patch(CharacterApplicationGenderRoute, UpdateCharacterApplicationGender(&i))
+
+	// TODO: Put this in a generator
+	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationGenderRoute)
+	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationGenderSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Patch(CharacterApplicationGenderRoute, UpdateCharacterApplicationGender(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/gender")
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("gender", "NonBinary")
+	writer.Close()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationGenderNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Patch(CharacterApplicationGenderRoute, UpdateCharacterApplicationGender(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid+1, "/gender")
+	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationGenderFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterApplicationGenderRoute, UpdateCharacterApplicationGender(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	i.Close()
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/gender")
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationGenderMissingBody(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterApplicationGenderRoute, UpdateCharacterApplicationGender(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/gender")
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationSdesc(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(bind.New())
+	app.Use(session.New(&i))
+
+	app.Patch(CharacterApplicationSdescRoute, UpdateCharacterApplicationSdesc(&i))
+
+	// TODO: Put this in a generator
+	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationSdescRoute)
+	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationSdescSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Patch(CharacterApplicationSdescRoute, UpdateCharacterApplicationSdesc(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/sdesc")
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("sdesc", "testing, testerly person")
+	writer.Close()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationSdescNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Patch(CharacterApplicationSdescRoute, UpdateCharacterApplicationSdesc(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid+1, "/sdesc")
+	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationSdescFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterApplicationSdescRoute, UpdateCharacterApplicationSdesc(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	i.Close()
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/sdesc")
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationSdescMissingBody(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterApplicationSdescRoute, UpdateCharacterApplicationSdesc(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/sdesc")
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationDescription(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(bind.New())
+	app.Use(session.New(&i))
+
+	app.Patch(CharacterApplicationDescriptionRoute, UpdateCharacterApplicationDescription(&i))
+
+	// TODO: Put this in a generator
+	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationDescriptionRoute)
+	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationDescriptionSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Patch(CharacterApplicationDescriptionRoute, UpdateCharacterApplicationDescription(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/description")
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("description", "This is a test actor.")
+	writer.Close()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationDescriptionNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Patch(CharacterApplicationDescriptionRoute, UpdateCharacterApplicationDescription(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid+1, "/description")
+	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationDescriptionFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterApplicationDescriptionRoute, UpdateCharacterApplicationDescription(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	i.Close()
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/description")
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationDescriptionMissingBody(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterApplicationDescriptionRoute, UpdateCharacterApplicationDescription(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/description")
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationBackstory(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(bind.New())
+	app.Use(session.New(&i))
+
+	app.Patch(CharacterApplicationBackstoryRoute, UpdateCharacterApplicationBackstory(&i))
+
+	// TODO: Put this in a generator
+	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationBackstoryRoute)
+	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationBackstorySuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Patch(CharacterApplicationBackstoryRoute, UpdateCharacterApplicationBackstory(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/backstory")
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("backstory", "This is a tragic backstory.")
+	writer.Close()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationBackstoryNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Patch(CharacterApplicationBackstoryRoute, UpdateCharacterApplicationBackstory(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid+1, "/backstory")
+	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationBackstoryFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterApplicationBackstoryRoute, UpdateCharacterApplicationBackstory(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	i.Close()
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/backstory")
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationBackstoryMissingBody(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	app := fiber.New(configs.Fiber(views))
+	app.Use(session.New(&i))
+
+	app.Post(RegisterRoute, Register(&i))
+	app.Post(LoginRoute, Login(&i))
+	app.Post(NewCharacterRoute, NewCharacterApplication(&i))
+	app.Put(CharacterApplicationBackstoryRoute, UpdateCharacterApplicationBackstory(&i))
+
+	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
+	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/characters/", rid, "/backstory")
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
 func TestCharacterNamePage(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()

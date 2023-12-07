@@ -112,7 +112,7 @@ func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, 
 	return i, err
 }
 
-const updateCharacterApplicationContent = `-- name: UpdateCharacterApplicationContent :execresult
+const updateCharacterApplicationContent = `-- name: UpdateCharacterApplicationContent :exec
 UPDATE 
   character_application_content
 SET 
@@ -136,8 +136,8 @@ type UpdateCharacterApplicationContentParams struct {
 	Rid         int64
 }
 
-func (q *Queries) UpdateCharacterApplicationContent(ctx context.Context, arg UpdateCharacterApplicationContentParams) (sql.Result, error) {
-	return q.exec(ctx, q.updateCharacterApplicationContentStmt, updateCharacterApplicationContent,
+func (q *Queries) UpdateCharacterApplicationContent(ctx context.Context, arg UpdateCharacterApplicationContentParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentStmt, updateCharacterApplicationContent,
 		arg.Gender,
 		arg.Name,
 		arg.Sdesc,
@@ -146,4 +146,89 @@ func (q *Queries) UpdateCharacterApplicationContent(ctx context.Context, arg Upd
 		arg.Vid,
 		arg.Rid,
 	)
+	return err
+}
+
+const updateCharacterApplicationContentBackstory = `-- name: UpdateCharacterApplicationContentBackstory :exec
+UPDATE character_application_content SET backstory = ? WHERE rid = ?
+`
+
+type UpdateCharacterApplicationContentBackstoryParams struct {
+	Backstory string
+	Rid       int64
+}
+
+func (q *Queries) UpdateCharacterApplicationContentBackstory(ctx context.Context, arg UpdateCharacterApplicationContentBackstoryParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentBackstoryStmt, updateCharacterApplicationContentBackstory, arg.Backstory, arg.Rid)
+	return err
+}
+
+const updateCharacterApplicationContentDescription = `-- name: UpdateCharacterApplicationContentDescription :exec
+UPDATE character_application_content SET description = ? WHERE rid = ?
+`
+
+type UpdateCharacterApplicationContentDescriptionParams struct {
+	Description string
+	Rid         int64
+}
+
+func (q *Queries) UpdateCharacterApplicationContentDescription(ctx context.Context, arg UpdateCharacterApplicationContentDescriptionParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentDescriptionStmt, updateCharacterApplicationContentDescription, arg.Description, arg.Rid)
+	return err
+}
+
+const updateCharacterApplicationContentGender = `-- name: UpdateCharacterApplicationContentGender :exec
+UPDATE character_application_content SET gender = ? WHERE rid = ?
+`
+
+type UpdateCharacterApplicationContentGenderParams struct {
+	Gender string
+	Rid    int64
+}
+
+func (q *Queries) UpdateCharacterApplicationContentGender(ctx context.Context, arg UpdateCharacterApplicationContentGenderParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentGenderStmt, updateCharacterApplicationContentGender, arg.Gender, arg.Rid)
+	return err
+}
+
+const updateCharacterApplicationContentName = `-- name: UpdateCharacterApplicationContentName :exec
+UPDATE character_application_content SET name = ? WHERE rid = ?
+`
+
+type UpdateCharacterApplicationContentNameParams struct {
+	Name string
+	Rid  int64
+}
+
+func (q *Queries) UpdateCharacterApplicationContentName(ctx context.Context, arg UpdateCharacterApplicationContentNameParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentNameStmt, updateCharacterApplicationContentName, arg.Name, arg.Rid)
+	return err
+}
+
+const updateCharacterApplicationContentSdesc = `-- name: UpdateCharacterApplicationContentSdesc :exec
+UPDATE character_application_content SET sdesc = ? WHERE rid = ?
+`
+
+type UpdateCharacterApplicationContentSdescParams struct {
+	Sdesc string
+	Rid   int64
+}
+
+func (q *Queries) UpdateCharacterApplicationContentSdesc(ctx context.Context, arg UpdateCharacterApplicationContentSdescParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentSdescStmt, updateCharacterApplicationContentSdesc, arg.Sdesc, arg.Rid)
+	return err
+}
+
+const updateCharacterApplicationContentVersion = `-- name: UpdateCharacterApplicationContentVersion :exec
+UPDATE character_application_content SET vid = ? WHERE rid = ?
+`
+
+type UpdateCharacterApplicationContentVersionParams struct {
+	Vid int64
+	Rid int64
+}
+
+func (q *Queries) UpdateCharacterApplicationContentVersion(ctx context.Context, arg UpdateCharacterApplicationContentVersionParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentVersionStmt, updateCharacterApplicationContentVersion, arg.Vid, arg.Rid)
+	return err
 }
