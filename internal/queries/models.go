@@ -11,11 +11,11 @@ import (
 type CharacterApplicationContent struct {
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
-	Gender      string
-	Name        string
-	Sdesc       string
-	Description string
 	Backstory   string
+	Description string
+	Sdesc       string
+	Name        string
+	Gender      string
 	Vid         int64
 	Rid         int64
 	ID          int64
@@ -24,11 +24,11 @@ type CharacterApplicationContent struct {
 type CharacterApplicationContentHistory struct {
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
-	Gender      string
-	Name        string
-	Sdesc       string
-	Description string
 	Backstory   string
+	Description string
+	Sdesc       string
+	Name        string
+	Gender      string
 	Vid         int64
 	Rid         int64
 	ID          int64
@@ -66,19 +66,13 @@ type RequestComment struct {
 	CreatedAt sql.NullTime
 	UpdatedAt sql.NullTime
 	DeletedAt sql.NullTime
+	Text      string
 	Field     sql.NullString
 	Deleted   sql.NullBool
 	Cid       sql.NullInt64
 	Rid       int64
 	Vid       int64
 	Pid       int64
-	ID        int64
-}
-
-type RequestCommentContent struct {
-	CreatedAt sql.NullTime
-	Text      string
-	Cid       int64
 	ID        int64
 }
 

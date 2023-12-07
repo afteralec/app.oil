@@ -69,7 +69,7 @@ func (q *Queries) CreateCharacterApplicationContentHistory(ctx context.Context, 
 }
 
 const getCharacterApplicationContent = `-- name: GetCharacterApplicationContent :one
-SELECT created_at, updated_at, gender, name, sdesc, description, backstory, vid, rid, id FROM character_application_content WHERE id = ?
+SELECT created_at, updated_at, backstory, description, sdesc, name, gender, vid, rid, id FROM character_application_content WHERE id = ?
 `
 
 func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) (CharacterApplicationContent, error) {
@@ -78,11 +78,11 @@ func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) 
 	err := row.Scan(
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Gender,
-		&i.Name,
-		&i.Sdesc,
-		&i.Description,
 		&i.Backstory,
+		&i.Description,
+		&i.Sdesc,
+		&i.Name,
+		&i.Gender,
 		&i.Vid,
 		&i.Rid,
 		&i.ID,
@@ -91,7 +91,7 @@ func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) 
 }
 
 const getCharacterApplicationContentForRequest = `-- name: GetCharacterApplicationContentForRequest :one
-SELECT created_at, updated_at, gender, name, sdesc, description, backstory, vid, rid, id FROM character_application_content WHERE rid = ?
+SELECT created_at, updated_at, backstory, description, sdesc, name, gender, vid, rid, id FROM character_application_content WHERE rid = ?
 `
 
 func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, rid int64) (CharacterApplicationContent, error) {
@@ -100,11 +100,11 @@ func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, 
 	err := row.Scan(
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Gender,
-		&i.Name,
-		&i.Sdesc,
-		&i.Description,
 		&i.Backstory,
+		&i.Description,
+		&i.Sdesc,
+		&i.Name,
+		&i.Gender,
 		&i.Vid,
 		&i.Rid,
 		&i.ID,
