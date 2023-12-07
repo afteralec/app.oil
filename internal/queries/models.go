@@ -54,6 +54,7 @@ type Player struct {
 
 type Request struct {
 	Type      string
+	Status    string
 	CreatedAt sql.NullTime
 	UpdatedAt sql.NullTime
 	Vid       int64
@@ -86,5 +87,14 @@ type RequestCommentContentHistory struct {
 	Text      string
 	Cid       int64
 	Vid       int64
+	ID        int64
+}
+
+type RequestStatusChange struct {
+	Status    string
+	CreatedAt sql.NullTime
+	Vid       int64
+	Rid       int64
+	Pid       int64
 	ID        int64
 }

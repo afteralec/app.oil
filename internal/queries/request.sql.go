@@ -24,7 +24,7 @@ func (q *Queries) CreateRequest(ctx context.Context, arg CreateRequestParams) (s
 }
 
 const getRequest = `-- name: GetRequest :one
-SELECT type, created_at, updated_at, vid, pid, id FROM requests WHERE id = ?
+SELECT type, status, created_at, updated_at, vid, pid, id FROM requests WHERE id = ?
 `
 
 func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
@@ -32,6 +32,7 @@ func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
 	var i Request
 	err := row.Scan(
 		&i.Type,
+		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Vid,
@@ -42,7 +43,7 @@ func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
 }
 
 const listCharacterApplicationsForPlayer = `-- name: ListCharacterApplicationsForPlayer :many
-SELECT type, created_at, updated_at, vid, pid, id FROM requests WHERE pid = ? AND type = 'CharacterApplication'
+SELECT type, status, created_at, updated_at, vid, pid, id FROM requests WHERE pid = ? AND type = 'CharacterApplication'
 `
 
 func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid int64) ([]Request, error) {
@@ -56,6 +57,7 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 		var i Request
 		if err := rows.Scan(
 			&i.Type,
+			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Vid,
@@ -76,7 +78,7 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 }
 
 const listRequestsForPlayer = `-- name: ListRequestsForPlayer :many
-SELECT type, created_at, updated_at, vid, pid, id FROM requests WHERE pid = ?
+SELECT type, status, created_at, updated_at, vid, pid, id FROM requests WHERE pid = ?
 `
 
 func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Request, error) {
@@ -90,6 +92,7 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 		var i Request
 		if err := rows.Scan(
 			&i.Type,
+			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Vid,
