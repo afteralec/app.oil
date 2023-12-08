@@ -10,6 +10,98 @@ import (
 	"database/sql"
 )
 
+const addCommentToRequest = `-- name: AddCommentToRequest :execresult
+
+INSERT INTO request_comments (text, pid, rid, vid) VALUES (?, ?, ?, ?)
+`
+
+type AddCommentToRequestParams struct {
+	Text string
+	Pid  int64
+	Rid  int64
+	Vid  int64
+}
+
+// TODO: Make these use the current vid of the application in the rid - compound query
+func (q *Queries) AddCommentToRequest(ctx context.Context, arg AddCommentToRequestParams) (sql.Result, error) {
+	return q.exec(ctx, q.addCommentToRequestStmt, addCommentToRequest,
+		arg.Text,
+		arg.Pid,
+		arg.Rid,
+		arg.Vid,
+	)
+}
+
+const addCommentToRequestField = `-- name: AddCommentToRequestField :execresult
+INSERT INTO request_comments (text, field, pid, rid, vid) VALUES (?, ?, ?, ?, ?)
+`
+
+type AddCommentToRequestFieldParams struct {
+	Text  string
+	Field string
+	Pid   int64
+	Rid   int64
+	Vid   int64
+}
+
+func (q *Queries) AddCommentToRequestField(ctx context.Context, arg AddCommentToRequestFieldParams) (sql.Result, error) {
+	return q.exec(ctx, q.addCommentToRequestFieldStmt, addCommentToRequestField,
+		arg.Text,
+		arg.Field,
+		arg.Pid,
+		arg.Rid,
+		arg.Vid,
+	)
+}
+
+const addReplyToComment = `-- name: AddReplyToComment :execresult
+
+INSERT INTO request_comments (text, cid, pid, rid, vid) VALUES (?, ?, ?, ?, ?)
+`
+
+type AddReplyToCommentParams struct {
+	Text string
+	Cid  int64
+	Pid  int64
+	Rid  int64
+	Vid  int64
+}
+
+// TODO: Make this use the same field as the comment at the cid
+func (q *Queries) AddReplyToComment(ctx context.Context, arg AddReplyToCommentParams) (sql.Result, error) {
+	return q.exec(ctx, q.addReplyToCommentStmt, addReplyToComment,
+		arg.Text,
+		arg.Cid,
+		arg.Pid,
+		arg.Rid,
+		arg.Vid,
+	)
+}
+
+const addReplyToFieldComment = `-- name: AddReplyToFieldComment :execresult
+INSERT INTO request_comments (text, field, cid, pid, rid, vid) VALUES (?, ?, ?, ?, ?, ?)
+`
+
+type AddReplyToFieldCommentParams struct {
+	Text  string
+	Field string
+	Cid   int64
+	Pid   int64
+	Rid   int64
+	Vid   int64
+}
+
+func (q *Queries) AddReplyToFieldComment(ctx context.Context, arg AddReplyToFieldCommentParams) (sql.Result, error) {
+	return q.exec(ctx, q.addReplyToFieldCommentStmt, addReplyToFieldComment,
+		arg.Text,
+		arg.Field,
+		arg.Cid,
+		arg.Pid,
+		arg.Rid,
+		arg.Vid,
+	)
+}
+
 const countOpenRequests = `-- name: CountOpenRequests :one
 SELECT
   COUNT(*)
@@ -58,6 +150,29 @@ func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
 	return i, err
 }
 
+const getRequestComment = `-- name: GetRequestComment :one
+SELECT created_at, updated_at, deleted_at, text, field, deleted, cid, rid, vid, pid, id FROM request_comments WHERE id = ?
+`
+
+func (q *Queries) GetRequestComment(ctx context.Context, id int64) (RequestComment, error) {
+	row := q.queryRow(ctx, q.getRequestCommentStmt, getRequestComment, id)
+	var i RequestComment
+	err := row.Scan(
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+		&i.Text,
+		&i.Field,
+		&i.Deleted,
+		&i.Cid,
+		&i.Rid,
+		&i.Vid,
+		&i.Pid,
+		&i.ID,
+	)
+	return i, err
+}
+
 const listCharacterApplicationsForPlayer = `-- name: ListCharacterApplicationsForPlayer :many
 SELECT type, status, created_at, updated_at, vid, pid, id FROM requests WHERE pid = ? AND type = 'CharacterApplication'
 `
@@ -76,6 +191,84 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Vid,
+			&i.Pid,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listCommentsForRequest = `-- name: ListCommentsForRequest :many
+SELECT created_at, updated_at, deleted_at, text, field, deleted, cid, rid, vid, pid, id FROM request_comments WHERE rid = ?
+`
+
+func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]RequestComment, error) {
+	rows, err := q.query(ctx, q.listCommentsForRequestStmt, listCommentsForRequest, rid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestComment
+	for rows.Next() {
+		var i RequestComment
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+			&i.Text,
+			&i.Field,
+			&i.Deleted,
+			&i.Cid,
+			&i.Rid,
+			&i.Vid,
+			&i.Pid,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listRepliesToComment = `-- name: ListRepliesToComment :many
+SELECT created_at, updated_at, deleted_at, text, field, deleted, cid, rid, vid, pid, id FROM request_comments WHERE cid = ?
+`
+
+func (q *Queries) ListRepliesToComment(ctx context.Context, cid int64) ([]RequestComment, error) {
+	rows, err := q.query(ctx, q.listRepliesToCommentStmt, listRepliesToComment, cid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestComment
+	for rows.Next() {
+		var i RequestComment
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+			&i.Text,
+			&i.Field,
+			&i.Deleted,
+			&i.Cid,
+			&i.Rid,
 			&i.Vid,
 			&i.Pid,
 			&i.ID,

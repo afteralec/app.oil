@@ -67,9 +67,9 @@ type RequestComment struct {
 	UpdatedAt sql.NullTime
 	DeletedAt sql.NullTime
 	Text      string
-	Field     sql.NullString
+	Field     string
 	Deleted   sql.NullBool
-	Cid       sql.NullInt64
+	Cid       int64
 	Rid       int64
 	Vid       int64
 	Pid       int64
