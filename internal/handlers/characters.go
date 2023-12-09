@@ -276,7 +276,7 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 
 		c.Status(fiber.StatusCreated)
 		// TODO: Get this in a generator
-		path := fmt.Sprintf("/character/new/%d/name", rid)
+		path := fmt.Sprintf("/characters/new/%d/name", rid)
 		c.Append("HX-Redirect", path)
 		return nil
 	}
