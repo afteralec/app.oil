@@ -14,18 +14,14 @@ import (
 
 const (
 	CharactersRoute                      = "/characters"
-	CharacterRoute                       = "/characters/:id"
-	CharacterApplicationNameRoute        = "/characters/:id/name"
-	CharacterApplicationGenderRoute      = "/characters/:id/gender"
-	CharacterApplicationSdescRoute       = "/characters/:id/sdesc"
-	CharacterApplicationDescriptionRoute = "/characters/:id/description"
-	CharacterApplicationBackstoryRoute   = "/characters/:id/backstory"
-	NewCharacterRoute                    = "/characters/new"
-	NewCharacterNameRoute                = "/characters/new/:id/name"
-	NewCharacterGenderRoute              = "/characters/new/:id/gender"
-	NewCharacterSdescRoute               = "/characters/new/:id/sdesc"
-	NewCharacterDescriptionRoute         = "/characters/new/:id/description"
-	NewCharacterBackstoryRoute           = "/characters/new/:id/backstory"
+	CharacterApplicationsRoute           = "/character/application"
+	CharacterApplicationRoute            = "/character/application/:id"
+	NewCharacterApplicationRoute         = "/character/application/new"
+	CharacterApplicationNameRoute        = "/character/application/:id/name"
+	CharacterApplicationGenderRoute      = "/character/application/:id/gender"
+	CharacterApplicationSdescRoute       = "/character/application/:id/sdesc"
+	CharacterApplicationDescriptionRoute = "/character/application/:id/description"
+	CharacterApplicationBackstoryRoute   = "/character/application/:id/backstory"
 )
 
 func CharactersPage(i *shared.Interfaces) fiber.Handler {
@@ -37,15 +33,15 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
-		apps, err := i.Queries.ListCharacterApplicationsForPlayer(context.Background(), pid.(int64))
+		reqs, err := i.Queries.ListCharacterApplicationsForPlayer(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("web/views/500", c.Locals("bind"))
 		}
 
 		b := c.Locals("bind").(fiber.Map)
-		b["CharacterApplications"] = apps
-		b["HasCharacterApplications"] = len(apps) > 0
+		b["CharacterApplications"] = reqs
+		b["HasCharacterApplications"] = len(reqs) > 0
 		return c.Render("web/views/characters", b)
 	}
 }
