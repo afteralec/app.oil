@@ -13,11 +13,8 @@ import (
 	html "github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
+	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/handlers"
-	"petrichormud.com/app/internal/middleware/bind"
-	"petrichormud.com/app/internal/middleware/session"
-	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -26,25 +23,19 @@ func TestEditEmailUnauthorized(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
-	app.Put(routes.EmailPath(routes.ID), handlers.EditEmail(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	_, err := app.Test(req)
+	_, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +51,7 @@ func TestEditEmailUnauthorized(t *testing.T) {
 	email := emails[0]
 
 	req = EditEmailRequest(email.ID, TestEmailAddressTwo)
-	res, err = app.Test(req)
+	res, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -73,25 +64,19 @@ func TestEditEmailMissingInput(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
-	app.Put(routes.EmailPath(routes.ID), handlers.EditEmail(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	_, err := app.Test(req)
+	_, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -108,7 +93,7 @@ func TestEditEmailMissingInput(t *testing.T) {
 
 	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodPut, url, nil)
-	res, err = app.Test(req)
+	res, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -121,25 +106,19 @@ func TestEditEmailMalformedInput(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
-	app.Put(routes.EmailPath(routes.ID), handlers.EditEmail(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	_, err := app.Test(req)
+	_, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -163,7 +142,7 @@ func TestEditEmailMalformedInput(t *testing.T) {
 	req = httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
-	res, err = app.Test(req)
+	res, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -176,26 +155,19 @@ func TestEditEmailDBError(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
-	app.Put(routes.EmailPath(routes.ID), handlers.EditEmail(&i))
-
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 	SetupTestEditEmail(t, &i, "testify2", TestEmailAddressTwo)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	_, err := app.Test(req)
+	_, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -214,7 +186,7 @@ func TestEditEmailDBError(t *testing.T) {
 	req.AddCookie(sessionCookie)
 	// Close the connection to the DB to simulate a DB error
 	i.Close()
-	res, err = app.Test(req)
+	res, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -227,28 +199,20 @@ func TestEditEmailUnowned(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.LogoutRoute, handlers.Logout(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
-	app.Delete(routes.EmailPath(routes.ID), handlers.DeleteEmail(&i))
-	app.Put(routes.EmailPath(routes.ID), handlers.EditEmail(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 	SetupTestEditEmail(t, &i, "testify2", TestEmailAddressTwo)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	_, err := app.Test(req)
+	_, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -264,20 +228,20 @@ func TestEditEmailUnowned(t *testing.T) {
 	email := emails[0]
 
 	// Log in as a different user
-	CallRegister(t, app, TestUsernameTwo, TestPassword)
-	res = CallLogin(t, app, TestUsernameTwo, TestPassword)
+	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	res = CallLogin(t, a, TestUsernameTwo, TestPassword)
 	cookies = res.Cookies()
 	sessionCookie = cookies[0]
 	req = AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	_, err = app.Test(req)
+	_, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	req = EditEmailRequest(email.ID, TestEmailAddressTwo)
 	req.AddCookie(sessionCookie)
-	res, err = app.Test(req)
+	res, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -290,20 +254,14 @@ func TestEditEmailInvalidID(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
-	app.Put(routes.EmailPath(routes.ID), handlers.EditEmail(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
@@ -318,7 +276,7 @@ func TestEditEmailInvalidID(t *testing.T) {
 		t.Fatal(err)
 	}
 	req.AddCookie(sessionCookie)
-	res, err = app.Test(req)
+	res, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -331,26 +289,19 @@ func TestEditNonexistantEmail(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
-	app.Delete(routes.EmailPath(routes.ID), handlers.DeleteEmail(&i))
-	app.Put(routes.EmailPath(routes.ID), handlers.EditEmail(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	_, err := app.Test(req)
+	_, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -373,14 +324,14 @@ func TestEditNonexistantEmail(t *testing.T) {
 	}
 	req.AddCookie(sessionCookie)
 
-	_, err = app.Test(req)
+	_, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	req = EditEmailRequest(email.ID, TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	res, err = app.Test(req)
+	res, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -393,26 +344,19 @@ func TestEditEmailUnverified(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
-	app.Delete(routes.EmailPath(routes.ID), handlers.DeleteEmail(&i))
-	app.Put(routes.EmailPath(routes.ID), handlers.EditEmail(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	_, err := app.Test(req)
+	_, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -429,7 +373,7 @@ func TestEditEmailUnverified(t *testing.T) {
 
 	req = EditEmailRequest(email.ID, TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	res, err = app.Test(req)
+	res, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -442,26 +386,19 @@ func TestEditEmailSuccess(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
-	app.Delete(routes.EmailPath(routes.ID), handlers.DeleteEmail(&i))
-	app.Put(routes.EmailPath(routes.ID), handlers.EditEmail(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	_, err := app.Test(req)
+	_, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -483,7 +420,7 @@ func TestEditEmailSuccess(t *testing.T) {
 
 	req = EditEmailRequest(email.ID, TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	res, err = app.Test(req)
+	res, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
