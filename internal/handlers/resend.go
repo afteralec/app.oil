@@ -82,9 +82,9 @@ func Resend(i *shared.Interfaces) fiber.Handler {
 			}
 		}
 		if err == nil {
-			// TODO: This is a new error state - it means another user has claimed and verified the email before you
-			c.Status(fiber.StatusForbidden)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusConflict)
+			return c.Render("web/views/partials/profile/email/resend/err-conflict-unowned", &fiber.Map{}, "")
 		}
 
 		err = email.Verify(i, id, e.Address)
