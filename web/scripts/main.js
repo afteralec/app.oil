@@ -134,7 +134,7 @@ export function isCharacterNameValid(n = "") {
 
 // TODO: Test
 export function isCharacterShortDescriptionValid(sdesc = "") {
-  if (sdesc.length < 4) return false;
+  if (sdesc.length < 8) return false;
   if (sdesc.length > 300) return false;
   const regex = new RegExp("[^a-zA-Z, -]+", "g");
   if (regex.test(sdesc)) return false;
@@ -152,8 +152,8 @@ export function isCharacterDescriptionValid(desc = "") {
 
 // TODO: Test
 export function isCharacterBackstoryValid(backstory) {
-  if (backstory.length < 32) return false;
-  if (backstory.length > 300) return false;
+  if (backstory.length < 500) return false;
+  if (backstory.length > 10000) return false;
   const regex = RegExp("[^\r\na-zA-Z, -.!()]+", "gi");
   if (regex.test(backstory)) return false;
   return true;

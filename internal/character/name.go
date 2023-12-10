@@ -2,20 +2,23 @@ package character
 
 import (
 	"regexp"
+
+	"petrichormud.com/app/internal/shared"
 )
 
 func SanitizeName(n string) string {
+	// TODO: Add this regex test to IsNameValid too
 	re := regexp.MustCompile("[^a-zA-Z'-]+")
 	s := re.ReplaceAllString(n, "")
 	return s
 }
 
-func IsValidName(n string) bool {
-	if len(n) < 4 {
+func IsNameValid(n string) bool {
+	if len(n) < shared.MinCharacterNameLength {
 		return false
 	}
 
-	if len(n) > 16 {
+	if len(n) > shared.MaxCharacterNameLength {
 		return false
 	}
 

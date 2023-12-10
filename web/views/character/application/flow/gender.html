@@ -1,7 +1,9 @@
 <main
-  class="flex h-screen w-screen items-center justify-center"
+  class="flex h-screen w-screen flex-col items-center justify-center"
   x-data="getCharacterApplicationFlowGenderData('{{ .Gender }}')"
 >
+  <!-- prettier-ignore -->
+  {{ template "web/views/partials/character/application/status/list" .Statuses }}
   <div class="w-full max-w-lg rounded-md border p-6">
     <div id="character-application-flow-error"></div>
     <p class="whitespace-nowrap pt-4">Choose {{ .Name }}'s gender:</p>
@@ -22,7 +24,7 @@
       <div class="space-y-4">
         <div
           @click="gender = '{{ .GenderNonBinary }}'"
-          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-black"
+          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
           :class="{
             'cursor-pointer': gender !== '{{ .GenderNonBinary }}',
             'border-black': gender == '{{ .GenderNonBinary }}',
@@ -61,7 +63,7 @@
         </div>
         <div
           @click="gender = '{{ .GenderFemale }}'"
-          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-black"
+          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
           :class="{
             'cursor-pointer': gender !== '{{ .GenderFemale }}',
             'border-black': gender == '{{ .GenderFemale }}',
@@ -100,7 +102,7 @@
         </div>
         <div
           @click="gender = '{{ .GenderMale }}'"
-          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-black"
+          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
           :class="{
             'cursor-pointer': gender !== '{{ .GenderMale }}',
             'border-black': gender == '{{ .GenderMale }}',

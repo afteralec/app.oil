@@ -1,7 +1,9 @@
 <main
-  class="flex h-screen w-screen items-center justify-center"
+  class="flex h-screen w-screen flex-col items-center justify-center"
   x-data="getCharacterApplicationFlowShortDescriptionData('{{ .ShortDescription }}')"
 >
+  <!-- prettier-ignore -->
+  {{ template "web/views/partials/character/application/status/list" .Statuses }}
   <div class="w-full max-w-lg rounded-md border p-6">
     <div id="character-application-flow-error"></div>
     <p class="whitespace-nowrap pt-4">Write {{ .Name }}'s short description:</p>

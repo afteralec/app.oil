@@ -73,9 +73,12 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		statuses := character.MakeApplicationPartStatuses("name", &app)
+
 		b := c.Locals("bind").(fiber.Map)
 		b["Name"] = app.Name
 		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
+		b["Statuses"] = statuses
 		return c.Render("web/views/character/application/flow/name", b, "web/views/layouts/standalone")
 	}
 }
@@ -111,7 +114,9 @@ func CharacterGenderPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		gender := character.ValidateGender(app.Gender)
+		statuses := character.MakeApplicationPartStatuses("gender", &app)
+
+		gender := character.SanitizeGender(app.Gender)
 		b := c.Locals("bind").(fiber.Map)
 		b["Name"] = app.Name
 		b["GenderNonBinary"] = character.GenderNonBinary
@@ -122,6 +127,7 @@ func CharacterGenderPage(i *shared.Interfaces) fiber.Handler {
 		b["GenderIsFemale"] = gender == character.GenderFemale
 		b["GenderIsMale"] = gender == character.GenderMale
 		b["CharacterApplicationGenderPath"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
+		b["Statuses"] = statuses
 		return c.Render("web/views/character/application/flow/gender", b, "web/views/layouts/standalone")
 	}
 }
@@ -157,10 +163,13 @@ func CharacterShortDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		statuses := character.MakeApplicationPartStatuses("sdesc", &app)
+
 		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Name"] = app.Name
 		b["ShortDescription"] = app.ShortDescription
 		b["CharacterApplicationShortDescriptionPath"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
+		b["Statuses"] = statuses
 		return c.Render("web/views/character/application/flow/sdesc", b, "web/views/layouts/standalone")
 	}
 }
@@ -196,10 +205,13 @@ func CharacterDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		statuses := character.MakeApplicationPartStatuses("description", &app)
+
 		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Name"] = app.Name
 		b["Description"] = app.Description
 		b["CharacterApplicationDescriptionPath"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
+		b["Statuses"] = statuses
 		return c.Render("web/views/character/application/flow/description", b, "web/views/layouts/standalone")
 	}
 }
@@ -235,9 +247,12 @@ func CharacterBackstoryPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		statuses := character.MakeApplicationPartStatuses("backstory", &app)
+
 		b := c.Locals("bind").(fiber.Map)
 		b["Name"] = app.Name
 		b["Backstory"] = app.Backstory
+		b["Statuses"] = statuses
 		return c.Render("web/views/character/application/flow/backstory", b, "web/views/layouts/standalone")
 	}
 }
@@ -366,7 +381,7 @@ func UpdateCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		}
 
 		err = i.Queries.UpdateCharacterApplicationContent(context.Background(), queries.UpdateCharacterApplicationContentParams{
-			Gender:           character.ValidateGender(r.Gender),
+			Gender:           character.SanitizeGender(r.Gender),
 			Name:             r.Name,
 			ShortDescription: r.ShortDescription,
 			Description:      r.Description,
@@ -416,7 +431,7 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 
 		name := character.SanitizeName(r.Name)
 
-		if !character.IsValidName(name) {
+		if !character.IsNameValid(name) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
