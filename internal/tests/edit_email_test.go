@@ -105,7 +105,7 @@ func TestEditEmailMissingInput(t *testing.T) {
 	}
 	email := emails[0]
 
-	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodPut, url, nil)
 	res, err = app.Test(req)
 	if err != nil {
@@ -158,7 +158,7 @@ func TestEditEmailMalformedInput(t *testing.T) {
 	writer.WriteField("notemail", "malformed")
 	writer.Close()
 
-	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -311,7 +311,7 @@ func TestEditEmailInvalidID(t *testing.T) {
 	writer.WriteField("email", TestEmailAddressTwo)
 	writer.Close()
 
-	url := fmt.Sprintf("%s/player/email/%s", shared.TestURL, "invalid")
+	url := fmt.Sprintf("%s/player/email/%s", TestURL, "invalid")
 	req, err := http.NewRequest(http.MethodPut, url, body)
 	if err != nil {
 		t.Fatal(err)
@@ -365,7 +365,7 @@ func TestEditNonexistantEmail(t *testing.T) {
 	email := emails[0]
 
 	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
 	req, err = http.NewRequest(http.MethodDelete, url, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -509,7 +509,7 @@ func EditEmailRequest(id int64, e string) *http.Request {
 	writer.WriteField("email", e)
 	writer.Close()
 
-	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, id)
+	url := fmt.Sprintf("%s/player/email/%d", TestURL, id)
 	req := httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return req

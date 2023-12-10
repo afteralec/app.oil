@@ -58,7 +58,7 @@ func TestResendUnauthorized(t *testing.T) {
 	}
 	email := emails[0]
 
-	url := fmt.Sprintf("%s/player/email/%d/resend", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d/resend", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	res, err = app.Test(req)
 	if err != nil {
@@ -106,7 +106,7 @@ func TestResendDBError(t *testing.T) {
 	}
 	email := emails[0]
 
-	url := fmt.Sprintf("%s/player/email/%d/resend", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d/resend", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	i.Close()
@@ -170,7 +170,7 @@ func TestResendUnowned(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s/player/email/%d/resend", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d/resend", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = app.Test(req)
@@ -208,7 +208,7 @@ func TestResendInvalidID(t *testing.T) {
 	writer.WriteField("email", TestEmailAddressTwo)
 	writer.Close()
 
-	url := fmt.Sprintf("%s/player/email/%s/resend", shared.TestURL, "invalid")
+	url := fmt.Sprintf("%s/player/email/%s/resend", TestURL, "invalid")
 	req, err := http.NewRequest(http.MethodPost, url, body)
 	if err != nil {
 		t.Fatal(err)
@@ -262,7 +262,7 @@ func TestResendNonexistantEmail(t *testing.T) {
 	email := emails[0]
 
 	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 	_, err = app.Test(req)
@@ -270,7 +270,7 @@ func TestResendNonexistantEmail(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url = fmt.Sprintf("%s/player/email/%d/resend", shared.TestURL, email.ID)
+	url = fmt.Sprintf("%s/player/email/%d/resend", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = app.Test(req)
@@ -323,7 +323,7 @@ func TestEditEmailVerified(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s/player/email/%d/resend", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d/resend", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = app.Test(req)
@@ -372,7 +372,7 @@ func TestResendSuccess(t *testing.T) {
 	}
 	email := emails[0]
 
-	url := fmt.Sprintf("%s/player/email/%d/resend", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d/resend", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = app.Test(req)

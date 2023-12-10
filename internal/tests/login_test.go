@@ -103,7 +103,7 @@ func TestLoginWithMalformedFormData(t *testing.T) {
 	writer.WriteField("username", "testify")
 	writer.Close()
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.LoginRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.LoginRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)
@@ -120,7 +120,7 @@ func CallLogin(t *testing.T, app *fiber.App, u string, pw string) *http.Response
 	writer.WriteField("password", pw)
 	writer.Close()
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.LoginRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.LoginRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)

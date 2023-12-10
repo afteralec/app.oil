@@ -30,7 +30,7 @@ func TestVerifyPage(t *testing.T) {
 
 	app.Get(handlers.VerifyRoute, handlers.VerifyPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.VerifyRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.VerifyRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -52,7 +52,7 @@ func TestVerifyUnauthorized(t *testing.T) {
 
 	app.Post(handlers.VerifyRoute, handlers.Verify(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.VerifyRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.VerifyRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -80,7 +80,7 @@ func TestVerifyNoToken(t *testing.T) {
 	res := CallLogin(t, app, TestUsername, TestPassword)
 	sessionCookie := res.Cookies()[0]
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.VerifyRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.VerifyRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -127,7 +127,7 @@ func TestVerifyExpiredToken(t *testing.T) {
 	}
 	email := emails[0]
 
-	url := fmt.Sprintf("%s/player/email/%d/resend?t=non-existant-key", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d/resend?t=non-existant-key", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = app.Test(req)

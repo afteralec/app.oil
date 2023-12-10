@@ -57,7 +57,7 @@ func TestDeleteEmailUnauthorized(t *testing.T) {
 	email := emails[0]
 
 	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	res, err = app.Test(req)
 	if err != nil {
@@ -106,7 +106,7 @@ func TestDeleteEmailDBError(t *testing.T) {
 	email := emails[0]
 
 	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -172,7 +172,7 @@ func TestDeleteEmailUnowned(t *testing.T) {
 	}
 
 	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -206,7 +206,7 @@ func TestDeleteEmailInvalidID(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	url := fmt.Sprintf("%s/player/email/%s", shared.TestURL, "invalid")
+	url := fmt.Sprintf("%s/player/email/%s", TestURL, "invalid")
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -257,7 +257,7 @@ func TestDeleteNonexistantEmail(t *testing.T) {
 	email := emails[0]
 
 	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -313,7 +313,7 @@ func TestDeleteEmailSuccess(t *testing.T) {
 	email := emails[0]
 
 	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", shared.TestURL, email.ID)
+	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 

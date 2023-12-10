@@ -13,7 +13,6 @@ import (
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
-	"petrichormud.com/app/internal/shared"
 )
 
 func TestRecoverPage(t *testing.T) {
@@ -24,7 +23,7 @@ func TestRecoverPage(t *testing.T) {
 
 	app.Get(handlers.RecoverRoute, handlers.RecoverPage())
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.RecoverRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {

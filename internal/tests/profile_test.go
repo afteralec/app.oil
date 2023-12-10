@@ -28,7 +28,7 @@ func TestProfilePage(t *testing.T) {
 
 	app.Get(handlers.ProfileRoute, handlers.ProfilePage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.ProfileRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.ProfileRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -59,7 +59,7 @@ func TestProfilePageSuccess(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.ProfileRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.ProfileRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)

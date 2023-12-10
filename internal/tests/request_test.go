@@ -38,7 +38,7 @@ func TestCreateCommentUnauthorized(t *testing.T) {
 
 	rid, _ := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -69,7 +69,7 @@ func TestCreateCommentSuccess(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -101,7 +101,7 @@ func TestCreateCommentNotFound(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid+1)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid+1)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -135,7 +135,7 @@ func TestCreateCommentFatal(t *testing.T) {
 	i.Close()
 
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid+1)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid+1)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -167,7 +167,7 @@ func TestCreateFieldCommentUnauthorized(t *testing.T) {
 
 	rid, _ := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -199,7 +199,7 @@ func TestCreateFieldCommentSuccess(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -232,7 +232,7 @@ func TestCreateFieldCommentNotFound(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid+1)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid+1)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -267,7 +267,7 @@ func TestCreateFieldCommentFatal(t *testing.T) {
 	i.Close()
 
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -302,7 +302,7 @@ func TestCreateReplyCommentUnauthorized(t *testing.T) {
 	cid, _ := CreateTestComment(t, &i, app, rid)
 	strcid := strconv.FormatInt(cid, 10)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -336,7 +336,7 @@ func TestCreateReplyCommentSuccess(t *testing.T) {
 	cid, sessionCookie := CreateTestComment(t, &i, app, rid)
 	strcid := strconv.FormatInt(cid, 10)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -371,7 +371,7 @@ func TestCreateReplyCommentNotFound(t *testing.T) {
 	cid, sessionCookie := CreateTestComment(t, &i, app, rid)
 	strcid := strconv.FormatInt(cid, 10)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid+1)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid+1)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -406,7 +406,7 @@ func TestCreateReplyCommentCIDNotFound(t *testing.T) {
 	cid, sessionCookie := CreateTestComment(t, &i, app, rid)
 	strcid := strconv.FormatInt(cid+1, 10)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -443,7 +443,7 @@ func TestCreateReplyCommentFatal(t *testing.T) {
 	i.Close()
 
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid+1)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid+1)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")
@@ -540,7 +540,7 @@ func SetupTestRequests(t *testing.T, i *shared.Interfaces, u string) {
 
 func NewCommentRequest(rid int64) *http.Request {
 	// TODO: Get this into a generator
-	url := fmt.Sprintf("%s/request/%d/comments/new", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("text", "Test comment.")

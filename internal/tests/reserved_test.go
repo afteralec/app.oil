@@ -38,7 +38,7 @@ func TestReserved(t *testing.T) {
 	writer.Close()
 
 	// TODO: Clean this up using the existing test utilities
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.RegisterRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.RegisterRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	_, err := app.Test(req)
@@ -51,7 +51,7 @@ func TestReserved(t *testing.T) {
 	writer.WriteField("username", TestUsername)
 	writer.Close()
 
-	url = fmt.Sprintf("%s%s", shared.TestURL, handlers.ReservedRoute)
+	url = fmt.Sprintf("%s%s", TestURL, handlers.ReservedRoute)
 	req = httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)

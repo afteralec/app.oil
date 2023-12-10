@@ -48,7 +48,7 @@ func CallRegister(t *testing.T, app *fiber.App, u string, pw string) *http.Respo
 	writer.WriteField("confirmPassword", pw)
 	writer.Close()
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.RegisterRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.RegisterRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)

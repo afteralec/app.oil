@@ -29,7 +29,7 @@ func TestResetPasswordPage(t *testing.T) {
 	app.Get(handlers.ResetPasswordRoute, handlers.ResetPasswordPage())
 
 	id := uuid.NewString()
-	url := fmt.Sprintf("%s%s?t=%s", shared.TestURL, handlers.ResetPasswordRoute, id)
+	url := fmt.Sprintf("%s%s?t=%s", TestURL, handlers.ResetPasswordRoute, id)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -46,7 +46,7 @@ func TestResetPasswordSuccessPage(t *testing.T) {
 
 	app.Get(handlers.ResetPasswordSuccessRoute, handlers.ResetPasswordSuccessPage())
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.ResetPasswordSuccessRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.ResetPasswordSuccessRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -67,7 +67,7 @@ func TestResetPasswordMissingBody(t *testing.T) {
 
 	SetupTestResetPassword(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.ResetPasswordRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.ResetPasswordRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := app.Test(req)
@@ -89,7 +89,7 @@ func TestResetPasswordMalformedBody(t *testing.T) {
 
 	SetupTestResetPassword(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.ResetPasswordRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.ResetPasswordRoute)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("notusername", "notausername")
@@ -150,7 +150,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.RecoverPasswordRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverPasswordRoute)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("username", TestUsername)

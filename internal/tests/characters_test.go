@@ -31,7 +31,7 @@ func TestCharactersPage(t *testing.T) {
 
 	app.Get(handlers.CharactersRoute, handlers.CharactersPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharactersRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharactersRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -61,7 +61,7 @@ func TestCharactersPageSuccess(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharactersRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharactersRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -92,7 +92,7 @@ func TestCharactersPageFatal(t *testing.T) {
 	sessionCookie := cookies[0]
 
 	i.Close()
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharactersRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharactersRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -113,7 +113,7 @@ func TestNewCharacter(t *testing.T) {
 
 	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.NewCharacterApplicationRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.NewCharacterApplicationRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -142,7 +142,7 @@ func TestNewCharacterSuccess(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.NewCharacterApplicationRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.NewCharacterApplicationRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -173,7 +173,7 @@ func TestNewCharacterFatal(t *testing.T) {
 
 	i.Close()
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.NewCharacterApplicationRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.NewCharacterApplicationRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -195,7 +195,7 @@ func TestUpdateCharacterApplication(t *testing.T) {
 
 	app.Put(handlers.CharacterApplicationRoute, handlers.UpdateCharacterApplication(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharacterApplicationRoute)
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -220,7 +220,7 @@ func TestUpdateCharacterApplicationSuccess(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s%d", shared.TestURL, "/character/application/", rid)
+	url := fmt.Sprintf("%s%s%d", TestURL, "/character/application/", rid)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("name", "test")
@@ -255,7 +255,7 @@ func TestUpdateCharacterApplicationNotFound(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s%d", shared.TestURL, "/character/application/", rid+1)
+	url := fmt.Sprintf("%s%s%d", TestURL, "/character/application/", rid+1)
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -280,7 +280,7 @@ func TestUpdateCharacterApplicationFatal(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
-	url := fmt.Sprintf("%s%s%d", shared.TestURL, "/character/application/", rid)
+	url := fmt.Sprintf("%s%s%d", TestURL, "/character/application/", rid)
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -305,7 +305,7 @@ func TestUpdateCharacterApplicationMissingBody(t *testing.T) {
 	app.Put(handlers.CharacterApplicationRoute, handlers.UpdateCharacterApplication(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d", shared.TestURL, "/character/application/", rid)
+	url := fmt.Sprintf("%s%s%d", TestURL, "/character/application/", rid)
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -328,7 +328,7 @@ func TestUpdateCharacterApplicationName(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationNameRoute, handlers.UpdateCharacterApplicationName(&i))
 
 	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationNameRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharacterApplicationNameRoute)
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -353,7 +353,7 @@ func TestUpdateCharacterApplicationNameSuccess(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/name")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/name")
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("name", "test")
@@ -383,7 +383,7 @@ func TestUpdateCharacterApplicationNameNotFound(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationNameRoute, handlers.UpdateCharacterApplicationName(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid+1, "/name")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid+1, "/name")
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -408,7 +408,7 @@ func TestUpdateCharacterApplicationNameFatal(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/name")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/name")
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -433,7 +433,7 @@ func TestUpdateCharacterApplicationNameMissingBody(t *testing.T) {
 	app.Put(handlers.CharacterApplicationNameRoute, handlers.UpdateCharacterApplicationName(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/name")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/name")
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -456,7 +456,7 @@ func TestUpdateCharacterApplicationGender(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationGenderRoute, handlers.UpdateCharacterApplicationGender(&i))
 
 	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationGenderRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharacterApplicationGenderRoute)
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -481,7 +481,7 @@ func TestUpdateCharacterApplicationGenderSuccess(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/gender")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/gender")
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("gender", "NonBinary")
@@ -511,7 +511,7 @@ func TestUpdateCharacterApplicationGenderNotFound(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationGenderRoute, handlers.UpdateCharacterApplicationGender(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid+1, "/gender")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid+1, "/gender")
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -536,7 +536,7 @@ func TestUpdateCharacterApplicationGenderFatal(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/gender")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/gender")
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -561,7 +561,7 @@ func TestUpdateCharacterApplicationGenderMissingBody(t *testing.T) {
 	app.Put(handlers.CharacterApplicationGenderRoute, handlers.UpdateCharacterApplicationGender(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/gender")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/gender")
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -584,7 +584,7 @@ func TestUpdateCharacterApplicationSdesc(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationSdescRoute, handlers.UpdateCharacterApplicationSdesc(&i))
 
 	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationSdescRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharacterApplicationSdescRoute)
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -608,7 +608,7 @@ func TestUpdateCharacterApplicationSdescSuccess(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationSdescRoute, handlers.UpdateCharacterApplicationSdesc(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/sdesc")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/sdesc")
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("sdesc", "testing, testerly person")
@@ -638,7 +638,7 @@ func TestUpdateCharacterApplicationSdescNotFound(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationSdescRoute, handlers.UpdateCharacterApplicationSdesc(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid+1, "/sdesc")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid+1, "/sdesc")
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -663,7 +663,7 @@ func TestUpdateCharacterApplicationSdescFatal(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/sdesc")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/sdesc")
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -688,7 +688,7 @@ func TestUpdateCharacterApplicationSdescMissingBody(t *testing.T) {
 	app.Put(handlers.CharacterApplicationSdescRoute, handlers.UpdateCharacterApplicationSdesc(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/sdesc")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/sdesc")
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -711,7 +711,7 @@ func TestUpdateCharacterApplicationDescription(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationDescriptionRoute, handlers.UpdateCharacterApplicationDescription(&i))
 
 	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationDescriptionRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharacterApplicationDescriptionRoute)
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -735,7 +735,7 @@ func TestUpdateCharacterApplicationDescriptionSuccess(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationDescriptionRoute, handlers.UpdateCharacterApplicationDescription(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/description")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/description")
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("description", "This is a test actor.")
@@ -765,7 +765,7 @@ func TestUpdateCharacterApplicationDescriptionNotFound(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationDescriptionRoute, handlers.UpdateCharacterApplicationDescription(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid+1, "/description")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid+1, "/description")
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -790,7 +790,7 @@ func TestUpdateCharacterApplicationDescriptionFatal(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/description")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/description")
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -815,7 +815,7 @@ func TestUpdateCharacterApplicationDescriptionMissingBody(t *testing.T) {
 	app.Put(handlers.CharacterApplicationDescriptionRoute, handlers.UpdateCharacterApplicationDescription(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/description")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/description")
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -838,7 +838,7 @@ func TestUpdateCharacterApplicationBackstory(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationBackstoryRoute, handlers.UpdateCharacterApplicationBackstory(&i))
 
 	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationBackstoryRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharacterApplicationBackstoryRoute)
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -862,7 +862,7 @@ func TestUpdateCharacterApplicationBackstorySuccess(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationBackstoryRoute, handlers.UpdateCharacterApplicationBackstory(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/backstory")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/backstory")
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("backstory", "This is a tragic backstory.")
@@ -892,7 +892,7 @@ func TestUpdateCharacterApplicationBackstoryNotFound(t *testing.T) {
 	app.Patch(handlers.CharacterApplicationBackstoryRoute, handlers.UpdateCharacterApplicationBackstory(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid+1, "/backstory")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid+1, "/backstory")
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -917,7 +917,7 @@ func TestUpdateCharacterApplicationBackstoryFatal(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/backstory")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/backstory")
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -942,7 +942,7 @@ func TestUpdateCharacterApplicationBackstoryMissingBody(t *testing.T) {
 	app.Put(handlers.CharacterApplicationBackstoryRoute, handlers.UpdateCharacterApplicationBackstory(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/backstory")
+	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/backstory")
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -963,7 +963,7 @@ func TestCharacterNamePage(t *testing.T) {
 
 	app.Get(handlers.CharacterApplicationNameRoute, handlers.CharacterNamePage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationNameRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharacterApplicationNameRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -988,7 +988,7 @@ func TestCharacterNamePageSuccess(t *testing.T) {
 	app.Get(handlers.CharacterApplicationNameRoute, handlers.CharacterNamePage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s/character/application/%d/name", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/character/application/%d/name", TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1014,7 +1014,7 @@ func TestCharacterNamePageNotFound(t *testing.T) {
 	app.Get(handlers.CharacterApplicationNameRoute, handlers.CharacterNamePage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
-	url := fmt.Sprintf("%s/character/application/%d/name", shared.TestURL, rid+1)
+	url := fmt.Sprintf("%s/character/application/%d/name", TestURL, rid+1)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1040,7 +1040,7 @@ func TestCharacterNamePageFatal(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
-	url := fmt.Sprintf("%s/character/application/%d/name", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/character/application/%d/name", TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1061,7 +1061,7 @@ func TestCharacterGenderPage(t *testing.T) {
 
 	app.Get(handlers.CharacterApplicationGenderRoute, handlers.CharacterGenderPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationGenderRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharacterApplicationGenderRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -1087,7 +1087,7 @@ func TestCharacterGenderPageSuccess(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/character/application/%d/gender", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/character/application/%d/gender", TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1114,7 +1114,7 @@ func TestCharacterGenderPageNotFound(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/characters/new/%d/gender", shared.TestURL, rid+1)
+	url := fmt.Sprintf("%s/characters/new/%d/gender", TestURL, rid+1)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1141,7 +1141,7 @@ func TestCharacterGenderPageFatal(t *testing.T) {
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/character/application/%d/gender", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/character/application/%d/gender", TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1162,7 +1162,7 @@ func TestCharacterSdescPage(t *testing.T) {
 
 	app.Get(handlers.CharacterApplicationSdescRoute, handlers.CharacterSdescPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationSdescRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharacterApplicationSdescRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -1188,7 +1188,7 @@ func TestCharacterSdescPageSuccess(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/character/application/%d/sdesc", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/character/application/%d/sdesc", TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1215,7 +1215,7 @@ func TestCharacterSdescPageNotFound(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/character/application/%d/sdesc", shared.TestURL, rid+1)
+	url := fmt.Sprintf("%s/character/application/%d/sdesc", TestURL, rid+1)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1242,7 +1242,7 @@ func TestCharacterSdescPageFatal(t *testing.T) {
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/character/application/%d/sdesc", shared.TestURL, rid+1)
+	url := fmt.Sprintf("%s/character/application/%d/sdesc", TestURL, rid+1)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1263,7 +1263,7 @@ func TestCharacterDescriptionPage(t *testing.T) {
 
 	app.Get(handlers.CharacterApplicationDescriptionRoute, handlers.CharacterDescriptionPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationDescriptionRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharacterApplicationDescriptionRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -1289,7 +1289,7 @@ func TestCharacterDescriptionPageSuccess(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/character/application/%d/description", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/character/application/%d/description", TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1316,7 +1316,7 @@ func TestCharacterDescriptionPageNotFound(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/character/application/%d/description", shared.TestURL, rid+1)
+	url := fmt.Sprintf("%s/character/application/%d/description", TestURL, rid+1)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1343,7 +1343,7 @@ func TestCharacterDescriptionPageFatal(t *testing.T) {
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/character/application/%d/description", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/character/application/%d/description", TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1364,7 +1364,7 @@ func TestCharacterBackstoryPage(t *testing.T) {
 
 	app.Get(handlers.CharacterApplicationBackstoryRoute, handlers.CharacterBackstoryPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationBackstoryRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.CharacterApplicationBackstoryRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -1390,7 +1390,7 @@ func TestCharacterBackstoryPageSuccess(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/character/application/%d/backstory", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/character/application/%d/backstory", TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1417,7 +1417,7 @@ func TestCharacterBackstoryPageNotFound(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/character/application/%d/backstory", shared.TestURL, rid+1)
+	url := fmt.Sprintf("%s/character/application/%d/backstory", TestURL, rid+1)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1444,7 +1444,7 @@ func TestCharacterBackstoryPageFatal(t *testing.T) {
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
 	// TODO: Get this in a generator
-	url := fmt.Sprintf("%s/character/application/%d/backstory", shared.TestURL, rid)
+	url := fmt.Sprintf("%s/character/application/%d/backstory", TestURL, rid)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -1520,6 +1520,6 @@ func CharacterApplicationRID(t *testing.T, i *shared.Interfaces, app *fiber.App)
 }
 
 func NewCharacterRequest() *http.Request {
-	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.NewCharacterApplicationRoute)
+	url := fmt.Sprintf("%s%s", TestURL, handlers.NewCharacterApplicationRoute)
 	return httptest.NewRequest(http.MethodPost, url, nil)
 }
