@@ -3,6 +3,8 @@ package handlers
 import (
 	"context"
 
+	"github.com/VividCortex/mysqlerr"
+	"github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/password"
@@ -85,12 +87,26 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			},
 		)
 		if err != nil {
-			// TODO: Distinguish between "already exists" and a connection error
+			me, ok := err.(*mysql.MySQLError)
+			if !ok {
+				c.Append("HX-Retarget", "#register-error")
+				c.Append("HX-Reswap", "outerHTML")
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render("web/views/partials/register/err-internal", c.Locals("bind"), "")
+			}
+			if me.Number == mysqlerr.ER_DUP_ENTRY {
+				c.Append("HX-Retarget", "#register-error")
+				c.Append("HX-Reswap", "outerHTML")
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Status(fiber.StatusConflict)
+				return c.Render("web/views/partials/register/err-conflict", c.Locals("bind"), "")
+			}
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
-			c.Status(fiber.StatusConflict)
-			return c.Render("web/views/partials/register/err-conflict", c.Locals("bind"), "")
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("web/views/partials/register/err-internal", c.Locals("bind"), "")
 		}
 
 		pid, err := result.LastInsertId()
