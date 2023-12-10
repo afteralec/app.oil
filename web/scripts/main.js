@@ -188,7 +188,6 @@ export function getProfileAvatarSrc(
   }
 }
 
-// TODO: Configure this to be injected from Go template?
 const HEADER_CSRF_TOKEN = "X-CSRF-Token";
 const HEADER_HX_ACCEPTABLE = "X-HX-Acceptable";
 const HX_ACCEPTABLE_STATUSES = {

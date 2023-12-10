@@ -35,8 +35,7 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			if err == redis.Nil {
 				c.Status(fiber.StatusNotFound)
-				// TODO: Return a snippet here
-				return nil
+				return c.Render("web/views/404", c.Locals("bind"), "web/views/layouts/standalone")
 			}
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
@@ -65,8 +64,7 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 		}
 		if err == nil {
 			c.Status(fiber.StatusConflict)
-			// TODO: Build an "already verified" page for this
-			return c.Render("web/views/401", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/verify-email-409", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
 		un, err := username.Get(i.Redis, pid.(int64))
@@ -80,7 +78,7 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 		b["Address"] = e.Address
 		b["Username"] = un
 
-		return c.Render("web/views/verify", b, "web/views/layouts/standalone")
+		return c.Render("web/views/verify-email", b, "web/views/layouts/standalone")
 	}
 }
 

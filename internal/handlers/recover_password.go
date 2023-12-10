@@ -51,7 +51,15 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 		}
 
 		// TODO: Transaction this up
-		p, err := i.Queries.GetPlayerByUsername(context.Background(), r.Username)
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		p, err := qtx.GetPlayerByUsername(context.Background(), r.Username)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -61,13 +69,18 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		emails, err := i.Queries.ListVerifiedEmails(context.Background(), p.ID)
+		emails, err := qtx.ListVerifiedEmails(context.Background(), p.ID)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 		if len(emails) == 0 {
 			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 

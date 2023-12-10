@@ -109,8 +109,6 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 
 		_, err = qtx.DeleteEmail(context.Background(), id)
 		if err != nil {
-			// TODO: Confirm that this is the actual error returned
-			// TODO: This might just be an underlying MySQL err
 			if err == sql.ErrNoRows {
 				c.Append("HX-Retarget", "profile-email-error")
 				c.Append("HX-Reswap", "outerHTML")
