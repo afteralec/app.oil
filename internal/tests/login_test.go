@@ -38,6 +38,31 @@ func TestLoginPage(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
+func TestLoginPageRedirectsIfAlreadyLoggedIn(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	SetupTestLogin(t, &i, TestUsername)
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
+	sessionCookie := res.Cookies()[0]
+
+	req := httptest.NewRequest(http.MethodGet, MakeTestURL(routes.Login), nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusFound, res.StatusCode)
+}
+
 func TestLoginNonExistantUser(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
