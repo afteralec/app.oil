@@ -69,7 +69,6 @@ func Resend(i *shared.Interfaces) fiber.Handler {
 		if e.Pid != pid.(int64) {
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
-			// TODO: Make this a different error - here, the caller doesn't own the email
 			return c.Render("web/views/partials/profile/email/resend/err-internal", &fiber.Map{}, "")
 		}
 

@@ -246,8 +246,7 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		}
 
 		_, err = i.Queries.CreateCharacterApplicationContent(context.Background(), queries.CreateCharacterApplicationContentParams{
-			// TODO: Get gender into a constant
-			Gender:      "NonBinary",
+			Gender:      character.GenderNonBinary,
 			Name:        "",
 			Sdesc:       "",
 			Description: "",
