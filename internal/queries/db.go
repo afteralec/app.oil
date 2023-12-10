@@ -96,6 +96,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getVerifiedEmailByAddressStmt, err = db.PrepareContext(ctx, getVerifiedEmailByAddress); err != nil {
 		return nil, fmt.Errorf("error preparing query GetVerifiedEmailByAddress: %w", err)
 	}
+	if q.listCharacterApplicationContentForPlayerStmt, err = db.PrepareContext(ctx, listCharacterApplicationContentForPlayer); err != nil {
+		return nil, fmt.Errorf("error preparing query ListCharacterApplicationContentForPlayer: %w", err)
+	}
 	if q.listCharacterApplicationsForPlayerStmt, err = db.PrepareContext(ctx, listCharacterApplicationsForPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query ListCharacterApplicationsForPlayer: %w", err)
 	}
@@ -266,6 +269,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getVerifiedEmailByAddressStmt: %w", cerr)
 		}
 	}
+	if q.listCharacterApplicationContentForPlayerStmt != nil {
+		if cerr := q.listCharacterApplicationContentForPlayerStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listCharacterApplicationContentForPlayerStmt: %w", cerr)
+		}
+	}
 	if q.listCharacterApplicationsForPlayerStmt != nil {
 		if cerr := q.listCharacterApplicationsForPlayerStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listCharacterApplicationsForPlayerStmt: %w", cerr)
@@ -404,6 +412,7 @@ type Queries struct {
 	getRequestCommentStmt                            *sql.Stmt
 	getRoleStmt                                      *sql.Stmt
 	getVerifiedEmailByAddressStmt                    *sql.Stmt
+	listCharacterApplicationContentForPlayerStmt     *sql.Stmt
 	listCharacterApplicationsForPlayerStmt           *sql.Stmt
 	listCommentsForRequestStmt                       *sql.Stmt
 	listEmailsStmt                                   *sql.Stmt
@@ -449,6 +458,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getRequestCommentStmt:                            q.getRequestCommentStmt,
 		getRoleStmt:                                      q.getRoleStmt,
 		getVerifiedEmailByAddressStmt:                    q.getVerifiedEmailByAddressStmt,
+		listCharacterApplicationContentForPlayerStmt:     q.listCharacterApplicationContentForPlayerStmt,
 		listCharacterApplicationsForPlayerStmt:           q.listCharacterApplicationsForPlayerStmt,
 		listCommentsForRequestStmt:                       q.listCommentsForRequestStmt,
 		listEmailsStmt:                                   q.listEmailsStmt,

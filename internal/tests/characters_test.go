@@ -1254,13 +1254,13 @@ func SetupTestCharacters(t *testing.T, i *shared.Interfaces, u string) {
 	}
 
 	for _, req := range reqs {
-		query := fmt.Sprintf("DELETE FROM character_application_content WHERE rid = %d;", req.ID)
+		query := fmt.Sprintf("DELETE FROM character_application_content WHERE rid = %d;", req.Request.ID)
 		_, err := i.Database.Exec(query)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		query = fmt.Sprintf("DELETE FROM character_application_content_history WHERE rid = %d;", req.ID)
+		query = fmt.Sprintf("DELETE FROM character_application_content_history WHERE rid = %d;", req.Request.ID)
 		_, err = i.Database.Exec(query)
 		if err != nil {
 			t.Fatal(err)
@@ -1302,7 +1302,7 @@ func CharacterApplicationRID(t *testing.T, i *shared.Interfaces, app *fiber.App)
 		t.Fatal(err)
 	}
 	r := reqs[0]
-	return r.ID, sessionCookie
+	return r.Request.ID, sessionCookie
 }
 
 func NewCharacterRequest() *http.Request {

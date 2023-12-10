@@ -37,8 +37,7 @@ func SendRecoverUsernameEmail(i *shared.Interfaces, username string, email strin
 	params := &resend.SendEmailRequest{
 		To:   []string{email},
 		From: "verify@petrichormud.com",
-		// TODO: Add a doc for what to do if the user didn't request this
-		// TODO: Link to that doc here
+		// TODO: If the user didn't request this, link to the section of the profile for changing your password
 		Html:    fmt.Sprintf("You received this email as part of recovering your Username. Your username is: %s", username),
 		Subject: "[PetrichorMUD] Username Recovery",
 		ReplyTo: "support@petrichormud.com",

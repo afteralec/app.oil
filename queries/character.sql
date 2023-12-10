@@ -11,6 +11,27 @@ SELECT * FROM character_application_content WHERE id = ?;
 -- name: GetCharacterApplicationContentForRequest :one
 SELECT * FROM character_application_content WHERE rid = ?;
 
+-- name: ListCharacterApplicationsForPlayer :many
+SELECT
+  sqlc.embed(requests), sqlc.embed(character_application_content)
+FROM
+  requests
+JOIN
+  character_application_content
+ON
+  requests.id = character_application_content.rid
+WHERE
+  requests.pid = ? AND requests.type = 'CharacterApplication';
+
+-- name: ListCharacterApplicationContentForPlayer :many
+SELECT
+  *
+FROM
+  character_application_content 
+WHERE
+  rid
+IN (SELECT id FROM requests WHERE pid = ?);
+
 -- name: CreateCharacterApplicationContentHistory :execresult
 INSERT INTO
   character_application_content_history

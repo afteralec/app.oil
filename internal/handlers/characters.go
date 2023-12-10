@@ -23,15 +23,15 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
-		reqs, err := i.Queries.ListCharacterApplicationsForPlayer(context.Background(), pid.(int64))
+		apps, err := i.Queries.ListCharacterApplicationsForPlayer(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("web/views/500", c.Locals("bind"))
+			return c.Render("web/views/500", c.Locals(shared.Bind))
 		}
 
 		b := c.Locals("bind").(fiber.Map)
-		b["CharacterApplications"] = reqs
-		b["HasCharacterApplications"] = len(reqs) > 0
+		b["CharacterApplications"] = apps
+		b["HasCharacterApplications"] = len(apps) > 0
 		return c.Render("web/views/characters", b)
 	}
 }

@@ -112,6 +112,109 @@ func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, 
 	return i, err
 }
 
+const listCharacterApplicationContentForPlayer = `-- name: ListCharacterApplicationContentForPlayer :many
+SELECT
+  created_at, updated_at, backstory, description, sdesc, name, gender, vid, rid, id
+FROM
+  character_application_content 
+WHERE
+  rid
+IN (SELECT id FROM requests WHERE pid = ?)
+`
+
+func (q *Queries) ListCharacterApplicationContentForPlayer(ctx context.Context, pid int64) ([]CharacterApplicationContent, error) {
+	rows, err := q.query(ctx, q.listCharacterApplicationContentForPlayerStmt, listCharacterApplicationContentForPlayer, pid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []CharacterApplicationContent
+	for rows.Next() {
+		var i CharacterApplicationContent
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Backstory,
+			&i.Description,
+			&i.Sdesc,
+			&i.Name,
+			&i.Gender,
+			&i.Vid,
+			&i.Rid,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listCharacterApplicationsForPlayer = `-- name: ListCharacterApplicationsForPlayer :many
+SELECT
+  requests.type, requests.status, requests.created_at, requests.updated_at, requests.vid, requests.pid, requests.id, character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.sdesc, character_application_content.name, character_application_content.gender, character_application_content.vid, character_application_content.rid, character_application_content.id
+FROM
+  requests
+JOIN
+  character_application_content
+ON
+  requests.id = character_application_content.rid
+WHERE
+  requests.pid = ? AND requests.type = 'CharacterApplication'
+`
+
+type ListCharacterApplicationsForPlayerRow struct {
+	Request                     Request
+	CharacterApplicationContent CharacterApplicationContent
+}
+
+func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid int64) ([]ListCharacterApplicationsForPlayerRow, error) {
+	rows, err := q.query(ctx, q.listCharacterApplicationsForPlayerStmt, listCharacterApplicationsForPlayer, pid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListCharacterApplicationsForPlayerRow
+	for rows.Next() {
+		var i ListCharacterApplicationsForPlayerRow
+		if err := rows.Scan(
+			&i.Request.Type,
+			&i.Request.Status,
+			&i.Request.CreatedAt,
+			&i.Request.UpdatedAt,
+			&i.Request.Vid,
+			&i.Request.Pid,
+			&i.Request.ID,
+			&i.CharacterApplicationContent.CreatedAt,
+			&i.CharacterApplicationContent.UpdatedAt,
+			&i.CharacterApplicationContent.Backstory,
+			&i.CharacterApplicationContent.Description,
+			&i.CharacterApplicationContent.Sdesc,
+			&i.CharacterApplicationContent.Name,
+			&i.CharacterApplicationContent.Gender,
+			&i.CharacterApplicationContent.Vid,
+			&i.CharacterApplicationContent.Rid,
+			&i.CharacterApplicationContent.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateCharacterApplicationContent = `-- name: UpdateCharacterApplicationContent :exec
 UPDATE 
   character_application_content

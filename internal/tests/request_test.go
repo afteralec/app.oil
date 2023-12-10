@@ -446,19 +446,19 @@ func SetupTestRequests(t *testing.T, i *shared.Interfaces, u string) {
 
 	// TODO: Delete requests of all types from this player
 	for _, req := range reqs {
-		query := fmt.Sprintf("DELETE FROM character_application_content WHERE rid = %d;", req.ID)
+		query := fmt.Sprintf("DELETE FROM character_application_content WHERE rid = %d;", req.Request.ID)
 		_, err := i.Database.Exec(query)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		query = fmt.Sprintf("DELETE FROM character_application_content_history WHERE rid = %d;", req.ID)
+		query = fmt.Sprintf("DELETE FROM character_application_content_history WHERE rid = %d;", req.Request.ID)
 		_, err = i.Database.Exec(query)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		comments, err := i.Queries.ListCommentsForRequest(context.Background(), req.ID)
+		comments, err := i.Queries.ListCommentsForRequest(context.Background(), req.Request.ID)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -490,7 +490,7 @@ func SetupTestRequests(t *testing.T, i *shared.Interfaces, u string) {
 			}
 		}
 
-		query = fmt.Sprintf("DELETE FROM request_comments WHERE rid = %d;", req.ID)
+		query = fmt.Sprintf("DELETE FROM request_comments WHERE rid = %d;", req.Request.ID)
 		_, err = i.Database.Exec(query)
 		if err != nil {
 			t.Fatal(err)

@@ -11,7 +11,6 @@ import (
 )
 
 const addCommentToRequest = `-- name: AddCommentToRequest :execresult
-
 INSERT INTO request_comments (text, pid, rid, vid) VALUES (?, ?, ?, ?)
 `
 
@@ -22,7 +21,6 @@ type AddCommentToRequestParams struct {
 	Vid  int64
 }
 
-// TODO: Make these use the current vid of the application in the rid - compound query
 func (q *Queries) AddCommentToRequest(ctx context.Context, arg AddCommentToRequestParams) (sql.Result, error) {
 	return q.exec(ctx, q.addCommentToRequestStmt, addCommentToRequest,
 		arg.Text,
@@ -55,7 +53,6 @@ func (q *Queries) AddCommentToRequestField(ctx context.Context, arg AddCommentTo
 }
 
 const addReplyToComment = `-- name: AddReplyToComment :execresult
-
 INSERT INTO request_comments (text, cid, pid, rid, vid) VALUES (?, ?, ?, ?, ?)
 `
 
@@ -67,7 +64,6 @@ type AddReplyToCommentParams struct {
 	Vid  int64
 }
 
-// TODO: Make this use the same field as the comment at the cid
 func (q *Queries) AddReplyToComment(ctx context.Context, arg AddReplyToCommentParams) (sql.Result, error) {
 	return q.exec(ctx, q.addReplyToCommentStmt, addReplyToComment,
 		arg.Text,
@@ -171,41 +167,6 @@ func (q *Queries) GetRequestComment(ctx context.Context, id int64) (RequestComme
 		&i.ID,
 	)
 	return i, err
-}
-
-const listCharacterApplicationsForPlayer = `-- name: ListCharacterApplicationsForPlayer :many
-SELECT type, status, created_at, updated_at, vid, pid, id FROM requests WHERE pid = ? AND type = 'CharacterApplication'
-`
-
-func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid int64) ([]Request, error) {
-	rows, err := q.query(ctx, q.listCharacterApplicationsForPlayerStmt, listCharacterApplicationsForPlayer, pid)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Request
-	for rows.Next() {
-		var i Request
-		if err := rows.Scan(
-			&i.Type,
-			&i.Status,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.Vid,
-			&i.Pid,
-			&i.ID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const listCommentsForRequest = `-- name: ListCommentsForRequest :many
