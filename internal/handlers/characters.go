@@ -12,18 +12,6 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-const (
-	CharactersRoute                      = "/characters"
-	CharacterApplicationsRoute           = "/character/application"
-	CharacterApplicationRoute            = "/character/application/:id"
-	NewCharacterApplicationRoute         = "/character/application/new"
-	CharacterApplicationNameRoute        = "/character/application/:id/name"
-	CharacterApplicationGenderRoute      = "/character/application/:id/gender"
-	CharacterApplicationSdescRoute       = "/character/application/:id/sdesc"
-	CharacterApplicationDescriptionRoute = "/character/application/:id/description"
-	CharacterApplicationBackstoryRoute   = "/character/application/:id/backstory"
-)
-
 func CharactersPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
