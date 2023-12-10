@@ -29,7 +29,6 @@ func TestResetPasswordPage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	// TODO: Make this a colon-separated cache key
 	id := uuid.NewString()
 	url := MakeTestURL(fmt.Sprintf("%s?t=%s", routes.ResetPassword, id))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
