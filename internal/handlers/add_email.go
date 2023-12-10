@@ -15,8 +15,6 @@ import (
 )
 
 const (
-	EmailRoute    = "/player/email/:id"
-	AddEmailRoute = "/player/email/new"
 	MaxEmailCount = 3
 )
 
@@ -24,7 +22,6 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Email string `form:"email"`
 	}
-
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 

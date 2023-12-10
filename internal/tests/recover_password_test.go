@@ -17,6 +17,7 @@ import (
 	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/session"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -116,7 +117,7 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
 	app.Post(handlers.RecoverPasswordRoute, handlers.RecoverPassword(&i))
 
 	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)

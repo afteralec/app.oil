@@ -15,6 +15,7 @@ import (
 	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/session"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -30,8 +31,8 @@ func TestDeleteEmailUnauthorized(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Delete(handlers.EmailRoute, handlers.DeleteEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Delete(routes.EmailPath(), handlers.DeleteEmail(&i))
 
 	SetupTestDeleteEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -79,8 +80,8 @@ func TestDeleteEmailDBError(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Delete(handlers.EmailRoute, handlers.DeleteEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Delete(routes.EmailPath(), handlers.DeleteEmail(&i))
 
 	SetupTestDeleteEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -132,8 +133,8 @@ func TestDeleteEmailUnowned(t *testing.T) {
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
 	app.Post(handlers.LogoutRoute, handlers.Logout(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Delete(handlers.EmailRoute, handlers.DeleteEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Delete(routes.EmailPath(), handlers.DeleteEmail(&i))
 
 	SetupTestDeleteEmail(t, &i, TestUsername, TestEmailAddress)
 	SetupTestDeleteEmail(t, &i, "testify2", TestEmailAddress)
@@ -196,8 +197,8 @@ func TestDeleteEmailInvalidID(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Delete(handlers.EmailRoute, handlers.DeleteEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Delete(routes.EmailPath(), handlers.DeleteEmail(&i))
 
 	SetupTestDeleteEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -230,8 +231,8 @@ func TestDeleteNonexistantEmail(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Delete(handlers.EmailRoute, handlers.DeleteEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Delete(routes.EmailPath(), handlers.DeleteEmail(&i))
 
 	SetupTestDeleteEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -286,8 +287,8 @@ func TestDeleteEmailSuccess(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Delete(handlers.EmailRoute, handlers.DeleteEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Delete(routes.EmailPath(), handlers.DeleteEmail(&i))
 
 	SetupTestDeleteEmail(t, &i, TestUsername, TestEmailAddress)
 

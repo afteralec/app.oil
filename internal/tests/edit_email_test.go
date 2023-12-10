@@ -17,6 +17,7 @@ import (
 	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/session"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -32,8 +33,8 @@ func TestEditEmailUnauthorized(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Put(handlers.EmailRoute, handlers.EditEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Put(routes.EmailPath(), handlers.EditEmail(&i))
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -79,8 +80,8 @@ func TestEditEmailMissingInput(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Put(handlers.EmailRoute, handlers.EditEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Put(routes.EmailPath(), handlers.EditEmail(&i))
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -127,8 +128,8 @@ func TestEditEmailMalformedInput(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Put(handlers.EmailRoute, handlers.EditEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Put(routes.EmailPath(), handlers.EditEmail(&i))
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -182,8 +183,8 @@ func TestEditEmailDBError(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Put(handlers.EmailRoute, handlers.EditEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Put(routes.EmailPath(), handlers.EditEmail(&i))
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 	SetupTestEditEmail(t, &i, "testify2", TestEmailAddressTwo)
@@ -234,9 +235,9 @@ func TestEditEmailUnowned(t *testing.T) {
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
 	app.Post(handlers.LogoutRoute, handlers.Logout(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Delete(handlers.EmailRoute, handlers.DeleteEmail(&i))
-	app.Put(handlers.EmailRoute, handlers.EditEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Delete(routes.EmailPath(), handlers.DeleteEmail(&i))
+	app.Put(routes.EmailPath(), handlers.EditEmail(&i))
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 	SetupTestEditEmail(t, &i, "testify2", TestEmailAddressTwo)
@@ -296,8 +297,8 @@ func TestEditEmailInvalidID(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Put(handlers.EmailRoute, handlers.EditEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Put(routes.EmailPath(), handlers.EditEmail(&i))
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -337,9 +338,9 @@ func TestEditNonexistantEmail(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Delete(handlers.EmailRoute, handlers.DeleteEmail(&i))
-	app.Put(handlers.EmailRoute, handlers.EditEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Delete(routes.EmailPath(), handlers.DeleteEmail(&i))
+	app.Put(routes.EmailPath(), handlers.EditEmail(&i))
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -399,9 +400,9 @@ func TestEditEmailUnverified(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Delete(handlers.EmailRoute, handlers.DeleteEmail(&i))
-	app.Put(handlers.EmailRoute, handlers.EditEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Delete(routes.EmailPath(), handlers.DeleteEmail(&i))
+	app.Put(routes.EmailPath(), handlers.EditEmail(&i))
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -448,9 +449,9 @@ func TestEditEmailSuccess(t *testing.T) {
 
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
-	app.Delete(handlers.EmailRoute, handlers.DeleteEmail(&i))
-	app.Put(handlers.EmailRoute, handlers.EditEmail(&i))
+	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	app.Delete(routes.EmailPath(), handlers.DeleteEmail(&i))
+	app.Put(routes.EmailPath(), handlers.EditEmail(&i))
 
 	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
 
