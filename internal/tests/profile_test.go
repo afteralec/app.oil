@@ -25,7 +25,7 @@ func TestProfilePage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.Profile)
+	url := MakeTestURL(routes.Profile)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -51,7 +51,7 @@ func TestProfilePageSuccess(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.Profile)
+	url := MakeTestURL(routes.Profile)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -63,7 +63,7 @@ func TestProfilePageSuccess(t *testing.T) {
 }
 
 func SetupTestProfile(t *testing.T, i *shared.Interfaces, u string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
+	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s';", u)
 	_, err := i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)

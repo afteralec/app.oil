@@ -178,7 +178,7 @@ func AddEmailRequest(e string) *http.Request {
 	writer.WriteField("email", e)
 	writer.Close()
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.NewEmailPath())
+	url := MakeTestURL(routes.NewEmailPath())
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return req

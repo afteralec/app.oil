@@ -27,7 +27,7 @@ func TestVerifyPage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.VerifyEmail)
+	url := MakeTestURL(routes.VerifyEmail)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -46,7 +46,7 @@ func TestVerifyUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.VerifyEmail)
+	url := MakeTestURL(routes.VerifyEmail)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -69,7 +69,7 @@ func TestVerifyNoToken(t *testing.T) {
 	res := CallLogin(t, a, TestUsername, TestPassword)
 	sessionCookie := res.Cookies()[0]
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.VerifyEmail)
+	url := MakeTestURL(routes.VerifyEmail)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -111,15 +111,14 @@ func TestVerifyExpiredToken(t *testing.T) {
 	email := emails[0]
 
 	eid := strconv.FormatInt(email.ID, 10)
-	path := routes.ResendEmailVerificationPath(eid)
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.ResendEmailVerificationPath(eid))
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	_, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	url = fmt.Sprintf("%s%s?t=non-existant-key", TestURL, routes.VerifyEmail)
+	url = fmt.Sprintf("%s?t=non-existant-key", MakeTestURL(routes.VerifyEmail))
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = a.Test(req)
@@ -131,12 +130,12 @@ func TestVerifyExpiredToken(t *testing.T) {
 }
 
 func SetupTestVerify(t *testing.T, i *shared.Interfaces, u string, e string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
+	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s';", u)
 	_, err := i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)
 	}
-	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s'", e)
+	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s';", e)
 	_, err = i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)

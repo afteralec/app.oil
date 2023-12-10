@@ -28,7 +28,7 @@ func TestRecoverPasswordPage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverPassword)
+	url := MakeTestURL(routes.RecoverPassword)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -47,7 +47,7 @@ func TestRecoverPasswordSuccessPage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverPasswordSuccess)
+	url := MakeTestURL(routes.RecoverPasswordSuccess)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -68,7 +68,7 @@ func TestRecoverPasswordMissingBody(t *testing.T) {
 
 	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverPassword)
+	url := MakeTestURL(routes.RecoverPassword)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := a.Test(req)
@@ -90,7 +90,7 @@ func TestRecoverPasswordMalformedBody(t *testing.T) {
 
 	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverPassword)
+	url := MakeTestURL(routes.RecoverPassword)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("notemail", "notanemail")
@@ -143,7 +143,7 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverPassword)
+	url := MakeTestURL(routes.RecoverPassword)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("username", TestUsername)
@@ -161,12 +161,12 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 }
 
 func SetupTestRecoverPassword(t *testing.T, i *shared.Interfaces, u string, e string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
+	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s';", u)
 	_, err := i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)
 	}
-	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s'", e)
+	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s';", e)
 	_, err = i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)

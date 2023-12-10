@@ -28,7 +28,7 @@ func TestLoginPage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.Login)
+	url := MakeTestURL(routes.Login)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -104,7 +104,7 @@ func TestLoginWithMalformedFormData(t *testing.T) {
 	writer.WriteField("username", "testify")
 	writer.Close()
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.Login)
+	url := MakeTestURL(routes.Login)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := a.Test(req)
@@ -121,7 +121,7 @@ func CallLogin(t *testing.T, app *fiber.App, u string, pw string) *http.Response
 	writer.WriteField("password", pw)
 	writer.Close()
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.Login)
+	url := MakeTestURL(routes.Login)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)

@@ -50,8 +50,7 @@ func TestDeleteEmailUnauthorized(t *testing.T) {
 	}
 	email := emails[0]
 
-	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	res, err = a.Test(req)
 	if err != nil {
@@ -93,8 +92,7 @@ func TestDeleteEmailDBError(t *testing.T) {
 	}
 	email := emails[0]
 
-	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -154,8 +152,7 @@ func TestDeleteEmailUnowned(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -183,9 +180,7 @@ func TestDeleteEmailInvalidID(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	path := routes.EmailPath("invalid")
-	// TODO: Make this TestURL prefix into a func
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.EmailPath("invalid"))
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -231,8 +226,7 @@ func TestDeleteNonexistantEmail(t *testing.T) {
 	}
 	email := emails[0]
 
-	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -281,8 +275,7 @@ func TestDeleteEmailSuccess(t *testing.T) {
 	}
 	email := emails[0]
 
-	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 

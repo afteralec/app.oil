@@ -29,8 +29,9 @@ func TestResetPasswordPage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
+	// TODO: Make this a colon-separated cache key
 	id := uuid.NewString()
-	url := fmt.Sprintf("%s%s?t=%s", TestURL, routes.ResetPassword, id)
+	url := MakeTestURL(fmt.Sprintf("%s?t=%s", routes.ResetPassword, id))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -40,7 +41,7 @@ func TestResetPasswordPage(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestResetPasswordSuccessPage(t *testing.T) {
+func TestResetPasswordSuccessPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -49,7 +50,7 @@ func TestResetPasswordSuccessPage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.ResetPasswordSuccess)
+	url := MakeTestURL(routes.ResetPasswordSuccess)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -70,7 +71,7 @@ func TestResetPasswordMissingBody(t *testing.T) {
 
 	SetupTestResetPassword(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.ResetPassword)
+	url := MakeTestURL(routes.ResetPassword)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := a.Test(req)
@@ -92,7 +93,7 @@ func TestResetPasswordMalformedBody(t *testing.T) {
 
 	SetupTestResetPassword(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.ResetPassword)
+	url := MakeTestURL(routes.ResetPassword)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("notusername", "notausername")
@@ -146,7 +147,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverPassword)
+	url := MakeTestURL(routes.RecoverPassword)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("username", TestUsername)
@@ -165,12 +166,12 @@ func TestResetPasswordSuccess(t *testing.T) {
 }
 
 func SetupTestResetPassword(t *testing.T, i *shared.Interfaces, u string, e string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
+	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s';", u)
 	_, err := i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)
 	}
-	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s'", e)
+	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s';", e)
 	_, err = i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)

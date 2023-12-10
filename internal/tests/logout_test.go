@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -25,7 +24,7 @@ func TestLogout(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.Logout)
+	url := MakeTestURL(routes.Logout)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -44,7 +43,7 @@ func TestLogoutPage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.Logout)
+	url := MakeTestURL(routes.Logout)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {

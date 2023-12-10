@@ -2,7 +2,6 @@ package tests
 
 import (
 	"bytes"
-	"fmt"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -30,29 +29,15 @@ func TestReserved(t *testing.T) {
 
 	SetupTestReserved(&i, t)
 
+	_ = CallRegister(t, a, TestUsername, TestPassword)
+
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("username", TestUsername)
-	writer.WriteField("password", TestPassword)
-	writer.WriteField("confirmPassword", TestPassword)
 	writer.Close()
 
-	// TODO: Clean this up using the existing test utilities
-	url := fmt.Sprintf("%s%s", TestURL, routes.Register)
+	url := MakeTestURL(routes.Reserved)
 	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	body = new(bytes.Buffer)
-	writer = multipart.NewWriter(body)
-	writer.WriteField("username", TestUsername)
-	writer.Close()
-
-	url = fmt.Sprintf("%s%s", TestURL, routes.Reserved)
-	req = httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := a.Test(req)
 	if err != nil {

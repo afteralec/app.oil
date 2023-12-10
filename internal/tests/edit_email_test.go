@@ -93,8 +93,7 @@ func TestEditEmailMissingInput(t *testing.T) {
 	}
 	email := emails[0]
 
-	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
 	req = httptest.NewRequest(http.MethodPut, url, nil)
 	res, err = a.Test(req)
 	if err != nil {
@@ -141,8 +140,7 @@ func TestEditEmailMalformedInput(t *testing.T) {
 	writer.WriteField("notemail", "malformed")
 	writer.Close()
 
-	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
 	req = httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -274,8 +272,7 @@ func TestEditEmailInvalidID(t *testing.T) {
 	writer.WriteField("email", TestEmailAddressTwo)
 	writer.Close()
 
-	path := routes.EmailPath("invalid")
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.EmailPath("invalid"))
 	req, err := http.NewRequest(http.MethodPut, url, body)
 	if err != nil {
 		t.Fatal(err)
@@ -321,8 +318,7 @@ func TestEditNonexistantEmail(t *testing.T) {
 	}
 	email := emails[0]
 
-	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
 	req, err = http.NewRequest(http.MethodDelete, url, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -452,8 +448,7 @@ func EditEmailRequest(id int64, e string) *http.Request {
 	writer.WriteField("email", e)
 	writer.Close()
 
-	path := routes.EmailPath(strconv.FormatInt(id, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(id, 10)))
 	req := httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return req
