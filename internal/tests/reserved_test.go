@@ -17,7 +17,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func TestReserved(t *testing.T) {
+func TestReservedConflict(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -45,6 +45,37 @@ func TestReserved(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusConflict, res.StatusCode)
+}
+
+func TestReservedFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	config := configs.Fiber(views)
+	a := fiber.New(config)
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	SetupTestReserved(&i, t)
+
+	_ = CallRegister(t, a, TestUsername, TestPassword)
+
+	i.Close()
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("username", TestUsername)
+	writer.Close()
+
+	url := MakeTestURL(routes.Reserved)
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
 func SetupTestReserved(i *shared.Interfaces, t *testing.T) {
