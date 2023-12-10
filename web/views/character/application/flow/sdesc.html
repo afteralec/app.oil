@@ -1,1 +1,67 @@
-<main></main>
+<main
+  class="flex h-screen w-screen items-center justify-center"
+  x-data="getCharacterApplicationFlowShortDescriptionData('{{ .ShortDescription }}')"
+>
+  <div class="w-full max-w-lg rounded-md border p-6">
+    <div id="character-application-flow-error"></div>
+    <p class="whitespace-nowrap pt-4">Write {{ .Name }}'s short description:</p>
+    <div class="pb-2 text-xs leading-none text-muted-foreground">
+      This is how your character will appear in third-person descriptions during
+      the game.
+    </div>
+    <div class="pb-2 text-sm leading-none">
+      Your short description will be prefixed with the correct article.
+    </div>
+    <div class="pb-2 text-sm font-semibold leading-none">
+      You don't need to add "the" or "a" to the front of your description.
+    </div>
+    <div class="pb-1 text-sm leading-none">
+      <!-- TODO: Write a helpfile for sdesc and link to it here -->
+      You <span class="font-semibold">should</span> include a single primary
+      noun. For example, 'woman', 'waif', 'hulk', 'man'.
+    </div>
+    <form
+      class="space-y-4 px-4 pt-4"
+      @submit.prevent=""
+      hx-patch="{{ .CharacterApplicationShortDescriptionPath }}"
+      hx-swap="none"
+    >
+      <div class="space-y-2">
+        <input
+          id="character-application-flow-sdesc"
+          x-model="sdesc"
+          @input="
+            eval.sdesc.len = true;
+            sdesc = sanitizeCharacterShortDescription(event.target.value);
+          "
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder=""
+          name="sdesc"
+          value=""
+          autofocus
+        />
+        <div>
+          <!-- prettier-ignore -->
+          {{ template "web/views/partials/character/application/sdesc/requirements" }}
+        </div>
+      </div>
+      <div
+        x-show="isCharacterShortDescriptionValid(sdesc)"
+        class="text-sm leading-none"
+      >
+        Your short description will be displayed in-game as:
+        <br />
+        The <span x-text="sdesc"></span>
+      </div>
+      <div class="flex justify-end">
+        <button
+          :disabled="!isCharacterShortDescriptionValid(sdesc)"
+          class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+          type="submit"
+        >
+          Next
+        </button>
+      </div>
+    </form>
+  </div>
+</main>

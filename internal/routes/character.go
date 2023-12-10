@@ -24,7 +24,7 @@ func CharacterApplicationGenderPath(id string) string {
 }
 
 func CharacterApplicationShortDescriptionPath(id string) string {
-	return fmt.Sprintf("%s/%s/shortdescription", CharacterApplication, id)
+	return fmt.Sprintf("%s/%s/sdesc", CharacterApplication, id)
 }
 
 func CharacterApplicationDescriptionPath(id string) string {

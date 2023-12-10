@@ -93,6 +93,11 @@ export function sanitizeCharacterName(n) {
   return n.replace(/[^a-zA-Z'-]+/gi, "");
 }
 
+// TODO: Test
+export function sanitizeCharacterShortDescription(sdesc) {
+  return sdesc.replace(/[^a-zA-Z, -]+/gi, "").toLowerCase();
+}
+
 // TODO: Pass these lengths in as constants
 export function isUsernameValid(u) {
   if (u.length < 4) return false;
@@ -112,8 +117,17 @@ export function isPasswordValid(pw) {
 export function isCharacterNameValid(n = "") {
   if (n.length < 4) return false;
   if (n.length > 16) return false;
-  const regex = new RegExp("[^a-zA-Z0-9_-]+", "g");
+  const regex = new RegExp("[^a-zA-Z'-]+", "g");
   if (regex.test(n)) return false;
+  return true;
+}
+
+// TODO: Test
+export function isCharacterShortDescriptionValid(sdesc = "") {
+  if (sdesc.length < 4) return false;
+  if (sdesc.length > 300) return false;
+  const regex = new RegExp("[^a-zA-Z, -]+", "g");
+  if (regex.test(sdesc)) return false;
   return true;
 }
 
@@ -215,6 +229,25 @@ export function getCharacterApplicationFlowNameData(name) {
   };
 }
 
+export function getCharacterApplicationFlowGenderData(gender) {
+  return {
+    gender,
+  };
+}
+
+export function getCharacterApplicationFlowShortDescriptionData(sdesc) {
+  return {
+    sdesc,
+    eval: {
+      sdesc: {
+        len: sdesc.length > 0,
+      },
+    },
+    sanitizeCharacterShortDescription,
+    isCharacterShortDescriptionValid,
+  };
+}
+
 const HEADER_CSRF_TOKEN = "X-CSRF-Token";
 const HEADER_HX_ACCEPTABLE = "X-HX-Acceptable";
 const HX_ACCEPTABLE_STATUSES = {
@@ -251,3 +284,7 @@ window.getGravatarEmailData = getGravatarEmailData;
 window.getProfileAvatarData = getProfileAvatarData;
 window.getCharacterApplicationFlowNameData =
   getCharacterApplicationFlowNameData;
+window.getCharacterApplicationFlowGenderData =
+  getCharacterApplicationFlowGenderData;
+window.getCharacterApplicationFlowShortDescriptionData =
+  getCharacterApplicationFlowShortDescriptionData;

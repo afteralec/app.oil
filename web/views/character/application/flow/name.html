@@ -4,7 +4,7 @@
 >
   <div class="w-full max-w-lg rounded-md border p-6">
     <div id="character-application-flow-error"></div>
-    <p class="pt-4">Create a character:</p>
+    <p class="pt-4">Name your character:</p>
     <form
       class="space-y-4 px-4 pt-4"
       @submit.prevent=""
@@ -12,12 +12,6 @@
       hx-swap="none"
     >
       <div class="space-y-2">
-        <label
-          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          for="character-application-flow-name"
-        >
-          Name
-        </label>
         <input
           id="character-application-flow-name"
           x-model="name"

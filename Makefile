@@ -31,7 +31,7 @@ icons:
 		web/static/iconify-icon.min.js \
 		https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js
 
-main:
+mainjs:
 	bun build web/scripts/main.js \
 		--outdir web/static \
 		--minify-whitespace \
@@ -42,7 +42,7 @@ js:
 	make alpine
 	make htmx
 	make icons
-	make main
+	make mainjs
 
 css:
 	bunx postcss web/styles/styles.css -o web/static/styles.min.css

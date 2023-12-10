@@ -374,7 +374,12 @@ func TestUpdateCharacterApplicationNameNotFound(t *testing.T) {
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid+1, 10)))
-	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("name", "test")
+	writer.Close()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
 	if err != nil {
@@ -395,7 +400,12 @@ func TestUpdateCharacterApplicationNameFatal(t *testing.T) {
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	i.Close()
 	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
-	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("name", "test")
+	writer.Close()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
 	if err != nil {

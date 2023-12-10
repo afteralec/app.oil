@@ -111,8 +111,17 @@ func CharacterGenderPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		gender := character.ValidateGender(app.Gender)
 		b := c.Locals("bind").(fiber.Map)
-		b["Gender"] = app.Gender
+		b["Name"] = app.Name
+		b["GenderNonBinary"] = character.GenderNonBinary
+		b["GenderFemale"] = character.GenderFemale
+		b["GenderMale"] = character.GenderMale
+		b["Gender"] = gender
+		b["GenderIsNonBinary"] = gender == character.GenderNonBinary
+		b["GenderIsFemale"] = gender == character.GenderFemale
+		b["GenderIsMale"] = gender == character.GenderMale
+		b["CharacterApplicationGenderPath"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		return c.Render("web/views/character/application/flow/gender", b, "web/views/layouts/standalone")
 	}
 }
@@ -149,6 +158,7 @@ func CharacterShortDescriptionPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		b := c.Locals("bind").(fiber.Map)
+		b["Name"] = app.Name
 		b["ShortDescription"] = app.ShortDescription
 		return c.Render("web/views/character/application/flow/sdesc", b, "web/views/layouts/standalone")
 	}
@@ -538,6 +548,7 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusOK)
+		c.Append("HX-Redirect", routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10)))
 		return nil
 	}
 }
