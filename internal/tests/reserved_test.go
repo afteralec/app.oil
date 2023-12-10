@@ -2,6 +2,7 @@ package tests
 
 import (
 	"bytes"
+	"fmt"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -28,6 +29,7 @@ func TestReservedConflict(t *testing.T) {
 	app.Handlers(a, &i)
 
 	SetupTestReserved(&i, t)
+	defer SetupTestReserved(&i, t)
 
 	_ = CallRegister(t, a, TestUsername, TestPassword)
 
@@ -75,11 +77,44 @@ func TestReservedFatal(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	it := shared.SetupInterfaces()
+	SetupTestReserved(&it, t)
+	it.Close()
+
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
+func TestReservedOK(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	config := configs.Fiber(views)
+	a := fiber.New(config)
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	SetupTestReserved(&i, t)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("username", TestUsername)
+	writer.Close()
+
+	url := MakeTestURL(routes.Reserved)
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
 func SetupTestReserved(i *shared.Interfaces, t *testing.T) {
-	_, err := i.Database.Exec("DELETE FROM players WHERE username = 'testify';")
+	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s';", TestUsername)
+	_, err := i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)
 	}
