@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -100,14 +99,7 @@ func TestVerifyExpiredToken(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
 	eid := strconv.FormatInt(email.ID, 10)

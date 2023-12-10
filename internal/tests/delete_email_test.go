@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -40,14 +39,7 @@ func TestDeleteEmailUnauthorized(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
 	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
@@ -82,14 +74,7 @@ func TestDeleteEmailDBError(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
 	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
@@ -130,14 +115,7 @@ func TestDeleteEmailUnowned(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
 	// Log in as a different user
@@ -216,14 +194,7 @@ func TestDeleteNonexistantEmail(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
 	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
@@ -265,14 +236,7 @@ func TestDeleteEmailSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
 	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))

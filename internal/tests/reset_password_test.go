@@ -131,14 +131,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	e := emails[0]
 
 	_, err = i.Queries.MarkEmailVerified(context.Background(), e.ID)

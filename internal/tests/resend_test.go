@@ -42,14 +42,7 @@ func TestResendUnauthorized(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
 	url := MakeTestURL(routes.ResendEmailVerificationPath(strconv.FormatInt(email.ID, 10)))
@@ -84,14 +77,7 @@ func TestResendDBError(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
 	url := MakeTestURL(routes.ResendEmailVerificationPath(strconv.FormatInt(email.ID, 10)))
@@ -131,14 +117,7 @@ func TestResendUnowned(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
 	// Log in as a different user
@@ -221,14 +200,7 @@ func TestResendNonexistantEmail(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
 	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
@@ -272,14 +244,7 @@ func TestEditEmailVerified(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 	_, err = i.Queries.MarkEmailVerified(context.Background(), email.ID)
 	if err != nil {
@@ -319,14 +284,7 @@ func TestResendSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-	emails, err := i.Queries.ListEmails(context.Background(), p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
 	url := MakeTestURL(routes.ResendEmailVerificationPath(strconv.FormatInt(email.ID, 10)))
