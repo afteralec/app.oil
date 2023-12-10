@@ -9,13 +9,9 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/password"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
-)
-
-const (
-	RecoverPasswordRoute        = "/recover/password"
-	RecoverPasswordSuccessRoute = "/recover/password/success"
 )
 
 func RecoverPasswordPage() fiber.Handler {
@@ -93,7 +89,7 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		c.Append("HX-Redirect", RecoverPasswordSuccessRoute)
+		c.Append("HX-Redirect", routes.RecoverPasswordSuccess)
 		return nil
 	}
 }

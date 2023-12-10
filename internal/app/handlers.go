@@ -26,7 +26,7 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Get(routes.CharacterApplicationBackstoryPath(routes.ID), handlers.CharacterBackstoryPage(i))
 	app.Patch(routes.CharacterApplicationNamePath(routes.ID), handlers.UpdateCharacterApplicationName(i))
 	app.Patch(routes.CharacterApplicationGenderPath(routes.ID), handlers.UpdateCharacterApplicationGender(i))
-	app.Patch(routes.CharacterApplicationShortDescriptionPath(routes.ID), handlers.UpdateCharacterApplicationSdesc(i))
+	app.Patch(routes.CharacterApplicationShortDescriptionPath(routes.ID), handlers.UpdateCharacterApplicationShortDescription(i))
 	app.Patch(routes.CharacterApplicationDescriptionPath(routes.ID), handlers.UpdateCharacterApplicationDescription(i))
 	app.Patch(routes.CharacterApplicationBackstoryPath(routes.ID), handlers.UpdateCharacterApplicationBackstory(i))
 

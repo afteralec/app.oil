@@ -9,13 +9,9 @@ import (
 
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
-)
-
-const (
-	ResetPasswordRoute        = "/reset/password"
-	ResetPasswordSuccessRoute = "/reset/password/route"
 )
 
 func ResetPasswordPage() fiber.Handler {
@@ -126,7 +122,7 @@ func ResetPassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		c.Append("HX-Redirect", ResetPasswordSuccessRoute)
+		c.Append("HX-Redirect", routes.ResetPasswordSuccess)
 		return nil
 	}
 }

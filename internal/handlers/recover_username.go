@@ -8,13 +8,9 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
-)
-
-const (
-	RecoverUsernameRoute        = "/recover/username"
-	RecoverUsernameSuccessRoute = "/recover/username/success"
 )
 
 func RecoverUsernamePage() fiber.Handler {
@@ -27,13 +23,13 @@ func RecoverUsernameSuccessPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		t := c.Query("t")
 		if len(t) == 0 {
-			c.Redirect(HomeRoute)
+			c.Redirect(routes.Home)
 		}
 
 		key := username.RecoverySuccessKey(t)
 		address, err := i.Redis.Get(context.Background(), key).Result()
 		if err != nil {
-			c.Redirect(HomeRoute)
+			c.Redirect(routes.Home)
 		}
 
 		b := c.Locals("bind").(fiber.Map)
@@ -73,7 +69,7 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 					return c.Render("web/views/partials/recover/username/err-internal", c.Locals("bind"), "")
 				}
 
-				path := fmt.Sprintf("%s?t=%s", RecoverUsernameSuccessRoute, rusid)
+				path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)
 				c.Append("HX-Redirect", path)
 				return nil
 			}
@@ -89,7 +85,7 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/recover/username/err-internal", c.Locals("bind"), "")
 		}
 
-		path := fmt.Sprintf("%s?t=%s", RecoverUsernameSuccessRoute, rusid)
+		path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)
 		c.Append("HX-Reswap", "none")
 		c.Append("HX-Redirect", path)
 		return nil

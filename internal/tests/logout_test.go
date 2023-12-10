@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,6 +12,7 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -23,7 +25,8 @@ func TestLogout(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	req := httptest.NewRequest(http.MethodPost, "http://petrichormud.com/logout", nil)
+	url := fmt.Sprintf("%s%s", TestURL, routes.Logout)
+	req := httptest.NewRequest(http.MethodPost, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -41,7 +44,8 @@ func TestLogoutPage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	req := httptest.NewRequest(http.MethodGet, "http://petrichormud.com/logout", nil)
+	url := fmt.Sprintf("%s%s", TestURL, routes.Logout)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)

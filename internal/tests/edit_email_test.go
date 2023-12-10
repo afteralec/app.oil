@@ -7,6 +7,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -15,6 +16,7 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -91,7 +93,8 @@ func TestEditEmailMissingInput(t *testing.T) {
 	}
 	email := emails[0]
 
-	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
+	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodPut, url, nil)
 	res, err = a.Test(req)
 	if err != nil {
@@ -138,7 +141,8 @@ func TestEditEmailMalformedInput(t *testing.T) {
 	writer.WriteField("notemail", "malformed")
 	writer.Close()
 
-	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
+	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -270,7 +274,8 @@ func TestEditEmailInvalidID(t *testing.T) {
 	writer.WriteField("email", TestEmailAddressTwo)
 	writer.Close()
 
-	url := fmt.Sprintf("%s/player/email/%s", TestURL, "invalid")
+	path := routes.EmailPath("invalid")
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req, err := http.NewRequest(http.MethodPut, url, body)
 	if err != nil {
 		t.Fatal(err)
@@ -316,8 +321,8 @@ func TestEditNonexistantEmail(t *testing.T) {
 	}
 	email := emails[0]
 
-	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
+	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req, err = http.NewRequest(http.MethodDelete, url, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -447,7 +452,8 @@ func EditEmailRequest(id int64, e string) *http.Request {
 	writer.WriteField("email", e)
 	writer.Close()
 
-	url := fmt.Sprintf("%s/player/email/%d", TestURL, id)
+	path := routes.EmailPath(strconv.FormatInt(id, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req := httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return req

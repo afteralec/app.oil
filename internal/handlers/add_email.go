@@ -14,10 +14,6 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-const (
-	MaxEmailCount = 3
-)
-
 func AddEmail(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Email string `form:"email"`
@@ -43,7 +39,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 		}
 
-		if ec >= MaxEmailCount {
+		if ec >= shared.MaxEmailCount {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")

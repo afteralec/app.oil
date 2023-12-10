@@ -495,7 +495,7 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func UpdateCharacterApplicationSdesc(i *shared.Interfaces) fiber.Handler {
+func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Handler {
 	// TODO: Validate this input for length on the way in
 	type request struct {
 		Sdesc string `form:"sdesc"`

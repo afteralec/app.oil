@@ -7,6 +7,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -15,6 +16,7 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -50,7 +52,8 @@ func TestResendUnauthorized(t *testing.T) {
 	}
 	email := emails[0]
 
-	url := fmt.Sprintf("%s/player/email/%d/resend", TestURL, email.ID)
+	path := routes.ResendEmailVerificationPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	res, err = a.Test(req)
 	if err != nil {
@@ -92,7 +95,8 @@ func TestResendDBError(t *testing.T) {
 	}
 	email := emails[0]
 
-	url := fmt.Sprintf("%s/player/email/%d/resend", TestURL, email.ID)
+	path := routes.ResendEmailVerificationPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	i.Close()
@@ -149,7 +153,8 @@ func TestResendUnowned(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s/player/email/%d/resend", TestURL, email.ID)
+	path := routes.ResendEmailVerificationPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = a.Test(req)
@@ -181,7 +186,8 @@ func TestResendInvalidID(t *testing.T) {
 	writer.WriteField("email", TestEmailAddressTwo)
 	writer.Close()
 
-	url := fmt.Sprintf("%s/player/email/%s/resend", TestURL, "invalid")
+	path := routes.ResendEmailVerificationPath("invalid")
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req, err := http.NewRequest(http.MethodPost, url, body)
 	if err != nil {
 		t.Fatal(err)
@@ -227,8 +233,8 @@ func TestResendNonexistantEmail(t *testing.T) {
 	}
 	email := emails[0]
 
-	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
+	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 	_, err = a.Test(req)
@@ -236,7 +242,8 @@ func TestResendNonexistantEmail(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url = fmt.Sprintf("%s/player/email/%d/resend", TestURL, email.ID)
+	path = routes.ResendEmailVerificationPath(strconv.FormatInt(email.ID, 10))
+	url = fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = a.Test(req)
@@ -283,7 +290,8 @@ func TestEditEmailVerified(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s/player/email/%d/resend", TestURL, email.ID)
+	path := routes.ResendEmailVerificationPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = a.Test(req)
@@ -326,7 +334,8 @@ func TestResendSuccess(t *testing.T) {
 	}
 	email := emails[0]
 
-	url := fmt.Sprintf("%s/player/email/%d/resend", TestURL, email.ID)
+	path := routes.ResendEmailVerificationPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = a.Test(req)

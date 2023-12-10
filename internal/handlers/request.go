@@ -11,8 +11,6 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-const NewRequestCommentRoute = "/request/:id/comments/new"
-
 func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Text  string `form:"text"`

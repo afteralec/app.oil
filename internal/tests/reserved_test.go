@@ -14,7 +14,7 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/handlers"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -38,7 +38,7 @@ func TestReserved(t *testing.T) {
 	writer.Close()
 
 	// TODO: Clean this up using the existing test utilities
-	url := fmt.Sprintf("%s%s", TestURL, handlers.RegisterRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.Register)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	_, err := a.Test(req)
@@ -51,7 +51,7 @@ func TestReserved(t *testing.T) {
 	writer.WriteField("username", TestUsername)
 	writer.Close()
 
-	url = fmt.Sprintf("%s%s", TestURL, handlers.ReservedRoute)
+	url = fmt.Sprintf("%s%s", TestURL, routes.Reserved)
 	req = httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := a.Test(req)

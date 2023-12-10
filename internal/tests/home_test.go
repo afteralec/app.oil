@@ -24,7 +24,7 @@ func TestHomePage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	req := httptest.NewRequest(http.MethodGet, "http://petrichormud.com", nil)
+	req := httptest.NewRequest(http.MethodGet, TestURL, nil)
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)

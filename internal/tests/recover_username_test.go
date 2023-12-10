@@ -15,7 +15,7 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/handlers"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -28,7 +28,7 @@ func TestRecoverUsernamePage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverUsernameRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverUsername)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -47,7 +47,7 @@ func TestRecoverUsernameSuccessPageRedirectsWithoutToken(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverUsernameSuccessRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverUsernameSuccess)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -68,7 +68,7 @@ func TestRecoverUsernameMissingBody(t *testing.T) {
 
 	SetupTestRecoverUsername(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverUsernameRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverUsername)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := a.Test(req)
@@ -90,7 +90,7 @@ func TestRecoverUsernameMalformedBody(t *testing.T) {
 
 	SetupTestRecoverUsername(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverUsernameRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverUsername)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("notemail", "notanemail")
@@ -144,7 +144,7 @@ func TestRecoverUsernameSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverUsernameRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverUsername)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("email", TestEmailAddress)

@@ -12,7 +12,6 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-// TODO: This needs to return error snippets
 func EditEmail(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Email string `form:"email"`

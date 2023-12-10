@@ -12,8 +12,6 @@ import (
 	"petrichormud.com/app/internal/username"
 )
 
-const RegisterRoute = "/player/new"
-
 func Register(i *shared.Interfaces) fiber.Handler {
 	type Player struct {
 		Username        string `form:"username"`

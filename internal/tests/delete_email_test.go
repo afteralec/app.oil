@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -13,6 +14,7 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -48,8 +50,8 @@ func TestDeleteEmailUnauthorized(t *testing.T) {
 	}
 	email := emails[0]
 
-	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
+	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	res, err = a.Test(req)
 	if err != nil {
@@ -91,8 +93,8 @@ func TestDeleteEmailDBError(t *testing.T) {
 	}
 	email := emails[0]
 
-	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
+	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -152,8 +154,8 @@ func TestDeleteEmailUnowned(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
+	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -181,7 +183,9 @@ func TestDeleteEmailInvalidID(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	url := fmt.Sprintf("%s/player/email/%s", TestURL, "invalid")
+	path := routes.EmailPath("invalid")
+	// TODO: Make this TestURL prefix into a func
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -227,8 +231,8 @@ func TestDeleteNonexistantEmail(t *testing.T) {
 	}
 	email := emails[0]
 
-	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
+	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -277,8 +281,8 @@ func TestDeleteEmailSuccess(t *testing.T) {
 	}
 	email := emails[0]
 
-	// TODO: Turn this route into a generator
-	url := fmt.Sprintf("%s/player/email/%d", TestURL, email.ID)
+	path := routes.EmailPath(strconv.FormatInt(email.ID, 10))
+	url := fmt.Sprintf("%s%s", TestURL, path)
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 

@@ -16,7 +16,6 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
@@ -31,7 +30,7 @@ func TestResetPasswordPage(t *testing.T) {
 	app.Handlers(a, &i)
 
 	id := uuid.NewString()
-	url := fmt.Sprintf("%s%s?t=%s", TestURL, handlers.ResetPasswordRoute, id)
+	url := fmt.Sprintf("%s%s?t=%s", TestURL, routes.ResetPassword, id)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {

@@ -11,8 +11,6 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-const ResendRoute = "/player/email/:id/resend"
-
 func Resend(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")

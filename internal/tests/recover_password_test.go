@@ -15,7 +15,7 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/handlers"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -28,7 +28,7 @@ func TestRecoverPasswordPage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverPasswordRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverPassword)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -47,7 +47,7 @@ func TestRecoverPasswordSuccessPage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverPasswordSuccessRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverPasswordSuccess)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -68,7 +68,7 @@ func TestRecoverPasswordMissingBody(t *testing.T) {
 
 	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverPasswordRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverPassword)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := a.Test(req)
@@ -90,7 +90,7 @@ func TestRecoverPasswordMalformedBody(t *testing.T) {
 
 	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverPasswordRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverPassword)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("notemail", "notanemail")
@@ -143,7 +143,7 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverPasswordRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.RecoverPassword)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("username", TestUsername)
