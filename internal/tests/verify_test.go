@@ -5,16 +5,15 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
+	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/handlers"
-	"petrichormud.com/app/internal/middleware/bind"
-	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
@@ -24,16 +23,13 @@ func TestVerifyPage(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Get(handlers.VerifyRoute, handlers.VerifyPage(&i))
-
-	url := fmt.Sprintf("%s%s", TestURL, handlers.VerifyRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.VerifyEmail)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,16 +42,13 @@ func TestVerifyUnauthorized(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.VerifyRoute, handlers.Verify(&i))
-
-	url := fmt.Sprintf("%s%s", TestURL, handlers.VerifyRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.VerifyEmail)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -68,23 +61,18 @@ func TestVerifyNoToken(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.VerifyRoute, handlers.Verify(&i))
-
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	sessionCookie := res.Cookies()[0]
 
-	url := fmt.Sprintf("%s%s", TestURL, handlers.VerifyRoute)
+	url := fmt.Sprintf("%s%s", TestURL, routes.VerifyEmail)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -97,23 +85,17 @@ func TestVerifyExpiredToken(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
-	app.Post(handlers.VerifyRoute, handlers.Verify(&i))
-
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	sessionCookie := res.Cookies()[0]
 
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	_, err := app.Test(req)
+	_, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -128,10 +110,19 @@ func TestVerifyExpiredToken(t *testing.T) {
 	}
 	email := emails[0]
 
-	url := fmt.Sprintf("%s/player/email/%d/resend?t=non-existant-key", TestURL, email.ID)
+	eid := strconv.FormatInt(email.ID, 10)
+	path := routes.ResendEmailVerificationPath(eid)
+	url := fmt.Sprintf("%s%s", TestURL, path)
+	req = httptest.NewRequest(http.MethodPost, url, nil)
+	_, err = a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	url = fmt.Sprintf("%s%s?t=non-existant-key", TestURL, routes.VerifyEmail)
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err = app.Test(req)
+	res, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}

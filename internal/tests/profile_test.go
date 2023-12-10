@@ -10,10 +10,9 @@ import (
 	html "github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
+	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/handlers"
-	"petrichormud.com/app/internal/middleware/bind"
-	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -22,15 +21,13 @@ func TestProfilePage(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-
-	app.Get(handlers.ProfileRoute, handlers.ProfilePage(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	url := fmt.Sprintf("%s%s", TestURL, handlers.ProfileRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -43,26 +40,21 @@ func TestProfilePageSuccess(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Get(handlers.ProfileRoute, handlers.ProfilePage(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestProfile(t, &i, TestUsername)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
 	url := fmt.Sprintf("%s%s", TestURL, handlers.ProfileRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}

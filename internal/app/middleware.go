@@ -14,11 +14,14 @@ import (
 )
 
 func Middleware(a *fiber.App, i *shared.Interfaces) {
-	a.Use(logger.New())
 	a.Use(session.New(i))
 	a.Use(bind.New())
 
 	if os.Getenv("DISABLE_CSRF") != "true" {
 		a.Use(csrf.New(configs.CSRF(i.Sessions)))
+	}
+
+	if os.Getenv("DISABLE_LOGGING") != "true" {
+		a.Use(logger.New())
 	}
 }

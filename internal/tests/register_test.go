@@ -12,15 +12,10 @@ import (
 	html "github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
+	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/shared"
-)
-
-const (
-	TestUsername    = "testify"
-	TestUsernameTwo = "testify2"
-	TestPassword    = "T3sted_tested"
 )
 
 // TODO: Add failure tests here for bad inputs
@@ -31,11 +26,11 @@ func TestRegister(t *testing.T) {
 	SetupTestRegister(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-
-	res := CallRegister(t, app, TestUsername, TestPassword)
+	res := CallRegister(t, a, TestUsername, TestPassword)
 
 	require.Equal(t, fiber.StatusCreated, res.StatusCode)
 }
@@ -60,7 +55,7 @@ func CallRegister(t *testing.T, app *fiber.App, u string, pw string) *http.Respo
 }
 
 func SetupTestRegister(t *testing.T, i *shared.Interfaces, u string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
+	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s';", u)
 	_, err := i.Database.Exec(query)
 	if err != nil {
 		t.Fatal(err)

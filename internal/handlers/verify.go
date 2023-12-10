@@ -12,8 +12,6 @@ import (
 	"petrichormud.com/app/internal/username"
 )
 
-const VerifyRoute = "/verify"
-
 func VerifyPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
@@ -107,6 +105,10 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 
 		eid, err := i.Redis.Get(context.Background(), key).Result()
 		if err != nil {
+			if err == redis.Nil {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -117,22 +119,17 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		// TODO: This same block of code is reused across a couple of email operations; peel it out?
 		e, err := i.Queries.GetEmail(context.Background(), id)
 		if err != nil {
-			// TODO: Distinguish between "not found" and other errors
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		_, err = i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
-		if err != nil {
-			if err != sql.ErrNoRows {
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
-		}
-		if err == nil {
+		if e.Verified {
 			c.Status(fiber.StatusConflict)
 			return nil
 		}

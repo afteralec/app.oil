@@ -12,6 +12,7 @@ import (
 	html "github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
+	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/shared"
@@ -21,14 +22,13 @@ func TestReserved(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestReserved(&i, t)
-
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
-	app := fiber.New(config)
+	a := fiber.New(config)
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.ReservedRoute, handlers.Reserved(&i))
+	SetupTestReserved(&i, t)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -41,7 +41,7 @@ func TestReserved(t *testing.T) {
 	url := fmt.Sprintf("%s%s", TestURL, handlers.RegisterRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
-	_, err := app.Test(req)
+	_, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -54,7 +54,7 @@ func TestReserved(t *testing.T) {
 	url = fmt.Sprintf("%s%s", TestURL, handlers.ReservedRoute)
 	req = httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}

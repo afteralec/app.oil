@@ -13,23 +13,24 @@ import (
 	html "github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
+	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/handlers"
-	"petrichormud.com/app/internal/middleware/bind"
-	"petrichormud.com/app/internal/middleware/session"
-	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
 func TestRecoverPasswordPage(t *testing.T) {
-	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
+	i := shared.SetupInterfaces()
+	defer i.Close()
 
-	app.Get(handlers.RecoverPasswordRoute, handlers.RecoverPasswordPage())
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverPasswordRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,13 +43,13 @@ func TestRecoverPasswordSuccessPage(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Get(handlers.RecoverPasswordSuccessRoute, handlers.RecoverPasswordSuccessPage())
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverPasswordSuccessRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,16 +62,16 @@ func TestRecoverPasswordMissingBody(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Post(handlers.RecoverPasswordRoute, handlers.RecoverPassword(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)
 
 	url := fmt.Sprintf("%s%s", TestURL, handlers.RecoverPasswordRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -83,9 +84,9 @@ func TestRecoverPasswordMalformedBody(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Post(handlers.RecoverPasswordRoute, handlers.RecoverPassword(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)
 
@@ -97,7 +98,7 @@ func TestRecoverPasswordMalformedBody(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -110,25 +111,19 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-	app.Use(bind.New())
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
-	app.Post(handlers.RecoverPasswordRoute, handlers.RecoverPassword(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	sessionCookie := res.Cookies()[0]
 
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	_, err := app.Test(req)
+	_, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -157,7 +152,7 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 	req = httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	res, err = app.Test(req)
+	res, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}

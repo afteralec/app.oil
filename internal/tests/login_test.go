@@ -12,21 +12,25 @@ import (
 	html "github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
+	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/shared"
 )
 
 func TestLoginPage(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
-	app := fiber.New(config)
-
-	app.Get(handlers.LoginRoute, handlers.LoginPage())
+	a := fiber.New(config)
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	url := fmt.Sprintf("http://petrichormud.com%s", handlers.LoginRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,13 +44,13 @@ func TestLoginNonExistantUser(t *testing.T) {
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
-	app := fiber.New(config)
-
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	a := fiber.New(config)
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestLogin(t, &i, TestUsername)
 
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
@@ -57,13 +61,12 @@ func TestLoginSuccess(t *testing.T) {
 	SetupTestLogin(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
@@ -74,13 +77,12 @@ func TestLoginWithWrongPassword(t *testing.T) {
 	SetupTestLogin(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, "wrongpassword")
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, "wrongpassword")
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
@@ -91,12 +93,11 @@ func TestLoginWithMalformedFormData(t *testing.T) {
 	SetupTestLogin(t, &i, TestUsername)
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-
-	CallRegister(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -106,7 +107,7 @@ func TestLoginWithMalformedFormData(t *testing.T) {
 	url := fmt.Sprintf("%s%s", TestURL, handlers.LoginRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -9,19 +9,23 @@ import (
 	html "github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
+	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/handlers"
+	"petrichormud.com/app/internal/shared"
 )
 
 func TestHomePage(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
-	app := fiber.New(config)
-
-	app.Get(handlers.HomeRoute, handlers.HomePage())
+	a := fiber.New(config)
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	req := httptest.NewRequest(http.MethodGet, "http://petrichormud.com", nil)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
