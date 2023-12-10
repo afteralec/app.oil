@@ -20,7 +20,6 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
-		// TODO: Turn this into a colon-separated key
 		token := c.Query("t")
 		exists, err := i.Redis.Exists(context.Background(), token).Result()
 		if err != nil {
@@ -29,8 +28,7 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 		}
 		if exists != 1 {
 			c.Status(fiber.StatusNotFound)
-			// TODO: Make this a not-found response to this
-			return c.Render("web/views/401", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/404", c.Locals("bind"), "web/views/layouts/standalone")
 		}
 
 		eid, err := i.Redis.Get(context.Background(), token).Result()
@@ -52,8 +50,7 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				// TODO: Make this a 404 page
-				return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
+				return c.Render("web/views/404", c.Locals("bind"), "web/views/layouts/standalone")
 			}
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
@@ -96,7 +93,6 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		// TODO: Move this into a colon-separated key
 		key := c.Query("t")
 		if len(key) == 0 {
 			c.Status(fiber.StatusBadRequest)

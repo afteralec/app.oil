@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2/middleware/session"
 	redis "github.com/redis/go-redis/v9"
+	"github.com/resendlabs/resend-go"
 
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/queries"
@@ -30,7 +31,9 @@ func SetupInterfaces() Interfaces {
 	// TODO: Update this config to be more secure. Will depend on environment.
 	s := session.New()
 
-	i := InterfacesBuilder().Database(db).Redis(r).Sessions(s).Build()
+	rc := resend.NewClient(os.Getenv("RESEND_API_KEY"))
+
+	i := InterfacesBuilder().Database(db).Redis(r).Sessions(s).Resend(rc).Build()
 	i.Ping()
 	return i
 }
@@ -40,6 +43,7 @@ type Interfaces struct {
 	Redis    *redis.Client
 	Queries  *queries.Queries
 	Sessions *session.Store
+	Resend   *resend.Client
 }
 
 type interfacesBuilder struct {
@@ -63,6 +67,11 @@ func (b *interfacesBuilder) Redis(r *redis.Client) *interfacesBuilder {
 
 func (b *interfacesBuilder) Sessions(s *session.Store) *interfacesBuilder {
 	b.Interfaces.Sessions = s
+	return b
+}
+
+func (b *interfacesBuilder) Resend(client *resend.Client) *interfacesBuilder {
+	b.Interfaces.Resend = client
 	return b
 }
 

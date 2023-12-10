@@ -25,7 +25,7 @@ func Recover(i *shared.Interfaces, e queries.Email) (string, error) {
 		return id, nil
 	}
 
-	_, err = SendRecoverUsernameEmail(username, e.Address)
+	_, err = SendRecoverUsernameEmail(i, username, e.Address)
 	if err != nil {
 		return "", err
 	}
@@ -33,9 +33,7 @@ func Recover(i *shared.Interfaces, e queries.Email) (string, error) {
 	return id, nil
 }
 
-func SendRecoverUsernameEmail(username string, email string) (resend.SendEmailResponse, error) {
-	// TODO: Extract this so we aren't building a new client on each request
-	client := resend.NewClient(os.Getenv("RESEND_API_KEY"))
+func SendRecoverUsernameEmail(i *shared.Interfaces, username string, email string) (resend.SendEmailResponse, error) {
 	params := &resend.SendEmailRequest{
 		To:   []string{email},
 		From: "verify@petrichormud.com",
@@ -45,5 +43,5 @@ func SendRecoverUsernameEmail(username string, email string) (resend.SendEmailRe
 		Subject: "[PetrichorMUD] Username Recovery",
 		ReplyTo: "support@petrichormud.com",
 	}
-	return client.Emails.Send(params)
+	return i.Resend.Emails.Send(params)
 }

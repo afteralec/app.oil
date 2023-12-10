@@ -117,7 +117,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 		}
 
-		err = email.Verify(i.Redis, id, e.Address)
+		err = email.Verify(i, id, e.Address)
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")

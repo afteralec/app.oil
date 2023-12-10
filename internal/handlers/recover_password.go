@@ -83,7 +83,7 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		err = password.SetupRecovery(i.Redis, p.ID, r.Email)
+		err = password.SetupRecovery(i, p.ID, r.Email)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil

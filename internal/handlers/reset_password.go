@@ -111,8 +111,6 @@ func ResetPassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		// TODO: Cache a new UUID here that represents a reference to an email to show on the success page
-
 		_, err = i.Queries.UpdatePlayerPassword(context.Background(), queries.UpdatePlayerPasswordParams{
 			ID:     pid,
 			PwHash: pwHash,

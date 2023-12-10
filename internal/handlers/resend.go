@@ -89,7 +89,7 @@ func Resend(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		err = email.Verify(i.Redis, id, e.Address)
+		err = email.Verify(i, id, e.Address)
 		if err != nil {
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
