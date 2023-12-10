@@ -157,7 +157,7 @@ func CharacterShortDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		b := c.Locals("bind").(fiber.Map)
+		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Name"] = app.Name
 		b["ShortDescription"] = app.ShortDescription
 		return c.Render("web/views/character/application/flow/sdesc", b, "web/views/layouts/standalone")
@@ -170,7 +170,7 @@ func CharacterDescriptionPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -195,9 +195,10 @@ func CharacterDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		b := c.Locals("bind").(fiber.Map)
+		b := c.Locals(shared.Bind).(fiber.Map)
+		b["Name"] = app.Name
 		b["Description"] = app.Description
-		return c.Render("web/views/character/application/flow/desc", b, "web/views/layouts/standalone")
+		return c.Render("web/views/character/application/flow/description", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -630,6 +631,7 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 		}
 
 		c.Status(fiber.StatusOK)
+		c.Append("HX-Redirect", routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10)))
 		return nil
 	}
 }
@@ -710,6 +712,7 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		c.Append("HX-Redirect", routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10)))
 		c.Status(fiber.StatusOK)
 		return nil
 	}

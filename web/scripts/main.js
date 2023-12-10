@@ -98,6 +98,16 @@ export function sanitizeCharacterShortDescription(sdesc) {
   return sdesc.replace(/[^a-zA-Z, -]+/gi, "").toLowerCase();
 }
 
+// TODO: Test
+export function sanitizeCharacterDescription(desc) {
+  return desc.replace(/[^a-zA-Z, -.!()]+/gi, "");
+}
+
+// TODO: Test
+export function sanitizeCharacterBackstory(desc) {
+  return desc.replace(/[^a-zA-Z, -.!()]+/gi, "");
+}
+
 // TODO: Pass these lengths in as constants
 export function isUsernameValid(u) {
   if (u.length < 4) return false;
@@ -128,6 +138,24 @@ export function isCharacterShortDescriptionValid(sdesc = "") {
   if (sdesc.length > 300) return false;
   const regex = new RegExp("[^a-zA-Z, -]+", "g");
   if (regex.test(sdesc)) return false;
+  return true;
+}
+
+// TODO: Test
+export function isCharacterDescriptionValid(desc = "") {
+  if (desc.length < 32) return false;
+  if (desc.length > 2000) return false;
+  const regex = new RegExp("[^a-zA-Z, -.!()]+", "g");
+  if (regex.test(desc)) return false;
+  return true;
+}
+
+// TODO: Test
+export function isCharacterBackstoryValid(backstory) {
+  if (backstory.length < 32) return false;
+  if (backstory.length > 300) return false;
+  const regex = RegExp("[^a-zA-Z, -.!()]+", "gi");
+  if (regex.test(backstory)) return false;
   return true;
 }
 
@@ -248,6 +276,32 @@ export function getCharacterApplicationFlowShortDescriptionData(sdesc) {
   };
 }
 
+export function getCharacterApplicationFlowDescriptionData(description) {
+  return {
+    description,
+    eval: {
+      desc: {
+        len: description.length > 0,
+      },
+    },
+    sanitizeCharacterDescription,
+    isCharacterDescriptionValid,
+  };
+}
+
+export function getCharacterApplicationFlowBackstoryData(backstory) {
+  return {
+    backstory,
+    eval: {
+      bs: {
+        len: backstory.length > 0,
+      },
+    },
+    sanitizeCharacterBackstory,
+    isCharacterBackstoryValid,
+  };
+}
+
 const HEADER_CSRF_TOKEN = "X-CSRF-Token";
 const HEADER_HX_ACCEPTABLE = "X-HX-Acceptable";
 const HX_ACCEPTABLE_STATUSES = {
@@ -288,3 +342,7 @@ window.getCharacterApplicationFlowGenderData =
   getCharacterApplicationFlowGenderData;
 window.getCharacterApplicationFlowShortDescriptionData =
   getCharacterApplicationFlowShortDescriptionData;
+window.getCharacterApplicationFlowDescriptionData =
+  getCharacterApplicationFlowDescriptionData;
+window.getCharacterApplicationFlowBackstoryData =
+  getCharacterApplicationFlowBackstoryData;

@@ -2,12 +2,11 @@ package character
 
 import (
 	"regexp"
-	"strings"
 )
 
-func SanitizeName(u string) string {
+func SanitizeName(n string) string {
 	re := regexp.MustCompile("[^a-zA-Z'-]+")
-	s := re.ReplaceAllString(strings.ToLower(u), "")
+	s := re.ReplaceAllString(n, "")
 	return s
 }
 
