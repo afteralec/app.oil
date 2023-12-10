@@ -1,4 +1,4 @@
-package handlers
+package tests
 
 import (
 	"net/http"
@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -20,7 +21,7 @@ func TestLogout(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Post(LogoutRoute, Logout(&i))
+	app.Post(handlers.LogoutRoute, handlers.Logout(&i))
 
 	req := httptest.NewRequest(http.MethodPost, "http://petrichormud.com/logout", nil)
 	res, err := app.Test(req)
@@ -35,7 +36,7 @@ func TestLogoutPage(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Get(LogoutRoute, LogoutPage())
+	app.Get(handlers.LogoutRoute, handlers.LogoutPage())
 
 	req := httptest.NewRequest(http.MethodGet, "http://petrichormud.com/logout", nil)
 	res, err := app.Test(req)

@@ -1,4 +1,4 @@
-package handlers
+package tests
 
 import (
 	"bytes"
@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
@@ -23,9 +24,9 @@ func TestRecoverPasswordPage(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Get(RecoverPasswordRoute, RecoverPasswordPage())
+	app.Get(handlers.RecoverPasswordRoute, handlers.RecoverPasswordPage())
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverPasswordRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.RecoverPasswordRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -42,9 +43,9 @@ func TestRecoverPasswordSuccessPage(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Get(RecoverPasswordSuccessRoute, RecoverPasswordSuccessPage())
+	app.Get(handlers.RecoverPasswordSuccessRoute, handlers.RecoverPasswordSuccessPage())
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverPasswordSuccessRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.RecoverPasswordSuccessRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -61,11 +62,11 @@ func TestRecoverPasswordMissingBody(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Post(RecoverPasswordRoute, RecoverPassword(&i))
+	app.Post(handlers.RecoverPasswordRoute, handlers.RecoverPassword(&i))
 
 	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverPasswordRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.RecoverPasswordRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := app.Test(req)
@@ -83,11 +84,11 @@ func TestRecoverPasswordMalformedBody(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Post(RecoverPasswordRoute, RecoverPassword(&i))
+	app.Post(handlers.RecoverPasswordRoute, handlers.RecoverPassword(&i))
 
 	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverPasswordRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.RecoverPasswordRoute)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("notemail", "notanemail")
@@ -113,10 +114,10 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(AddEmailRoute, AddEmail(&i))
-	app.Post(RecoverPasswordRoute, RecoverPassword(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
+	app.Post(handlers.RecoverPasswordRoute, handlers.RecoverPassword(&i))
 
 	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)
 
@@ -146,7 +147,7 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverPasswordRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.RecoverPasswordRoute)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("username", TestUsername)

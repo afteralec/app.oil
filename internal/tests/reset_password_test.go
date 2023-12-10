@@ -1,4 +1,4 @@
-package handlers
+package tests
 
 import (
 	"bytes"
@@ -11,21 +11,25 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 	html "github.com/gofiber/template/html/v2"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
 )
 
-func TestRecoverUsernamePage(t *testing.T) {
+func TestResetPasswordPage(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
+	app.Use(bind.New())
 
-	app.Get(RecoverUsernameRoute, RecoverUsernamePage())
+	app.Get(handlers.ResetPasswordRoute, handlers.ResetPasswordPage())
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverUsernameRoute)
+	id := uuid.NewString()
+	url := fmt.Sprintf("%s%s?t=%s", shared.TestURL, handlers.ResetPasswordRoute, id)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -35,38 +39,35 @@ func TestRecoverUsernamePage(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestRecoverUsernameSuccessPageRedirectsWithoutToken(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
+func TestResetPasswordSuccessPage(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 	app.Use(bind.New())
 
-	app.Get(RecoverUsernameSuccessRoute, RecoverUsernameSuccessPage(&i))
+	app.Get(handlers.ResetPasswordSuccessRoute, handlers.ResetPasswordSuccessPage())
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverUsernameSuccessRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.ResetPasswordSuccessRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, fiber.StatusFound, res.StatusCode)
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestRecoverUsernameMissingBody(t *testing.T) {
+func TestResetPasswordMissingBody(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Post(RecoverUsernameRoute, RecoverUsername(&i))
+	app.Post(handlers.ResetPasswordRoute, handlers.ResetPassword(&i))
 
-	SetupTestRecoverUsername(t, &i, TestUsername, TestEmailAddress)
+	SetupTestResetPassword(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverUsernameRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.ResetPasswordRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := app.Test(req)
@@ -77,21 +78,21 @@ func TestRecoverUsernameMissingBody(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestRecoverUsernameMalformedBody(t *testing.T) {
+func TestResetPasswordMalformedBody(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Post(RecoverUsernameRoute, RecoverUsername(&i))
+	app.Post(handlers.ResetPasswordRoute, handlers.ResetPassword(&i))
 
-	SetupTestRecoverUsername(t, &i, TestUsername, TestEmailAddress)
+	SetupTestResetPassword(t, &i, TestUsername, TestEmailAddress)
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverUsernameRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.ResetPasswordRoute)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("notemail", "notanemail")
+	writer.WriteField("notusername", "notausername")
 	writer.Close()
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -104,7 +105,8 @@ func TestRecoverUsernameMalformedBody(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestRecoverUsernameSuccess(t *testing.T) {
+func TestResetPasswordSuccess(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -112,18 +114,19 @@ func TestRecoverUsernameSuccess(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 
 	app.Use(session.New(&i))
+	app.Use(bind.New())
 
-	SetupTestRecoverUsername(t, &i, TestUsername, TestEmailAddress)
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
+	app.Post(handlers.RecoverPasswordRoute, handlers.RecoverPassword(&i))
+	app.Post(handlers.ResetPasswordRoute, handlers.ResetPassword(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(AddEmailRoute, AddEmail(&i))
-	app.Post(RecoverUsernameRoute, RecoverUsername(&i))
+	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)
 
 	CallRegister(t, app, TestUsername, TestPassword)
 	res := CallLogin(t, app, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
+	sessionCookie := res.Cookies()[0]
 
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
@@ -132,7 +135,6 @@ func TestRecoverUsernameSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// TODO: Extract this block of functionality to a helper
 	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
 	if err != nil {
 		t.Fatal(err)
@@ -141,16 +143,19 @@ func TestRecoverUsernameSuccess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	email := emails[0]
-	_, err = i.Queries.MarkEmailVerified(context.Background(), email.ID)
+	e := emails[0]
+
+	_, err = i.Queries.MarkEmailVerified(context.Background(), e.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverUsernameRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.RecoverPasswordRoute)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("email", TestEmailAddress)
+	writer.WriteField("username", TestUsername)
+	writer.WriteField("password", TestPassword)
+	writer.WriteField("confirm", TestPassword)
 	writer.Close()
 	req = httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -163,7 +168,7 @@ func TestRecoverUsernameSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func SetupTestRecoverUsername(t *testing.T, i *shared.Interfaces, u string, e string) {
+func SetupTestResetPassword(t *testing.T, i *shared.Interfaces, u string, e string) {
 	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
 	_, err := i.Database.Exec(query)
 	if err != nil {

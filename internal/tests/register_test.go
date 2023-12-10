@@ -1,4 +1,4 @@
-package handlers
+package tests
 
 import (
 	"bytes"
@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -32,7 +33,7 @@ func TestRegister(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Post(RegisterRoute, Register(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 
 	res := CallRegister(t, app, TestUsername, TestPassword)
 
@@ -47,7 +48,7 @@ func CallRegister(t *testing.T, app *fiber.App, u string, pw string) *http.Respo
 	writer.WriteField("confirmPassword", pw)
 	writer.Close()
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, RegisterRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.RegisterRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)

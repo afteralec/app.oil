@@ -1,4 +1,4 @@
-package handlers
+package tests
 
 import (
 	"bytes"
@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -21,9 +22,9 @@ func TestLoginPage(t *testing.T) {
 	config := configs.Fiber(views)
 	app := fiber.New(config)
 
-	app.Get(LoginRoute, LoginPage())
+	app.Get(handlers.LoginRoute, handlers.LoginPage())
 
-	url := fmt.Sprintf("http://petrichormud.com%s", LoginRoute)
+	url := fmt.Sprintf("http://petrichormud.com%s", handlers.LoginRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -41,7 +42,7 @@ func TestLoginNonExistantUser(t *testing.T) {
 	config := configs.Fiber(views)
 	app := fiber.New(config)
 
-	app.Post(LoginRoute, Login(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
 
 	SetupTestLogin(t, &i, TestUsername)
 
@@ -58,8 +59,8 @@ func TestLoginSuccess(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Post(LoginRoute, Login(&i))
-	app.Post(RegisterRoute, Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 
 	CallRegister(t, app, TestUsername, TestPassword)
 	res := CallLogin(t, app, TestUsername, TestPassword)
@@ -75,8 +76,8 @@ func TestLoginWithWrongPassword(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Post(LoginRoute, Login(&i))
-	app.Post(RegisterRoute, Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 
 	CallRegister(t, app, TestUsername, TestPassword)
 	res := CallLogin(t, app, TestUsername, "wrongpassword")
@@ -92,8 +93,8 @@ func TestLoginWithMalformedFormData(t *testing.T) {
 	views := html.New("../..", ".html")
 	app := fiber.New(configs.Fiber(views))
 
-	app.Post(LoginRoute, Login(&i))
-	app.Post(RegisterRoute, Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 
 	CallRegister(t, app, TestUsername, TestPassword)
 
@@ -102,7 +103,7 @@ func TestLoginWithMalformedFormData(t *testing.T) {
 	writer.WriteField("username", "testify")
 	writer.Close()
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, LoginRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.LoginRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)
@@ -119,7 +120,7 @@ func CallLogin(t *testing.T, app *fiber.App, u string, pw string) *http.Response
 	writer.WriteField("password", pw)
 	writer.Close()
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, LoginRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.LoginRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)

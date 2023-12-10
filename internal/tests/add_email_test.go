@@ -1,4 +1,4 @@
-package handlers
+package tests
 
 import (
 	"bytes"
@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
 )
@@ -31,9 +32,9 @@ func TestAddEmailSuccess(t *testing.T) {
 
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(AddEmailRoute, AddEmail(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
 
 	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -59,7 +60,7 @@ func TestAddEmailWithoutLogin(t *testing.T) {
 	config := configs.Fiber(views)
 	app := fiber.New(config)
 	app.Use(session.New(&i))
-	app.Post(AddEmailRoute, AddEmail(&i))
+	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
 
 	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -82,9 +83,9 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 
 	app.Use(session.New(&i))
 
-	app.Post(LoginRoute, Login(&i))
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(AddEmailRoute, AddEmail(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
 
 	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -114,9 +115,9 @@ func TestAddEmailDBDisconnected(t *testing.T) {
 
 	app.Use(session.New(&i))
 
-	app.Post(LoginRoute, Login(&i))
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(AddEmailRoute, AddEmail(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
 
 	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -146,9 +147,9 @@ func TestAddEmailMalformedInput(t *testing.T) {
 
 	app.Use(session.New(&i))
 
-	app.Post(LoginRoute, Login(&i))
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(AddEmailRoute, AddEmail(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
 
 	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
@@ -162,7 +163,7 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	writer.WriteField("notemail", "blahblahblah")
 	writer.Close()
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, AddEmailRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.AddEmailRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -193,7 +194,7 @@ func AddEmailRequest(e string) *http.Request {
 	writer.WriteField("email", e)
 	writer.Close()
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, AddEmailRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.AddEmailRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return req

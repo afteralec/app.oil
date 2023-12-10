@@ -1,4 +1,4 @@
-package handlers
+package tests
 
 import (
 	"bytes"
@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -26,8 +27,8 @@ func TestReserved(t *testing.T) {
 	config := configs.Fiber(views)
 	app := fiber.New(config)
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(ReservedRoute, Reserved(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.ReservedRoute, handlers.Reserved(&i))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -37,7 +38,7 @@ func TestReserved(t *testing.T) {
 	writer.Close()
 
 	// TODO: Clean this up using the existing test utilities
-	url := fmt.Sprintf("http://petrichormud.com%s", RegisterRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.RegisterRoute)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	_, err := app.Test(req)
@@ -50,7 +51,7 @@ func TestReserved(t *testing.T) {
 	writer.WriteField("username", TestUsername)
 	writer.Close()
 
-	url = fmt.Sprintf("http://petrichormud.com%s", ReservedRoute)
+	url = fmt.Sprintf("%s%s", shared.TestURL, handlers.ReservedRoute)
 	req = httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)

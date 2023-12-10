@@ -1,7 +1,6 @@
-package handlers
+package tests
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,20 +10,17 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/middleware/bind"
-	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/handlers"
 )
 
-func TestRecoverPage(t *testing.T) {
+func TestHomePage(t *testing.T) {
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
+	config := configs.Fiber(views)
+	app := fiber.New(config)
 
-	app.Use(bind.New())
+	app.Get(handlers.HomeRoute, handlers.HomePage())
 
-	app.Get(RecoverRoute, RecoverPage())
-
-	url := fmt.Sprintf("%s%s", shared.TestURL, RecoverRoute)
-	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req := httptest.NewRequest(http.MethodGet, "http://petrichormud.com", nil)
 	res, err := app.Test(req)
 	if err != nil {
 		t.Fatal(err)

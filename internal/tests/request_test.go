@@ -1,4 +1,4 @@
-package handlers
+package tests
 
 import (
 	"bytes"
@@ -16,6 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
@@ -30,10 +31,10 @@ func TestCreateCommentUnauthorized(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, _ := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -61,10 +62,10 @@ func TestCreateCommentSuccess(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -93,10 +94,10 @@ func TestCreateCommentNotFound(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -124,10 +125,10 @@ func TestCreateCommentFatal(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 
@@ -159,10 +160,10 @@ func TestCreateFieldCommentUnauthorized(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, _ := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -191,10 +192,10 @@ func TestCreateFieldCommentSuccess(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -224,10 +225,10 @@ func TestCreateFieldCommentNotFound(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -256,10 +257,10 @@ func TestCreateFieldCommentFatal(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 
@@ -292,10 +293,10 @@ func TestCreateReplyCommentUnauthorized(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, _ := CharacterApplicationRID(t, &i, app)
 	cid, _ := CreateTestComment(t, &i, app, rid)
@@ -326,10 +327,10 @@ func TestCreateReplyCommentSuccess(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, _ := CharacterApplicationRID(t, &i, app)
 	cid, sessionCookie := CreateTestComment(t, &i, app, rid)
@@ -361,10 +362,10 @@ func TestCreateReplyCommentNotFound(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, _ := CharacterApplicationRID(t, &i, app)
 	cid, sessionCookie := CreateTestComment(t, &i, app, rid)
@@ -396,10 +397,10 @@ func TestCreateReplyCommentCIDNotFound(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, _ := CharacterApplicationRID(t, &i, app)
 	cid, sessionCookie := CreateTestComment(t, &i, app, rid)
@@ -430,10 +431,10 @@ func TestCreateReplyCommentFatal(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Post(NewRequestCommentRoute, CreateRequestComment(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Post(handlers.NewRequestCommentRoute, handlers.CreateRequestComment(&i))
 
 	rid, _ := CharacterApplicationRID(t, &i, app)
 	cid, sessionCookie := CreateTestComment(t, &i, app, rid)

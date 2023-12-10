@@ -1,4 +1,4 @@
-package handlers
+package tests
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
@@ -27,9 +28,9 @@ func TestVerifyPage(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Get(VerifyRoute, VerifyPage(&i))
+	app.Get(handlers.VerifyRoute, handlers.VerifyPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, VerifyRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.VerifyRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -49,9 +50,9 @@ func TestVerifyUnauthorized(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(VerifyRoute, Verify(&i))
+	app.Post(handlers.VerifyRoute, handlers.Verify(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, VerifyRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.VerifyRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -71,15 +72,15 @@ func TestVerifyNoToken(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(VerifyRoute, Verify(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.VerifyRoute, handlers.Verify(&i))
 
 	CallRegister(t, app, TestUsername, TestPassword)
 	res := CallLogin(t, app, TestUsername, TestPassword)
 	sessionCookie := res.Cookies()[0]
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, VerifyRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.VerifyRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -100,10 +101,10 @@ func TestVerifyExpiredToken(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(AddEmailRoute, AddEmail(&i))
-	app.Post(VerifyRoute, Verify(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.AddEmailRoute, handlers.AddEmail(&i))
+	app.Post(handlers.VerifyRoute, handlers.Verify(&i))
 
 	CallRegister(t, app, TestUsername, TestPassword)
 	res := CallLogin(t, app, TestUsername, TestPassword)

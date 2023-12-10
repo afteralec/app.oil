@@ -1,4 +1,4 @@
-package handlers
+package tests
 
 import (
 	"fmt"
@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
@@ -25,9 +26,9 @@ func TestProfilePage(t *testing.T) {
 
 	app.Use(session.New(&i))
 
-	app.Get(ProfileRoute, ProfilePage(&i))
+	app.Get(handlers.ProfileRoute, handlers.ProfilePage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, ProfileRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.ProfileRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -47,9 +48,9 @@ func TestProfilePageSuccess(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Get(ProfileRoute, ProfilePage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Get(handlers.ProfileRoute, handlers.ProfilePage(&i))
 
 	SetupTestProfile(t, &i, TestUsername)
 
@@ -58,7 +59,7 @@ func TestProfilePageSuccess(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, ProfileRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.ProfileRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)

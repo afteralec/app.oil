@@ -1,4 +1,4 @@
-package handlers
+package tests
 
 import (
 	"bytes"
@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/handlers"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
@@ -28,9 +29,9 @@ func TestCharactersPage(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Get(CharactersRoute, CharactersPage(&i))
+	app.Get(handlers.CharactersRoute, handlers.CharactersPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharactersRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharactersRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -49,9 +50,9 @@ func TestCharactersPageSuccess(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Get(CharactersRoute, CharactersPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Get(handlers.CharactersRoute, handlers.CharactersPage(&i))
 
 	SetupTestCharacters(t, &i, TestUsername)
 
@@ -60,7 +61,7 @@ func TestCharactersPageSuccess(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharactersRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharactersRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -79,9 +80,9 @@ func TestCharactersPageFatal(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Get(CharactersRoute, CharactersPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Get(handlers.CharactersRoute, handlers.CharactersPage(&i))
 
 	SetupTestCharacters(t, &i, TestUsername)
 
@@ -91,7 +92,7 @@ func TestCharactersPageFatal(t *testing.T) {
 	sessionCookie := cookies[0]
 
 	i.Close()
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharactersRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharactersRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -110,9 +111,9 @@ func TestNewCharacter(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, NewCharacterApplicationRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.NewCharacterApplicationRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -130,9 +131,9 @@ func TestNewCharacterSuccess(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
 
 	SetupTestCharacters(t, &i, TestUsername)
 
@@ -141,7 +142,7 @@ func TestNewCharacterSuccess(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, NewCharacterApplicationRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.NewCharacterApplicationRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -159,9 +160,9 @@ func TestNewCharacterFatal(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
 
 	SetupTestCharacters(t, &i, TestUsername)
 
@@ -172,7 +173,7 @@ func TestNewCharacterFatal(t *testing.T) {
 
 	i.Close()
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, NewCharacterApplicationRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.NewCharacterApplicationRoute)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := app.Test(req)
@@ -192,9 +193,9 @@ func TestUpdateCharacterApplication(t *testing.T) {
 	app.Use(bind.New())
 	app.Use(session.New(&i))
 
-	app.Put(CharacterApplicationRoute, UpdateCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationRoute, handlers.UpdateCharacterApplication(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationRoute)
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -212,10 +213,10 @@ func TestUpdateCharacterApplicationSuccess(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationRoute, UpdateCharacterApplication(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationRoute, handlers.UpdateCharacterApplication(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Put this in a generator
@@ -247,10 +248,10 @@ func TestUpdateCharacterApplicationNotFound(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationRoute, UpdateCharacterApplication(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationRoute, handlers.UpdateCharacterApplication(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Put this in a generator
@@ -272,10 +273,10 @@ func TestUpdateCharacterApplicationFatal(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationRoute, UpdateCharacterApplication(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationRoute, handlers.UpdateCharacterApplication(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
@@ -298,10 +299,10 @@ func TestUpdateCharacterApplicationMissingBody(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationRoute, UpdateCharacterApplication(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationRoute, handlers.UpdateCharacterApplication(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d", shared.TestURL, "/character/application/", rid)
@@ -324,10 +325,10 @@ func TestUpdateCharacterApplicationName(t *testing.T) {
 	app.Use(bind.New())
 	app.Use(session.New(&i))
 
-	app.Patch(CharacterApplicationNameRoute, UpdateCharacterApplicationName(&i))
+	app.Patch(handlers.CharacterApplicationNameRoute, handlers.UpdateCharacterApplicationName(&i))
 
 	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationNameRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationNameRoute)
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -345,10 +346,10 @@ func TestUpdateCharacterApplicationNameSuccess(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Patch(CharacterApplicationNameRoute, UpdateCharacterApplicationName(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Patch(handlers.CharacterApplicationNameRoute, handlers.UpdateCharacterApplicationName(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -376,10 +377,10 @@ func TestUpdateCharacterApplicationNameNotFound(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Patch(CharacterApplicationNameRoute, UpdateCharacterApplicationName(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Patch(handlers.CharacterApplicationNameRoute, handlers.UpdateCharacterApplicationName(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid+1, "/name")
@@ -400,10 +401,10 @@ func TestUpdateCharacterApplicationNameFatal(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationNameRoute, UpdateCharacterApplicationName(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationNameRoute, handlers.UpdateCharacterApplicationName(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
@@ -426,10 +427,10 @@ func TestUpdateCharacterApplicationNameMissingBody(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationNameRoute, UpdateCharacterApplicationName(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationNameRoute, handlers.UpdateCharacterApplicationName(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/name")
@@ -452,10 +453,10 @@ func TestUpdateCharacterApplicationGender(t *testing.T) {
 	app.Use(bind.New())
 	app.Use(session.New(&i))
 
-	app.Patch(CharacterApplicationGenderRoute, UpdateCharacterApplicationGender(&i))
+	app.Patch(handlers.CharacterApplicationGenderRoute, handlers.UpdateCharacterApplicationGender(&i))
 
 	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationGenderRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationGenderRoute)
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -473,10 +474,10 @@ func TestUpdateCharacterApplicationGenderSuccess(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Patch(CharacterApplicationGenderRoute, UpdateCharacterApplicationGender(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Patch(handlers.CharacterApplicationGenderRoute, handlers.UpdateCharacterApplicationGender(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -504,10 +505,10 @@ func TestUpdateCharacterApplicationGenderNotFound(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Patch(CharacterApplicationGenderRoute, UpdateCharacterApplicationGender(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Patch(handlers.CharacterApplicationGenderRoute, handlers.UpdateCharacterApplicationGender(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid+1, "/gender")
@@ -528,10 +529,10 @@ func TestUpdateCharacterApplicationGenderFatal(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationGenderRoute, UpdateCharacterApplicationGender(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationGenderRoute, handlers.UpdateCharacterApplicationGender(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
@@ -554,10 +555,10 @@ func TestUpdateCharacterApplicationGenderMissingBody(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationGenderRoute, UpdateCharacterApplicationGender(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationGenderRoute, handlers.UpdateCharacterApplicationGender(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/gender")
@@ -580,10 +581,10 @@ func TestUpdateCharacterApplicationSdesc(t *testing.T) {
 	app.Use(bind.New())
 	app.Use(session.New(&i))
 
-	app.Patch(CharacterApplicationSdescRoute, UpdateCharacterApplicationSdesc(&i))
+	app.Patch(handlers.CharacterApplicationSdescRoute, handlers.UpdateCharacterApplicationSdesc(&i))
 
 	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationSdescRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationSdescRoute)
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -601,10 +602,10 @@ func TestUpdateCharacterApplicationSdescSuccess(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Patch(CharacterApplicationSdescRoute, UpdateCharacterApplicationSdesc(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Patch(handlers.CharacterApplicationSdescRoute, handlers.UpdateCharacterApplicationSdesc(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/sdesc")
@@ -631,10 +632,10 @@ func TestUpdateCharacterApplicationSdescNotFound(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Patch(CharacterApplicationSdescRoute, UpdateCharacterApplicationSdesc(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Patch(handlers.CharacterApplicationSdescRoute, handlers.UpdateCharacterApplicationSdesc(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid+1, "/sdesc")
@@ -655,10 +656,10 @@ func TestUpdateCharacterApplicationSdescFatal(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationSdescRoute, UpdateCharacterApplicationSdesc(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationSdescRoute, handlers.UpdateCharacterApplicationSdesc(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
@@ -681,10 +682,10 @@ func TestUpdateCharacterApplicationSdescMissingBody(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationSdescRoute, UpdateCharacterApplicationSdesc(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationSdescRoute, handlers.UpdateCharacterApplicationSdesc(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/sdesc")
@@ -707,10 +708,10 @@ func TestUpdateCharacterApplicationDescription(t *testing.T) {
 	app.Use(bind.New())
 	app.Use(session.New(&i))
 
-	app.Patch(CharacterApplicationDescriptionRoute, UpdateCharacterApplicationDescription(&i))
+	app.Patch(handlers.CharacterApplicationDescriptionRoute, handlers.UpdateCharacterApplicationDescription(&i))
 
 	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationDescriptionRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationDescriptionRoute)
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -728,10 +729,10 @@ func TestUpdateCharacterApplicationDescriptionSuccess(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Patch(CharacterApplicationDescriptionRoute, UpdateCharacterApplicationDescription(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Patch(handlers.CharacterApplicationDescriptionRoute, handlers.UpdateCharacterApplicationDescription(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/description")
@@ -758,10 +759,10 @@ func TestUpdateCharacterApplicationDescriptionNotFound(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Patch(CharacterApplicationDescriptionRoute, UpdateCharacterApplicationDescription(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Patch(handlers.CharacterApplicationDescriptionRoute, handlers.UpdateCharacterApplicationDescription(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid+1, "/description")
@@ -782,10 +783,10 @@ func TestUpdateCharacterApplicationDescriptionFatal(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationDescriptionRoute, UpdateCharacterApplicationDescription(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationDescriptionRoute, handlers.UpdateCharacterApplicationDescription(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
@@ -808,10 +809,10 @@ func TestUpdateCharacterApplicationDescriptionMissingBody(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationDescriptionRoute, UpdateCharacterApplicationDescription(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationDescriptionRoute, handlers.UpdateCharacterApplicationDescription(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/description")
@@ -834,10 +835,10 @@ func TestUpdateCharacterApplicationBackstory(t *testing.T) {
 	app.Use(bind.New())
 	app.Use(session.New(&i))
 
-	app.Patch(CharacterApplicationBackstoryRoute, UpdateCharacterApplicationBackstory(&i))
+	app.Patch(handlers.CharacterApplicationBackstoryRoute, handlers.UpdateCharacterApplicationBackstory(&i))
 
 	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationBackstoryRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationBackstoryRoute)
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -855,10 +856,10 @@ func TestUpdateCharacterApplicationBackstorySuccess(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Patch(CharacterApplicationBackstoryRoute, UpdateCharacterApplicationBackstory(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Patch(handlers.CharacterApplicationBackstoryRoute, handlers.UpdateCharacterApplicationBackstory(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/backstory")
@@ -885,10 +886,10 @@ func TestUpdateCharacterApplicationBackstoryNotFound(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Patch(CharacterApplicationBackstoryRoute, UpdateCharacterApplicationBackstory(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Patch(handlers.CharacterApplicationBackstoryRoute, handlers.UpdateCharacterApplicationBackstory(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid+1, "/backstory")
@@ -909,10 +910,10 @@ func TestUpdateCharacterApplicationBackstoryFatal(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationBackstoryRoute, UpdateCharacterApplicationBackstory(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationBackstoryRoute, handlers.UpdateCharacterApplicationBackstory(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
@@ -935,10 +936,10 @@ func TestUpdateCharacterApplicationBackstoryMissingBody(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Put(CharacterApplicationBackstoryRoute, UpdateCharacterApplicationBackstory(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Put(handlers.CharacterApplicationBackstoryRoute, handlers.UpdateCharacterApplicationBackstory(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s%s%d%s", shared.TestURL, "/character/application/", rid, "/backstory")
@@ -960,9 +961,9 @@ func TestCharacterNamePage(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Get(CharacterApplicationNameRoute, CharacterNamePage(&i))
+	app.Get(handlers.CharacterApplicationNameRoute, handlers.CharacterNamePage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationNameRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationNameRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -981,10 +982,10 @@ func TestCharacterNamePageSuccess(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(CharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationNameRoute, CharacterNamePage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.CharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationNameRoute, handlers.CharacterNamePage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s/character/application/%d/name", shared.TestURL, rid)
@@ -1007,10 +1008,10 @@ func TestCharacterNamePageNotFound(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(CharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationNameRoute, CharacterNamePage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.CharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationNameRoute, handlers.CharacterNamePage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	url := fmt.Sprintf("%s/character/application/%d/name", shared.TestURL, rid+1)
@@ -1032,10 +1033,10 @@ func TestCharacterNamePageFatal(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationNameRoute, CharacterNamePage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationNameRoute, handlers.CharacterNamePage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
@@ -1058,9 +1059,9 @@ func TestCharacterGenderPage(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Get(CharacterApplicationGenderRoute, CharacterGenderPage(&i))
+	app.Get(handlers.CharacterApplicationGenderRoute, handlers.CharacterGenderPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationGenderRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationGenderRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -1079,10 +1080,10 @@ func TestCharacterGenderPageSuccess(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationGenderRoute, CharacterGenderPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationGenderRoute, handlers.CharacterGenderPage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -1106,10 +1107,10 @@ func TestCharacterGenderPageNotFound(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationGenderRoute, CharacterGenderPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationGenderRoute, handlers.CharacterGenderPage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -1132,10 +1133,10 @@ func TestCharacterGenderPageFatal(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationGenderRoute, CharacterGenderPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationGenderRoute, handlers.CharacterGenderPage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
@@ -1159,9 +1160,9 @@ func TestCharacterSdescPage(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Get(CharacterApplicationSdescRoute, CharacterSdescPage(&i))
+	app.Get(handlers.CharacterApplicationSdescRoute, handlers.CharacterSdescPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationSdescRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationSdescRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -1180,10 +1181,10 @@ func TestCharacterSdescPageSuccess(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationSdescRoute, CharacterSdescPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationSdescRoute, handlers.CharacterSdescPage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -1207,10 +1208,10 @@ func TestCharacterSdescPageNotFound(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationSdescRoute, CharacterSdescPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationSdescRoute, handlers.CharacterSdescPage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -1233,10 +1234,10 @@ func TestCharacterSdescPageFatal(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationSdescRoute, CharacterSdescPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationSdescRoute, handlers.CharacterSdescPage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
@@ -1260,9 +1261,9 @@ func TestCharacterDescriptionPage(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Get(CharacterApplicationDescriptionRoute, CharacterDescriptionPage(&i))
+	app.Get(handlers.CharacterApplicationDescriptionRoute, handlers.CharacterDescriptionPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationDescriptionRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationDescriptionRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -1281,10 +1282,10 @@ func TestCharacterDescriptionPageSuccess(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationDescriptionRoute, CharacterDescriptionPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationDescriptionRoute, handlers.CharacterDescriptionPage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -1308,10 +1309,10 @@ func TestCharacterDescriptionPageNotFound(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationDescriptionRoute, CharacterDescriptionPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationDescriptionRoute, handlers.CharacterDescriptionPage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -1334,10 +1335,10 @@ func TestCharacterDescriptionPageFatal(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationDescriptionRoute, CharacterDescriptionPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationDescriptionRoute, handlers.CharacterDescriptionPage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
@@ -1361,9 +1362,9 @@ func TestCharacterBackstoryPage(t *testing.T) {
 	app := fiber.New(configs.Fiber(views))
 	app.Use(session.New(&i))
 
-	app.Get(CharacterApplicationBackstoryRoute, CharacterBackstoryPage(&i))
+	app.Get(handlers.CharacterApplicationBackstoryRoute, handlers.CharacterBackstoryPage(&i))
 
-	url := fmt.Sprintf("%s%s", shared.TestURL, CharacterApplicationBackstoryRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.CharacterApplicationBackstoryRoute)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := app.Test(req)
 	if err != nil {
@@ -1382,10 +1383,10 @@ func TestCharacterBackstoryPageSuccess(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationBackstoryRoute, CharacterBackstoryPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationBackstoryRoute, handlers.CharacterBackstoryPage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -1409,10 +1410,10 @@ func TestCharacterBackstoryPageNotFound(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationBackstoryRoute, CharacterBackstoryPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationBackstoryRoute, handlers.CharacterBackstoryPage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	// TODO: Get this in a generator
@@ -1435,10 +1436,10 @@ func TestCharacterBackstoryPageFatal(t *testing.T) {
 	app.Use(session.New(&i))
 	app.Use(bind.New())
 
-	app.Post(RegisterRoute, Register(&i))
-	app.Post(LoginRoute, Login(&i))
-	app.Post(NewCharacterApplicationRoute, NewCharacterApplication(&i))
-	app.Get(CharacterApplicationBackstoryRoute, CharacterBackstoryPage(&i))
+	app.Post(handlers.RegisterRoute, handlers.Register(&i))
+	app.Post(handlers.LoginRoute, handlers.Login(&i))
+	app.Post(handlers.NewCharacterApplicationRoute, handlers.NewCharacterApplication(&i))
+	app.Get(handlers.CharacterApplicationBackstoryRoute, handlers.CharacterBackstoryPage(&i))
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, app)
 	i.Close()
@@ -1519,6 +1520,6 @@ func CharacterApplicationRID(t *testing.T, i *shared.Interfaces, app *fiber.App)
 }
 
 func NewCharacterRequest() *http.Request {
-	url := fmt.Sprintf("%s%s", shared.TestURL, NewCharacterApplicationRoute)
+	url := fmt.Sprintf("%s%s", shared.TestURL, handlers.NewCharacterApplicationRoute)
 	return httptest.NewRequest(http.MethodPost, url, nil)
 }
