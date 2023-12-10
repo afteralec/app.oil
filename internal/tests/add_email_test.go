@@ -12,9 +12,8 @@ import (
 	html "github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
+	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/handlers"
-	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
@@ -29,24 +28,20 @@ func TestAddEmailSuccess(t *testing.T) {
 	defer i.Close()
 
 	views := html.New("../..", ".html")
-	app := fiber.New(configs.Fiber(views))
-
-	app.Use(session.New(&i))
-
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,14 +54,14 @@ func TestAddEmailWithoutLogin(t *testing.T) {
 	defer i.Close()
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
-	app := fiber.New(config)
-	app.Use(session.New(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	a := fiber.New(config)
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
 	req := AddEmailRequest(TestEmailAddress)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -80,25 +75,21 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
-	app := fiber.New(config)
-
-	app.Use(session.New(&i))
-
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	a := fiber.New(config)
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
 	// TODO: Add more test cases for possible inputs here
 	req := AddEmailRequest("invalid")
 	req.AddCookie(sessionCookie)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -112,25 +103,21 @@ func TestAddEmailDBDisconnected(t *testing.T) {
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
-	app := fiber.New(config)
-
-	app.Use(session.New(&i))
-
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	a := fiber.New(config)
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
 
 	i.Close()
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -144,18 +131,14 @@ func TestAddEmailMalformedInput(t *testing.T) {
 
 	views := html.New("../..", ".html")
 	config := configs.Fiber(views)
-	app := fiber.New(config)
-
-	app.Use(session.New(&i))
-
-	app.Post(handlers.LoginRoute, handlers.Login(&i))
-	app.Post(handlers.RegisterRoute, handlers.Register(&i))
-	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
+	a := fiber.New(config)
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
 	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
 
-	CallRegister(t, app, TestUsername, TestPassword)
-	res := CallLogin(t, app, TestUsername, TestPassword)
+	CallRegister(t, a, TestUsername, TestPassword)
+	res := CallLogin(t, a, TestUsername, TestPassword)
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
@@ -168,7 +151,7 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
-	res, err := app.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
