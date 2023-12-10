@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -21,9 +22,16 @@ func Reserved(i *shared.Interfaces) fiber.Handler {
 
 		u, err := i.Queries.GetPlayerUsername(context.Background(), r.Username)
 		if err != nil {
-			// TODO: Distinguish between "not found" and a connection error
+			if err == sql.ErrNoRows {
+				c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
+				return c.Render("web/views/partials/register/player-free", fiber.Map{
+					"CSRF": c.Locals("csrf"),
+				}, "web/views/layouts/csrf")
+			}
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
-			return c.Render("web/views/partials/register/player-free", fiber.Map{
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("web/views/partials/register/player-reserved-err", fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, "web/views/layouts/csrf")
 		}
