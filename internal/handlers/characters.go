@@ -160,6 +160,7 @@ func CharacterShortDescriptionPage(i *shared.Interfaces) fiber.Handler {
 		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Name"] = app.Name
 		b["ShortDescription"] = app.ShortDescription
+		b["CharacterApplicationShortDescriptionPath"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		return c.Render("web/views/character/application/flow/sdesc", b, "web/views/layouts/standalone")
 	}
 }
@@ -198,6 +199,7 @@ func CharacterDescriptionPage(i *shared.Interfaces) fiber.Handler {
 		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Name"] = app.Name
 		b["Description"] = app.Description
+		b["CharacterApplicationDescriptionPath"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		return c.Render("web/views/character/application/flow/description", b, "web/views/layouts/standalone")
 	}
 }
@@ -234,6 +236,7 @@ func CharacterBackstoryPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		b := c.Locals("bind").(fiber.Map)
+		b["Name"] = app.Name
 		b["Backstory"] = app.Backstory
 		return c.Render("web/views/character/application/flow/backstory", b, "web/views/layouts/standalone")
 	}

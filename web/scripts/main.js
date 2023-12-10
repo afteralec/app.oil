@@ -105,7 +105,7 @@ export function sanitizeCharacterDescription(desc) {
 
 // TODO: Test
 export function sanitizeCharacterBackstory(desc) {
-  return desc.replace(/[^a-zA-Z, -.!()]+/gi, "");
+  return desc.replace(/[^\r\na-zA-Z, \-\.!()]+/gi, "");
 }
 
 // TODO: Pass these lengths in as constants
@@ -154,7 +154,7 @@ export function isCharacterDescriptionValid(desc = "") {
 export function isCharacterBackstoryValid(backstory) {
   if (backstory.length < 32) return false;
   if (backstory.length > 300) return false;
-  const regex = RegExp("[^a-zA-Z, -.!()]+", "gi");
+  const regex = RegExp("[^\r\na-zA-Z, -.!()]+", "gi");
   if (regex.test(backstory)) return false;
   return true;
 }

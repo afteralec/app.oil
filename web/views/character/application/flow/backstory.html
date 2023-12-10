@@ -1,70 +1,57 @@
 <main
   class="flex h-screen w-screen items-center justify-center"
-  x-data="getCharacterApplicationFlowDescriptionData('{{ .Description }}')"
+  x-data="getCharacterApplicationFlowBackstoryData('{{ .Backstory }}')"
 >
   <div class="w-full max-w-lg rounded-md border p-6">
     <div id="character-application-flow-error"></div>
-    <p class="whitespace-nowrap pt-4">Write {{ .Name }}'s description:</p>
+    <p class="whitespace-nowrap pt-4">Write {{ .Name }}'s backstory:</p>
     <div class="pb-2 text-xs leading-none text-muted-foreground">
-      This is how your character will appear when examined.
+      This is your character's private backstory.
     </div>
     <div class="pb-2 text-sm leading-none">
       <!-- TODO: Write a helpfile for description and link to it here -->
-      You <span class="font-semibold">should not</span> describe anything that
-      isn't visible and physical.
+      Have some fun! This is primarily to provide some context for your
+      character's personality, flaws and goals.
     </div>
     <div class="pb-2 text-sm leading-none">
       <!-- TODO: Write a helpfile for description and link to it here -->
-      You <span class="font-semibold">should not</span> describe a specific body
-      posture or movement, since this will change during the course of the game.
-      Leave this open!
-    </div>
-    <div class="pb-2 text-sm leading-none">
-      <!-- TODO: Write a helpfile for description and link to it here -->
-      You <span class="font-semibold">should not</span> describe {{ .Name }}'s
-      genitals.
-    </div>
-    <div class="pb-2 text-sm leading-none">
-      <!-- TODO: Write a helpfile for description and link to it here -->
-      You <span class="font-semibold">should</span> describe {{ .Name }}'s
-      distinct physical attributes - think hair, eye color, face shape, body
-      shape. Scars, tattoos, blemishes, mutations, and visible augmentations are
-      also valid.
+      You don't need to be extremely detailed - for example, we don't want to
+      see a full timeline of the first three decades of {{ .Name }}'s life - but
+      definitely hit the highlights. Parentage (or lack thereof, if you're
+      feeling edgy), early life and one or two pivotal events is plenty.
     </div>
     <div class="pb-1 text-sm leading-none">
       <!-- TODO: Link to description change helpfile here -->
-      There is a temporary description system in the game for things like
-      temporary hairstyles, fleeting injuries, new scars after character
-      creation, and the like, so you aren't stuck with what you put here! You
-      can also request a description change later on, within reason.
+      This is only ever visible to you and specific staff, so don't worry about
+      providing secrets here. In fact, we expect them to be here!
     </div>
     <form
       class="space-y-4 px-4 pt-4"
       @submit.prevent=""
-      hx-patch="{{ .CharacterApplicationDescriptionPath }}"
+      hx-patch="{{ .CharacterApplicationBackstoryPath }}"
       hx-swap="none"
     >
       <div class="space-y-2">
         <textarea
-          id="character-application-flow-description"
-          x-model="description"
+          id="character-application-flow-backstory"
+          x-model="backstory"
           @input="
-            eval.desc.len = true;
-            sdesc = sanitizeCharacterDescription(event.target.value);
+            eval.bs.len = true;
+            backstory = sanitizeCharacterBackstory(event.target.value);
           "
           class="min-h-20 flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
-          name="description"
+          name="backstory"
           autofocus
         ></textarea>
         <div>
           <!-- prettier-ignore -->
-          {{ template "web/views/partials/character/application/description/requirements" }}
+          {{ template "web/views/partials/character/application/backstory/requirements" }}
         </div>
       </div>
       <div class="flex justify-end">
         <button
-          :disabled="!isCharacterDescriptionValid(description)"
+          :disabled="!isCharacterBackstoryValid(backstory)"
           class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
           type="submit"
         >
