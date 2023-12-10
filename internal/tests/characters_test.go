@@ -103,7 +103,7 @@ func TestNewCharacter(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	// TODO: Make this kind of route a utility func on the routes package
+	// TODO: Make this kind of "new" route a utility func on the routes package
 	url := MakeTestURL(routes.NewCharacterApplicationPath())
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	res, err := a.Test(req)
@@ -198,8 +198,7 @@ func TestUpdateCharacterApplicationSuccess(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s%d", TestURL, "/character/application/", rid)
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("name", "test")
@@ -229,8 +228,7 @@ func TestUpdateCharacterApplicationNotFound(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	// TODO: Put this in a generator
-	url := fmt.Sprintf("%s%s%d", TestURL, "/character/application/", rid+1)
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid+1, 10)))
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -251,7 +249,7 @@ func TestUpdateCharacterApplicationFatal(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
 	i.Close()
-	url := fmt.Sprintf("%s%s%d", TestURL, "/character/application/", rid)
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -272,7 +270,7 @@ func TestUpdateCharacterApplicationMissingBody(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	url := fmt.Sprintf("%s%s%d", TestURL, "/character/application/", rid)
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -359,8 +357,7 @@ func TestUpdateCharacterApplicationNameFatal(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
 	i.Close()
-	path := routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -381,8 +378,7 @@ func TestUpdateCharacterApplicationNameMissingBody(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	path := routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -469,8 +465,7 @@ func TestUpdateCharacterApplicationGenderFatal(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
 	i.Close()
-	path := routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -491,7 +486,7 @@ func TestUpdateCharacterApplicationGenderMissingBody(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/gender")
+	url := MakeTestURL(routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -511,7 +506,7 @@ func TestUpdateCharacterApplicationShortDescription(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.CharacterApplicationShortDescriptionPath(routes.ID))
+	url := MakeTestURL(routes.CharacterApplicationShortDescriptionPath(routes.ID))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -531,8 +526,7 @@ func TestUpdateCharacterApplicationShortDescriptionSuccess(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	path := routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10)))
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("sdesc", "testing, testerly person")
@@ -558,8 +552,7 @@ func TestUpdateCharacterApplicationShortDescriptionNotFound(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	path := routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid+1, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid+1, 10)))
 	// TODO: Move this into a fixture
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -586,8 +579,7 @@ func TestUpdateCharacterApplicationShortDescriptionFatal(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
 	i.Close()
-	path := routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10)))
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("sdesc", "testing, testerly person")
@@ -612,8 +604,7 @@ func TestUpdateCharacterApplicationShortDescriptionMissingBody(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	path := routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
-	url := fmt.Sprintf("%s%s", TestURL, path)
+	url := MakeTestURL(routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -633,7 +624,7 @@ func TestUpdateCharacterApplicationDescription(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.CharacterApplicationDescriptionPath(routes.ID))
+	url := MakeTestURL(routes.CharacterApplicationDescriptionPath(routes.ID))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -653,7 +644,7 @@ func TestUpdateCharacterApplicationDescriptionSuccess(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/description")
+	url := MakeTestURL(routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10)))
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("description", "This is a test actor.")
@@ -679,7 +670,7 @@ func TestUpdateCharacterApplicationDescriptionNotFound(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid+1, "/description")
+	url := MakeTestURL(routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid+1, 10)))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -732,7 +723,7 @@ func TestUpdateCharacterApplicationDescriptionMissingBody(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestUpdateCharacterApplicationBackstory(t *testing.T) {
+func TestUpdateCharacterApplicationBackstoryUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -761,7 +752,7 @@ func TestUpdateCharacterApplicationBackstorySuccess(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid, "/backstory")
+	url := MakeTestURL(routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10)))
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("backstory", "This is a tragic backstory.")
@@ -787,7 +778,7 @@ func TestUpdateCharacterApplicationBackstoryNotFound(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	url := fmt.Sprintf("%s%s%d%s", TestURL, "/character/application/", rid+1, "/backstory")
+	url := MakeTestURL(routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid+1, 10)))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -869,7 +860,7 @@ func TestCharacterNamePageSuccess(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	url := fmt.Sprintf("%s/character/application/%d/name", TestURL, rid)
+	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -890,7 +881,7 @@ func TestCharacterNamePageNotFound(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
-	url := fmt.Sprintf("%s/character/application/%d/name", TestURL, rid+1)
+	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid+1, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -911,7 +902,7 @@ func TestCharacterNamePageFatal(t *testing.T) {
 
 	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
 	i.Close()
-	url := fmt.Sprintf("%s/character/application/%d/name", TestURL, rid)
+	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
