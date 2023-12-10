@@ -35,25 +35,25 @@ func (q *Queries) CountOpenCharacterApplicationsForPlayer(ctx context.Context, p
 const createCharacterApplicationContent = `-- name: CreateCharacterApplicationContent :execresult
 INSERT INTO
   character_application_content 
-  (gender, name, sdesc, description, backstory, rid) 
+  (gender, name, short_description, description, backstory, rid) 
 VALUES 
   (?, ?, ?, ?, ?, ?)
 `
 
 type CreateCharacterApplicationContentParams struct {
-	Gender      string
-	Name        string
-	Sdesc       string
-	Description string
-	Backstory   string
-	Rid         int64
+	Gender           string
+	Name             string
+	ShortDescription string
+	Description      string
+	Backstory        string
+	Rid              int64
 }
 
 func (q *Queries) CreateCharacterApplicationContent(ctx context.Context, arg CreateCharacterApplicationContentParams) (sql.Result, error) {
 	return q.exec(ctx, q.createCharacterApplicationContentStmt, createCharacterApplicationContent,
 		arg.Gender,
 		arg.Name,
-		arg.Sdesc,
+		arg.ShortDescription,
 		arg.Description,
 		arg.Backstory,
 		arg.Rid,
@@ -63,26 +63,26 @@ func (q *Queries) CreateCharacterApplicationContent(ctx context.Context, arg Cre
 const createCharacterApplicationContentHistory = `-- name: CreateCharacterApplicationContentHistory :execresult
 INSERT INTO
   character_application_content_history
-  (gender, name, sdesc, description, backstory, vid, rid)
+  (gender, name, short_description, description, backstory, vid, rid)
 VALUES
   (?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateCharacterApplicationContentHistoryParams struct {
-	Gender      string
-	Name        string
-	Sdesc       string
-	Description string
-	Backstory   string
-	Vid         int64
-	Rid         int64
+	Gender           string
+	Name             string
+	ShortDescription string
+	Description      string
+	Backstory        string
+	Vid              int64
+	Rid              int64
 }
 
 func (q *Queries) CreateCharacterApplicationContentHistory(ctx context.Context, arg CreateCharacterApplicationContentHistoryParams) (sql.Result, error) {
 	return q.exec(ctx, q.createCharacterApplicationContentHistoryStmt, createCharacterApplicationContentHistory,
 		arg.Gender,
 		arg.Name,
-		arg.Sdesc,
+		arg.ShortDescription,
 		arg.Description,
 		arg.Backstory,
 		arg.Vid,
@@ -91,7 +91,7 @@ func (q *Queries) CreateCharacterApplicationContentHistory(ctx context.Context, 
 }
 
 const getCharacterApplicationContent = `-- name: GetCharacterApplicationContent :one
-SELECT created_at, updated_at, backstory, description, sdesc, name, gender, vid, rid, id FROM character_application_content WHERE id = ?
+SELECT created_at, updated_at, backstory, description, short_description, name, gender, vid, rid, id FROM character_application_content WHERE id = ?
 `
 
 func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) (CharacterApplicationContent, error) {
@@ -102,7 +102,7 @@ func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) 
 		&i.UpdatedAt,
 		&i.Backstory,
 		&i.Description,
-		&i.Sdesc,
+		&i.ShortDescription,
 		&i.Name,
 		&i.Gender,
 		&i.Vid,
@@ -113,7 +113,7 @@ func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) 
 }
 
 const getCharacterApplicationContentForRequest = `-- name: GetCharacterApplicationContentForRequest :one
-SELECT created_at, updated_at, backstory, description, sdesc, name, gender, vid, rid, id FROM character_application_content WHERE rid = ?
+SELECT created_at, updated_at, backstory, description, short_description, name, gender, vid, rid, id FROM character_application_content WHERE rid = ?
 `
 
 func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, rid int64) (CharacterApplicationContent, error) {
@@ -124,7 +124,7 @@ func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, 
 		&i.UpdatedAt,
 		&i.Backstory,
 		&i.Description,
-		&i.Sdesc,
+		&i.ShortDescription,
 		&i.Name,
 		&i.Gender,
 		&i.Vid,
@@ -136,7 +136,7 @@ func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, 
 
 const listCharacterApplicationContentForPlayer = `-- name: ListCharacterApplicationContentForPlayer :many
 SELECT
-  created_at, updated_at, backstory, description, sdesc, name, gender, vid, rid, id
+  created_at, updated_at, backstory, description, short_description, name, gender, vid, rid, id
 FROM
   character_application_content 
 WHERE
@@ -158,7 +158,7 @@ func (q *Queries) ListCharacterApplicationContentForPlayer(ctx context.Context, 
 			&i.UpdatedAt,
 			&i.Backstory,
 			&i.Description,
-			&i.Sdesc,
+			&i.ShortDescription,
 			&i.Name,
 			&i.Gender,
 			&i.Vid,
@@ -180,7 +180,7 @@ func (q *Queries) ListCharacterApplicationContentForPlayer(ctx context.Context, 
 
 const listCharacterApplicationsForPlayer = `-- name: ListCharacterApplicationsForPlayer :many
 SELECT
-  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.sdesc, character_application_content.name, character_application_content.gender, character_application_content.vid, character_application_content.rid, character_application_content.id, requests.type, requests.status, requests.created_at, requests.updated_at, requests.vid, requests.pid, requests.id, requests.new
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.vid, character_application_content.rid, character_application_content.id, requests.type, requests.status, requests.created_at, requests.updated_at, requests.vid, requests.pid, requests.id, requests.new
 FROM
   requests
 JOIN
@@ -216,7 +216,7 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 			&i.CharacterApplicationContent.UpdatedAt,
 			&i.CharacterApplicationContent.Backstory,
 			&i.CharacterApplicationContent.Description,
-			&i.CharacterApplicationContent.Sdesc,
+			&i.CharacterApplicationContent.ShortDescription,
 			&i.CharacterApplicationContent.Name,
 			&i.CharacterApplicationContent.Gender,
 			&i.CharacterApplicationContent.Vid,
@@ -250,7 +250,7 @@ UPDATE
 SET 
   gender = ?,
   name = ?,
-  sdesc = ?,
+  short_description = ?,
   description = ?,
   backstory = ?,
   vid = ?
@@ -259,20 +259,20 @@ WHERE
 `
 
 type UpdateCharacterApplicationContentParams struct {
-	Gender      string
-	Name        string
-	Sdesc       string
-	Description string
-	Backstory   string
-	Vid         int64
-	Rid         int64
+	Gender           string
+	Name             string
+	ShortDescription string
+	Description      string
+	Backstory        string
+	Vid              int64
+	Rid              int64
 }
 
 func (q *Queries) UpdateCharacterApplicationContent(ctx context.Context, arg UpdateCharacterApplicationContentParams) error {
 	_, err := q.exec(ctx, q.updateCharacterApplicationContentStmt, updateCharacterApplicationContent,
 		arg.Gender,
 		arg.Name,
-		arg.Sdesc,
+		arg.ShortDescription,
 		arg.Description,
 		arg.Backstory,
 		arg.Vid,
@@ -337,17 +337,17 @@ func (q *Queries) UpdateCharacterApplicationContentName(ctx context.Context, arg
 	return err
 }
 
-const updateCharacterApplicationContentSdesc = `-- name: UpdateCharacterApplicationContentSdesc :exec
-UPDATE character_application_content SET sdesc = ? WHERE rid = ?
+const updateCharacterApplicationContentShortDescription = `-- name: UpdateCharacterApplicationContentShortDescription :exec
+UPDATE character_application_content SET short_description = ? WHERE rid = ?
 `
 
-type UpdateCharacterApplicationContentSdescParams struct {
-	Sdesc string
-	Rid   int64
+type UpdateCharacterApplicationContentShortDescriptionParams struct {
+	ShortDescription string
+	Rid              int64
 }
 
-func (q *Queries) UpdateCharacterApplicationContentSdesc(ctx context.Context, arg UpdateCharacterApplicationContentSdescParams) error {
-	_, err := q.exec(ctx, q.updateCharacterApplicationContentSdescStmt, updateCharacterApplicationContentSdesc, arg.Sdesc, arg.Rid)
+func (q *Queries) UpdateCharacterApplicationContentShortDescription(ctx context.Context, arg UpdateCharacterApplicationContentShortDescriptionParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentShortDescriptionStmt, updateCharacterApplicationContentShortDescription, arg.ShortDescription, arg.Rid)
 	return err
 }
 

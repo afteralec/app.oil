@@ -41,8 +41,7 @@ func GetApplicationFlowLink(req *queries.Request, app *queries.CharacterApplicat
 		return routes.CharacterApplicationGenderPath(strid)
 	}
 
-	// TODO: Rename this to ShortDescription
-	if len(app.Sdesc) == 0 {
+	if len(app.ShortDescription) == 0 {
 		return routes.CharacterApplicationShortDescriptionPath(strid)
 	}
 

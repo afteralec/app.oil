@@ -1,7 +1,7 @@
 -- name: CreateCharacterApplicationContent :execresult
 INSERT INTO
   character_application_content 
-  (gender, name, sdesc, description, backstory, rid) 
+  (gender, name, short_description, description, backstory, rid) 
 VALUES 
   (?, ?, ?, ?, ?, ?);
 
@@ -55,7 +55,7 @@ IN (SELECT id FROM requests WHERE pid = ?);
 -- name: CreateCharacterApplicationContentHistory :execresult
 INSERT INTO
   character_application_content_history
-  (gender, name, sdesc, description, backstory, vid, rid)
+  (gender, name, short_description, description, backstory, vid, rid)
 VALUES
   (?, ?, ?, ?, ?, ?, ?);
 
@@ -65,7 +65,7 @@ UPDATE
 SET 
   gender = ?,
   name = ?,
-  sdesc = ?,
+  short_description = ?,
   description = ?,
   backstory = ?,
   vid = ?
@@ -78,8 +78,8 @@ UPDATE character_application_content SET name = ? WHERE rid = ?;
 -- name: UpdateCharacterApplicationContentGender :exec
 UPDATE character_application_content SET gender = ? WHERE rid = ?;
 
--- name: UpdateCharacterApplicationContentSdesc :exec
-UPDATE character_application_content SET sdesc = ? WHERE rid = ?;
+-- name: UpdateCharacterApplicationContentShortDescription :exec
+UPDATE character_application_content SET short_description = ? WHERE rid = ?;
 
 -- name: UpdateCharacterApplicationContentDescription :exec
 UPDATE character_application_content SET description = ? WHERE rid = ?;

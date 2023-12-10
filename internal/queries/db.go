@@ -138,8 +138,8 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updateCharacterApplicationContentNameStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentName); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentName: %w", err)
 	}
-	if q.updateCharacterApplicationContentSdescStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentSdesc); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentSdesc: %w", err)
+	if q.updateCharacterApplicationContentShortDescriptionStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentShortDescription); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentShortDescription: %w", err)
 	}
 	if q.updateCharacterApplicationContentVersionStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentVersion); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentVersion: %w", err)
@@ -342,9 +342,9 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateCharacterApplicationContentNameStmt: %w", cerr)
 		}
 	}
-	if q.updateCharacterApplicationContentSdescStmt != nil {
-		if cerr := q.updateCharacterApplicationContentSdescStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentSdescStmt: %w", cerr)
+	if q.updateCharacterApplicationContentShortDescriptionStmt != nil {
+		if cerr := q.updateCharacterApplicationContentShortDescriptionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateCharacterApplicationContentShortDescriptionStmt: %w", cerr)
 		}
 	}
 	if q.updateCharacterApplicationContentVersionStmt != nil {
@@ -394,49 +394,49 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                                               DBTX
-	tx                                               *sql.Tx
-	addCommentToRequestStmt                          *sql.Stmt
-	addCommentToRequestFieldStmt                     *sql.Stmt
-	addReplyToCommentStmt                            *sql.Stmt
-	addReplyToFieldCommentStmt                       *sql.Stmt
-	countEmailsStmt                                  *sql.Stmt
-	countOpenCharacterApplicationsForPlayerStmt      *sql.Stmt
-	countOpenRequestsStmt                            *sql.Stmt
-	createCharacterApplicationContentStmt            *sql.Stmt
-	createCharacterApplicationContentHistoryStmt     *sql.Stmt
-	createEmailStmt                                  *sql.Stmt
-	createPlayerStmt                                 *sql.Stmt
-	createRequestStmt                                *sql.Stmt
-	deleteEmailStmt                                  *sql.Stmt
-	getCharacterApplicationContentStmt               *sql.Stmt
-	getCharacterApplicationContentForRequestStmt     *sql.Stmt
-	getEmailStmt                                     *sql.Stmt
-	getPlayerStmt                                    *sql.Stmt
-	getPlayerByUsernameStmt                          *sql.Stmt
-	getPlayerPWHashStmt                              *sql.Stmt
-	getPlayerUsernameStmt                            *sql.Stmt
-	getPlayerUsernameByIdStmt                        *sql.Stmt
-	getRequestStmt                                   *sql.Stmt
-	getRequestCommentStmt                            *sql.Stmt
-	getRoleStmt                                      *sql.Stmt
-	getVerifiedEmailByAddressStmt                    *sql.Stmt
-	listCharacterApplicationContentForPlayerStmt     *sql.Stmt
-	listCharacterApplicationsForPlayerStmt           *sql.Stmt
-	listCommentsForRequestStmt                       *sql.Stmt
-	listEmailsStmt                                   *sql.Stmt
-	listRepliesToCommentStmt                         *sql.Stmt
-	listRequestsForPlayerStmt                        *sql.Stmt
-	listVerifiedEmailsStmt                           *sql.Stmt
-	markEmailVerifiedStmt                            *sql.Stmt
-	updateCharacterApplicationContentStmt            *sql.Stmt
-	updateCharacterApplicationContentBackstoryStmt   *sql.Stmt
-	updateCharacterApplicationContentDescriptionStmt *sql.Stmt
-	updateCharacterApplicationContentGenderStmt      *sql.Stmt
-	updateCharacterApplicationContentNameStmt        *sql.Stmt
-	updateCharacterApplicationContentSdescStmt       *sql.Stmt
-	updateCharacterApplicationContentVersionStmt     *sql.Stmt
-	updatePlayerPasswordStmt                         *sql.Stmt
+	db                                                    DBTX
+	tx                                                    *sql.Tx
+	addCommentToRequestStmt                               *sql.Stmt
+	addCommentToRequestFieldStmt                          *sql.Stmt
+	addReplyToCommentStmt                                 *sql.Stmt
+	addReplyToFieldCommentStmt                            *sql.Stmt
+	countEmailsStmt                                       *sql.Stmt
+	countOpenCharacterApplicationsForPlayerStmt           *sql.Stmt
+	countOpenRequestsStmt                                 *sql.Stmt
+	createCharacterApplicationContentStmt                 *sql.Stmt
+	createCharacterApplicationContentHistoryStmt          *sql.Stmt
+	createEmailStmt                                       *sql.Stmt
+	createPlayerStmt                                      *sql.Stmt
+	createRequestStmt                                     *sql.Stmt
+	deleteEmailStmt                                       *sql.Stmt
+	getCharacterApplicationContentStmt                    *sql.Stmt
+	getCharacterApplicationContentForRequestStmt          *sql.Stmt
+	getEmailStmt                                          *sql.Stmt
+	getPlayerStmt                                         *sql.Stmt
+	getPlayerByUsernameStmt                               *sql.Stmt
+	getPlayerPWHashStmt                                   *sql.Stmt
+	getPlayerUsernameStmt                                 *sql.Stmt
+	getPlayerUsernameByIdStmt                             *sql.Stmt
+	getRequestStmt                                        *sql.Stmt
+	getRequestCommentStmt                                 *sql.Stmt
+	getRoleStmt                                           *sql.Stmt
+	getVerifiedEmailByAddressStmt                         *sql.Stmt
+	listCharacterApplicationContentForPlayerStmt          *sql.Stmt
+	listCharacterApplicationsForPlayerStmt                *sql.Stmt
+	listCommentsForRequestStmt                            *sql.Stmt
+	listEmailsStmt                                        *sql.Stmt
+	listRepliesToCommentStmt                              *sql.Stmt
+	listRequestsForPlayerStmt                             *sql.Stmt
+	listVerifiedEmailsStmt                                *sql.Stmt
+	markEmailVerifiedStmt                                 *sql.Stmt
+	updateCharacterApplicationContentStmt                 *sql.Stmt
+	updateCharacterApplicationContentBackstoryStmt        *sql.Stmt
+	updateCharacterApplicationContentDescriptionStmt      *sql.Stmt
+	updateCharacterApplicationContentGenderStmt           *sql.Stmt
+	updateCharacterApplicationContentNameStmt             *sql.Stmt
+	updateCharacterApplicationContentShortDescriptionStmt *sql.Stmt
+	updateCharacterApplicationContentVersionStmt          *sql.Stmt
+	updatePlayerPasswordStmt                              *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -448,41 +448,41 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		addReplyToCommentStmt:        q.addReplyToCommentStmt,
 		addReplyToFieldCommentStmt:   q.addReplyToFieldCommentStmt,
 		countEmailsStmt:              q.countEmailsStmt,
-		countOpenCharacterApplicationsForPlayerStmt:      q.countOpenCharacterApplicationsForPlayerStmt,
-		countOpenRequestsStmt:                            q.countOpenRequestsStmt,
-		createCharacterApplicationContentStmt:            q.createCharacterApplicationContentStmt,
-		createCharacterApplicationContentHistoryStmt:     q.createCharacterApplicationContentHistoryStmt,
-		createEmailStmt:                                  q.createEmailStmt,
-		createPlayerStmt:                                 q.createPlayerStmt,
-		createRequestStmt:                                q.createRequestStmt,
-		deleteEmailStmt:                                  q.deleteEmailStmt,
-		getCharacterApplicationContentStmt:               q.getCharacterApplicationContentStmt,
-		getCharacterApplicationContentForRequestStmt:     q.getCharacterApplicationContentForRequestStmt,
-		getEmailStmt:                                     q.getEmailStmt,
-		getPlayerStmt:                                    q.getPlayerStmt,
-		getPlayerByUsernameStmt:                          q.getPlayerByUsernameStmt,
-		getPlayerPWHashStmt:                              q.getPlayerPWHashStmt,
-		getPlayerUsernameStmt:                            q.getPlayerUsernameStmt,
-		getPlayerUsernameByIdStmt:                        q.getPlayerUsernameByIdStmt,
-		getRequestStmt:                                   q.getRequestStmt,
-		getRequestCommentStmt:                            q.getRequestCommentStmt,
-		getRoleStmt:                                      q.getRoleStmt,
-		getVerifiedEmailByAddressStmt:                    q.getVerifiedEmailByAddressStmt,
-		listCharacterApplicationContentForPlayerStmt:     q.listCharacterApplicationContentForPlayerStmt,
-		listCharacterApplicationsForPlayerStmt:           q.listCharacterApplicationsForPlayerStmt,
-		listCommentsForRequestStmt:                       q.listCommentsForRequestStmt,
-		listEmailsStmt:                                   q.listEmailsStmt,
-		listRepliesToCommentStmt:                         q.listRepliesToCommentStmt,
-		listRequestsForPlayerStmt:                        q.listRequestsForPlayerStmt,
-		listVerifiedEmailsStmt:                           q.listVerifiedEmailsStmt,
-		markEmailVerifiedStmt:                            q.markEmailVerifiedStmt,
-		updateCharacterApplicationContentStmt:            q.updateCharacterApplicationContentStmt,
-		updateCharacterApplicationContentBackstoryStmt:   q.updateCharacterApplicationContentBackstoryStmt,
-		updateCharacterApplicationContentDescriptionStmt: q.updateCharacterApplicationContentDescriptionStmt,
-		updateCharacterApplicationContentGenderStmt:      q.updateCharacterApplicationContentGenderStmt,
-		updateCharacterApplicationContentNameStmt:        q.updateCharacterApplicationContentNameStmt,
-		updateCharacterApplicationContentSdescStmt:       q.updateCharacterApplicationContentSdescStmt,
-		updateCharacterApplicationContentVersionStmt:     q.updateCharacterApplicationContentVersionStmt,
-		updatePlayerPasswordStmt:                         q.updatePlayerPasswordStmt,
+		countOpenCharacterApplicationsForPlayerStmt:           q.countOpenCharacterApplicationsForPlayerStmt,
+		countOpenRequestsStmt:                                 q.countOpenRequestsStmt,
+		createCharacterApplicationContentStmt:                 q.createCharacterApplicationContentStmt,
+		createCharacterApplicationContentHistoryStmt:          q.createCharacterApplicationContentHistoryStmt,
+		createEmailStmt:                                       q.createEmailStmt,
+		createPlayerStmt:                                      q.createPlayerStmt,
+		createRequestStmt:                                     q.createRequestStmt,
+		deleteEmailStmt:                                       q.deleteEmailStmt,
+		getCharacterApplicationContentStmt:                    q.getCharacterApplicationContentStmt,
+		getCharacterApplicationContentForRequestStmt:          q.getCharacterApplicationContentForRequestStmt,
+		getEmailStmt:                                          q.getEmailStmt,
+		getPlayerStmt:                                         q.getPlayerStmt,
+		getPlayerByUsernameStmt:                               q.getPlayerByUsernameStmt,
+		getPlayerPWHashStmt:                                   q.getPlayerPWHashStmt,
+		getPlayerUsernameStmt:                                 q.getPlayerUsernameStmt,
+		getPlayerUsernameByIdStmt:                             q.getPlayerUsernameByIdStmt,
+		getRequestStmt:                                        q.getRequestStmt,
+		getRequestCommentStmt:                                 q.getRequestCommentStmt,
+		getRoleStmt:                                           q.getRoleStmt,
+		getVerifiedEmailByAddressStmt:                         q.getVerifiedEmailByAddressStmt,
+		listCharacterApplicationContentForPlayerStmt:          q.listCharacterApplicationContentForPlayerStmt,
+		listCharacterApplicationsForPlayerStmt:                q.listCharacterApplicationsForPlayerStmt,
+		listCommentsForRequestStmt:                            q.listCommentsForRequestStmt,
+		listEmailsStmt:                                        q.listEmailsStmt,
+		listRepliesToCommentStmt:                              q.listRepliesToCommentStmt,
+		listRequestsForPlayerStmt:                             q.listRequestsForPlayerStmt,
+		listVerifiedEmailsStmt:                                q.listVerifiedEmailsStmt,
+		markEmailVerifiedStmt:                                 q.markEmailVerifiedStmt,
+		updateCharacterApplicationContentStmt:                 q.updateCharacterApplicationContentStmt,
+		updateCharacterApplicationContentBackstoryStmt:        q.updateCharacterApplicationContentBackstoryStmt,
+		updateCharacterApplicationContentDescriptionStmt:      q.updateCharacterApplicationContentDescriptionStmt,
+		updateCharacterApplicationContentGenderStmt:           q.updateCharacterApplicationContentGenderStmt,
+		updateCharacterApplicationContentNameStmt:             q.updateCharacterApplicationContentNameStmt,
+		updateCharacterApplicationContentShortDescriptionStmt: q.updateCharacterApplicationContentShortDescriptionStmt,
+		updateCharacterApplicationContentVersionStmt:          q.updateCharacterApplicationContentVersionStmt,
+		updatePlayerPasswordStmt:                              q.updatePlayerPasswordStmt,
 	}
 }

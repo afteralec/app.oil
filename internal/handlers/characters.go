@@ -117,7 +117,7 @@ func CharacterGenderPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func CharacterSdescPage(i *shared.Interfaces) fiber.Handler {
+func CharacterShortDescriptionPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -149,7 +149,7 @@ func CharacterSdescPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		b := c.Locals("bind").(fiber.Map)
-		b["Sdesc"] = app.Sdesc
+		b["ShortDescription"] = app.ShortDescription
 		return c.Render("web/views/characters/new/gender", b, "web/views/layouts/standalone")
 	}
 }
@@ -264,12 +264,12 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		}
 
 		_, err = i.Queries.CreateCharacterApplicationContent(context.Background(), queries.CreateCharacterApplicationContentParams{
-			Gender:      character.GenderNonBinary,
-			Name:        "",
-			Sdesc:       "",
-			Description: "",
-			Backstory:   "",
-			Rid:         rid,
+			Gender:           character.GenderNonBinary,
+			Name:             "",
+			ShortDescription: "",
+			Description:      "",
+			Backstory:        "",
+			Rid:              rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -286,11 +286,11 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 func UpdateCharacterApplication(i *shared.Interfaces) fiber.Handler {
 	// TODO: Validate this input for length on the way in
 	type input struct {
-		Name        string `form:"name"`
-		Gender      string `form:"gender"`
-		Sdesc       string `form:"sdesc"`
-		Description string `form:"description"`
-		Backstory   string `form:"backstory"`
+		Name             string `form:"name"`
+		Gender           string `form:"gender"`
+		ShortDescription string `form:"sdesc"`
+		Description      string `form:"description"`
+		Backstory        string `form:"backstory"`
 	}
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
@@ -333,13 +333,13 @@ func UpdateCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		}
 
 		_, err = i.Queries.CreateCharacterApplicationContentHistory(context.Background(), queries.CreateCharacterApplicationContentHistoryParams{
-			Gender:      app.Gender,
-			Name:        app.Name,
-			Sdesc:       app.Sdesc,
-			Description: app.Description,
-			Backstory:   app.Backstory,
-			Vid:         app.Vid,
-			Rid:         app.Rid,
+			Gender:           app.Gender,
+			Name:             app.Name,
+			ShortDescription: app.ShortDescription,
+			Description:      app.Description,
+			Backstory:        app.Backstory,
+			Vid:              app.Vid,
+			Rid:              app.Rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -353,13 +353,13 @@ func UpdateCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		}
 
 		err = i.Queries.UpdateCharacterApplicationContent(context.Background(), queries.UpdateCharacterApplicationContentParams{
-			Gender:      character.ValidateGender(r.Gender),
-			Name:        r.Name,
-			Sdesc:       r.Sdesc,
-			Description: r.Description,
-			Backstory:   r.Backstory,
-			Vid:         app.Vid,
-			Rid:         app.Rid,
+			Gender:           character.ValidateGender(r.Gender),
+			Name:             r.Name,
+			ShortDescription: r.ShortDescription,
+			Description:      r.Description,
+			Backstory:        r.Backstory,
+			Vid:              app.Vid,
+			Rid:              app.Rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -419,13 +419,13 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 		}
 
 		_, err = i.Queries.CreateCharacterApplicationContentHistory(context.Background(), queries.CreateCharacterApplicationContentHistoryParams{
-			Gender:      app.Gender,
-			Name:        app.Name,
-			Sdesc:       app.Sdesc,
-			Description: app.Description,
-			Backstory:   app.Backstory,
-			Vid:         app.Vid,
-			Rid:         app.Rid,
+			Gender:           app.Gender,
+			Name:             app.Name,
+			ShortDescription: app.ShortDescription,
+			Description:      app.Description,
+			Backstory:        app.Backstory,
+			Vid:              app.Vid,
+			Rid:              app.Rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -500,13 +500,13 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 		}
 
 		_, err = i.Queries.CreateCharacterApplicationContentHistory(context.Background(), queries.CreateCharacterApplicationContentHistoryParams{
-			Gender:      app.Gender,
-			Name:        app.Name,
-			Sdesc:       app.Sdesc,
-			Description: app.Description,
-			Backstory:   app.Backstory,
-			Vid:         app.Vid,
-			Rid:         app.Rid,
+			Gender:           app.Gender,
+			Name:             app.Name,
+			ShortDescription: app.ShortDescription,
+			Description:      app.Description,
+			Backstory:        app.Backstory,
+			Vid:              app.Vid,
+			Rid:              app.Rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -581,13 +581,13 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 		}
 
 		_, err = i.Queries.CreateCharacterApplicationContentHistory(context.Background(), queries.CreateCharacterApplicationContentHistoryParams{
-			Gender:      app.Gender,
-			Name:        app.Name,
-			Sdesc:       app.Sdesc,
-			Description: app.Description,
-			Backstory:   app.Backstory,
-			Vid:         app.Vid,
-			Rid:         app.Rid,
+			Gender:           app.Gender,
+			Name:             app.Name,
+			ShortDescription: app.ShortDescription,
+			Description:      app.Description,
+			Backstory:        app.Backstory,
+			Vid:              app.Vid,
+			Rid:              app.Rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -600,9 +600,9 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 			return nil
 		}
 
-		err = i.Queries.UpdateCharacterApplicationContentSdesc(context.Background(), queries.UpdateCharacterApplicationContentSdescParams{
-			Sdesc: r.Sdesc,
-			Rid:   rid,
+		err = i.Queries.UpdateCharacterApplicationContentShortDescription(context.Background(), queries.UpdateCharacterApplicationContentShortDescriptionParams{
+			ShortDescription: r.Sdesc,
+			Rid:              rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -662,13 +662,13 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 		}
 
 		_, err = i.Queries.CreateCharacterApplicationContentHistory(context.Background(), queries.CreateCharacterApplicationContentHistoryParams{
-			Gender:      app.Gender,
-			Name:        app.Name,
-			Sdesc:       app.Sdesc,
-			Description: app.Description,
-			Backstory:   app.Backstory,
-			Vid:         app.Vid,
-			Rid:         app.Rid,
+			Gender:           app.Gender,
+			Name:             app.Name,
+			ShortDescription: app.ShortDescription,
+			Description:      app.Description,
+			Backstory:        app.Backstory,
+			Vid:              app.Vid,
+			Rid:              app.Rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -743,13 +743,13 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 		}
 
 		_, err = i.Queries.CreateCharacterApplicationContentHistory(context.Background(), queries.CreateCharacterApplicationContentHistoryParams{
-			Gender:      app.Gender,
-			Name:        app.Name,
-			Sdesc:       app.Sdesc,
-			Description: app.Description,
-			Backstory:   app.Backstory,
-			Vid:         app.Vid,
-			Rid:         app.Rid,
+			Gender:           app.Gender,
+			Name:             app.Name,
+			ShortDescription: app.ShortDescription,
+			Description:      app.Description,
+			Backstory:        app.Backstory,
+			Vid:              app.Vid,
+			Rid:              app.Rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -824,13 +824,13 @@ func UpdateCharacterApplicationVersion(i *shared.Interfaces) fiber.Handler {
 		}
 
 		_, err = i.Queries.CreateCharacterApplicationContentHistory(context.Background(), queries.CreateCharacterApplicationContentHistoryParams{
-			Gender:      app.Gender,
-			Name:        app.Name,
-			Sdesc:       app.Sdesc,
-			Description: app.Description,
-			Backstory:   app.Backstory,
-			Vid:         app.Vid,
-			Rid:         app.Rid,
+			Gender:           app.Gender,
+			Name:             app.Name,
+			ShortDescription: app.ShortDescription,
+			Description:      app.Description,
+			Backstory:        app.Backstory,
+			Vid:              app.Vid,
+			Rid:              app.Rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)

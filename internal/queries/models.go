@@ -9,29 +9,29 @@ import (
 )
 
 type CharacterApplicationContent struct {
-	CreatedAt   sql.NullTime
-	UpdatedAt   sql.NullTime
-	Backstory   string
-	Description string
-	Sdesc       string
-	Name        string
-	Gender      string
-	Vid         int64
-	Rid         int64
-	ID          int64
+	CreatedAt        sql.NullTime
+	UpdatedAt        sql.NullTime
+	Backstory        string
+	Description      string
+	ShortDescription string
+	Name             string
+	Gender           string
+	Vid              int64
+	Rid              int64
+	ID               int64
 }
 
 type CharacterApplicationContentHistory struct {
-	CreatedAt   sql.NullTime
-	UpdatedAt   sql.NullTime
-	Backstory   string
-	Description string
-	Sdesc       string
-	Name        string
-	Gender      string
-	Vid         int64
-	Rid         int64
-	ID          int64
+	CreatedAt        sql.NullTime
+	UpdatedAt        sql.NullTime
+	Backstory        string
+	Description      string
+	ShortDescription string
+	Name             string
+	Gender           string
+	Vid              int64
+	Rid              int64
+	ID               int64
 }
 
 type Email struct {
