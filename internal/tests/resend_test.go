@@ -116,7 +116,9 @@ func TestResendUnowned(t *testing.T) {
 	app.Handlers(a, &i)
 
 	SetupTestResend(t, &i, TestUsername, TestEmailAddress)
+	defer SetupTestResend(t, &i, TestUsername, TestEmailAddress)
 	SetupTestResend(t, &i, TestUsernameTwo, TestEmailAddressTwo)
+	defer SetupTestResend(t, &i, TestUsernameTwo, TestEmailAddressTwo)
 
 	CallRegister(t, a, TestUsername, TestPassword)
 	res := CallLogin(t, a, TestUsername, TestPassword)

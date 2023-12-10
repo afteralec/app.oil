@@ -34,7 +34,7 @@ func SetupRecovery(i *shared.Interfaces, pid int64, email string) error {
 }
 
 func RecoveryKey(id string) string {
-	return fmt.Sprintf("rp:%s", id)
+	return fmt.Sprintf("%s:%s", shared.RecoverPasswordTokenKey, id)
 }
 
 func SendRecoveryEmail(i *shared.Interfaces, key string, email string) (resend.SendEmailResponse, error) {

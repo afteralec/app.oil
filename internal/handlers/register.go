@@ -32,7 +32,6 @@ func Register(i *shared.Interfaces) fiber.Handler {
 
 		u := username.Sanitize(p.Username)
 
-		// TODO: Return the reason the username is invalid
 		if !username.Validate(u) {
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")
@@ -41,7 +40,6 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/register/err-invalid", c.Locals("bind"), "")
 		}
 
-		// TODO: Return the reason the password is invalid
 		if !password.Validate(p.Password) {
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")

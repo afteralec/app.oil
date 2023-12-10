@@ -29,8 +29,19 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 		}
 
-		// TODO: Open a transaction up here
-		ec, err := i.Queries.CountEmails(context.Background(), pid.(int64))
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
+		}
+		defer tx.Rollback()
+
+		qtx := i.Queries.WithTx(tx)
+
+		ec, err := qtx.CountEmails(context.Background(), pid.(int64))
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")
@@ -65,7 +76,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
 		}
 
-		_, err = i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
+		_, err = qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
 		if err != nil {
 			if err != sql.ErrNoRows {
 				c.Append("HX-Retarget", "#add-email-error")
@@ -85,7 +96,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			}, "")
 		}
 
-		result, err := i.Queries.CreateEmail(
+		result, err := qtx.CreateEmail(
 			context.Background(),
 			queries.CreateEmailParams{Pid: pid.(int64), Address: e.Address},
 		)
@@ -117,8 +128,15 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 		}
 
-		err = email.Verify(i, id, e.Address)
-		if err != nil {
+		if err = tx.Commit(); err != nil {
+			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
+		}
+
+		if err = email.Verify(i, id, e.Address); err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")

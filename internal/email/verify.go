@@ -14,7 +14,8 @@ import (
 const ThirtyMinutesInNanoseconds = 30 * 60 * 1000 * 1000 * 1000
 
 func Verify(i *shared.Interfaces, id int64, email string) error {
-	key := Key(uuid.NewString())
+	token := uuid.NewString()
+	key := VerificationKey(token)
 
 	err := Cache(i.Redis, key, id)
 	if err != nil {
@@ -24,7 +25,7 @@ func Verify(i *shared.Interfaces, id int64, email string) error {
 	if os.Getenv("DISABLE_RESEND") == "true" {
 		return nil
 	}
-	_, err = SendEmail(i, key, email)
+	_, err = SendEmail(i, token, email)
 	if err != nil {
 		return err
 	}
@@ -32,13 +33,13 @@ func Verify(i *shared.Interfaces, id int64, email string) error {
 	return nil
 }
 
-func Key(id string) string {
-	return fmt.Sprintf("%s:%s", "ve", id)
+func VerificationKey(id string) string {
+	return fmt.Sprintf("%s:%s", shared.VerifyEmailTokenKey, id)
 }
 
-func SendEmail(i *shared.Interfaces, key string, email string) (resend.SendEmailResponse, error) {
+func SendEmail(i *shared.Interfaces, token string, email string) (resend.SendEmailResponse, error) {
 	base := os.Getenv("BASE_URL")
-	url := fmt.Sprintf("%s/verify?t=%s", base, key)
+	url := fmt.Sprintf("%s/verify?t=%s", base, token)
 	params := &resend.SendEmailRequest{
 		To:      []string{email},
 		From:    "verify@petrichormud.com",

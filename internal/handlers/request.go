@@ -39,7 +39,6 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 		req, err := i.Queries.GetRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				// TODO: Pull the request here and if the type isn't CharacterApplication, send back a 400
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}

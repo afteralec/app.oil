@@ -54,12 +54,11 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 		e, err := qtx.GetEmail(context.Background(), id)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				// TODO: Make this a 404 error?
 				c.Append("HX-Retarget", "profile-email-error")
 				c.Append("HX-Reswap", "outerHTML")
 				c.Append(shared.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusNotFound)
-				return c.Render("web/views/partials/profile/email/delete/err-internal", &fiber.Map{}, "")
+				return c.Render("web/views/partials/profile/email/delete/err-404", &fiber.Map{}, "")
 			}
 			c.Append("HX-Retarget", "profile-email-error")
 			c.Append("HX-Reswap", "outerHTML")
@@ -78,7 +77,13 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 
 		_, err = qtx.DeleteEmail(context.Background(), id)
 		if err != nil {
-			// TODO: Differentiate between not found and other errors
+			if err == sql.ErrNoRows {
+				c.Append("HX-Retarget", "profile-email-error")
+				c.Append("HX-Reswap", "outerHTML")
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Status(fiber.StatusNotFound)
+				return c.Render("web/views/partials/profile/email/delete/err-404", &fiber.Map{}, "")
+			}
 			c.Append("HX-Retarget", "profile-email-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")

@@ -1,7 +1,11 @@
 package shared
 
 const (
-	Bind               = "bind"
-	MaxEmailCount      = 3
-	HeaderHXAcceptable = "X-HX-Acceptable"
+	Bind                            = "bind"
+	MaxEmailCount                   = 3
+	HeaderHXAcceptable              = "X-HX-Acceptable"
+	VerifyEmailTokenKey             = "ve"
+	UsernameTokenKey                = "un"
+	UsernameRecoverySuccessTokenKey = "rus"
+	RecoverPasswordTokenKey         = "rp"
 )

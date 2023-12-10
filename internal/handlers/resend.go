@@ -15,8 +15,6 @@ func Resend(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {
-			// TODO: Check that this behavior is accurate - maybe send back a 403 instead
-			// TODO: Along with a minor "log in again" component
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Append("HX-Refresh", "true")
 			c.Status(fiber.StatusUnauthorized)

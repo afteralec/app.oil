@@ -50,7 +50,6 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		// TODO: Transaction this up
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)

@@ -8,6 +8,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 	redis "github.com/redis/go-redis/v9"
 
+	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
 )
@@ -92,12 +93,13 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		key := c.Query("t")
-		if len(key) == 0 {
+		token := c.Query("t")
+		if len(token) == 0 {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
 
+		key := email.VerificationKey(token)
 		eid, err := i.Redis.Get(context.Background(), key).Result()
 		if err != nil {
 			if err == redis.Nil {
