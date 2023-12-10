@@ -15,7 +15,7 @@
     >
       <!-- prettier-ignore -->
       {{ if .HasCharacterApplications -}}
-        {{ range .CharacterApplications -}}
+        {{ range .CharacterApplicationSummaries -}}
           {{ template "web/views/partials/characters/summary-card" . }}
         {{ end -}}
       {{ else -}}
@@ -24,8 +24,8 @@
     </section>
     <div class="pl-6 pt-2">
       <div
-        hx-post="/characters/new"
-        class="htmx-trade-indicator-out inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        hx-post="{{ .NewCharacterApplicationPath }}"
+        class="htmx-trade-indicator-out inline-flex h-10 cursor-pointer items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       >
         Create a Character
       </div>

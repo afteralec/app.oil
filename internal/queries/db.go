@@ -39,6 +39,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.countEmailsStmt, err = db.PrepareContext(ctx, countEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query CountEmails: %w", err)
 	}
+	if q.countOpenCharacterApplicationsForPlayerStmt, err = db.PrepareContext(ctx, countOpenCharacterApplicationsForPlayer); err != nil {
+		return nil, fmt.Errorf("error preparing query CountOpenCharacterApplicationsForPlayer: %w", err)
+	}
 	if q.countOpenRequestsStmt, err = db.PrepareContext(ctx, countOpenRequests); err != nil {
 		return nil, fmt.Errorf("error preparing query CountOpenRequests: %w", err)
 	}
@@ -172,6 +175,11 @@ func (q *Queries) Close() error {
 	if q.countEmailsStmt != nil {
 		if cerr := q.countEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing countEmailsStmt: %w", cerr)
+		}
+	}
+	if q.countOpenCharacterApplicationsForPlayerStmt != nil {
+		if cerr := q.countOpenCharacterApplicationsForPlayerStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countOpenCharacterApplicationsForPlayerStmt: %w", cerr)
 		}
 	}
 	if q.countOpenRequestsStmt != nil {
@@ -393,6 +401,7 @@ type Queries struct {
 	addReplyToCommentStmt                            *sql.Stmt
 	addReplyToFieldCommentStmt                       *sql.Stmt
 	countEmailsStmt                                  *sql.Stmt
+	countOpenCharacterApplicationsForPlayerStmt      *sql.Stmt
 	countOpenRequestsStmt                            *sql.Stmt
 	createCharacterApplicationContentStmt            *sql.Stmt
 	createCharacterApplicationContentHistoryStmt     *sql.Stmt
@@ -432,16 +441,17 @@ type Queries struct {
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                                    tx,
-		tx:                                    tx,
-		addCommentToRequestStmt:               q.addCommentToRequestStmt,
-		addCommentToRequestFieldStmt:          q.addCommentToRequestFieldStmt,
-		addReplyToCommentStmt:                 q.addReplyToCommentStmt,
-		addReplyToFieldCommentStmt:            q.addReplyToFieldCommentStmt,
-		countEmailsStmt:                       q.countEmailsStmt,
-		countOpenRequestsStmt:                 q.countOpenRequestsStmt,
-		createCharacterApplicationContentStmt: q.createCharacterApplicationContentStmt,
-		createCharacterApplicationContentHistoryStmt: q.createCharacterApplicationContentHistoryStmt,
+		db:                           tx,
+		tx:                           tx,
+		addCommentToRequestStmt:      q.addCommentToRequestStmt,
+		addCommentToRequestFieldStmt: q.addCommentToRequestFieldStmt,
+		addReplyToCommentStmt:        q.addReplyToCommentStmt,
+		addReplyToFieldCommentStmt:   q.addReplyToFieldCommentStmt,
+		countEmailsStmt:              q.countEmailsStmt,
+		countOpenCharacterApplicationsForPlayerStmt:      q.countOpenCharacterApplicationsForPlayerStmt,
+		countOpenRequestsStmt:                            q.countOpenRequestsStmt,
+		createCharacterApplicationContentStmt:            q.createCharacterApplicationContentStmt,
+		createCharacterApplicationContentHistoryStmt:     q.createCharacterApplicationContentHistoryStmt,
 		createEmailStmt:                                  q.createEmailStmt,
 		createPlayerStmt:                                 q.createPlayerStmt,
 		createRequestStmt:                                q.createRequestStmt,

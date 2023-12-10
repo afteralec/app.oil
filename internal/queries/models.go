@@ -60,6 +60,7 @@ type Request struct {
 	Vid       int64
 	Pid       int64
 	ID        int64
+	New       bool
 }
 
 type RequestComment struct {

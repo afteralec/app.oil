@@ -13,7 +13,7 @@ SELECT * FROM character_application_content WHERE rid = ?;
 
 -- name: ListCharacterApplicationsForPlayer :many
 SELECT
-  sqlc.embed(requests), sqlc.embed(character_application_content)
+  sqlc.embed(character_application_content), sqlc.embed(requests)
 FROM
   requests
 JOIN
@@ -21,7 +21,27 @@ JOIN
 ON
   requests.id = character_application_content.rid
 WHERE
-  requests.pid = ? AND requests.type = 'CharacterApplication';
+  requests.pid = ?
+AND
+  requests.type = "CharacterApplication"
+AND
+  requests.status != "Archived"
+AND
+  requests.status != "Canceled";
+
+-- name: CountOpenCharacterApplicationsForPlayer :one
+SELECT
+  COUNT(*)
+FROM
+  requests
+WHERE
+  pid = ?
+AND
+  type = "CharacterApplication"
+AND
+  status != "Archived"
+AND
+  status != "Canceled";
 
 -- name: ListCharacterApplicationContentForPlayer :many
 SELECT

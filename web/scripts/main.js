@@ -88,6 +88,12 @@ export function sanitizeUsername(u) {
   return u.replace(/[^a-zA-Z0-9_-]+/gi, "").toLowerCase();
 }
 
+// TODO: Test
+export function sanitizeCharacterName(n) {
+  return n.replace(/[^a-zA-Z0-9_-]+/gi, "");
+}
+
+// TODO: Pass these lengths in as constants
 export function isUsernameValid(u) {
   if (u.length < 4) return false;
   if (u.length > 8) return false;
@@ -99,6 +105,15 @@ export function isUsernameValid(u) {
 export function isPasswordValid(pw) {
   if (pw.length < 8) return false;
   if (pw.length > 255) return false;
+  return true;
+}
+
+// TODO: Test
+export function isCharacterNameValid(n) {
+  if (u.length < 4) return false;
+  if (u.length > 16) return false;
+  const regex = new RegExp("[^a-zA-Z0-9_-]+", "g");
+  if (regex.test(n)) return false;
   return true;
 }
 
@@ -117,7 +132,6 @@ export function setStrengths(strengths, pw) {
   if (pw.match(/[0-9]/)) {
     strengths.num = true;
   }
-
   strengths.specialChar = false;
   if (pw.match(/[^a-zA-Z\d]/)) {
     strengths.specialChar = true;
@@ -186,6 +200,14 @@ export function getProfileAvatarSrc(
   } else {
     return `https://gravatar.com/avatar/${gravatarHash}.jpeg?s=256&d=retro`;
   }
+}
+
+export function getCharacterApplicationFlowNameData(name) {
+  return {
+    name,
+    sanitizeCharacterName,
+    isCharacterNameValid,
+  };
 }
 
 const HEADER_CSRF_TOKEN = "X-CSRF-Token";

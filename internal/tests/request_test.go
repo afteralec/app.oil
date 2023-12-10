@@ -32,7 +32,7 @@ func TestCreateCommentUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CharacterApplicationRID(t, &i, a)
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
@@ -61,7 +61,7 @@ func TestCreateCommentSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
@@ -91,7 +91,7 @@ func TestCreateCommentNotFound(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid+1)
 	body := new(bytes.Buffer)
@@ -120,7 +120,7 @@ func TestCreateCommentFatal(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 
 	i.Close()
 
@@ -153,7 +153,7 @@ func TestCreateFieldCommentUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CharacterApplicationRID(t, &i, a)
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
@@ -183,7 +183,7 @@ func TestCreateFieldCommentSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid)
 	body := new(bytes.Buffer)
@@ -214,7 +214,7 @@ func TestCreateFieldCommentNotFound(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	// TODO: Get this in a generator
 	url := fmt.Sprintf("%s/request/%d/comments/new", TestURL, rid+1)
 	body := new(bytes.Buffer)
@@ -244,7 +244,7 @@ func TestCreateFieldCommentFatal(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, sessionCookie := CharacterApplicationRID(t, &i, a)
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 
 	i.Close()
 
@@ -278,7 +278,7 @@ func TestCreateReplyCommentUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CharacterApplicationRID(t, &i, a)
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	cid, _ := CreateTestComment(t, &i, a, rid)
 	strcid := strconv.FormatInt(cid, 10)
 	// TODO: Get this in a generator
@@ -310,7 +310,7 @@ func TestCreateReplyCommentSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CharacterApplicationRID(t, &i, a)
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	cid, sessionCookie := CreateTestComment(t, &i, a, rid)
 	strcid := strconv.FormatInt(cid, 10)
 	// TODO: Get this in a generator
@@ -343,7 +343,7 @@ func TestCreateReplyCommentNotFound(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CharacterApplicationRID(t, &i, a)
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	cid, sessionCookie := CreateTestComment(t, &i, a, rid)
 	strcid := strconv.FormatInt(cid, 10)
 	// TODO: Get this in a generator
@@ -376,7 +376,7 @@ func TestCreateReplyCommentCIDNotFound(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CharacterApplicationRID(t, &i, a)
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	cid, sessionCookie := CreateTestComment(t, &i, a, rid)
 	strcid := strconv.FormatInt(cid+1, 10)
 	// TODO: Get this in a generator
@@ -408,7 +408,7 @@ func TestCreateReplyCommentFatal(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CharacterApplicationRID(t, &i, a)
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	cid, sessionCookie := CreateTestComment(t, &i, a, rid)
 	strcid := strconv.FormatInt(cid, 10)
 

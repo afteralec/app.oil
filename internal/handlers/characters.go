@@ -29,8 +29,14 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/500", c.Locals(shared.Bind))
 		}
 
+		summaries := []character.ApplicationSummary{}
+		for _, app := range apps {
+			summaries = append(summaries, character.NewSummaryFromApplication(&app.Request, &app.CharacterApplicationContent))
+		}
+
 		b := c.Locals("bind").(fiber.Map)
-		b["CharacterApplications"] = apps
+		b["NewCharacterApplicationPath"] = routes.NewCharacterApplicationPath()
+		b["CharacterApplicationSummaries"] = summaries
 		b["HasCharacterApplications"] = len(apps) > 0
 		return c.Render("web/views/characters", b)
 	}
@@ -69,6 +75,7 @@ func CharacterNamePage(i *shared.Interfaces) fiber.Handler {
 
 		b := c.Locals("bind").(fiber.Map)
 		b["Name"] = app.Name
+		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		return c.Render("web/views/characters/new/name", b, "web/views/layouts/standalone")
 	}
 }
@@ -227,7 +234,18 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return nil
+		}
+
+		count, err := i.Queries.CountOpenCharacterApplicationsForPlayer(context.Background(), pid.(int64))
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if count >= shared.MaxOpenCharacterApplications {
+			c.Status(fiber.StatusForbidden)
+			return nil
 		}
 
 		result, err := i.Queries.CreateRequest(context.Background(), queries.CreateRequestParams{

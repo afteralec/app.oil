@@ -128,7 +128,7 @@ func (q *Queries) CreateRequest(ctx context.Context, arg CreateRequestParams) (s
 }
 
 const getRequest = `-- name: GetRequest :one
-SELECT type, status, created_at, updated_at, vid, pid, id FROM requests WHERE id = ?
+SELECT type, status, created_at, updated_at, vid, pid, id, new FROM requests WHERE id = ?
 `
 
 func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
@@ -142,6 +142,7 @@ func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
 		&i.Vid,
 		&i.Pid,
 		&i.ID,
+		&i.New,
 	)
 	return i, err
 }
@@ -248,7 +249,7 @@ func (q *Queries) ListRepliesToComment(ctx context.Context, cid int64) ([]Reques
 }
 
 const listRequestsForPlayer = `-- name: ListRequestsForPlayer :many
-SELECT type, status, created_at, updated_at, vid, pid, id FROM requests WHERE pid = ?
+SELECT type, status, created_at, updated_at, vid, pid, id, new FROM requests WHERE pid = ?
 `
 
 func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Request, error) {
@@ -268,6 +269,7 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 			&i.Vid,
 			&i.Pid,
 			&i.ID,
+			&i.New,
 		); err != nil {
 			return nil, err
 		}

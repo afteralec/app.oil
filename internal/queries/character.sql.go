@@ -10,6 +10,28 @@ import (
 	"database/sql"
 )
 
+const countOpenCharacterApplicationsForPlayer = `-- name: CountOpenCharacterApplicationsForPlayer :one
+SELECT
+  COUNT(*)
+FROM
+  requests
+WHERE
+  pid = ?
+AND
+  type = "CharacterApplication"
+AND
+  status != "Archived"
+AND
+  status != "Canceled"
+`
+
+func (q *Queries) CountOpenCharacterApplicationsForPlayer(ctx context.Context, pid int64) (int64, error) {
+	row := q.queryRow(ctx, q.countOpenCharacterApplicationsForPlayerStmt, countOpenCharacterApplicationsForPlayer, pid)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createCharacterApplicationContent = `-- name: CreateCharacterApplicationContent :execresult
 INSERT INTO
   character_application_content 
@@ -158,7 +180,7 @@ func (q *Queries) ListCharacterApplicationContentForPlayer(ctx context.Context, 
 
 const listCharacterApplicationsForPlayer = `-- name: ListCharacterApplicationsForPlayer :many
 SELECT
-  requests.type, requests.status, requests.created_at, requests.updated_at, requests.vid, requests.pid, requests.id, character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.sdesc, character_application_content.name, character_application_content.gender, character_application_content.vid, character_application_content.rid, character_application_content.id
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.sdesc, character_application_content.name, character_application_content.gender, character_application_content.vid, character_application_content.rid, character_application_content.id, requests.type, requests.status, requests.created_at, requests.updated_at, requests.vid, requests.pid, requests.id, requests.new
 FROM
   requests
 JOIN
@@ -166,12 +188,18 @@ JOIN
 ON
   requests.id = character_application_content.rid
 WHERE
-  requests.pid = ? AND requests.type = 'CharacterApplication'
+  requests.pid = ?
+AND
+  requests.type = "CharacterApplication"
+AND
+  requests.status != "Archived"
+AND
+  requests.status != "Canceled"
 `
 
 type ListCharacterApplicationsForPlayerRow struct {
-	Request                     Request
 	CharacterApplicationContent CharacterApplicationContent
+	Request                     Request
 }
 
 func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid int64) ([]ListCharacterApplicationsForPlayerRow, error) {
@@ -184,13 +212,6 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 	for rows.Next() {
 		var i ListCharacterApplicationsForPlayerRow
 		if err := rows.Scan(
-			&i.Request.Type,
-			&i.Request.Status,
-			&i.Request.CreatedAt,
-			&i.Request.UpdatedAt,
-			&i.Request.Vid,
-			&i.Request.Pid,
-			&i.Request.ID,
 			&i.CharacterApplicationContent.CreatedAt,
 			&i.CharacterApplicationContent.UpdatedAt,
 			&i.CharacterApplicationContent.Backstory,
@@ -201,6 +222,14 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 			&i.CharacterApplicationContent.Vid,
 			&i.CharacterApplicationContent.Rid,
 			&i.CharacterApplicationContent.ID,
+			&i.Request.Type,
+			&i.Request.Status,
+			&i.Request.CreatedAt,
+			&i.Request.UpdatedAt,
+			&i.Request.Vid,
+			&i.Request.Pid,
+			&i.Request.ID,
+			&i.Request.New,
 		); err != nil {
 			return nil, err
 		}

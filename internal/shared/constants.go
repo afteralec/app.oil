@@ -8,4 +8,5 @@ const (
 	UsernameTokenKey                = "un"
 	UsernameRecoverySuccessTokenKey = "rus"
 	RecoverPasswordTokenKey         = "rp"
+	MaxOpenCharacterApplications    = 20
 )
