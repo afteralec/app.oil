@@ -28,8 +28,7 @@ func SetupInterfaces() Interfaces {
 	opts := configs.Redis()
 	r := redis.NewClient(&opts)
 
-	// TODO: Update this config to be more secure. Will depend on environment.
-	s := session.New()
+	s := session.New(configs.Session())
 
 	rc := resend.NewClient(os.Getenv("RESEND_API_KEY"))
 

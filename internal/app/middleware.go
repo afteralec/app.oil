@@ -14,14 +14,16 @@ import (
 )
 
 func Middleware(a *fiber.App, i *shared.Interfaces) {
-	a.Use(session.New(i))
-	a.Use(bind.New())
+	if os.Getenv("DISABLE_LOGGING") != "true" {
+		a.Use(logger.New())
+	}
 
+	// This order is important - if the CSRF middleware loads after bind, the CSRF token isn't sent to the templates
+	// TODO: Figure out a way to test with the CSRF token
 	if os.Getenv("DISABLE_CSRF") != "true" {
 		a.Use(csrf.New(configs.CSRF(i.Sessions)))
 	}
 
-	if os.Getenv("DISABLE_LOGGING") != "true" {
-		a.Use(logger.New())
-	}
+	a.Use(session.New(i))
+	a.Use(bind.New())
 }

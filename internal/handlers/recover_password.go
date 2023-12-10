@@ -31,7 +31,6 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 		Username string `form:"username"`
 		Email    string `form:"email"`
 	}
-
 	return func(c *fiber.Ctx) error {
 		r := new(request)
 		if err := c.BodyParser(r); err != nil {
