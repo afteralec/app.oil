@@ -9,6 +9,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -229,9 +230,8 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		}
 
 		result, err := i.Queries.CreateRequest(context.Background(), queries.CreateRequestParams{
-			Pid: pid.(int64),
-			// TODO: Get this type into a constant
-			Type: "CharacterApplication",
+			Pid:  pid.(int64),
+			Type: request.TypeCharacterApplication,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)

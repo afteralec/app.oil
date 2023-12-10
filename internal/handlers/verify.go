@@ -87,7 +87,8 @@ func Verify(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			// TODO: This should redirect them back to the login page for this token
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Refresh", "true")
 			return nil
 		}
 
