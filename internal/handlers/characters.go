@@ -42,7 +42,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func CharacterNamePage(i *shared.Interfaces) fiber.Handler {
+func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -76,7 +76,7 @@ func CharacterNamePage(i *shared.Interfaces) fiber.Handler {
 		b := c.Locals("bind").(fiber.Map)
 		b["Name"] = app.Name
 		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
-		return c.Render("web/views/characters/new/name", b, "web/views/layouts/standalone")
+		return c.Render("web/views/character/application/flow/name", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -113,7 +113,7 @@ func CharacterGenderPage(i *shared.Interfaces) fiber.Handler {
 
 		b := c.Locals("bind").(fiber.Map)
 		b["Gender"] = app.Gender
-		return c.Render("web/views/characters/new/gender", b, "web/views/layouts/standalone")
+		return c.Render("web/views/character/application/flow/gender", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -150,7 +150,7 @@ func CharacterShortDescriptionPage(i *shared.Interfaces) fiber.Handler {
 
 		b := c.Locals("bind").(fiber.Map)
 		b["ShortDescription"] = app.ShortDescription
-		return c.Render("web/views/characters/new/gender", b, "web/views/layouts/standalone")
+		return c.Render("web/views/character/application/flow/sdesc", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -187,7 +187,7 @@ func CharacterDescriptionPage(i *shared.Interfaces) fiber.Handler {
 
 		b := c.Locals("bind").(fiber.Map)
 		b["Description"] = app.Description
-		return c.Render("web/views/characters/new/gender", b, "web/views/layouts/standalone")
+		return c.Render("web/views/character/application/flow/desc", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -224,7 +224,7 @@ func CharacterBackstoryPage(i *shared.Interfaces) fiber.Handler {
 
 		b := c.Locals("bind").(fiber.Map)
 		b["Backstory"] = app.Backstory
-		return c.Render("web/views/characters/new/gender", b, "web/views/layouts/standalone")
+		return c.Render("web/views/character/application/flow/backstory", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -284,7 +284,6 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 }
 
 func UpdateCharacterApplication(i *shared.Interfaces) fiber.Handler {
-	// TODO: Validate this input for length on the way in
 	type input struct {
 		Name             string `form:"name"`
 		Gender           string `form:"gender"`

@@ -109,9 +109,9 @@ export function isPasswordValid(pw) {
 }
 
 // TODO: Test
-export function isCharacterNameValid(n) {
-  if (u.length < 4) return false;
-  if (u.length > 16) return false;
+export function isCharacterNameValid(n = "") {
+  if (n.length < 4) return false;
+  if (n.length > 16) return false;
   const regex = new RegExp("[^a-zA-Z0-9_-]+", "g");
   if (regex.test(n)) return false;
   return true;
@@ -205,6 +205,11 @@ export function getProfileAvatarSrc(
 export function getCharacterApplicationFlowNameData(name) {
   return {
     name,
+    eval: {
+      n: {
+        len: false,
+      },
+    },
     sanitizeCharacterName,
     isCharacterNameValid,
   };
@@ -244,3 +249,5 @@ window.getProfileEmailData = getProfileEmailData;
 window.getEmailData = getEmailData;
 window.getGravatarEmailData = getGravatarEmailData;
 window.getProfileAvatarData = getProfileAvatarData;
+window.getCharacterApplicationFlowNameData =
+  getCharacterApplicationFlowNameData;

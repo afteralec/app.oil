@@ -16,7 +16,7 @@
       <!-- prettier-ignore -->
       {{ if .HasCharacterApplications -}}
         {{ range .CharacterApplicationSummaries -}}
-          {{ template "web/views/partials/characters/summary-card" . }}
+          {{ template "web/views/partials/character/application/summary" . }}
         {{ end -}}
       {{ else -}}
         You don't have any open character applications

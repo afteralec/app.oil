@@ -1,0 +1,37 @@
+<!-- TODO: Move these min and max numbers to injected variables? -->
+<!-- TODO: Move this alpine evaluation to htmx -->
+<div
+  id="character-application-name-requirements"
+  class="pb-1 text-xs leading-none text-muted-foreground"
+>
+  Upper and lower case letters, dashes, and apostrophes only.
+</div>
+<div
+  class="flex items-center gap-1 text-xs leading-none text-muted-foreground"
+  x-cloak
+  x-show="!isCharacterNameValid(name) && !eval.n.len"
+>
+  <!-- TODO: Move this string to a passed variable? -->
+  <p>Your character's name should be between 4 and 16 characters long.</p>
+</div>
+<div
+  class="flex items-center gap-1 text-xs leading-none text-rose-800"
+  x-cloak
+  x-show="!isCharacterNameValid(name) && eval.n.len && name.length < 4"
+>
+  <p>Your character's name should be between 4 and 16 characters long.</p>
+</div>
+<div
+  class="flex items-center gap-1 text-xs leading-none text-emerald-800"
+  x-cloak
+  x-show="!isCharacterNameValid(name) && eval.n.len && name.length >= 4 && name.length <= 16"
+>
+  <p>Your character's name should be between 4 and 16 characters long.</p>
+</div>
+<div
+  class="flex items-center gap-1 text-xs leading-none text-rose-800"
+  x-cloak
+  x-show="!isCharacterNameValid(name) && eval.n.len && name.length > 16"
+>
+  <p>Your character's name should be between 4 and 16 characters long.</p>
+</div>
