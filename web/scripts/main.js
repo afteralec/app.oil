@@ -90,7 +90,7 @@ export function sanitizeUsername(u) {
 
 // TODO: Test
 export function sanitizeCharacterName(n) {
-  return n.replace(/[^a-zA-Z0-9_-]+/gi, "");
+  return n.replace(/[^a-zA-Z'-]+/gi, "");
 }
 
 // TODO: Pass these lengths in as constants
@@ -207,7 +207,7 @@ export function getCharacterApplicationFlowNameData(name) {
     name,
     eval: {
       n: {
-        len: false,
+        len: name.length > 0,
       },
     },
     sanitizeCharacterName,

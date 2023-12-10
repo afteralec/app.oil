@@ -394,22 +394,37 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		r := new(input)
+		if err := c.BodyParser(r); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		name := character.SanitizeName(r.Name)
+
+		if !character.IsValidName(name) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		req, err := i.Queries.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if req.Type != request.TypeCharacterApplication {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
 		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				req, err := i.Queries.GetRequest(context.Background(), rid)
-				if err != nil {
-					if err == sql.ErrNoRows {
-						c.Status(fiber.StatusNotFound)
-						return nil
-					}
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-				if req.Type != request.TypeCharacterApplication {
-					c.Status(fiber.StatusBadRequest)
-					return nil
-				}
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
@@ -431,14 +446,8 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		r := new(input)
-		if err := c.BodyParser(r); err != nil {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-
 		err = i.Queries.UpdateCharacterApplicationContentName(context.Background(), queries.UpdateCharacterApplicationContentNameParams{
-			Name: r.Name,
+			Name: name,
 			Rid:  rid,
 		})
 		if err != nil {
@@ -446,6 +455,7 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		c.Append("HX-Redirect", routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10)))
 		c.Status(fiber.StatusOK)
 		return nil
 	}
