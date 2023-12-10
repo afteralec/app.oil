@@ -236,7 +236,7 @@ func TestResendNonexistantEmail(t *testing.T) {
 	app.Post(handlers.RegisterRoute, handlers.Register(&i))
 	app.Post(handlers.LoginRoute, handlers.Login(&i))
 	app.Post(routes.NewEmailPath(), handlers.AddEmail(&i))
-	app.Delete(routes.EmailPath(), handlers.DeleteEmail(&i))
+	app.Delete(routes.EmailPath(routes.ID), handlers.DeleteEmail(&i))
 	app.Post(handlers.ResendRoute, handlers.Resend(&i))
 
 	SetupTestResend(t, &i, TestUsername, TestEmailAddress)
