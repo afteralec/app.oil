@@ -29,29 +29,26 @@ func NewSummaryFromApplication(req *queries.Request, app *queries.CharacterAppli
 
 func GetApplicationFlowLink(req *queries.Request, app *queries.CharacterApplicationContent) string {
 	strid := strconv.FormatInt(req.ID, 10)
-	if !req.New {
-		return routes.CharacterApplicationPath(strconv.FormatInt(req.ID, 10))
-	}
 
-	if len(app.Name) == 0 {
+	if !IsNameValid(app.Name) {
 		return routes.CharacterApplicationNamePath(strid)
 	}
 
-	if len(app.Gender) == 0 {
+	if !IsGenderValid(app.Gender) {
 		return routes.CharacterApplicationGenderPath(strid)
 	}
 
-	if len(app.ShortDescription) == 0 {
+	if !IsShortDescriptionValid(app.ShortDescription) {
 		return routes.CharacterApplicationShortDescriptionPath(strid)
 	}
 
-	if len(app.Description) == 0 {
+	if !IsDescriptionValid(app.Description) {
 		return routes.CharacterApplicationDescriptionPath(strid)
 	}
 
-	if len(app.Backstory) == 0 {
+	if !IsBackstoryValid(app.Backstory) {
 		return routes.CharacterApplicationBackstoryPath(strid)
 	}
 
-	return routes.CharacterApplicationPath(strconv.FormatInt(req.ID, 10))
+	return routes.CharacterApplicationReviewPath(strconv.FormatInt(req.ID, 10))
 }
