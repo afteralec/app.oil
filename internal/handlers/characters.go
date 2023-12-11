@@ -293,6 +293,7 @@ func CharacterApplicationReviewPage(i *shared.Interfaces) fiber.Handler {
 		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Name"] = app.Name
 		b["Statuses"] = statuses
+		b["Ready"] = character.IsApplicationReady(&app)
 		return c.Render("web/views/character/application/flow/review", b, "web/views/layouts/standalone")
 	}
 }

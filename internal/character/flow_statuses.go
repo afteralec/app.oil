@@ -54,3 +54,27 @@ func MakeApplicationPartStatuses(current string, app *queries.CharacterApplicati
 
 	return result
 }
+
+func IsApplicationReady(app *queries.CharacterApplicationContent) bool {
+	if !IsNameValid(app.Name) {
+		return false
+	}
+
+	if !IsGenderValid(app.Gender) {
+		return false
+	}
+
+	if !IsShortDescriptionValid(app.ShortDescription) {
+		return false
+	}
+
+	if !IsDescriptionValid(app.Description) {
+		return false
+	}
+
+	if !IsBackstoryValid(app.Backstory) {
+		return false
+	}
+
+	return true
+}

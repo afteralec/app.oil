@@ -1,13 +1,25 @@
 <main class="flex h-screen w-screen flex-col items-center justify-center">
   <div class="w-full max-w-lg">
-    <h2 class="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
+    <h2
+      class="scroll-m-20 pb-4 text-3xl font-extrabold tracking-tight lg:text-4xl"
+    >
       {{ .Name }}
     </h2>
+    {{ if .Ready }}
+    <!-- prettier-ignore -->
+    {{ template "web/views/partials/character/application/status/list-complete" .Statuses }}
+    <div>
+      Looks like everything's ready! Feel free to make any adjustments to the
+      above sections, or, if you're ready to submit this application, click
+      Submit below.
+    </div>
+    {{ else -}}
     <p>Incomplete:</p>
     <!-- prettier-ignore -->
     {{ template "web/views/partials/character/application/status/list-incomplete" .Statuses }}
     <p>Complete:</p>
     <!-- prettier-ignore -->
     {{ template "web/views/partials/character/application/status/list-complete" .Statuses }}
+    {{ end -}}
   </div>
 </main>
