@@ -15,7 +15,7 @@ import (
 
 func RecoverUsernamePage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("web/views/recover/username", c.Locals("bind"), "web/views/layouts/standalone")
+		return c.Render("web/views/recover/username", c.Locals(shared.Bind), "web/views/layouts/standalone")
 	}
 }
 
@@ -32,7 +32,7 @@ func RecoverUsernameSuccessPage(i *shared.Interfaces) fiber.Handler {
 			c.Redirect(routes.Home)
 		}
 
-		b := c.Locals("bind").(fiber.Map)
+		b := c.Locals(shared.Bind).(fiber.Map)
 		b["EmailAddress"] = address
 
 		return c.Render("web/views/recover/username/success", b, "web/views/layouts/standalone")
@@ -49,14 +49,14 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 		if err := c.BodyParser(r); err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
-			return c.Render("web/views/partials/recover/username/err-invalid", c.Locals("bind"), "")
+			return c.Render("web/views/partials/recover/username/err-invalid", c.Locals(shared.Bind), "")
 		}
 
 		e, err := mail.ParseAddress(r.Email)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
-			return c.Render("web/views/partials/recover/username/err-invalid", c.Locals("bind"), "")
+			return c.Render("web/views/partials/recover/username/err-invalid", c.Locals(shared.Bind), "")
 		}
 
 		ve, err := i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
@@ -66,7 +66,7 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 				if err != nil {
 					c.Status(fiber.StatusUnauthorized)
 					c.Append(shared.HeaderHXAcceptable, "true")
-					return c.Render("web/views/partials/recover/username/err-internal", c.Locals("bind"), "")
+					return c.Render("web/views/partials/recover/username/err-internal", c.Locals(shared.Bind), "")
 				}
 
 				path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)
@@ -75,14 +75,14 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 			}
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
-			return c.Render("web/views/partials/recover/username/err", c.Locals("bind"), "")
+			return c.Render("web/views/partials/recover/username/err", c.Locals(shared.Bind), "")
 		}
 
 		rusid, err := username.Recover(i, ve)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
-			return c.Render("web/views/partials/recover/username/err-internal", c.Locals("bind"), "")
+			return c.Render("web/views/partials/recover/username/err-internal", c.Locals(shared.Bind), "")
 		}
 
 		path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)

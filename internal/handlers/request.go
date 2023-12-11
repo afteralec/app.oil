@@ -22,7 +22,7 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")

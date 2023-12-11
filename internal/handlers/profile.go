@@ -17,16 +17,16 @@ func ProfilePage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		emails, err := i.Queries.ListEmails(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("web/views/500", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/500", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
-		b := c.Locals("bind").(fiber.Map)
+		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Emails"] = emails
 		b["VerifiedEmails"] = email.Verified(emails)
 		b["GravatarEmail"] = "othertest@quack.ninja"

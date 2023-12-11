@@ -20,7 +20,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		apps, err := i.Queries.ListCharacterApplicationsForPlayer(context.Background(), pid.(int64))
@@ -34,7 +34,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 			summaries = append(summaries, character.NewSummaryFromApplication(&app.Request, &app.CharacterApplicationContent))
 		}
 
-		b := c.Locals("bind").(fiber.Map)
+		b := c.Locals(shared.Bind).(fiber.Map)
 		b["NewCharacterApplicationPath"] = routes.NewCharacterApplicationPath()
 		b["CharacterApplicationSummaries"] = summaries
 		b["HasCharacterApplications"] = len(apps) > 0
@@ -48,7 +48,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -75,7 +75,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 
 		statuses := character.MakeApplicationPartStatuses("name", &app)
 
-		b := c.Locals("bind").(fiber.Map)
+		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Name"] = app.Name
 		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["Statuses"] = statuses
@@ -89,7 +89,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -117,7 +117,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		statuses := character.MakeApplicationPartStatuses("gender", &app)
 
 		gender := character.SanitizeGender(app.Gender)
-		b := c.Locals("bind").(fiber.Map)
+		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Name"] = app.Name
 		b["GenderNonBinary"] = character.GenderNonBinary
 		b["GenderFemale"] = character.GenderFemale
@@ -138,7 +138,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -222,7 +222,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -263,7 +263,7 @@ func CharacterApplicationReviewPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -366,7 +366,7 @@ func UpdateCharacterApplication(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -450,7 +450,7 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -541,7 +541,7 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -623,7 +623,7 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -705,7 +705,7 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -787,7 +787,7 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -869,7 +869,7 @@ func UpdateCharacterApplicationVersion(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")

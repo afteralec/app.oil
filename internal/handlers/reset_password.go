@@ -21,7 +21,7 @@ func ResetPasswordPage() fiber.Handler {
 			return c.Redirect("/")
 		}
 
-		b := c.Locals("bind").(fiber.Map)
+		b := c.Locals(shared.Bind).(fiber.Map)
 		b["ResetPasswordToken"] = tid
 
 		return c.Render("web/views/reset/password", b, "web/views/layouts/standalone")
@@ -30,7 +30,7 @@ func ResetPasswordPage() fiber.Handler {
 
 func ResetPasswordSuccessPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("web/views/reset/password/success", c.Locals("bind"), "web/views/layouts/standalone")
+		return c.Render("web/views/reset/password/success", c.Locals(shared.Bind), "web/views/layouts/standalone")
 	}
 }
 
