@@ -1288,6 +1288,88 @@ func TestCharacterBackstoryPageFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
+func TestCharacterReviewPageUnauthorized(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	url := MakeTestURL(routes.CharacterApplicationReviewPath(routes.ID))
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestCharacterReviewPageSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	url := MakeTestURL(routes.CharacterApplicationReviewPath(strconv.FormatInt(rid, 10)))
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestCharacterReviewPageNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	url := MakeTestURL(routes.CharacterApplicationReviewPath(strconv.FormatInt(rid+1, 10)))
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestCharacterReviewPageFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	i.Close()
+	url := MakeTestURL(routes.CharacterApplicationReviewPath(strconv.FormatInt(rid, 10)))
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
 func SetupTestCharacters(t *testing.T, i *shared.Interfaces, u string) {
 	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
 	if err != nil && err != sql.ErrNoRows {

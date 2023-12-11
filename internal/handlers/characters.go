@@ -83,7 +83,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func CharacterGenderPage(i *shared.Interfaces) fiber.Handler {
+func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -132,7 +132,7 @@ func CharacterGenderPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func CharacterShortDescriptionPage(i *shared.Interfaces) fiber.Handler {
+func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -174,7 +174,7 @@ func CharacterShortDescriptionPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func CharacterDescriptionPage(i *shared.Interfaces) fiber.Handler {
+func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -216,7 +216,7 @@ func CharacterDescriptionPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func CharacterBackstoryPage(i *shared.Interfaces) fiber.Handler {
+func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -249,11 +249,51 @@ func CharacterBackstoryPage(i *shared.Interfaces) fiber.Handler {
 
 		statuses := character.MakeApplicationPartStatuses("backstory", &app)
 
-		b := c.Locals("bind").(fiber.Map)
+		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Name"] = app.Name
 		b["Backstory"] = app.Backstory
 		b["Statuses"] = statuses
 		return c.Render("web/views/character/application/flow/backstory", b, "web/views/layouts/standalone")
+	}
+}
+
+func CharacterApplicationReviewPage(i *shared.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		pid := c.Locals("pid")
+
+		if pid == nil {
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render("web/views/login", c.Locals("bind"), "web/views/layouts/standalone")
+		}
+
+		prid := c.Params("id")
+		if len(prid) == 0 {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		rid, err := strconv.ParseInt(prid, 10, 64)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		statuses := character.MakeApplicationPartStatuses("review", &app)
+
+		b := c.Locals(shared.Bind).(fiber.Map)
+		b["Name"] = app.Name
+		b["Statuses"] = statuses
+		return c.Render("web/views/character/application/flow/review", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -812,6 +852,7 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		c.Append("HX-Redirect", routes.CharacterApplicationReviewPath(strconv.FormatInt(rid, 10)))
 		c.Status(fiber.StatusOK)
 		return nil
 	}

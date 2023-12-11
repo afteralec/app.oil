@@ -6,8 +6,6 @@
     {{ else -}}
       {{ if .Ready }}
         {{ template "web/views/partials/character/application/status/ready" . }}
-      {{ else -}}
-        {{ template "web/views/partials/character/application/status/incomplete" . }}
       {{ end -}}
     {{ end -}}
   {{ end -}}

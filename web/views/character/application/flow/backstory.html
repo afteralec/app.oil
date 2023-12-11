@@ -1,6 +1,6 @@
 <main
   class="flex h-screen w-screen flex-col items-center justify-center"
-  x-data="getCharacterApplicationFlowBackstoryData('{{ .Backstory }}')"
+  x-data="getCharacterApplicationFlowBackstoryData(`{{ .Backstory }}`)"
 >
   <!-- prettier-ignore -->
   {{ template "web/views/partials/character/application/status/list" .Statuses }}
@@ -41,7 +41,7 @@
             eval.bs.len = true;
             backstory = sanitizeCharacterBackstory(event.target.value);
           "
-          class="min-h-20 flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          class="flex min-h-[10rem] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="backstory"
           autofocus

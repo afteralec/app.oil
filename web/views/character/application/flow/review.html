@@ -1,0 +1,13 @@
+<main class="flex h-screen w-screen flex-col items-center justify-center">
+  <div class="w-full max-w-lg">
+    <h2 class="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
+      {{ .Name }}
+    </h2>
+    <p>Incomplete:</p>
+    <!-- prettier-ignore -->
+    {{ template "web/views/partials/character/application/status/list-incomplete" .Statuses }}
+    <p>Complete:</p>
+    <!-- prettier-ignore -->
+    {{ template "web/views/partials/character/application/status/list-complete" .Statuses }}
+  </div>
+</main>
