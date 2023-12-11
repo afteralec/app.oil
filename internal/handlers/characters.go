@@ -79,7 +79,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		b["Name"] = app.Name
 		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["Statuses"] = statuses
-		return c.Render("web/views/character/application/flow/name", b, "web/views/layouts/standalone")
+		return c.Render("web/views/character/application/name", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -128,7 +128,8 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		b["GenderIsMale"] = gender == character.GenderMale
 		b["CharacterApplicationGenderPath"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		b["Statuses"] = statuses
-		return c.Render("web/views/character/application/flow/gender", b, "web/views/layouts/standalone")
+		b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
+		return c.Render("web/views/character/application/gender", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -170,7 +171,8 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 		b["ShortDescription"] = app.ShortDescription
 		b["CharacterApplicationShortDescriptionPath"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		b["Statuses"] = statuses
-		return c.Render("web/views/character/application/flow/sdesc", b, "web/views/layouts/standalone")
+		b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
+		return c.Render("web/views/character/application/sdesc", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -212,7 +214,8 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 		b["Description"] = app.Description
 		b["CharacterApplicationDescriptionPath"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		b["Statuses"] = statuses
-		return c.Render("web/views/character/application/flow/description", b, "web/views/layouts/standalone")
+		b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
+		return c.Render("web/views/character/application/description", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -253,7 +256,8 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 		b["Name"] = app.Name
 		b["Backstory"] = app.Backstory
 		b["Statuses"] = statuses
-		return c.Render("web/views/character/application/flow/backstory", b, "web/views/layouts/standalone")
+		b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
+		return c.Render("web/views/character/application/backstory", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -294,7 +298,7 @@ func CharacterApplicationReviewPage(i *shared.Interfaces) fiber.Handler {
 		b["Name"] = app.Name
 		b["Statuses"] = statuses
 		b["Ready"] = character.IsApplicationReady(&app)
-		return c.Render("web/views/character/application/flow/review", b, "web/views/layouts/standalone")
+		return c.Render("web/views/character/application/review", b, "web/views/layouts/standalone")
 	}
 }
 

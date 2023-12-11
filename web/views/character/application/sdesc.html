@@ -6,7 +6,7 @@
   {{ template "web/views/partials/character/application/status/list" .Statuses }}
   <div class="w-full max-w-lg rounded-md border p-6">
     <div id="character-application-flow-error"></div>
-    <p class="whitespace-nowrap pt-4">Write {{ .Name }}'s short description:</p>
+    <p class="whitespace-nowrap">Write {{ .Name }}'s short description:</p>
     <div class="pb-2 text-xs leading-none text-muted-foreground">
       This is how your character will appear in third-person descriptions during
       the game.
@@ -55,7 +55,16 @@
         <br />
         The <span x-text="sdesc"></span>
       </div>
-      <div class="flex justify-end">
+      <div class="flex justify-end gap-2">
+        {{ if .BackLink }}
+        <a
+          href="{{ .BackLink }}"
+          class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+          type=""
+        >
+          Back
+        </a>
+        {{ end -}}
         <button
           :disabled="!isCharacterShortDescriptionValid(sdesc)"
           class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"

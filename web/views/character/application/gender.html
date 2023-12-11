@@ -6,7 +6,7 @@
   {{ template "web/views/partials/character/application/status/list" .Statuses }}
   <div class="w-full max-w-lg rounded-md border p-6">
     <div id="character-application-flow-error"></div>
-    <p class="whitespace-nowrap pt-4">Choose {{ .Name }}'s gender:</p>
+    <p class="whitespace-nowrap">Choose {{ .Name }}'s gender:</p>
     <div class="pb-1 text-xs leading-none text-muted-foreground">
       Your gender determines the pronouns used by third-person descriptions in
       the game.
@@ -138,7 +138,16 @@
           </label>
         </div>
       </div>
-      <div class="flex justify-end">
+      <div class="flex justify-end gap-2">
+        {{ if .BackLink }}
+        <a
+          href="{{ .BackLink }}"
+          class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+          type=""
+        >
+          Back
+        </a>
+        {{ end -}}
         <button
           class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
           type="submit"

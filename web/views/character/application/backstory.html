@@ -6,7 +6,7 @@
   {{ template "web/views/partials/character/application/status/list" .Statuses }}
   <div class="w-full max-w-lg rounded-md border p-6">
     <div id="character-application-flow-error"></div>
-    <p class="whitespace-nowrap pt-4">Write {{ .Name }}'s backstory:</p>
+    <p class="whitespace-nowrap">Write {{ .Name }}'s backstory:</p>
     <div class="pb-2 text-xs leading-none text-muted-foreground">
       This is your character's private backstory.
     </div>
@@ -51,13 +51,22 @@
           {{ template "web/views/partials/character/application/backstory/requirements" }}
         </div>
       </div>
-      <div class="flex justify-end">
+      <div class="flex justify-end gap-2">
+        {{ if .BackLink }}
+        <a
+          href="{{ .BackLink }}"
+          class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+          type=""
+        >
+          Back
+        </a>
+        {{ end -}}
         <button
           :disabled="!isCharacterBackstoryValid(backstory)"
           class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
           type="submit"
         >
-          Next
+          Review
         </button>
       </div>
     </form>
