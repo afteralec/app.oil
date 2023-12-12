@@ -126,9 +126,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.markEmailVerifiedStmt, err = db.PrepareContext(ctx, markEmailVerified); err != nil {
 		return nil, fmt.Errorf("error preparing query MarkEmailVerified: %w", err)
 	}
-	if q.updateCharacterApplicationContentStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContent); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContent: %w", err)
-	}
 	if q.updateCharacterApplicationContentBackstoryStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentBackstory); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentBackstory: %w", err)
 	}
@@ -322,11 +319,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing markEmailVerifiedStmt: %w", cerr)
 		}
 	}
-	if q.updateCharacterApplicationContentStmt != nil {
-		if cerr := q.updateCharacterApplicationContentStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentStmt: %w", cerr)
-		}
-	}
 	if q.updateCharacterApplicationContentBackstoryStmt != nil {
 		if cerr := q.updateCharacterApplicationContentBackstoryStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateCharacterApplicationContentBackstoryStmt: %w", cerr)
@@ -430,7 +422,6 @@ type Queries struct {
 	listRequestsForPlayerStmt                             *sql.Stmt
 	listVerifiedEmailsStmt                                *sql.Stmt
 	markEmailVerifiedStmt                                 *sql.Stmt
-	updateCharacterApplicationContentStmt                 *sql.Stmt
 	updateCharacterApplicationContentBackstoryStmt        *sql.Stmt
 	updateCharacterApplicationContentDescriptionStmt      *sql.Stmt
 	updateCharacterApplicationContentGenderStmt           *sql.Stmt
@@ -477,7 +468,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listRequestsForPlayerStmt:                             q.listRequestsForPlayerStmt,
 		listVerifiedEmailsStmt:                                q.listVerifiedEmailsStmt,
 		markEmailVerifiedStmt:                                 q.markEmailVerifiedStmt,
-		updateCharacterApplicationContentStmt:                 q.updateCharacterApplicationContentStmt,
 		updateCharacterApplicationContentBackstoryStmt:        q.updateCharacterApplicationContentBackstoryStmt,
 		updateCharacterApplicationContentDescriptionStmt:      q.updateCharacterApplicationContentDescriptionStmt,
 		updateCharacterApplicationContentGenderStmt:           q.updateCharacterApplicationContentGenderStmt,

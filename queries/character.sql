@@ -67,18 +67,6 @@ ON
 WHERE
   character_application_content.rid = ?;
 
--- name: UpdateCharacterApplicationContent :exec
-UPDATE 
-  character_application_content
-SET 
-  gender = ?,
-  name = ?,
-  short_description = ?,
-  description = ?,
-  backstory = ?
-WHERE
-  rid = ?;
-
 -- name: UpdateCharacterApplicationContentName :exec
 UPDATE character_application_content SET name = ? WHERE rid = ?;
 

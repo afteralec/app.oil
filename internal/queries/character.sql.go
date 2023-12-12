@@ -231,40 +231,6 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 	return items, nil
 }
 
-const updateCharacterApplicationContent = `-- name: UpdateCharacterApplicationContent :exec
-UPDATE 
-  character_application_content
-SET 
-  gender = ?,
-  name = ?,
-  short_description = ?,
-  description = ?,
-  backstory = ?
-WHERE
-  rid = ?
-`
-
-type UpdateCharacterApplicationContentParams struct {
-	Gender           string
-	Name             string
-	ShortDescription string
-	Description      string
-	Backstory        string
-	Rid              int64
-}
-
-func (q *Queries) UpdateCharacterApplicationContent(ctx context.Context, arg UpdateCharacterApplicationContentParams) error {
-	_, err := q.exec(ctx, q.updateCharacterApplicationContentStmt, updateCharacterApplicationContent,
-		arg.Gender,
-		arg.Name,
-		arg.ShortDescription,
-		arg.Description,
-		arg.Backstory,
-		arg.Rid,
-	)
-	return err
-}
-
 const updateCharacterApplicationContentBackstory = `-- name: UpdateCharacterApplicationContentBackstory :exec
 UPDATE character_application_content SET backstory = ? WHERE rid = ?
 `
