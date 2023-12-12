@@ -83,6 +83,51 @@ func TestVerifyPageUnowned(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
+func TestVerifyPageExpiredToken(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	if err := i.Redis.FlushAll(context.Background()).Err(); err != nil {
+		t.Fatal(err)
+	}
+	DeleteTestPlayer(t, &i, TestUsername)
+	CallRegister(t, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	res := CallLogin(t, a, TestUsername, TestPassword)
+	sessionCookie := res.Cookies()[0]
+	req := AddEmailRequest(TestEmailAddress)
+	req.AddCookie(sessionCookie)
+	_, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	keys, err := i.Redis.Keys(context.Background(), email.VerificationKey("*")).Result()
+	if err != nil {
+		t.Fatal(err)
+	}
+	key := keys[0]
+	if err := i.Redis.Expire(context.Background(), key, 0).Err(); err != nil {
+		t.Fatal(err)
+	}
+	keyParts := strings.Split(key, ":")
+
+	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
+	req = httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err = a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
 func TestVerifyEmailUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()

@@ -9,11 +9,12 @@ import (
 	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/email"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
 )
 
-func VerifyPage(i *shared.Interfaces) fiber.Handler {
+func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {
@@ -31,7 +32,11 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 		}
 		if exists != 1 {
 			c.Status(fiber.StatusNotFound)
-			return c.Render("web/views/404", c.Locals(shared.Bind), "web/views/layouts/standalone")
+			b := c.Locals(shared.Bind).(fiber.Map)
+			b["NotFoundMessage"] = "Sorry, it looks like this link has expired."
+			b["NotFoundButtonLink"] = routes.Profile
+			b["NotFoundButtonText"] = "Return to Profile"
+			return c.Render("web/views/404", b, "web/views/layouts/standalone")
 		}
 
 		eid, err := i.Redis.Get(context.Background(), key).Result()
@@ -102,7 +107,7 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func Verify(i *shared.Interfaces) fiber.Handler {
+func VerifyEmail(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {
