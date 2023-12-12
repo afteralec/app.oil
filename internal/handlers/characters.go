@@ -63,6 +63,26 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		req, err := i.Queries.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if req.Type != request.TypeCharacterApplication {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if req.Pid != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
 		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -101,6 +121,26 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		rid, err := strconv.ParseInt(prid, 10, 64)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		req, err := i.Queries.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if req.Type != request.TypeCharacterApplication {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if req.Pid != pid {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
@@ -154,6 +194,26 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 			return nil
 		}
 
+		req, err := i.Queries.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if req.Type != request.TypeCharacterApplication {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if req.Pid != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
 		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -197,6 +257,26 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		req, err := i.Queries.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if req.Type != request.TypeCharacterApplication {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if req.Pid != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
 		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -237,6 +317,26 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 		rid, err := strconv.ParseInt(prid, 10, 64)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		req, err := i.Queries.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if req.Type != request.TypeCharacterApplication {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if req.Pid != pid {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
