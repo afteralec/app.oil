@@ -11,27 +11,27 @@ import (
 )
 
 const addCommentToRequest = `-- name: AddCommentToRequest :execresult
-INSERT INTO request_comments (text, pid, rid, vid) VALUES (?, ?, ?, ?)
+INSERT INTO
+  request_comments (text, pid, rid, vid) 
+VALUES
+  (?, ?, ?, (SELECT vid FROM requests WHERE requests.rid = rid))
 `
 
 type AddCommentToRequestParams struct {
 	Text string
 	Pid  int64
 	Rid  int64
-	Vid  int64
 }
 
 func (q *Queries) AddCommentToRequest(ctx context.Context, arg AddCommentToRequestParams) (sql.Result, error) {
-	return q.exec(ctx, q.addCommentToRequestStmt, addCommentToRequest,
-		arg.Text,
-		arg.Pid,
-		arg.Rid,
-		arg.Vid,
-	)
+	return q.exec(ctx, q.addCommentToRequestStmt, addCommentToRequest, arg.Text, arg.Pid, arg.Rid)
 }
 
 const addCommentToRequestField = `-- name: AddCommentToRequestField :execresult
-INSERT INTO request_comments (text, field, pid, rid, vid) VALUES (?, ?, ?, ?, ?)
+INSERT INTO 
+  request_comments (text, field, pid, rid, vid) 
+VALUES 
+  (?, ?, ?, ?, ?)
 `
 
 type AddCommentToRequestFieldParams struct {
@@ -53,7 +53,10 @@ func (q *Queries) AddCommentToRequestField(ctx context.Context, arg AddCommentTo
 }
 
 const addReplyToComment = `-- name: AddReplyToComment :execresult
-INSERT INTO request_comments (text, cid, pid, rid, vid) VALUES (?, ?, ?, ?, ?)
+INSERT INTO 
+  request_comments (text, cid, pid, rid, vid) 
+VALUES 
+  (?, ?, ?, ?, (SELECT vid FROM requests WHERE requests.rid = rid))
 `
 
 type AddReplyToCommentParams struct {
@@ -61,7 +64,6 @@ type AddReplyToCommentParams struct {
 	Cid  int64
 	Pid  int64
 	Rid  int64
-	Vid  int64
 }
 
 func (q *Queries) AddReplyToComment(ctx context.Context, arg AddReplyToCommentParams) (sql.Result, error) {
@@ -70,12 +72,14 @@ func (q *Queries) AddReplyToComment(ctx context.Context, arg AddReplyToCommentPa
 		arg.Cid,
 		arg.Pid,
 		arg.Rid,
-		arg.Vid,
 	)
 }
 
 const addReplyToFieldComment = `-- name: AddReplyToFieldComment :execresult
-INSERT INTO request_comments (text, field, cid, pid, rid, vid) VALUES (?, ?, ?, ?, ?, ?)
+INSERT INTO 
+  request_comments (text, field, cid, pid, rid, vid) 
+VALUES 
+  (?, ?, ?, ?, ?, (SELECT vid FROM requests WHERE requests.rid = rid))
 `
 
 type AddReplyToFieldCommentParams struct {
@@ -84,7 +88,6 @@ type AddReplyToFieldCommentParams struct {
 	Cid   int64
 	Pid   int64
 	Rid   int64
-	Vid   int64
 }
 
 func (q *Queries) AddReplyToFieldComment(ctx context.Context, arg AddReplyToFieldCommentParams) (sql.Result, error) {
@@ -94,7 +97,6 @@ func (q *Queries) AddReplyToFieldComment(ctx context.Context, arg AddReplyToFiel
 		arg.Cid,
 		arg.Pid,
 		arg.Rid,
-		arg.Vid,
 	)
 }
 
@@ -168,6 +170,15 @@ func (q *Queries) GetRequestComment(ctx context.Context, id int64) (RequestComme
 		&i.ID,
 	)
 	return i, err
+}
+
+const incrementRequestVersion = `-- name: IncrementRequestVersion :exec
+UPDATE requests SET vid = vid + 1 WHERE id = ?
+`
+
+func (q *Queries) IncrementRequestVersion(ctx context.Context, id int64) error {
+	_, err := q.exec(ctx, q.incrementRequestVersionStmt, incrementRequestVersion, id)
+	return err
 }
 
 const listCommentsForRequest = `-- name: ListCommentsForRequest :many

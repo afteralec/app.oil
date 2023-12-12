@@ -7,6 +7,9 @@ SELECT * FROM requests WHERE id = ?;
 -- name: CreateRequest :execresult
 INSERT INTO requests (type, pid) VALUES (?, ?);
 
+-- name: IncrementRequestVersion :exec
+UPDATE requests SET vid = vid + 1 WHERE id = ?;
+
 -- name: CountOpenRequests :one
 SELECT
   COUNT(*)
@@ -16,16 +19,28 @@ WHERE
   pid = ? AND status != "Archived" AND status != "Canceled";
 
 -- name: AddCommentToRequest :execresult
-INSERT INTO request_comments (text, pid, rid, vid) VALUES (?, ?, ?, ?);
+INSERT INTO
+  request_comments (text, pid, rid, vid) 
+VALUES
+  (?, ?, ?, (SELECT vid FROM requests WHERE requests.rid = rid));
 
 -- name: AddCommentToRequestField :execresult
-INSERT INTO request_comments (text, field, pid, rid, vid) VALUES (?, ?, ?, ?, ?);
+INSERT INTO 
+  request_comments (text, field, pid, rid, vid) 
+VALUES 
+  (?, ?, ?, ?, ?);
 
 -- name: AddReplyToComment :execresult
-INSERT INTO request_comments (text, cid, pid, rid, vid) VALUES (?, ?, ?, ?, ?);
+INSERT INTO 
+  request_comments (text, cid, pid, rid, vid) 
+VALUES 
+  (?, ?, ?, ?, (SELECT vid FROM requests WHERE requests.rid = rid));
 
 -- name: AddReplyToFieldComment :execresult
-INSERT INTO request_comments (text, field, cid, pid, rid, vid) VALUES (?, ?, ?, ?, ?, ?);
+INSERT INTO 
+  request_comments (text, field, cid, pid, rid, vid) 
+VALUES 
+  (?, ?, ?, ?, ?, (SELECT vid FROM requests WHERE requests.rid = rid));
 
 -- name: ListCommentsForRequest :many
 SELECT * FROM request_comments WHERE rid = ?;
@@ -35,4 +50,3 @@ SELECT * FROM request_comments WHERE id = ?;
 
 -- name: ListRepliesToComment :many
 SELECT * FROM request_comments WHERE cid = ?;
-

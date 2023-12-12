@@ -80,7 +80,6 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			} else {
 				_, err := i.Queries.AddCommentToRequest(context.Background(), queries.AddCommentToRequestParams{
 					Rid:  rid,
-					Vid:  req.Vid,
 					Pid:  pid.(int64),
 					Text: r.Text,
 				})
@@ -104,7 +103,6 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			}
 			_, err = i.Queries.AddReplyToFieldComment(context.Background(), queries.AddReplyToFieldCommentParams{
 				Rid:   rid,
-				Vid:   req.Vid,
 				Pid:   pid.(int64),
 				Field: rc.Field,
 				Text:  r.Text,

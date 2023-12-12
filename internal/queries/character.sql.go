@@ -63,9 +63,9 @@ func (q *Queries) CreateCharacterApplicationContent(ctx context.Context, arg Cre
 const createCharacterApplicationContentHistory = `-- name: CreateCharacterApplicationContentHistory :execresult
 INSERT INTO
   character_application_content_history
-  (gender, name, short_description, description, backstory, vid, rid)
+  (gender, name, short_description, description, backstory, rid)
 VALUES
-  (?, ?, ?, ?, ?, ?, ?)
+  (?, ?, ?, ?, ?, ?)
 `
 
 type CreateCharacterApplicationContentHistoryParams struct {
@@ -74,7 +74,6 @@ type CreateCharacterApplicationContentHistoryParams struct {
 	ShortDescription string
 	Description      string
 	Backstory        string
-	Vid              int64
 	Rid              int64
 }
 
@@ -85,13 +84,33 @@ func (q *Queries) CreateCharacterApplicationContentHistory(ctx context.Context, 
 		arg.ShortDescription,
 		arg.Description,
 		arg.Backstory,
-		arg.Vid,
 		arg.Rid,
 	)
 }
 
+const createHistoryForCharacterApplication = `-- name: CreateHistoryForCharacterApplication :exec
+INSERT INTO
+  character_application_content_history
+  (gender, name, short_description, description, backstory, rid, vid)
+SELECT 
+  gender, name, short_description, description, backstory, rid, requests.vid
+FROM
+  character_application_content
+JOIN
+  requests
+ON
+  requests.id = character_application_content.rid
+WHERE
+  character_application_content.rid = ?
+`
+
+func (q *Queries) CreateHistoryForCharacterApplication(ctx context.Context, rid int64) error {
+	_, err := q.exec(ctx, q.createHistoryForCharacterApplicationStmt, createHistoryForCharacterApplication, rid)
+	return err
+}
+
 const getCharacterApplicationContent = `-- name: GetCharacterApplicationContent :one
-SELECT created_at, updated_at, backstory, description, short_description, name, gender, vid, rid, id FROM character_application_content WHERE id = ?
+SELECT created_at, updated_at, backstory, description, short_description, name, gender, rid, id FROM character_application_content WHERE id = ?
 `
 
 func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) (CharacterApplicationContent, error) {
@@ -105,7 +124,6 @@ func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) 
 		&i.ShortDescription,
 		&i.Name,
 		&i.Gender,
-		&i.Vid,
 		&i.Rid,
 		&i.ID,
 	)
@@ -113,7 +131,7 @@ func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) 
 }
 
 const getCharacterApplicationContentForRequest = `-- name: GetCharacterApplicationContentForRequest :one
-SELECT created_at, updated_at, backstory, description, short_description, name, gender, vid, rid, id FROM character_application_content WHERE rid = ?
+SELECT created_at, updated_at, backstory, description, short_description, name, gender, rid, id FROM character_application_content WHERE rid = ?
 `
 
 func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, rid int64) (CharacterApplicationContent, error) {
@@ -127,7 +145,6 @@ func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, 
 		&i.ShortDescription,
 		&i.Name,
 		&i.Gender,
-		&i.Vid,
 		&i.Rid,
 		&i.ID,
 	)
@@ -136,7 +153,7 @@ func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, 
 
 const listCharacterApplicationContentForPlayer = `-- name: ListCharacterApplicationContentForPlayer :many
 SELECT
-  created_at, updated_at, backstory, description, short_description, name, gender, vid, rid, id
+  created_at, updated_at, backstory, description, short_description, name, gender, rid, id
 FROM
   character_application_content 
 WHERE
@@ -161,7 +178,6 @@ func (q *Queries) ListCharacterApplicationContentForPlayer(ctx context.Context, 
 			&i.ShortDescription,
 			&i.Name,
 			&i.Gender,
-			&i.Vid,
 			&i.Rid,
 			&i.ID,
 		); err != nil {
@@ -180,7 +196,7 @@ func (q *Queries) ListCharacterApplicationContentForPlayer(ctx context.Context, 
 
 const listCharacterApplicationsForPlayer = `-- name: ListCharacterApplicationsForPlayer :many
 SELECT
-  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.vid, character_application_content.rid, character_application_content.id, requests.type, requests.status, requests.created_at, requests.updated_at, requests.vid, requests.pid, requests.id, requests.new
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, requests.type, requests.status, requests.created_at, requests.updated_at, requests.vid, requests.pid, requests.id, requests.new
 FROM
   requests
 JOIN
@@ -219,7 +235,6 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 			&i.CharacterApplicationContent.ShortDescription,
 			&i.CharacterApplicationContent.Name,
 			&i.CharacterApplicationContent.Gender,
-			&i.CharacterApplicationContent.Vid,
 			&i.CharacterApplicationContent.Rid,
 			&i.CharacterApplicationContent.ID,
 			&i.Request.Type,
@@ -252,8 +267,7 @@ SET
   name = ?,
   short_description = ?,
   description = ?,
-  backstory = ?,
-  vid = ?
+  backstory = ?
 WHERE
   rid = ?
 `
@@ -264,7 +278,6 @@ type UpdateCharacterApplicationContentParams struct {
 	ShortDescription string
 	Description      string
 	Backstory        string
-	Vid              int64
 	Rid              int64
 }
 
@@ -275,7 +288,6 @@ func (q *Queries) UpdateCharacterApplicationContent(ctx context.Context, arg Upd
 		arg.ShortDescription,
 		arg.Description,
 		arg.Backstory,
-		arg.Vid,
 		arg.Rid,
 	)
 	return err
@@ -348,19 +360,5 @@ type UpdateCharacterApplicationContentShortDescriptionParams struct {
 
 func (q *Queries) UpdateCharacterApplicationContentShortDescription(ctx context.Context, arg UpdateCharacterApplicationContentShortDescriptionParams) error {
 	_, err := q.exec(ctx, q.updateCharacterApplicationContentShortDescriptionStmt, updateCharacterApplicationContentShortDescription, arg.ShortDescription, arg.Rid)
-	return err
-}
-
-const updateCharacterApplicationContentVersion = `-- name: UpdateCharacterApplicationContentVersion :exec
-UPDATE character_application_content SET vid = ? WHERE rid = ?
-`
-
-type UpdateCharacterApplicationContentVersionParams struct {
-	Vid int64
-	Rid int64
-}
-
-func (q *Queries) UpdateCharacterApplicationContentVersion(ctx context.Context, arg UpdateCharacterApplicationContentVersionParams) error {
-	_, err := q.exec(ctx, q.updateCharacterApplicationContentVersionStmt, updateCharacterApplicationContentVersion, arg.Vid, arg.Rid)
 	return err
 }

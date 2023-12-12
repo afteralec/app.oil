@@ -16,7 +16,6 @@ type CharacterApplicationContent struct {
 	ShortDescription string
 	Name             string
 	Gender           string
-	Vid              int64
 	Rid              int64
 	ID               int64
 }

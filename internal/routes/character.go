@@ -38,3 +38,7 @@ func CharacterApplicationBackstoryPath(id string) string {
 func CharacterApplicationReviewPath(id string) string {
 	return fmt.Sprintf("%s/%s/review", CharacterApplication, id)
 }
+
+func SubmitCharacterApplicationPath(id string) string {
+	return fmt.Sprintf("%s/%s/submit", CharacterApplication, id)
+}

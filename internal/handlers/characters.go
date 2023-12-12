@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"log"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -357,93 +358,6 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func UpdateCharacterApplication(i *shared.Interfaces) fiber.Handler {
-	type input struct {
-		Name             string `form:"name"`
-		Gender           string `form:"gender"`
-		ShortDescription string `form:"sdesc"`
-		Description      string `form:"description"`
-		Backstory        string `form:"backstory"`
-	}
-	return func(c *fiber.Ctx) error {
-		pid := c.Locals("pid")
-
-		if pid == nil {
-			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
-		}
-
-		prid := c.Params("id")
-		if len(prid) == 0 {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-		rid, err := strconv.ParseInt(prid, 10, 64)
-		if err != nil {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-
-		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				req, err := i.Queries.GetRequest(context.Background(), rid)
-				if err != nil {
-					if err == sql.ErrNoRows {
-						c.Status(fiber.StatusNotFound)
-						return nil
-					}
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-				if req.Type != request.TypeCharacterApplication {
-					c.Status(fiber.StatusBadRequest)
-					return nil
-				}
-			}
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		_, err = i.Queries.CreateCharacterApplicationContentHistory(context.Background(), queries.CreateCharacterApplicationContentHistoryParams{
-			Gender:           app.Gender,
-			Name:             app.Name,
-			ShortDescription: app.ShortDescription,
-			Description:      app.Description,
-			Backstory:        app.Backstory,
-			Vid:              app.Vid,
-			Rid:              app.Rid,
-		})
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		r := new(input)
-		if err := c.BodyParser(r); err != nil {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-
-		err = i.Queries.UpdateCharacterApplicationContent(context.Background(), queries.UpdateCharacterApplicationContentParams{
-			Gender:           character.SanitizeGender(r.Gender),
-			Name:             r.Name,
-			ShortDescription: r.ShortDescription,
-			Description:      r.Description,
-			Backstory:        r.Backstory,
-			Vid:              app.Vid,
-			Rid:              app.Rid,
-		})
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		c.Status(fiber.StatusOK)
-		return nil
-	}
-}
-
 func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 	// TODO: Validate this input for length on the way in
 	type input struct {
@@ -481,7 +395,7 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		req, err := i.Queries.GetRequest(context.Background(), rid)
+		ok, err := request.IsCharacterApplicationDB(i.Database, rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -490,8 +404,7 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-
-		if req.Type != request.TypeCharacterApplication {
+		if !ok {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -512,7 +425,6 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 			ShortDescription: app.ShortDescription,
 			Description:      app.Description,
 			Backstory:        app.Backstory,
-			Vid:              app.Vid,
 			Rid:              app.Rid,
 		})
 		if err != nil {
@@ -559,22 +471,23 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		ok, err := request.IsCharacterApplicationDB(i.Database, rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		if !ok {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
 		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				req, err := i.Queries.GetRequest(context.Background(), rid)
-				if err != nil {
-					if err == sql.ErrNoRows {
-						c.Status(fiber.StatusNotFound)
-						return nil
-					}
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-				if req.Type != request.TypeCharacterApplication {
-					c.Status(fiber.StatusBadRequest)
-					return nil
-				}
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
@@ -588,7 +501,6 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 			ShortDescription: app.ShortDescription,
 			Description:      app.Description,
 			Backstory:        app.Backstory,
-			Vid:              app.Vid,
 			Rid:              app.Rid,
 		})
 		if err != nil {
@@ -641,22 +553,23 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 			return nil
 		}
 
+		ok, err := request.IsCharacterApplicationDB(i.Database, rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		if !ok {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
 		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				req, err := i.Queries.GetRequest(context.Background(), rid)
-				if err != nil {
-					if err == sql.ErrNoRows {
-						c.Status(fiber.StatusNotFound)
-						return nil
-					}
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-				if req.Type != request.TypeCharacterApplication {
-					c.Status(fiber.StatusBadRequest)
-					return nil
-				}
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
@@ -670,7 +583,6 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 			ShortDescription: app.ShortDescription,
 			Description:      app.Description,
 			Backstory:        app.Backstory,
-			Vid:              app.Vid,
 			Rid:              app.Rid,
 		})
 		if err != nil {
@@ -723,22 +635,23 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		ok, err := request.IsCharacterApplicationDB(i.Database, rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		if !ok {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
 		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				req, err := i.Queries.GetRequest(context.Background(), rid)
-				if err != nil {
-					if err == sql.ErrNoRows {
-						c.Status(fiber.StatusNotFound)
-						return nil
-					}
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-				if req.Type != request.TypeCharacterApplication {
-					c.Status(fiber.StatusBadRequest)
-					return nil
-				}
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
@@ -752,7 +665,6 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 			ShortDescription: app.ShortDescription,
 			Description:      app.Description,
 			Backstory:        app.Backstory,
-			Vid:              app.Vid,
 			Rid:              app.Rid,
 		})
 		if err != nil {
@@ -805,39 +717,24 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
+		ok, err := request.IsCharacterApplicationDB(i.Database, rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				req, err := i.Queries.GetRequest(context.Background(), rid)
-				if err != nil {
-					if err == sql.ErrNoRows {
-						c.Status(fiber.StatusNotFound)
-						return nil
-					}
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-				if req.Type != request.TypeCharacterApplication {
-					c.Status(fiber.StatusBadRequest)
-					return nil
-				}
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
+			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
+		if !ok {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
 
-		_, err = i.Queries.CreateCharacterApplicationContentHistory(context.Background(), queries.CreateCharacterApplicationContentHistoryParams{
-			Gender:           app.Gender,
-			Name:             app.Name,
-			ShortDescription: app.ShortDescription,
-			Description:      app.Description,
-			Backstory:        app.Backstory,
-			Vid:              app.Vid,
-			Rid:              app.Rid,
-		})
+		err = i.Queries.CreateHistoryForCharacterApplication(context.Background(), rid)
 		if err != nil {
+			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -853,6 +750,7 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 			Rid:       rid,
 		})
 		if err != nil {
+			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -863,17 +761,13 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func UpdateCharacterApplicationVersion(i *shared.Interfaces) fiber.Handler {
-	// TODO: Validate this input on the way in
-	type input struct {
-		Vid int64 `form:"vid"`
-	}
+func SubmitCharacterApplication(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
+			return nil
 		}
 
 		prid := c.Params("id")
@@ -887,22 +781,27 @@ func UpdateCharacterApplicationVersion(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		ok, err := request.IsCharacterApplicationTx(tx, rid)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		if !ok {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		err = qtx.IncrementRequestVersion(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				req, err := i.Queries.GetRequest(context.Background(), rid)
-				if err != nil {
-					if err == sql.ErrNoRows {
-						c.Status(fiber.StatusNotFound)
-						return nil
-					}
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-				if req.Type != request.TypeCharacterApplication {
-					c.Status(fiber.StatusBadRequest)
-					return nil
-				}
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
@@ -910,31 +809,7 @@ func UpdateCharacterApplicationVersion(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		_, err = i.Queries.CreateCharacterApplicationContentHistory(context.Background(), queries.CreateCharacterApplicationContentHistoryParams{
-			Gender:           app.Gender,
-			Name:             app.Name,
-			ShortDescription: app.ShortDescription,
-			Description:      app.Description,
-			Backstory:        app.Backstory,
-			Vid:              app.Vid,
-			Rid:              app.Rid,
-		})
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		r := new(input)
-		if err := c.BodyParser(r); err != nil {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-
-		err = i.Queries.UpdateCharacterApplicationContentVersion(context.Background(), queries.UpdateCharacterApplicationContentVersionParams{
-			Vid: r.Vid,
-			Rid: rid,
-		})
-		if err != nil {
+		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}

@@ -206,118 +206,6 @@ func TestNewCharacterApplicationMaxOpen(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestUpdateCharacterApplication(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	url := MakeTestURL(routes.NewCharacterApplicationPath())
-	req := httptest.NewRequest(http.MethodPut, url, nil)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
-}
-
-func TestUpdateCharacterApplicationSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("name", "test")
-	writer.WriteField("gender", "NonBinary")
-	writer.WriteField("sdesc", "test, testerly person")
-	writer.WriteField("description", "This is a test character application.")
-	writer.WriteField("backstory", "This is a tragic backtory.")
-	writer.Close()
-	req := httptest.NewRequest(http.MethodPut, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func TestUpdateCharacterApplicationNotFound(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid+1, 10)))
-	req := httptest.NewRequest(http.MethodPut, url, nil)
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
-}
-
-func TestUpdateCharacterApplicationFatal(t *testing.T) {
-	i := shared.SetupInterfaces()
-
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	i.Close()
-	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
-	req := httptest.NewRequest(http.MethodPut, url, nil)
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
-}
-
-func TestUpdateCharacterApplicationMissingBody(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
-	req := httptest.NewRequest(http.MethodPut, url, nil)
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
-}
-
 func TestUpdateCharacterApplicationNameUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
@@ -1368,6 +1256,26 @@ func TestCharacterReviewPageFatal(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
+func TestSubmitCharacterApplicationUnauthorized(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	url := MakeTestURL(routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10)))
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
 func SetupTestCharacters(t *testing.T, i *shared.Interfaces, u string) {

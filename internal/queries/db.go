@@ -54,6 +54,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createEmailStmt, err = db.PrepareContext(ctx, createEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateEmail: %w", err)
 	}
+	if q.createHistoryForCharacterApplicationStmt, err = db.PrepareContext(ctx, createHistoryForCharacterApplication); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateHistoryForCharacterApplication: %w", err)
+	}
 	if q.createPlayerStmt, err = db.PrepareContext(ctx, createPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePlayer: %w", err)
 	}
@@ -99,6 +102,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getVerifiedEmailByAddressStmt, err = db.PrepareContext(ctx, getVerifiedEmailByAddress); err != nil {
 		return nil, fmt.Errorf("error preparing query GetVerifiedEmailByAddress: %w", err)
 	}
+	if q.incrementRequestVersionStmt, err = db.PrepareContext(ctx, incrementRequestVersion); err != nil {
+		return nil, fmt.Errorf("error preparing query IncrementRequestVersion: %w", err)
+	}
 	if q.listCharacterApplicationContentForPlayerStmt, err = db.PrepareContext(ctx, listCharacterApplicationContentForPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query ListCharacterApplicationContentForPlayer: %w", err)
 	}
@@ -140,9 +146,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.updateCharacterApplicationContentShortDescriptionStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentShortDescription); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentShortDescription: %w", err)
-	}
-	if q.updateCharacterApplicationContentVersionStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentVersion); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentVersion: %w", err)
 	}
 	if q.updatePlayerPasswordStmt, err = db.PrepareContext(ctx, updatePlayerPassword); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePlayerPassword: %w", err)
@@ -200,6 +203,11 @@ func (q *Queries) Close() error {
 	if q.createEmailStmt != nil {
 		if cerr := q.createEmailStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createEmailStmt: %w", cerr)
+		}
+	}
+	if q.createHistoryForCharacterApplicationStmt != nil {
+		if cerr := q.createHistoryForCharacterApplicationStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createHistoryForCharacterApplicationStmt: %w", cerr)
 		}
 	}
 	if q.createPlayerStmt != nil {
@@ -277,6 +285,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getVerifiedEmailByAddressStmt: %w", cerr)
 		}
 	}
+	if q.incrementRequestVersionStmt != nil {
+		if cerr := q.incrementRequestVersionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing incrementRequestVersionStmt: %w", cerr)
+		}
+	}
 	if q.listCharacterApplicationContentForPlayerStmt != nil {
 		if cerr := q.listCharacterApplicationContentForPlayerStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listCharacterApplicationContentForPlayerStmt: %w", cerr)
@@ -347,11 +360,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateCharacterApplicationContentShortDescriptionStmt: %w", cerr)
 		}
 	}
-	if q.updateCharacterApplicationContentVersionStmt != nil {
-		if cerr := q.updateCharacterApplicationContentVersionStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentVersionStmt: %w", cerr)
-		}
-	}
 	if q.updatePlayerPasswordStmt != nil {
 		if cerr := q.updatePlayerPasswordStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updatePlayerPasswordStmt: %w", cerr)
@@ -406,6 +414,7 @@ type Queries struct {
 	createCharacterApplicationContentStmt                 *sql.Stmt
 	createCharacterApplicationContentHistoryStmt          *sql.Stmt
 	createEmailStmt                                       *sql.Stmt
+	createHistoryForCharacterApplicationStmt              *sql.Stmt
 	createPlayerStmt                                      *sql.Stmt
 	createRequestStmt                                     *sql.Stmt
 	deleteEmailStmt                                       *sql.Stmt
@@ -421,6 +430,7 @@ type Queries struct {
 	getRequestCommentStmt                                 *sql.Stmt
 	getRoleStmt                                           *sql.Stmt
 	getVerifiedEmailByAddressStmt                         *sql.Stmt
+	incrementRequestVersionStmt                           *sql.Stmt
 	listCharacterApplicationContentForPlayerStmt          *sql.Stmt
 	listCharacterApplicationsForPlayerStmt                *sql.Stmt
 	listCommentsForRequestStmt                            *sql.Stmt
@@ -435,7 +445,6 @@ type Queries struct {
 	updateCharacterApplicationContentGenderStmt           *sql.Stmt
 	updateCharacterApplicationContentNameStmt             *sql.Stmt
 	updateCharacterApplicationContentShortDescriptionStmt *sql.Stmt
-	updateCharacterApplicationContentVersionStmt          *sql.Stmt
 	updatePlayerPasswordStmt                              *sql.Stmt
 }
 
@@ -453,6 +462,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createCharacterApplicationContentStmt:                 q.createCharacterApplicationContentStmt,
 		createCharacterApplicationContentHistoryStmt:          q.createCharacterApplicationContentHistoryStmt,
 		createEmailStmt:                                       q.createEmailStmt,
+		createHistoryForCharacterApplicationStmt:              q.createHistoryForCharacterApplicationStmt,
 		createPlayerStmt:                                      q.createPlayerStmt,
 		createRequestStmt:                                     q.createRequestStmt,
 		deleteEmailStmt:                                       q.deleteEmailStmt,
@@ -468,6 +478,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getRequestCommentStmt:                                 q.getRequestCommentStmt,
 		getRoleStmt:                                           q.getRoleStmt,
 		getVerifiedEmailByAddressStmt:                         q.getVerifiedEmailByAddressStmt,
+		incrementRequestVersionStmt:                           q.incrementRequestVersionStmt,
 		listCharacterApplicationContentForPlayerStmt:          q.listCharacterApplicationContentForPlayerStmt,
 		listCharacterApplicationsForPlayerStmt:                q.listCharacterApplicationsForPlayerStmt,
 		listCommentsForRequestStmt:                            q.listCommentsForRequestStmt,
@@ -482,7 +493,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updateCharacterApplicationContentGenderStmt:           q.updateCharacterApplicationContentGenderStmt,
 		updateCharacterApplicationContentNameStmt:             q.updateCharacterApplicationContentNameStmt,
 		updateCharacterApplicationContentShortDescriptionStmt: q.updateCharacterApplicationContentShortDescriptionStmt,
-		updateCharacterApplicationContentVersionStmt:          q.updateCharacterApplicationContentVersionStmt,
 		updatePlayerPasswordStmt:                              q.updatePlayerPasswordStmt,
 	}
 }
