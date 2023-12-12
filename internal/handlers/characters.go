@@ -323,7 +323,15 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		result, err := i.Queries.CreateRequest(context.Background(), queries.CreateRequestParams{
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		result, err := qtx.CreateRequest(context.Background(), queries.CreateRequestParams{
 			Pid:  pid.(int64),
 			Type: request.TypeCharacterApplication,
 		})
@@ -331,22 +339,18 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-
 		rid, err := result.LastInsertId()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		_, err = i.Queries.CreateCharacterApplicationContent(context.Background(), queries.CreateCharacterApplicationContentParams{
-			Gender:           character.GenderNonBinary,
-			Name:             "",
-			ShortDescription: "",
-			Description:      "",
-			Backstory:        "",
-			Rid:              rid,
-		})
-		if err != nil {
+		if err = qtx.CreateCharacterApplicationContent(context.Background(), rid); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}

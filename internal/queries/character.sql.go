@@ -7,7 +7,6 @@ package queries
 
 import (
 	"context"
-	"database/sql"
 )
 
 const countOpenCharacterApplicationsForPlayer = `-- name: CountOpenCharacterApplicationsForPlayer :one
@@ -32,32 +31,17 @@ func (q *Queries) CountOpenCharacterApplicationsForPlayer(ctx context.Context, p
 	return count, err
 }
 
-const createCharacterApplicationContent = `-- name: CreateCharacterApplicationContent :execresult
+const createCharacterApplicationContent = `-- name: CreateCharacterApplicationContent :exec
 INSERT INTO
   character_application_content 
   (gender, name, short_description, description, backstory, rid) 
 VALUES 
-  (?, ?, ?, ?, ?, ?)
+  ("", "", "", "", "", ?)
 `
 
-type CreateCharacterApplicationContentParams struct {
-	Gender           string
-	Name             string
-	ShortDescription string
-	Description      string
-	Backstory        string
-	Rid              int64
-}
-
-func (q *Queries) CreateCharacterApplicationContent(ctx context.Context, arg CreateCharacterApplicationContentParams) (sql.Result, error) {
-	return q.exec(ctx, q.createCharacterApplicationContentStmt, createCharacterApplicationContent,
-		arg.Gender,
-		arg.Name,
-		arg.ShortDescription,
-		arg.Description,
-		arg.Backstory,
-		arg.Rid,
-	)
+func (q *Queries) CreateCharacterApplicationContent(ctx context.Context, rid int64) error {
+	_, err := q.exec(ctx, q.createCharacterApplicationContentStmt, createCharacterApplicationContent, rid)
+	return err
 }
 
 const createHistoryForCharacterApplication = `-- name: CreateHistoryForCharacterApplication :exec

@@ -1,9 +1,9 @@
--- name: CreateCharacterApplicationContent :execresult
+-- name: CreateCharacterApplicationContent :exec
 INSERT INTO
   character_application_content 
   (gender, name, short_description, description, backstory, rid) 
 VALUES 
-  (?, ?, ?, ?, ?, ?);
+  ("", "", "", "", "", ?);
 
 -- name: GetCharacterApplicationContent :one
 SELECT * FROM character_application_content WHERE id = ?;
