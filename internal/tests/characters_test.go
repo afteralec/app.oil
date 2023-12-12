@@ -1748,8 +1748,10 @@ func TestSubmitCharacterApplicationUnowned(t *testing.T) {
 
 	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 	CallRegister(t, a, "testify2", TestPassword)
 	res := CallLogin(t, a, "testify2", TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
 	sessionCookie := res.Cookies()[0]
 	url := MakeTestURL(routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
@@ -1773,6 +1775,7 @@ func TestSubmitCharacterApplicationSuccess(t *testing.T) {
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 	url := MakeTestURL(routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -1782,6 +1785,54 @@ func TestSubmitCharacterApplicationSuccess(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestSubmitCharacterApplicationNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	url := MakeTestURL(routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid+1, 10)))
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestSubmitCharacterApplicationFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	url := MakeTestURL(routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10)))
+	i.Close()
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	i = shared.SetupInterfaces()
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
 func SetupTestCharacters(t *testing.T, i *shared.Interfaces, u string) {
