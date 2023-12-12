@@ -63,7 +63,15 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		req, err := i.Queries.GetRequest(context.Background(), rid)
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		req, err := qtx.GetRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -83,12 +91,17 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
+		app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -124,7 +137,15 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		req, err := i.Queries.GetRequest(context.Background(), rid)
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		req, err := qtx.GetRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -144,12 +165,17 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
+		app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -194,7 +220,15 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 			return nil
 		}
 
-		req, err := i.Queries.GetRequest(context.Background(), rid)
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		req, err := qtx.GetRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -214,12 +248,17 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 			return nil
 		}
 
-		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
+		app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -257,7 +296,15 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		req, err := i.Queries.GetRequest(context.Background(), rid)
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		req, err := qtx.GetRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -277,12 +324,17 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
+		app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -320,7 +372,15 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		req, err := i.Queries.GetRequest(context.Background(), rid)
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		req, err := qtx.GetRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -340,12 +400,17 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		app, err := i.Queries.GetCharacterApplicationContentForRequest(context.Background(), rid)
+		app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
