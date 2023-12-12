@@ -244,7 +244,7 @@ export function getProfileAvatarSrc(
   }
 }
 
-export function getCharacterApplicationFlowNameData(name) {
+export function getCharacterApplicationNameData(name) {
   return {
     name,
     eval: {
@@ -257,13 +257,13 @@ export function getCharacterApplicationFlowNameData(name) {
   };
 }
 
-export function getCharacterApplicationFlowGenderData(gender) {
+export function getCharacterApplicationGenderData(gender) {
   return {
     gender,
   };
 }
 
-export function getCharacterApplicationFlowShortDescriptionData(sdesc) {
+export function getCharacterApplicationShortDescriptionData(sdesc) {
   return {
     sdesc,
     eval: {
@@ -276,7 +276,7 @@ export function getCharacterApplicationFlowShortDescriptionData(sdesc) {
   };
 }
 
-export function getCharacterApplicationFlowDescriptionData(description) {
+export function getCharacterApplicationDescriptionData(description) {
   return {
     description,
     eval: {
@@ -289,7 +289,7 @@ export function getCharacterApplicationFlowDescriptionData(description) {
   };
 }
 
-export function getCharacterApplicationFlowBackstoryData(backstory) {
+export function getCharacterApplicationBackstoryData(backstory) {
   return {
     backstory,
     eval: {
@@ -336,13 +336,11 @@ window.getProfileEmailData = getProfileEmailData;
 window.getEmailData = getEmailData;
 window.getGravatarEmailData = getGravatarEmailData;
 window.getProfileAvatarData = getProfileAvatarData;
-window.getCharacterApplicationFlowNameData =
-  getCharacterApplicationFlowNameData;
-window.getCharacterApplicationFlowGenderData =
-  getCharacterApplicationFlowGenderData;
-window.getCharacterApplicationFlowShortDescriptionData =
-  getCharacterApplicationFlowShortDescriptionData;
-window.getCharacterApplicationFlowDescriptionData =
-  getCharacterApplicationFlowDescriptionData;
-window.getCharacterApplicationFlowBackstoryData =
-  getCharacterApplicationFlowBackstoryData;
+window.getCharacterApplicationNameData = getCharacterApplicationNameData;
+window.getCharacterApplicationGenderData = getCharacterApplicationGenderData;
+window.getCharacterApplicationShortDescriptionData =
+  getCharacterApplicationShortDescriptionData;
+window.getCharacterApplicationDescriptionData =
+  getCharacterApplicationDescriptionData;
+window.getCharacterApplicationBackstoryData =
+  getCharacterApplicationBackstoryData;

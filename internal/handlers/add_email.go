@@ -76,17 +76,15 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
 		}
 
-		_, err = qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
-		if err != nil {
-			if err != sql.ErrNoRows {
-				c.Append("HX-Retarget", "#add-email-error")
-				c.Append("HX-Reswap", "innerHTML")
-				c.Append(shared.HeaderHXAcceptable, "true")
-				c.Status(fiber.StatusInternalServerError)
-				return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
-			}
+		ve, err := qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
+		if err != nil && err != sql.ErrNoRows {
+			c.Append("HX-Retarget", "#add-email-error")
+			c.Append("HX-Reswap", "innerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 		}
-		if err == nil {
+		if err == nil && ve.Verified {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
@@ -136,7 +134,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/err-internal", &fiber.Map{}, "")
 		}
 
-		if err = email.Verify(i, id, e.Address); err != nil {
+		if err = email.SendVerificationEmail(i, id, e.Address); err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")

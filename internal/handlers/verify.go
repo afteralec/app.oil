@@ -22,7 +22,9 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		token := c.Query("t")
-		exists, err := i.Redis.Exists(context.Background(), token).Result()
+		key := email.VerificationKey(token)
+
+		exists, err := i.Redis.Exists(context.Background(), key).Result()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("web/views/500", c.Locals(shared.Bind), "web/views/layouts/standalone")
@@ -32,7 +34,7 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/404", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
-		eid, err := i.Redis.Get(context.Background(), token).Result()
+		eid, err := i.Redis.Get(context.Background(), key).Result()
 		if err != nil {
 			if err == redis.Nil {
 				c.Status(fiber.StatusNotFound)
@@ -46,7 +48,16 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("web/views/500", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
-		e, err := i.Queries.GetEmail(context.Background(), id)
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		e, err := qtx.GetEmail(context.Background(), id)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -56,16 +67,19 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/500", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
-		_, err = i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
-		if err != nil {
-			if err != sql.ErrNoRows {
-				c.Status(fiber.StatusInternalServerError)
-				return c.Render("web/views/500", c.Locals(shared.Bind), "web/views/layouts/standalone")
-			}
+		ve, err := qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
+		if err != nil && err != sql.ErrNoRows {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("web/views/500", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
-		if err == nil {
+		if err == nil && ve.Verified {
 			c.Status(fiber.StatusConflict)
 			return c.Render("web/views/verify-email-409", c.Locals(shared.Bind), "web/views/layouts/standalone")
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
 		}
 
 		un, err := username.Get(i.Redis, pid.(int64))

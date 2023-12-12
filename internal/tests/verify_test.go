@@ -17,7 +17,8 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func TestVerifyPage(t *testing.T) {
+// TODO: Complete this test suite
+func TestVerifyPageUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -65,6 +66,7 @@ func TestVerifyNoToken(t *testing.T) {
 	app.Handlers(a, &i)
 
 	CallRegister(t, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 	res := CallLogin(t, a, TestUsername, TestPassword)
 	sessionCookie := res.Cookies()[0]
 

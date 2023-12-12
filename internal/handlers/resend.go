@@ -42,7 +42,6 @@ func Resend(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/resend/err-internal", &fiber.Map{}, "")
 		}
 		defer tx.Rollback()
-
 		qtx := i.Queries.WithTx(tx)
 
 		e, err := qtx.GetEmail(context.Background(), id)
@@ -62,34 +61,37 @@ func Resend(i *shared.Interfaces) fiber.Handler {
 		}
 
 		if e.Verified {
-			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusConflict)
+			c.Append(shared.HeaderHXAcceptable, "true")
 			return c.Render("web/views/partials/profile/email/resend/err-conflict", &fiber.Map{}, "")
 		}
 		if e.Pid != pid.(int64) {
-			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
+			c.Append(shared.HeaderHXAcceptable, "true")
 			return c.Render("web/views/partials/profile/email/resend/err-internal", &fiber.Map{}, "")
 		}
 
-		_, err = qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
-		if err != nil {
-			if err != sql.ErrNoRows {
-				c.Append(shared.HeaderHXAcceptable, "true")
-				c.Status(fiber.StatusInternalServerError)
-				return c.Render("web/views/partials/profile/email/resend/err-internal", &fiber.Map{}, "")
-			}
-		}
-		if err == nil {
+		ve, err := qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
+		if err != nil && err != sql.ErrNoRows {
+			c.Status(fiber.StatusInternalServerError)
 			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render("web/views/partials/profile/email/resend/err-internal", &fiber.Map{}, "")
+		}
+		if err == nil && ve.Verified {
 			c.Status(fiber.StatusConflict)
+			c.Append(shared.HeaderHXAcceptable, "true")
 			return c.Render("web/views/partials/profile/email/resend/err-conflict-unowned", &fiber.Map{}, "")
 		}
 
-		err = email.Verify(i, id, e.Address)
-		if err != nil {
-			c.Append(shared.HeaderHXAcceptable, "true")
+		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render("web/views/partials/profile/email/resend/err-internal", &fiber.Map{}, "")
+		}
+
+		if err = email.SendVerificationEmail(i, id, e.Address); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
 			return c.Render("web/views/partials/profile/email/resend/err-internal", &fiber.Map{}, "")
 		}
 

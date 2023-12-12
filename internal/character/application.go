@@ -21,13 +21,13 @@ func NewSummaryFromApplication(req *queries.Request, app *queries.CharacterAppli
 		name = DefaultApplicationSummaryName
 	}
 	return ApplicationSummary{
-		Link: GetApplicationFlowLink(req, app),
+		Link: GetApplicationLink(req, app),
 		ID:   req.ID,
 		Name: name,
 	}
 }
 
-func GetApplicationFlowLink(req *queries.Request, app *queries.CharacterApplicationContent) string {
+func GetApplicationLink(req *queries.Request, app *queries.CharacterApplicationContent) string {
 	strid := strconv.FormatInt(req.ID, 10)
 
 	if !IsNameValid(app.Name) {

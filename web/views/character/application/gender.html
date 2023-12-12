@@ -1,6 +1,6 @@
 <main
   class="flex h-screen w-screen flex-col items-center justify-center"
-  x-data="getCharacterApplicationFlowGenderData('{{ .Gender }}')"
+  x-data="getCharacterApplicationGenderData('{{ .Gender }}')"
 >
   <!-- prettier-ignore -->
   {{ template "web/views/partials/character/application/status/list" .Statuses }}
