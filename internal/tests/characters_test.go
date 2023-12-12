@@ -1615,7 +1615,10 @@ func TestCharacterReviewPageUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.CharacterApplicationReviewPath(routes.ID))
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	url := MakeTestURL(routes.CharacterApplicationReviewPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -1623,6 +1626,32 @@ func TestCharacterReviewPageUnauthorized(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestCharacterReviewPageUnowned(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
+	sessionCookie := res.Cookies()[0]
+	url := MakeTestURL(routes.CharacterApplicationReviewPath(strconv.FormatInt(rid, 10)))
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
 func TestCharacterReviewPageSuccess(t *testing.T) {
