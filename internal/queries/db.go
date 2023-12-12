@@ -48,9 +48,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createCharacterApplicationContentStmt, err = db.PrepareContext(ctx, createCharacterApplicationContent); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateCharacterApplicationContent: %w", err)
 	}
-	if q.createCharacterApplicationContentHistoryStmt, err = db.PrepareContext(ctx, createCharacterApplicationContentHistory); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateCharacterApplicationContentHistory: %w", err)
-	}
 	if q.createEmailStmt, err = db.PrepareContext(ctx, createEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateEmail: %w", err)
 	}
@@ -193,11 +190,6 @@ func (q *Queries) Close() error {
 	if q.createCharacterApplicationContentStmt != nil {
 		if cerr := q.createCharacterApplicationContentStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createCharacterApplicationContentStmt: %w", cerr)
-		}
-	}
-	if q.createCharacterApplicationContentHistoryStmt != nil {
-		if cerr := q.createCharacterApplicationContentHistoryStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createCharacterApplicationContentHistoryStmt: %w", cerr)
 		}
 	}
 	if q.createEmailStmt != nil {
@@ -412,7 +404,6 @@ type Queries struct {
 	countOpenCharacterApplicationsForPlayerStmt           *sql.Stmt
 	countOpenRequestsStmt                                 *sql.Stmt
 	createCharacterApplicationContentStmt                 *sql.Stmt
-	createCharacterApplicationContentHistoryStmt          *sql.Stmt
 	createEmailStmt                                       *sql.Stmt
 	createHistoryForCharacterApplicationStmt              *sql.Stmt
 	createPlayerStmt                                      *sql.Stmt
@@ -460,7 +451,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		countOpenCharacterApplicationsForPlayerStmt:           q.countOpenCharacterApplicationsForPlayerStmt,
 		countOpenRequestsStmt:                                 q.countOpenRequestsStmt,
 		createCharacterApplicationContentStmt:                 q.createCharacterApplicationContentStmt,
-		createCharacterApplicationContentHistoryStmt:          q.createCharacterApplicationContentHistoryStmt,
 		createEmailStmt:                                       q.createEmailStmt,
 		createHistoryForCharacterApplicationStmt:              q.createHistoryForCharacterApplicationStmt,
 		createPlayerStmt:                                      q.createPlayerStmt,

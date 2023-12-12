@@ -60,34 +60,6 @@ func (q *Queries) CreateCharacterApplicationContent(ctx context.Context, arg Cre
 	)
 }
 
-const createCharacterApplicationContentHistory = `-- name: CreateCharacterApplicationContentHistory :execresult
-INSERT INTO
-  character_application_content_history
-  (gender, name, short_description, description, backstory, rid)
-VALUES
-  (?, ?, ?, ?, ?, ?)
-`
-
-type CreateCharacterApplicationContentHistoryParams struct {
-	Gender           string
-	Name             string
-	ShortDescription string
-	Description      string
-	Backstory        string
-	Rid              int64
-}
-
-func (q *Queries) CreateCharacterApplicationContentHistory(ctx context.Context, arg CreateCharacterApplicationContentHistoryParams) (sql.Result, error) {
-	return q.exec(ctx, q.createCharacterApplicationContentHistoryStmt, createCharacterApplicationContentHistory,
-		arg.Gender,
-		arg.Name,
-		arg.ShortDescription,
-		arg.Description,
-		arg.Backstory,
-		arg.Rid,
-	)
-}
-
 const createHistoryForCharacterApplication = `-- name: CreateHistoryForCharacterApplication :exec
 INSERT INTO
   character_application_content_history

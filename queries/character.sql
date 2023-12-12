@@ -52,13 +52,6 @@ WHERE
   rid
 IN (SELECT id FROM requests WHERE pid = ?);
 
--- name: CreateCharacterApplicationContentHistory :execresult
-INSERT INTO
-  character_application_content_history
-  (gender, name, short_description, description, backstory, rid)
-VALUES
-  (?, ?, ?, ?, ?, ?);
-
 -- name: CreateHistoryForCharacterApplication :exec
 INSERT INTO
   character_application_content_history
