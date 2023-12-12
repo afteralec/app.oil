@@ -116,6 +116,24 @@ func (q *Queries) CountOpenRequests(ctx context.Context, pid int64) (int64, erro
 	return count, err
 }
 
+const createHistoryForRequestStatus = `-- name: CreateHistoryForRequestStatus :exec
+INSERT INTO 
+  request_status_changes
+  (rid, vid, status, pid)
+VALUES
+  (?, (SELECT vid FROM requests WHERE requests.rid = rid), (SELECT status FROM requests WHERE requests.rid = rid), ?)
+`
+
+type CreateHistoryForRequestStatusParams struct {
+	Rid int64
+	Pid int64
+}
+
+func (q *Queries) CreateHistoryForRequestStatus(ctx context.Context, arg CreateHistoryForRequestStatusParams) error {
+	_, err := q.exec(ctx, q.createHistoryForRequestStatusStmt, createHistoryForRequestStatus, arg.Rid, arg.Pid)
+	return err
+}
+
 const createRequest = `-- name: CreateRequest :execresult
 INSERT INTO requests (type, pid) VALUES (?, ?)
 `
@@ -293,4 +311,18 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateRequestStatus = `-- name: UpdateRequestStatus :exec
+UPDATE requests SET status = ? WHERE id = ?
+`
+
+type UpdateRequestStatusParams struct {
+	Status string
+	ID     int64
+}
+
+func (q *Queries) UpdateRequestStatus(ctx context.Context, arg UpdateRequestStatusParams) error {
+	_, err := q.exec(ctx, q.updateRequestStatusStmt, updateRequestStatus, arg.Status, arg.ID)
+	return err
 }

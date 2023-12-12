@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"log"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -363,7 +362,6 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 }
 
 func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
-	// TODO: Validate this input for length on the way in
 	type input struct {
 		Name string `form:"name"`
 	}
@@ -393,13 +391,12 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 		}
 
 		name := character.SanitizeName(r.Name)
-
 		if !character.IsNameValid(name) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
 
-		ok, err := request.IsCharacterApplicationDB(i.Database, rid)
+		req, err := i.Queries.GetRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -408,8 +405,13 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-		if !ok {
+		if req.Type != request.TypeCharacterApplication {
 			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if req.Pid != pid {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
@@ -439,7 +441,6 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 }
 
 func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
-	// TODO: Validate this input for length on the way in
 	type input struct {
 		Gender string `form:"gender"`
 	}
@@ -462,7 +463,7 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		ok, err := request.IsCharacterApplicationDB(i.Database, rid)
+		req, err := i.Queries.GetRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -471,8 +472,13 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-		if !ok {
+		if req.Type != request.TypeCharacterApplication {
 			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if req.Pid != pid {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
@@ -488,6 +494,10 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 
 		r := new(input)
 		if err := c.BodyParser(r); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+		if !character.IsGenderValid(r.Gender) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -508,9 +518,8 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 }
 
 func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Handler {
-	// TODO: Validate this input for length on the way in
 	type input struct {
-		Sdesc string `form:"sdesc"`
+		ShortDescription string `form:"sdesc"`
 	}
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
@@ -531,7 +540,7 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 			return nil
 		}
 
-		ok, err := request.IsCharacterApplicationDB(i.Database, rid)
+		req, err := i.Queries.GetRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -540,8 +549,13 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-		if !ok {
+		if req.Type != request.TypeCharacterApplication {
 			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if req.Pid != pid {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
@@ -560,9 +574,13 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
+		if !character.IsShortDescriptionValid(r.ShortDescription) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
 
 		err = i.Queries.UpdateCharacterApplicationContentShortDescription(context.Background(), queries.UpdateCharacterApplicationContentShortDescriptionParams{
-			ShortDescription: r.Sdesc,
+			ShortDescription: r.ShortDescription,
 			Rid:              rid,
 		})
 		if err != nil {
@@ -577,7 +595,6 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 }
 
 func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
-	// TODO: Validate this input for length on the way in
 	type input struct {
 		Description string `form:"description"`
 	}
@@ -600,7 +617,7 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		ok, err := request.IsCharacterApplicationDB(i.Database, rid)
+		req, err := i.Queries.GetRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -609,8 +626,13 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-		if !ok {
+		if req.Type != request.TypeCharacterApplication {
 			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if req.Pid != pid {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
@@ -626,6 +648,10 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 
 		r := new(input)
 		if err := c.BodyParser(r); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+		if !character.IsDescriptionValid(r.Description) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -646,7 +672,6 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 }
 
 func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
-	// TODO: Validate this input for length on the way in
 	type input struct {
 		Backstory string `form:"backstory"`
 	}
@@ -669,24 +694,27 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		ok, err := request.IsCharacterApplicationDB(i.Database, rid)
+		req, err := i.Queries.GetRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
-			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-		if !ok {
+		if req.Type != request.TypeCharacterApplication {
 			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if req.Pid != pid {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
 		err = i.Queries.CreateHistoryForCharacterApplication(context.Background(), rid)
 		if err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -697,12 +725,16 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		if !character.IsBackstoryValid(r.Backstory) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
 		err = i.Queries.UpdateCharacterApplicationContentBackstory(context.Background(), queries.UpdateCharacterApplicationContentBackstoryParams{
 			Backstory: r.Backstory,
 			Rid:       rid,
 		})
 		if err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -741,13 +773,22 @@ func SubmitCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		ok, err := request.IsCharacterApplicationTx(tx, rid)
+		req, err := qtx.GetRequest(context.Background(), rid)
 		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-		if !ok {
+		if req.Type != request.TypeCharacterApplication {
 			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if pid != req.Pid {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 

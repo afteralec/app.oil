@@ -16,6 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
+	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
@@ -225,6 +226,35 @@ func TestUpdateCharacterApplicationNameUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
+func TestUpdateCharacterApplicationNameUnowned(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	CallRegister(t, a, "testify2", TestPassword)
+	res := CallLogin(t, a, "testify2", TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestPlayer(t, &i, "testify2")
+	sessionCookie := res.Cookies()[0]
+	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
+	body, writer := MakeTestCharacterApplicationNameBody()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
 func TestUpdateCharacterApplicationNameSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
@@ -236,10 +266,7 @@ func TestUpdateCharacterApplicationNameSuccess(t *testing.T) {
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("name", "test")
-	writer.Close()
+	body, writer := MakeTestCharacterApplicationNameBody()
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -262,10 +289,7 @@ func TestUpdateCharacterApplicationNameNotFound(t *testing.T) {
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid+1, 10)))
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("name", "test")
-	writer.Close()
+	body, writer := MakeTestCharacterApplicationNameBody()
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -288,10 +312,7 @@ func TestUpdateCharacterApplicationNameFatal(t *testing.T) {
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	i.Close()
 	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("name", "test")
-	writer.Close()
+	body, writer := MakeTestCharacterApplicationNameBody()
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -313,8 +334,35 @@ func TestUpdateCharacterApplicationNameMissingBody(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationNameInvalidInput(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
+	body, writer := MakeTestCharacterApplicationNameBodyInvalid()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
 	if err != nil {
@@ -333,14 +381,48 @@ func TestUpdateCharacterApplicationGenderUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 	url := MakeTestURL(routes.CharacterApplicationGenderPath(routes.ID))
-	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	body, writer := MakeTestCharacterApplicationGenderBody()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationGenderUnowned(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	sessionCookie := res.Cookies()[0]
+	url := MakeTestURL(routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10)))
+	body, writer := MakeTestCharacterApplicationGenderBody()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
 func TestUpdateCharacterApplicationGenderSuccess(t *testing.T) {
@@ -401,7 +483,9 @@ func TestUpdateCharacterApplicationGenderFatal(t *testing.T) {
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	i.Close()
 	url := MakeTestURL(routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10)))
-	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	body, writer := MakeTestCharacterApplicationGenderBody()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
 	if err != nil {
@@ -432,7 +516,7 @@ func TestUpdateCharacterApplicationGenderMissingBody(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestUpdateCharacterApplicationShortDescription(t *testing.T) {
+func TestUpdateCharacterApplicationGenderInvalidInput(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -441,14 +525,71 @@ func TestUpdateCharacterApplicationShortDescription(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.CharacterApplicationShortDescriptionPath(routes.ID))
-	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	url := MakeTestURL(routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10)))
+	body, writer := MakeTestCharacterApplicationGenderBodyInvalid()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationShortDescriptionUnauthorized(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	url := MakeTestURL(routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10)))
+	body, writer := MakeTestCharacterApplicationShortDescriptionBody()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationShortDescriptionUnowned(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	sessionCookie := res.Cookies()[0]
+	url := MakeTestURL(routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10)))
+	body, writer := MakeTestCharacterApplicationShortDescriptionBody()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
 func TestUpdateCharacterApplicationShortDescriptionSuccess(t *testing.T) {
@@ -539,6 +680,8 @@ func TestUpdateCharacterApplicationShortDescriptionMissingBody(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 	url := MakeTestURL(routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
@@ -550,7 +693,7 @@ func TestUpdateCharacterApplicationShortDescriptionMissingBody(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestUpdateCharacterApplicationDescription(t *testing.T) {
+func TestUpdateCharacterApplicationShortDescriptionInvalidInput(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -559,6 +702,34 @@ func TestUpdateCharacterApplicationDescription(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	url := MakeTestURL(routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10)))
+	body, writer := MakeTestCharacterApplicationShortDescriptionBodyInvalid()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationDescriptionUnauthorized(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 	url := MakeTestURL(routes.CharacterApplicationDescriptionPath(routes.ID))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	res, err := a.Test(req)
@@ -567,6 +738,35 @@ func TestUpdateCharacterApplicationDescription(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationDescriptionUnowned(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	sessionCookie := res.Cookies()[0]
+	url := MakeTestURL(routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10)))
+	body, writer := MakeTestCharacterApplicationDescriptionBody()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
 func TestUpdateCharacterApplicationDescriptionSuccess(t *testing.T) {
@@ -580,10 +780,7 @@ func TestUpdateCharacterApplicationDescriptionSuccess(t *testing.T) {
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	url := MakeTestURL(routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10)))
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("description", "This is a test actor.")
-	writer.Close()
+	body, writer := MakeTestCharacterApplicationDescriptionBody()
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -647,8 +844,35 @@ func TestUpdateCharacterApplicationDescriptionMissingBody(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 	url := MakeTestURL(routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationDescriptionInvalidInput(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	url := MakeTestURL(routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10)))
+	body, writer := MakeTestCharacterApplicationDescriptionBodyInvalid()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
 	if err != nil {
@@ -667,14 +891,48 @@ func TestUpdateCharacterApplicationBackstoryUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.CharacterApplicationBackstoryPath(routes.ID))
-	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	url := MakeTestURL(routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10)))
+	body, writer := MakeTestCharacterApplicationBackstoryBody()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationBackstoryUnowned(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	sessionCookie := res.Cookies()[0]
+	url := MakeTestURL(routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10)))
+	body, writer := MakeTestCharacterApplicationBackstoryBody()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
 func TestUpdateCharacterApplicationBackstorySuccess(t *testing.T) {
@@ -688,10 +946,7 @@ func TestUpdateCharacterApplicationBackstorySuccess(t *testing.T) {
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	url := MakeTestURL(routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10)))
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("backstory", "This is a tragic backstory.")
-	writer.Close()
+	body, writer := MakeTestCharacterApplicationBackstoryBody()
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -755,8 +1010,35 @@ func TestUpdateCharacterApplicationBackstoryMissingBody(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 	url := MakeTestURL(routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestUpdateCharacterApplicationBackstoryInvalidInput(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	url := MakeTestURL(routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10)))
+	body, writer := MakeTestCharacterApplicationBackstoryBodyInvalid()
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
 	if err != nil {
@@ -1278,6 +1560,53 @@ func TestSubmitCharacterApplicationUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
+func TestSubmitCharacterApplicationUnowned(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	CallRegister(t, a, "testify2", TestPassword)
+	res := CallLogin(t, a, "testify2", TestPassword)
+	sessionCookie := res.Cookies()[0]
+	url := MakeTestURL(routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10)))
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestSubmitCharacterApplicationSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	views := html.New("../..", ".html")
+	a := fiber.New(configs.Fiber(views))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	url := MakeTestURL(routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10)))
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
 func SetupTestCharacters(t *testing.T, i *shared.Interfaces, u string) {
 	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
 	if err != nil && err != sql.ErrNoRows {
@@ -1342,7 +1671,107 @@ func CreateTestPlayerAndCharacterApplication(t *testing.T, i *shared.Interfaces,
 	return r.Request.ID, sessionCookie
 }
 
+func DeleteTestCharacterApplication(t *testing.T, i *shared.Interfaces, rid int64) {
+	_, err := i.Database.Exec("DELETE FROM requests WHERE id = ?;", rid)
+	if err != nil && err != sql.ErrNoRows {
+		t.Fatal(err)
+	}
+
+	_, err = i.Database.Exec("DELETE FROM character_application_content_history WHERE rid = ?;", rid)
+	if err != nil && err != sql.ErrNoRows {
+		t.Fatal(err)
+	}
+}
+
 func NewCharacterApplicationRequest() *http.Request {
 	url := MakeTestURL(routes.NewCharacterApplicationPath())
 	return httptest.NewRequest(http.MethodPost, url, nil)
+}
+
+func MakeTestCharacterApplicationNameBody() (*bytes.Buffer, *multipart.Writer) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("name", "test")
+	writer.Close()
+	return body, writer
+}
+
+func MakeTestCharacterApplicationNameBodyInvalid() (*bytes.Buffer, *multipart.Writer) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("name", "tes")
+	writer.Close()
+	return body, writer
+}
+
+func MakeTestCharacterApplicationGenderBody() (*bytes.Buffer, *multipart.Writer) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("gender", character.GenderNonBinary)
+	writer.Close()
+	return body, writer
+}
+
+func MakeTestCharacterApplicationGenderBodyInvalid() (*bytes.Buffer, *multipart.Writer) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("gender", "NotAGender")
+	writer.Close()
+	return body, writer
+}
+
+func MakeTestCharacterApplicationShortDescriptionBody() (*bytes.Buffer, *multipart.Writer) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("sdesc", "test, testing, person")
+	writer.Close()
+	return body, writer
+}
+
+func MakeTestCharacterApplicationShortDescriptionBodyInvalid() (*bytes.Buffer, *multipart.Writer) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("sdesc", "test")
+	writer.Close()
+	return body, writer
+}
+
+func MakeTestCharacterApplicationDescriptionBody() (*bytes.Buffer, *multipart.Writer) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	description := ""
+	for len(description) < shared.MinCharacterDescriptionLength {
+		description = description + "This is a test actor."
+	}
+	writer.WriteField("description", description)
+	writer.Close()
+	return body, writer
+}
+
+func MakeTestCharacterApplicationDescriptionBodyInvalid() (*bytes.Buffer, *multipart.Writer) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("description", "test")
+	writer.Close()
+	return body, writer
+}
+
+func MakeTestCharacterApplicationBackstoryBody() (*bytes.Buffer, *multipart.Writer) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	backstory := ""
+	for len(backstory) < shared.MinCharacterBackstoryLength {
+		backstory = backstory + "This is a tragic backstory."
+	}
+	writer.WriteField("backstory", backstory)
+	writer.Close()
+	return body, writer
+}
+
+func MakeTestCharacterApplicationBackstoryBodyInvalid() (*bytes.Buffer, *multipart.Writer) {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("backstory", "test")
+	writer.Close()
+	return body, writer
 }

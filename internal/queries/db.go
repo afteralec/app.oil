@@ -54,6 +54,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createHistoryForCharacterApplicationStmt, err = db.PrepareContext(ctx, createHistoryForCharacterApplication); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateHistoryForCharacterApplication: %w", err)
 	}
+	if q.createHistoryForRequestStatusStmt, err = db.PrepareContext(ctx, createHistoryForRequestStatus); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateHistoryForRequestStatus: %w", err)
+	}
 	if q.createPlayerStmt, err = db.PrepareContext(ctx, createPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePlayer: %w", err)
 	}
@@ -144,6 +147,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updatePlayerPasswordStmt, err = db.PrepareContext(ctx, updatePlayerPassword); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePlayerPassword: %w", err)
 	}
+	if q.updateRequestStatusStmt, err = db.PrepareContext(ctx, updateRequestStatus); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRequestStatus: %w", err)
+	}
 	return &q, nil
 }
 
@@ -197,6 +203,11 @@ func (q *Queries) Close() error {
 	if q.createHistoryForCharacterApplicationStmt != nil {
 		if cerr := q.createHistoryForCharacterApplicationStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createHistoryForCharacterApplicationStmt: %w", cerr)
+		}
+	}
+	if q.createHistoryForRequestStatusStmt != nil {
+		if cerr := q.createHistoryForRequestStatusStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createHistoryForRequestStatusStmt: %w", cerr)
 		}
 	}
 	if q.createPlayerStmt != nil {
@@ -349,6 +360,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updatePlayerPasswordStmt: %w", cerr)
 		}
 	}
+	if q.updateRequestStatusStmt != nil {
+		if cerr := q.updateRequestStatusStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRequestStatusStmt: %w", cerr)
+		}
+	}
 	return err
 }
 
@@ -398,6 +414,7 @@ type Queries struct {
 	createCharacterApplicationContentStmt                 *sql.Stmt
 	createEmailStmt                                       *sql.Stmt
 	createHistoryForCharacterApplicationStmt              *sql.Stmt
+	createHistoryForRequestStatusStmt                     *sql.Stmt
 	createPlayerStmt                                      *sql.Stmt
 	createRequestStmt                                     *sql.Stmt
 	deleteEmailStmt                                       *sql.Stmt
@@ -428,6 +445,7 @@ type Queries struct {
 	updateCharacterApplicationContentNameStmt             *sql.Stmt
 	updateCharacterApplicationContentShortDescriptionStmt *sql.Stmt
 	updatePlayerPasswordStmt                              *sql.Stmt
+	updateRequestStatusStmt                               *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -444,6 +462,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createCharacterApplicationContentStmt:                 q.createCharacterApplicationContentStmt,
 		createEmailStmt:                                       q.createEmailStmt,
 		createHistoryForCharacterApplicationStmt:              q.createHistoryForCharacterApplicationStmt,
+		createHistoryForRequestStatusStmt:                     q.createHistoryForRequestStatusStmt,
 		createPlayerStmt:                                      q.createPlayerStmt,
 		createRequestStmt:                                     q.createRequestStmt,
 		deleteEmailStmt:                                       q.deleteEmailStmt,
@@ -474,5 +493,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updateCharacterApplicationContentNameStmt:             q.updateCharacterApplicationContentNameStmt,
 		updateCharacterApplicationContentShortDescriptionStmt: q.updateCharacterApplicationContentShortDescriptionStmt,
 		updatePlayerPasswordStmt:                              q.updatePlayerPasswordStmt,
+		updateRequestStatusStmt:                               q.updateRequestStatusStmt,
 	}
 }
