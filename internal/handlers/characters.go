@@ -492,6 +492,7 @@ func CharacterApplicationReviewPage(i *shared.Interfaces) fiber.Handler {
 		b["Name"] = app.Name
 		b["Statuses"] = statuses
 		b["Ready"] = character.IsApplicationReady(&app)
+		b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
 		return c.Render("web/views/character/application/review", b, "web/views/layouts/standalone")
 	}
 }
@@ -993,6 +994,68 @@ func SubmitCharacterApplication(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		c.Status(fiber.StatusOK)
+		c.Append("HX-Redirect", routes.CharacterApplicationSubmittedPath(strconv.FormatInt(rid, 10)))
+		return nil
+	}
+}
+
+func CharacterApplicationSubmittedPage(i *shared.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		pid := c.Locals("pid")
+
+		if pid == nil {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		prid := c.Params("id")
+		if len(prid) == 0 {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+		rid, err := strconv.ParseInt(prid, 10, 64)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		req, err := qtx.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		if req.Type != request.TypeCharacterApplication {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+		if req.Status != request.StatusSubmitted {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if pid != req.Pid {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 

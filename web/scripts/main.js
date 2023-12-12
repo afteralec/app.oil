@@ -302,6 +302,12 @@ export function getCharacterApplicationBackstoryData(backstory) {
   };
 }
 
+export function getCharacterApplicationReviewData() {
+  return {
+    showSubmitDialog: false,
+  };
+}
+
 const HEADER_CSRF_TOKEN = "X-CSRF-Token";
 const HEADER_HX_ACCEPTABLE = "X-HX-Acceptable";
 const HX_ACCEPTABLE_STATUSES = {
@@ -344,3 +350,4 @@ window.getCharacterApplicationDescriptionData =
   getCharacterApplicationDescriptionData;
 window.getCharacterApplicationBackstoryData =
   getCharacterApplicationBackstoryData;
+window.getCharacterApplicationReviewData = getCharacterApplicationReviewData;

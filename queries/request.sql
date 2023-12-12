@@ -25,5 +25,7 @@ INSERT INTO
 VALUES
   (?, (SELECT vid FROM requests WHERE requests.rid = rid), (SELECT status FROM requests WHERE requests.rid = rid), ?);
 
+-- TODO: Move this to a more complex set of queries that pivot on the current status of the request
+--
 -- name: UpdateRequestStatus :exec
 UPDATE requests SET status = ? WHERE id = ?;
