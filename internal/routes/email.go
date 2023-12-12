@@ -18,3 +18,7 @@ func EmailPath(id string) string {
 func ResendEmailVerificationPath(id string) string {
 	return fmt.Sprintf("%s/resend", EmailPath(id))
 }
+
+func VerifyEmailWithToken(t string) string {
+	return fmt.Sprintf("%s?t=%s", VerifyEmail, t)
+}

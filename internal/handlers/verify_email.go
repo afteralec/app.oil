@@ -67,6 +67,11 @@ func VerifyPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/500", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
+		if e.Pid != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
 		ve, err := qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
 		if err != nil && err != sql.ErrNoRows {
 			c.Status(fiber.StatusInternalServerError)
