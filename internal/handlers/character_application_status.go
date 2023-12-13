@@ -164,6 +164,7 @@ func CharacterApplicationSubmittedPage(i *shared.Interfaces) fiber.Handler {
 		c.Status(fiber.StatusOK)
 		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Name"] = app.Name
+		b["CharactersPath"] = routes.Characters
 		return c.Render("web/views/character/application/submitted", b, "web/views/layouts/standalone")
 	}
 }

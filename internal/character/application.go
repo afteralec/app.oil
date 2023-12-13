@@ -4,13 +4,24 @@ import (
 	"strconv"
 
 	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
 )
 
 type ApplicationSummary struct {
-	Link string
-	Name string
-	ID   int64
+	Status           string
+	Link             string
+	Name             string
+	ID               int64
+	StatusIncomplete bool
+	StatusReady      bool
+	StatusSubmitted  bool
+	StatusInReview   bool
+	StatusApproved   bool
+	StatusReviewed   bool
+	StatusRejected   bool
+	StatusArchived   bool
+	StatusCanceled   bool
 }
 
 const DefaultApplicationSummaryName = "Unnamed"
@@ -21,9 +32,19 @@ func NewSummaryFromApplication(req *queries.Request, app *queries.CharacterAppli
 		name = DefaultApplicationSummaryName
 	}
 	return ApplicationSummary{
-		Link: GetApplicationLink(req, app),
-		ID:   req.ID,
-		Name: name,
+		Status:           req.Status,
+		StatusIncomplete: req.Status == request.StatusIncomplete,
+		StatusReady:      req.Status == request.StatusReady,
+		StatusSubmitted:  req.Status == request.StatusSubmitted,
+		StatusInReview:   req.Status == request.StatusInReview,
+		StatusApproved:   req.Status == request.StatusApproved,
+		StatusReviewed:   req.Status == request.StatusReviewed,
+		StatusRejected:   req.Status == request.StatusRejected,
+		StatusArchived:   req.Status == request.StatusArchived,
+		StatusCanceled:   req.Status == request.StatusCanceled,
+		Link:             GetApplicationLink(req, app),
+		ID:               req.ID,
+		Name:             name,
 	}
 }
 

@@ -1,6 +1,6 @@
 <main class="flex flex-col items-center justify-center">
   <div class="w-full text-foreground md:w-[750px] md:px-4 lg:w-[1000px]">
-    <header class="pl-6 pt-2">
+    <header class="px-6 pt-2">
       <h2
         class="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl"
       >
@@ -10,8 +10,17 @@
         All of your character applications
       </p>
     </header>
+    <section id="create-character-application" class="px-6 pt-4">
+      <div
+        hx-post="{{ .NewCharacterApplicationPath }}"
+        class="htmx-trade-indicator-out inline-flex h-10 cursor-pointer items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      >
+        Create a Character
+      </div>
+    </section>
     <section
-      class="flex flex-col items-center justify-center gap-2 pl-6 md:flex-row md:flex-wrap md:justify-start"
+      id="character-applications"
+      class="flex flex-col items-center justify-center gap-4 px-6 pt-6 md:flex-row md:flex-wrap md:justify-start"
     >
       <!-- prettier-ignore -->
       {{ if .HasCharacterApplications -}}
@@ -19,16 +28,10 @@
           {{ template "web/views/partials/character/application/summary" . }}
         {{ end -}}
       {{ else -}}
-        You don't have any open character applications
+      <span class="leading-none text-muted-foreground"
+        >You don't have any open character applications.</span
+      >
       {{ end -}}
     </section>
-    <div class="pl-6 pt-2">
-      <div
-        hx-post="{{ .NewCharacterApplicationPath }}"
-        class="htmx-trade-indicator-out inline-flex h-10 cursor-pointer items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-      >
-        Create a Character
-      </div>
-    </div>
   </div>
 </main>
