@@ -15,7 +15,7 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Text  string `form:"text"`
 		Field string `form:"text"`
-		Cid   int64  `form:"cid"`
+		CID   int64  `form:"cid"`
 	}
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
@@ -59,7 +59,7 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if r.Cid == 0 {
+		if r.CID == 0 {
 			if len(r.Field) > 0 {
 				_, err := i.Queries.AddCommentToRequestField(context.Background(), queries.AddCommentToRequestFieldParams{
 					RID: rid,
@@ -92,7 +92,7 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 		} else {
-			rc, err := i.Queries.GetRequestComment(context.Background(), r.Cid)
+			rc, err := i.Queries.GetRequestComment(context.Background(), r.CID)
 			if err != nil {
 				if err == sql.ErrNoRows {
 					c.Status(fiber.StatusNotFound)
