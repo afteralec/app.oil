@@ -1,75 +1,48 @@
 <!-- prettier-ignore -->
 {{ if .StatusIncomplete }}
-<iconify-icon
-  icon="fe:file"
-  class="text-gray-700"
-  width="48"
-  height="48"
-></iconify-icon>
+<div class="text-gray-600">
+  <iconify-icon icon="fe:file" width="48" height="48"></iconify-icon>
+</div>
 <!-- prettier-ignore -->
 {{ else if .StatusReady }}
-<iconify-icon
-  icon="fe:check"
-  class="text-primary"
-  width="48"
-  height="48"
-></iconify-icon>
+<div class="text-primary">
+  <iconify-icon icon="fe:check" width="48" height="48"></iconify-icon>
+</div>
 <!-- prettier-ignore -->
 {{ else if .StatusSubmitted }}
-<iconify-icon
-  icon="fe:check-circle-o"
-  class="text-slate-700"
-  width="48"
-  height="48"
-></iconify-icon>
+<div class="text-slate-700">
+  <iconify-icon icon="fe:check-circle-o" width="48" height="48"></iconify-icon>
+</div>
 <!-- prettier-ignore -->
 {{ else if .StatusInReview }}
-<iconify-icon
-  icon="fe:question"
-  class="text-amber-700"
-  width="48"
-  height="48"
-></iconify-icon>
+<div class="text-amber-700">
+  <iconify-icon icon="fe:question" width="48" height="48"></iconify-icon>
+</div>
 <!-- prettier-ignore -->
 {{ else if .StatusApproved }}
-<iconify-icon
-  icon="fe:check-circle"
-  class="text-emerald-700"
-  width="48"
-  height="48"
-></iconify-icon>
+<div class="text-emerald-700">
+  <iconify-icon icon="fe:check-circle" width="48" height="48"></iconify-icon>
+</div>
 <!-- prettier-ignore -->
 {{ else if .StatusReviewed }}
-<iconify-icon
-  icon="fe:warning"
-  class="text-amber-700"
-  width="48"
-  height="48"
-></iconify-icon>
+<div class="text-amber-700">
+  <iconify-icon icon="fe:warning" width="48" height="48"></iconify-icon>
+</div>
 <!-- prettier-ignore -->
 {{ else if .StatusRejected }}
-<iconify-icon
-  icon="fe:warning"
-  class="text-rose-700"
-  width="48"
-  height="48"
-></iconify-icon>
+<div class="text-rose-700">
+  <iconify-icon icon="fe:warning" width="48" height="48"></iconify-icon>
+</div>
 <!-- prettier-ignore -->
 {{ else if .StatusArchived }}
-<iconify-icon
-  icon="fe:folder"
-  class="text-gray-700"
-  width="48"
-  height="48"
-></iconify-icon>
+<div class="text-gray-700">
+  <iconify-icon icon="fe:folder" width="48" height="48"></iconify-icon>
+</div>
 <!-- prettier-ignore -->
 {{ else if .StatusCanceled }}
-<iconify-icon
-  icon="fe:close-circle-o"
-  class="text-gray-700"
-  width="48"
-  height="48"
-></iconify-icon>
+<div class="text-gray-700">
+  <iconify-icon icon="fe:close-circle-o" width="48" height="48"></iconify-icon>
+</div>
 <!-- prettier-ignore -->
 {{ end -}}
 <!-- TODO: Move these colors into the TW based on theme -->
