@@ -135,6 +135,11 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		if !request.IsEditable(&req) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
 		err = qtx.CreateHistoryForCharacterApplication(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -232,6 +237,11 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 		}
 
 		if req.PID != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if !request.IsEditable(&req) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -347,6 +357,11 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 			return nil
 		}
 
+		if !request.IsEditable(&req) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
 		err = qtx.CreateHistoryForCharacterApplication(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -448,12 +463,18 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
+
 		if req.Type != request.TypeCharacterApplication {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
 
 		if req.PID != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if !request.IsEditable(&req) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -559,12 +580,18 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
+
 		if req.Type != request.TypeCharacterApplication {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
 
 		if req.PID != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if !request.IsEditable(&req) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}

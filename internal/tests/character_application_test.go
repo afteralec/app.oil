@@ -18,6 +18,9 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+// TODO: Add tests that test against editable statuses
+// TODO: Make fixtures that build Character Applications in various states
+
 func TestNewCharacterApplicationUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
