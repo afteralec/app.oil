@@ -18,8 +18,6 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
@@ -1778,6 +1776,10 @@ func TestSubmitCharacterApplicationSuccess(t *testing.T) {
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 	defer DeleteTestPlayer(t, &i, TestUsername)
+	// TODO: This is a hack. Rework this to use valid content and the existing handlers
+	if err := i.Queries.MarkRequestReady(context.Background(), rid); err != nil {
+		t.Fatal(err)
+	}
 	url := MakeTestURL(routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -1849,6 +1851,9 @@ func TestSubmitCharacterApplicationVersionZero(t *testing.T) {
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 	defer DeleteTestPlayer(t, &i, TestUsername)
+	if err := i.Queries.MarkRequestReady(context.Background(), rid); err != nil {
+		t.Fatal(err)
+	}
 	url := MakeTestURL(routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -1878,6 +1883,9 @@ func TestSubmitCharacterApplicationVersionOne(t *testing.T) {
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 	defer DeleteTestPlayer(t, &i, TestUsername)
+	if err := i.Queries.MarkRequestReady(context.Background(), rid); err != nil {
+		t.Fatal(err)
+	}
 	if err := i.Queries.IncrementRequestVersion(context.Background(), rid); err != nil {
 		t.Fatal(err)
 	}
@@ -1933,10 +1941,7 @@ func TestCharacterApplicationSubmittedPageUnowned(t *testing.T) {
 	defer DeleteTestCharacterApplication(t, &i, rid)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	// TODO: This is kind of a hack; make this a better representation
-	if err := i.Queries.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
-		ID:     rid,
-		Status: request.StatusSubmitted,
-	}); err != nil {
+	if err := i.Queries.MarkRequestSubmitted(context.Background(), rid); err != nil {
 		t.Fatal(err)
 	}
 	CallRegister(t, a, TestUsernameTwo, TestPassword)
@@ -1967,10 +1972,7 @@ func TestCharacterApplicationSubmittedPageSuccess(t *testing.T) {
 	defer DeleteTestCharacterApplication(t, &i, rid)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	// TODO: This is kind of a hack; make this a better representation
-	if err := i.Queries.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
-		ID:     rid,
-		Status: request.StatusSubmitted,
-	}); err != nil {
+	if err := i.Queries.MarkRequestSubmitted(context.Background(), rid); err != nil {
 		t.Fatal(err)
 	}
 	url := MakeTestURL(routes.CharacterApplicationSubmittedPath(strconv.FormatInt(rid, 10)))

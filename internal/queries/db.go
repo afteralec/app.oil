@@ -129,6 +129,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.markEmailVerifiedStmt, err = db.PrepareContext(ctx, markEmailVerified); err != nil {
 		return nil, fmt.Errorf("error preparing query MarkEmailVerified: %w", err)
 	}
+	if q.markRequestReadyStmt, err = db.PrepareContext(ctx, markRequestReady); err != nil {
+		return nil, fmt.Errorf("error preparing query MarkRequestReady: %w", err)
+	}
+	if q.markRequestSubmittedStmt, err = db.PrepareContext(ctx, markRequestSubmitted); err != nil {
+		return nil, fmt.Errorf("error preparing query MarkRequestSubmitted: %w", err)
+	}
 	if q.updateCharacterApplicationContentBackstoryStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentBackstory); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentBackstory: %w", err)
 	}
@@ -146,9 +152,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.updatePlayerPasswordStmt, err = db.PrepareContext(ctx, updatePlayerPassword); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePlayerPassword: %w", err)
-	}
-	if q.updateRequestStatusStmt, err = db.PrepareContext(ctx, updateRequestStatus); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateRequestStatus: %w", err)
 	}
 	return &q, nil
 }
@@ -330,6 +333,16 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing markEmailVerifiedStmt: %w", cerr)
 		}
 	}
+	if q.markRequestReadyStmt != nil {
+		if cerr := q.markRequestReadyStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing markRequestReadyStmt: %w", cerr)
+		}
+	}
+	if q.markRequestSubmittedStmt != nil {
+		if cerr := q.markRequestSubmittedStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing markRequestSubmittedStmt: %w", cerr)
+		}
+	}
 	if q.updateCharacterApplicationContentBackstoryStmt != nil {
 		if cerr := q.updateCharacterApplicationContentBackstoryStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateCharacterApplicationContentBackstoryStmt: %w", cerr)
@@ -358,11 +371,6 @@ func (q *Queries) Close() error {
 	if q.updatePlayerPasswordStmt != nil {
 		if cerr := q.updatePlayerPasswordStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updatePlayerPasswordStmt: %w", cerr)
-		}
-	}
-	if q.updateRequestStatusStmt != nil {
-		if cerr := q.updateRequestStatusStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateRequestStatusStmt: %w", cerr)
 		}
 	}
 	return err
@@ -439,13 +447,14 @@ type Queries struct {
 	listRequestsForPlayerStmt                             *sql.Stmt
 	listVerifiedEmailsStmt                                *sql.Stmt
 	markEmailVerifiedStmt                                 *sql.Stmt
+	markRequestReadyStmt                                  *sql.Stmt
+	markRequestSubmittedStmt                              *sql.Stmt
 	updateCharacterApplicationContentBackstoryStmt        *sql.Stmt
 	updateCharacterApplicationContentDescriptionStmt      *sql.Stmt
 	updateCharacterApplicationContentGenderStmt           *sql.Stmt
 	updateCharacterApplicationContentNameStmt             *sql.Stmt
 	updateCharacterApplicationContentShortDescriptionStmt *sql.Stmt
 	updatePlayerPasswordStmt                              *sql.Stmt
-	updateRequestStatusStmt                               *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -487,12 +496,13 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listRequestsForPlayerStmt:                             q.listRequestsForPlayerStmt,
 		listVerifiedEmailsStmt:                                q.listVerifiedEmailsStmt,
 		markEmailVerifiedStmt:                                 q.markEmailVerifiedStmt,
+		markRequestReadyStmt:                                  q.markRequestReadyStmt,
+		markRequestSubmittedStmt:                              q.markRequestSubmittedStmt,
 		updateCharacterApplicationContentBackstoryStmt:        q.updateCharacterApplicationContentBackstoryStmt,
 		updateCharacterApplicationContentDescriptionStmt:      q.updateCharacterApplicationContentDescriptionStmt,
 		updateCharacterApplicationContentGenderStmt:           q.updateCharacterApplicationContentGenderStmt,
 		updateCharacterApplicationContentNameStmt:             q.updateCharacterApplicationContentNameStmt,
 		updateCharacterApplicationContentShortDescriptionStmt: q.updateCharacterApplicationContentShortDescriptionStmt,
 		updatePlayerPasswordStmt:                              q.updatePlayerPasswordStmt,
-		updateRequestStatusStmt:                               q.updateRequestStatusStmt,
 	}
 }

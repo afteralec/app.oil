@@ -122,17 +122,20 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 	return items, nil
 }
 
-const updateRequestStatus = `-- name: UpdateRequestStatus :exec
-UPDATE requests SET status = ? WHERE id = ?
+const markRequestReady = `-- name: MarkRequestReady :exec
+UPDATE requests SET status = "Ready" WHERE id = ?
 `
 
-type UpdateRequestStatusParams struct {
-	Status string
-	ID     int64
+func (q *Queries) MarkRequestReady(ctx context.Context, id int64) error {
+	_, err := q.exec(ctx, q.markRequestReadyStmt, markRequestReady, id)
+	return err
 }
 
-// TODO: Move this to a more complex set of queries that pivot on the current status of the request
-func (q *Queries) UpdateRequestStatus(ctx context.Context, arg UpdateRequestStatusParams) error {
-	_, err := q.exec(ctx, q.updateRequestStatusStmt, updateRequestStatus, arg.Status, arg.ID)
+const markRequestSubmitted = `-- name: MarkRequestSubmitted :exec
+UPDATE requests SET status = "Submitted" WHERE id = ?
+`
+
+func (q *Queries) MarkRequestSubmitted(ctx context.Context, id int64) error {
+	_, err := q.exec(ctx, q.markRequestSubmittedStmt, markRequestSubmitted, id)
 	return err
 }
