@@ -46,3 +46,7 @@ func SubmitCharacterApplicationPath(id string) string {
 func CharacterApplicationSubmittedPath(id string) string {
 	return fmt.Sprintf("%s/%s/submitted", CharacterApplication, id)
 }
+
+func CharacterApplicationSubmittedSuccessPath(id string) string {
+	return fmt.Sprintf("%s/success", CharacterApplicationSubmittedPath(id))
+}

@@ -49,6 +49,10 @@ func NewSummaryFromApplication(req *queries.Request, app *queries.CharacterAppli
 }
 
 func GetApplicationLink(req *queries.Request, app *queries.CharacterApplicationContent) string {
+	if req.Status == request.StatusSubmitted {
+		return routes.CharacterApplicationSubmittedPath(strconv.FormatInt(req.ID, 10))
+	}
+
 	strid := strconv.FormatInt(req.ID, 10)
 
 	if !IsNameValid(app.Name) {
