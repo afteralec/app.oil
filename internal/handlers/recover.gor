@@ -6,6 +6,6 @@ import (
 
 func RecoverPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("views/recover", c.Locals("b"), "views/layouts/standalone")
+		return c.Render("web/views/recover", c.Locals("b"), "web/views/layouts/standalone")
 	}
 }

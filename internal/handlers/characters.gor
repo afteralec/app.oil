@@ -22,7 +22,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 		apps, err := i.Queries.ListCharacterApplicationsForPlayer(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(shared.Bind))
+			return c.Render("web/views/500", c.Locals(shared.Bind))
 		}
 
 		summaries := []character.ApplicationSummary{}
@@ -34,6 +34,6 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 		b["NewCharacterApplicationPath"] = routes.NewCharacterApplicationPath()
 		b["CharacterApplicationSummaries"] = summaries
 		b["HasCharacterApplications"] = len(apps) > 0
-		return c.Render("views/characters", b)
+		return c.Render("web/views/characters", b)
 	}
 }

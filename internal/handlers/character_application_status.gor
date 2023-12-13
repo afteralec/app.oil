@@ -101,7 +101,7 @@ func CharacterApplicationSubmittedSuccessPage(i *shared.Interfaces) fiber.Handle
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -165,7 +165,7 @@ func CharacterApplicationSubmittedSuccessPage(i *shared.Interfaces) fiber.Handle
 		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Name"] = app.Name
 		b["CharactersPath"] = routes.Characters
-		return c.Render("views/character/application/submitted", b, "views/layouts/standalone")
+		return c.Render("web/views/character/application/submitted", b, "web/views/layouts/standalone")
 	}
 }
 
@@ -175,7 +175,7 @@ func CharacterApplicationSubmittedPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -239,6 +239,6 @@ func CharacterApplicationSubmittedPage(i *shared.Interfaces) fiber.Handler {
 		b := c.Locals(shared.Bind).(fiber.Map)
 		b["Name"] = app.Name
 		b["CharactersPath"] = routes.Characters
-		return c.Render("views/character/application/submitted", b, "views/layouts/standalone")
+		return c.Render("web/views/character/application/submitted", b, "web/views/layouts/standalone")
 	}
 }

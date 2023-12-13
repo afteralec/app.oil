@@ -24,7 +24,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/partials/login/err-invalid", &fiber.Map{}, "")
+			return c.Render("web/views/partials/login/err-invalid", &fiber.Map{}, "")
 		}
 
 		p, err := i.Queries.GetPlayerByUsername(context.Background(), r.Username)
@@ -33,7 +33,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/partials/login/err-invalid", &fiber.Map{}, "")
+			return c.Render("web/views/partials/login/err-invalid", &fiber.Map{}, "")
 		}
 
 		v, err := password.Verify(r.Password, p.PwHash)
@@ -42,14 +42,14 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/partials/login/err-invalid", &fiber.Map{}, "")
+			return c.Render("web/views/partials/login/err-invalid", &fiber.Map{}, "")
 		}
 		if !v {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/partials/login/err-invalid", &fiber.Map{}, "")
+			return c.Render("web/views/partials/login/err-invalid", &fiber.Map{}, "")
 		}
 
 		pid := p.ID
@@ -59,7 +59,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/partials/login/err-invalid", &fiber.Map{}, "")
+			return c.Render("web/views/partials/login/err-invalid", &fiber.Map{}, "")
 		}
 
 		sess, err := i.Sessions.Get(c)
@@ -68,7 +68,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/partials/login/err-invalid", &fiber.Map{}, "")
+			return c.Render("web/views/partials/login/err-invalid", &fiber.Map{}, "")
 		}
 
 		sess.Set("pid", pid)
@@ -77,7 +77,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/partials/login/err-invalid", &fiber.Map{}, "")
+			return c.Render("web/views/partials/login/err-invalid", &fiber.Map{}, "")
 		}
 
 		c.Append("HX-Refresh", "true")
@@ -92,6 +92,6 @@ func LoginPage() fiber.Handler {
 			return c.Redirect(routes.Home)
 		}
 
-		return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+		return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 	}
 }
