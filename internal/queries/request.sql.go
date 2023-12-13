@@ -58,17 +58,17 @@ func (q *Queries) CreateRequest(ctx context.Context, arg CreateRequestParams) (s
 }
 
 const getRequest = `-- name: GetRequest :one
-SELECT type, status, created_at, updated_at, pid, id, vid, new FROM requests WHERE id = ?
+SELECT created_at, updated_at, type, status, pid, id, vid, new FROM requests WHERE id = ?
 `
 
 func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
 	row := q.queryRow(ctx, q.getRequestStmt, getRequest, id)
 	var i Request
 	err := row.Scan(
-		&i.Type,
-		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Type,
+		&i.Status,
 		&i.PID,
 		&i.ID,
 		&i.VID,
@@ -87,7 +87,7 @@ func (q *Queries) IncrementRequestVersion(ctx context.Context, id int64) error {
 }
 
 const listRequestsForPlayer = `-- name: ListRequestsForPlayer :many
-SELECT type, status, created_at, updated_at, pid, id, vid, new FROM requests WHERE pid = ?
+SELECT created_at, updated_at, type, status, pid, id, vid, new FROM requests WHERE pid = ?
 `
 
 func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Request, error) {
@@ -100,10 +100,10 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 	for rows.Next() {
 		var i Request
 		if err := rows.Scan(
-			&i.Type,
-			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Type,
+			&i.Status,
 			&i.PID,
 			&i.ID,
 			&i.VID,

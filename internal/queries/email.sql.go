@@ -43,16 +43,16 @@ func (q *Queries) DeleteEmail(ctx context.Context, id int64) (sql.Result, error)
 }
 
 const getEmail = `-- name: GetEmail :one
-SELECT address, created_at, updated_at, verified, pid, id FROM emails WHERE id = ?
+SELECT created_at, updated_at, address, verified, pid, id FROM emails WHERE id = ?
 `
 
 func (q *Queries) GetEmail(ctx context.Context, id int64) (Email, error) {
 	row := q.queryRow(ctx, q.getEmailStmt, getEmail, id)
 	var i Email
 	err := row.Scan(
-		&i.Address,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Address,
 		&i.Verified,
 		&i.PID,
 		&i.ID,
@@ -61,16 +61,16 @@ func (q *Queries) GetEmail(ctx context.Context, id int64) (Email, error) {
 }
 
 const getVerifiedEmailByAddress = `-- name: GetVerifiedEmailByAddress :one
-SELECT address, created_at, updated_at, verified, pid, id FROM emails WHERE address = ? AND verified = true
+SELECT created_at, updated_at, address, verified, pid, id FROM emails WHERE address = ? AND verified = true
 `
 
 func (q *Queries) GetVerifiedEmailByAddress(ctx context.Context, address string) (Email, error) {
 	row := q.queryRow(ctx, q.getVerifiedEmailByAddressStmt, getVerifiedEmailByAddress, address)
 	var i Email
 	err := row.Scan(
-		&i.Address,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Address,
 		&i.Verified,
 		&i.PID,
 		&i.ID,
@@ -79,7 +79,7 @@ func (q *Queries) GetVerifiedEmailByAddress(ctx context.Context, address string)
 }
 
 const listEmails = `-- name: ListEmails :many
-SELECT address, created_at, updated_at, verified, pid, id FROM emails WHERE pid = ?
+SELECT created_at, updated_at, address, verified, pid, id FROM emails WHERE pid = ?
 `
 
 func (q *Queries) ListEmails(ctx context.Context, pid int64) ([]Email, error) {
@@ -92,9 +92,9 @@ func (q *Queries) ListEmails(ctx context.Context, pid int64) ([]Email, error) {
 	for rows.Next() {
 		var i Email
 		if err := rows.Scan(
-			&i.Address,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Address,
 			&i.Verified,
 			&i.PID,
 			&i.ID,
@@ -113,7 +113,7 @@ func (q *Queries) ListEmails(ctx context.Context, pid int64) ([]Email, error) {
 }
 
 const listVerifiedEmails = `-- name: ListVerifiedEmails :many
-SELECT address, created_at, updated_at, verified, pid, id FROM emails WHERE pid = ? AND verified = true
+SELECT created_at, updated_at, address, verified, pid, id FROM emails WHERE pid = ? AND verified = true
 `
 
 func (q *Queries) ListVerifiedEmails(ctx context.Context, pid int64) ([]Email, error) {
@@ -126,9 +126,9 @@ func (q *Queries) ListVerifiedEmails(ctx context.Context, pid int64) ([]Email, e
 	for rows.Next() {
 		var i Email
 		if err := rows.Scan(
-			&i.Address,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Address,
 			&i.Verified,
 			&i.PID,
 			&i.ID,

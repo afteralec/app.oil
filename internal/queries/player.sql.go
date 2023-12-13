@@ -25,36 +25,36 @@ func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (sql
 }
 
 const getPlayer = `-- name: GetPlayer :one
-SELECT pw_hash, username, role, created_at, updated_at, id FROM players WHERE id = ?
+SELECT created_at, updated_at, pw_hash, username, role, id FROM players WHERE id = ?
 `
 
 func (q *Queries) GetPlayer(ctx context.Context, id int64) (Player, error) {
 	row := q.queryRow(ctx, q.getPlayerStmt, getPlayer, id)
 	var i Player
 	err := row.Scan(
+		&i.CreatedAt,
+		&i.UpdatedAt,
 		&i.PwHash,
 		&i.Username,
 		&i.Role,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.ID,
 	)
 	return i, err
 }
 
 const getPlayerByUsername = `-- name: GetPlayerByUsername :one
-SELECT pw_hash, username, role, created_at, updated_at, id FROM players WHERE username = ?
+SELECT created_at, updated_at, pw_hash, username, role, id FROM players WHERE username = ?
 `
 
 func (q *Queries) GetPlayerByUsername(ctx context.Context, username string) (Player, error) {
 	row := q.queryRow(ctx, q.getPlayerByUsernameStmt, getPlayerByUsername, username)
 	var i Player
 	err := row.Scan(
+		&i.CreatedAt,
+		&i.UpdatedAt,
 		&i.PwHash,
 		&i.Username,
 		&i.Role,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.ID,
 	)
 	return i, err

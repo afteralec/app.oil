@@ -6,11 +6,12 @@ package queries
 
 import (
 	"database/sql"
+	"time"
 )
 
 type CharacterApplicationContent struct {
-	CreatedAt        sql.NullTime
-	UpdatedAt        sql.NullTime
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 	Backstory        string
 	Description      string
 	ShortDescription string
@@ -21,8 +22,8 @@ type CharacterApplicationContent struct {
 }
 
 type CharacterApplicationContentHistory struct {
-	CreatedAt        sql.NullTime
-	UpdatedAt        sql.NullTime
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 	Backstory        string
 	Description      string
 	ShortDescription string
@@ -34,28 +35,47 @@ type CharacterApplicationContentHistory struct {
 }
 
 type Email struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	Address   string
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
 	Verified  bool
 	PID       int64
 	ID        int64
 }
 
 type Player struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	PwHash    string
 	Username  string
 	Role      string
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
 	ID        int64
 }
 
+type PlayerPermission struct {
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Permissions string
+	Ipid        int64
+	PID         int64
+	ID          int64
+}
+
+type PlayerPermissionChangeHistory struct {
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Permissions string
+	Ipid        int64
+	PID         int64
+	ID          int64
+	Deleted     bool
+}
+
 type Request struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	Type      string
 	Status    string
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
 	PID       int64
 	ID        int64
 	VID       int32
@@ -63,8 +83,8 @@ type Request struct {
 }
 
 type RequestComment struct {
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	DeletedAt sql.NullTime
 	Text      string
 	Field     string
@@ -77,7 +97,7 @@ type RequestComment struct {
 }
 
 type RequestCommentHistory struct {
-	CreatedAt sql.NullTime
+	CreatedAt time.Time
 	Text      string
 	Field     string
 	CID       int64
@@ -86,8 +106,8 @@ type RequestCommentHistory struct {
 }
 
 type RequestStatusChange struct {
+	CreatedAt time.Time
 	Status    string
-	CreatedAt sql.NullTime
 	RID       int64
 	PID       int64
 	ID        int64
