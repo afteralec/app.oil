@@ -54,6 +54,28 @@ func (q *Queries) CreatePlayerPermissionRevokedChangeHistory(ctx context.Context
 	return err
 }
 
+const getPermissionForPlayer = `-- name: GetPermissionForPlayer :one
+SELECT created_at, permission, ipid, pid, id FROM player_permissions WHERE permission = ? AND pid = ?
+`
+
+type GetPermissionForPlayerParams struct {
+	Permission string
+	PID        int64
+}
+
+func (q *Queries) GetPermissionForPlayer(ctx context.Context, arg GetPermissionForPlayerParams) (PlayerPermission, error) {
+	row := q.queryRow(ctx, q.getPermissionForPlayerStmt, getPermissionForPlayer, arg.Permission, arg.PID)
+	var i PlayerPermission
+	err := row.Scan(
+		&i.CreatedAt,
+		&i.Permission,
+		&i.IPID,
+		&i.PID,
+		&i.ID,
+	)
+	return i, err
+}
+
 const listPlayerPermissions = `-- name: ListPlayerPermissions :many
 SELECT created_at, permission, ipid, pid, id FROM player_permissions WHERE pid = ?
 `

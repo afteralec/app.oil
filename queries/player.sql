@@ -7,9 +7,6 @@ UPDATE players SET pw_hash = ? WHERE id = ?;
 -- name: GetPlayer :one
 SELECT * FROM players WHERE id = ?;
 
--- name: GetRole :one
-SELECT role FROM players WHERE id = ?;
-
 -- name: GetPlayerByUsername :one
 SELECT * FROM players WHERE username = ?;
 
@@ -18,6 +15,3 @@ SELECT (username) FROM players WHERE username = ?;
 
 -- name: GetPlayerUsernameById :one
 SELECT (username) FROM players WHERE id = ?;
-
--- name: GetPlayerPWHash :one
-SELECT (pw_hash) FROM players WHERE id = ?;

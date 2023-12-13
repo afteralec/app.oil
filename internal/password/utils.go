@@ -1,10 +1,15 @@
 package password
 
+const (
+	MinLength = 8
+	MaxLength = 255
+)
+
 func Validate(pw string) bool {
-	if len(pw) < 8 {
+	if len(pw) < MinLength {
 		return false
 	}
-	if len(pw) > 255 {
+	if len(pw) > MaxLength {
 		return false
 	}
 	return true

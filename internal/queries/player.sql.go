@@ -60,17 +60,6 @@ func (q *Queries) GetPlayerByUsername(ctx context.Context, username string) (Pla
 	return i, err
 }
 
-const getPlayerPWHash = `-- name: GetPlayerPWHash :one
-SELECT (pw_hash) FROM players WHERE id = ?
-`
-
-func (q *Queries) GetPlayerPWHash(ctx context.Context, id int64) (string, error) {
-	row := q.queryRow(ctx, q.getPlayerPWHashStmt, getPlayerPWHash, id)
-	var pw_hash string
-	err := row.Scan(&pw_hash)
-	return pw_hash, err
-}
-
 const getPlayerUsername = `-- name: GetPlayerUsername :one
 SELECT (username) FROM players WHERE username = ?
 `
@@ -90,17 +79,6 @@ func (q *Queries) GetPlayerUsernameById(ctx context.Context, id int64) (string, 
 	var username string
 	err := row.Scan(&username)
 	return username, err
-}
-
-const getRole = `-- name: GetRole :one
-SELECT role FROM players WHERE id = ?
-`
-
-func (q *Queries) GetRole(ctx context.Context, id int64) (string, error) {
-	row := q.queryRow(ctx, q.getRoleStmt, getRole, id)
-	var role string
-	err := row.Scan(&role)
-	return role, err
 }
 
 const updatePlayerPassword = `-- name: UpdatePlayerPassword :execresult

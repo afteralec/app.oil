@@ -16,7 +16,7 @@ func Recover(i *shared.Interfaces, e queries.Email) (string, error) {
 		return "", err
 	}
 
-	username, err := i.Queries.GetPlayerUsernameById(context.Background(), e.PID)
+	u, err := i.Queries.GetPlayerUsernameById(context.Background(), e.PID)
 	if err != nil {
 		return "", err
 	}
@@ -25,7 +25,7 @@ func Recover(i *shared.Interfaces, e queries.Email) (string, error) {
 		return id, nil
 	}
 
-	_, err = SendRecoverUsernameEmail(i, username, e.Address)
+	_, err = SendRecoverUsernameEmail(i, u, e.Address)
 	if err != nil {
 		return "", err
 	}

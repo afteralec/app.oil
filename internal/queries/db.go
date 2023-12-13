@@ -84,14 +84,14 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getEmailStmt, err = db.PrepareContext(ctx, getEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query GetEmail: %w", err)
 	}
+	if q.getPermissionForPlayerStmt, err = db.PrepareContext(ctx, getPermissionForPlayer); err != nil {
+		return nil, fmt.Errorf("error preparing query GetPermissionForPlayer: %w", err)
+	}
 	if q.getPlayerStmt, err = db.PrepareContext(ctx, getPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayer: %w", err)
 	}
 	if q.getPlayerByUsernameStmt, err = db.PrepareContext(ctx, getPlayerByUsername); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayerByUsername: %w", err)
-	}
-	if q.getPlayerPWHashStmt, err = db.PrepareContext(ctx, getPlayerPWHash); err != nil {
-		return nil, fmt.Errorf("error preparing query GetPlayerPWHash: %w", err)
 	}
 	if q.getPlayerUsernameStmt, err = db.PrepareContext(ctx, getPlayerUsername); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayerUsername: %w", err)
@@ -104,9 +104,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getRequestCommentStmt, err = db.PrepareContext(ctx, getRequestComment); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRequestComment: %w", err)
-	}
-	if q.getRoleStmt, err = db.PrepareContext(ctx, getRole); err != nil {
-		return nil, fmt.Errorf("error preparing query GetRole: %w", err)
 	}
 	if q.getVerifiedEmailByAddressStmt, err = db.PrepareContext(ctx, getVerifiedEmailByAddress); err != nil {
 		return nil, fmt.Errorf("error preparing query GetVerifiedEmailByAddress: %w", err)
@@ -270,6 +267,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getEmailStmt: %w", cerr)
 		}
 	}
+	if q.getPermissionForPlayerStmt != nil {
+		if cerr := q.getPermissionForPlayerStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getPermissionForPlayerStmt: %w", cerr)
+		}
+	}
 	if q.getPlayerStmt != nil {
 		if cerr := q.getPlayerStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPlayerStmt: %w", cerr)
@@ -278,11 +280,6 @@ func (q *Queries) Close() error {
 	if q.getPlayerByUsernameStmt != nil {
 		if cerr := q.getPlayerByUsernameStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPlayerByUsernameStmt: %w", cerr)
-		}
-	}
-	if q.getPlayerPWHashStmt != nil {
-		if cerr := q.getPlayerPWHashStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getPlayerPWHashStmt: %w", cerr)
 		}
 	}
 	if q.getPlayerUsernameStmt != nil {
@@ -303,11 +300,6 @@ func (q *Queries) Close() error {
 	if q.getRequestCommentStmt != nil {
 		if cerr := q.getRequestCommentStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getRequestCommentStmt: %w", cerr)
-		}
-	}
-	if q.getRoleStmt != nil {
-		if cerr := q.getRoleStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getRoleStmt: %w", cerr)
 		}
 	}
 	if q.getVerifiedEmailByAddressStmt != nil {
@@ -464,14 +456,13 @@ type Queries struct {
 	getCharacterApplicationContentStmt                    *sql.Stmt
 	getCharacterApplicationContentForRequestStmt          *sql.Stmt
 	getEmailStmt                                          *sql.Stmt
+	getPermissionForPlayerStmt                            *sql.Stmt
 	getPlayerStmt                                         *sql.Stmt
 	getPlayerByUsernameStmt                               *sql.Stmt
-	getPlayerPWHashStmt                                   *sql.Stmt
 	getPlayerUsernameStmt                                 *sql.Stmt
 	getPlayerUsernameByIdStmt                             *sql.Stmt
 	getRequestStmt                                        *sql.Stmt
 	getRequestCommentStmt                                 *sql.Stmt
-	getRoleStmt                                           *sql.Stmt
 	getVerifiedEmailByAddressStmt                         *sql.Stmt
 	incrementRequestVersionStmt                           *sql.Stmt
 	listCharacterApplicationContentForPlayerStmt          *sql.Stmt
@@ -517,14 +508,13 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getCharacterApplicationContentStmt:                    q.getCharacterApplicationContentStmt,
 		getCharacterApplicationContentForRequestStmt:          q.getCharacterApplicationContentForRequestStmt,
 		getEmailStmt:                                          q.getEmailStmt,
+		getPermissionForPlayerStmt:                            q.getPermissionForPlayerStmt,
 		getPlayerStmt:                                         q.getPlayerStmt,
 		getPlayerByUsernameStmt:                               q.getPlayerByUsernameStmt,
-		getPlayerPWHashStmt:                                   q.getPlayerPWHashStmt,
 		getPlayerUsernameStmt:                                 q.getPlayerUsernameStmt,
 		getPlayerUsernameByIdStmt:                             q.getPlayerUsernameByIdStmt,
 		getRequestStmt:                                        q.getRequestStmt,
 		getRequestCommentStmt:                                 q.getRequestCommentStmt,
-		getRoleStmt:                                           q.getRoleStmt,
 		getVerifiedEmailByAddressStmt:                         q.getVerifiedEmailByAddressStmt,
 		incrementRequestVersionStmt:                           q.incrementRequestVersionStmt,
 		listCharacterApplicationContentForPlayerStmt:          q.listCharacterApplicationContentForPlayerStmt,
