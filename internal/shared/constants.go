@@ -17,4 +17,5 @@ const (
 	MaxCharacterDescriptionLength      = 2000
 	MinCharacterBackstoryLength        = 500
 	MaxCharacterBackstoryLength        = 10000
+	AppEnv                             = "PETRICHOR_APP_ENV"
 )

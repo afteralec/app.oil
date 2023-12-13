@@ -53,22 +53,20 @@ type Player struct {
 }
 
 type PlayerPermission struct {
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Permissions string
-	Ipid        int64
-	PID         int64
-	ID          int64
+	CreatedAt  time.Time
+	Permission string
+	IPID       int64
+	PID        int64
+	ID         int64
 }
 
 type PlayerPermissionChangeHistory struct {
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Permissions string
-	Ipid        int64
-	PID         int64
-	ID          int64
-	Deleted     bool
+	CreatedAt  time.Time
+	Permission string
+	IPID       int64
+	PID        int64
+	ID         int64
+	Revoked    bool
 }
 
 type Request struct {

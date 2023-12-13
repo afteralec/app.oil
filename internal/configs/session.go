@@ -1,13 +1,13 @@
 package configs
 
 import (
-	"os"
-
 	"github.com/gofiber/fiber/v2/middleware/session"
+
+	"petrichormud.com/app/internal/util"
 )
 
 func Session() session.Config {
-	if os.Getenv("PETRICHOR_APP_ENV") == "prod" {
+	if util.IsProd() {
 		return session.Config{
 			CookieHTTPOnly:    true,
 			CookieSameSite:    "strict",
