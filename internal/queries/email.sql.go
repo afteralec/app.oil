@@ -27,11 +27,11 @@ INSERT INTO emails (address, pid, verified) VALUES (?, ?, false)
 
 type CreateEmailParams struct {
 	Address string
-	Pid     int64
+	PID     int64
 }
 
 func (q *Queries) CreateEmail(ctx context.Context, arg CreateEmailParams) (sql.Result, error) {
-	return q.exec(ctx, q.createEmailStmt, createEmail, arg.Address, arg.Pid)
+	return q.exec(ctx, q.createEmailStmt, createEmail, arg.Address, arg.PID)
 }
 
 const deleteEmail = `-- name: DeleteEmail :execresult
@@ -54,7 +54,7 @@ func (q *Queries) GetEmail(ctx context.Context, id int64) (Email, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Verified,
-		&i.Pid,
+		&i.PID,
 		&i.ID,
 	)
 	return i, err
@@ -72,7 +72,7 @@ func (q *Queries) GetVerifiedEmailByAddress(ctx context.Context, address string)
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Verified,
-		&i.Pid,
+		&i.PID,
 		&i.ID,
 	)
 	return i, err
@@ -96,7 +96,7 @@ func (q *Queries) ListEmails(ctx context.Context, pid int64) ([]Email, error) {
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Verified,
-			&i.Pid,
+			&i.PID,
 			&i.ID,
 		); err != nil {
 			return nil, err
@@ -130,7 +130,7 @@ func (q *Queries) ListVerifiedEmails(ctx context.Context, pid int64) ([]Email, e
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Verified,
-			&i.Pid,
+			&i.PID,
 			&i.ID,
 		); err != nil {
 			return nil, err

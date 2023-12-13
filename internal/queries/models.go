@@ -16,7 +16,7 @@ type CharacterApplicationContent struct {
 	ShortDescription string
 	Name             string
 	Gender           string
-	Rid              int64
+	RID              int64
 	ID               int64
 }
 
@@ -28,8 +28,8 @@ type CharacterApplicationContentHistory struct {
 	ShortDescription string
 	Name             string
 	Gender           string
-	Vid              int64
-	Rid              int64
+	VID              int64
+	RID              int64
 	ID               int64
 }
 
@@ -38,7 +38,7 @@ type Email struct {
 	CreatedAt sql.NullTime
 	UpdatedAt sql.NullTime
 	Verified  bool
-	Pid       int64
+	PID       int64
 	ID        int64
 }
 
@@ -56,8 +56,8 @@ type Request struct {
 	Status    string
 	CreatedAt sql.NullTime
 	UpdatedAt sql.NullTime
-	Vid       int64
-	Pid       int64
+	VID       int64
+	PID       int64
 	ID        int64
 	New       bool
 }
@@ -69,26 +69,26 @@ type RequestComment struct {
 	Text      string
 	Field     string
 	Deleted   sql.NullBool
-	Cid       int64
-	Rid       int64
-	Vid       int64
-	Pid       int64
+	CID       int64
+	RID       int64
+	VID       int64
+	PID       int64
 	ID        int64
 }
 
 type RequestCommentContentHistory struct {
 	CreatedAt sql.NullTime
 	Text      string
-	Cid       int64
-	Vid       int64
+	CID       int64
+	VID       int64
 	ID        int64
 }
 
 type RequestStatusChange struct {
 	Status    string
 	CreatedAt sql.NullTime
-	Vid       int64
-	Rid       int64
-	Pid       int64
+	VID       int64
+	RID       int64
+	PID       int64
 	ID        int64
 }

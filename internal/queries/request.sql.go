@@ -35,12 +35,12 @@ VALUES
 `
 
 type CreateHistoryForRequestStatusParams struct {
-	Rid int64
-	Pid int64
+	RID int64
+	PID int64
 }
 
 func (q *Queries) CreateHistoryForRequestStatus(ctx context.Context, arg CreateHistoryForRequestStatusParams) error {
-	_, err := q.exec(ctx, q.createHistoryForRequestStatusStmt, createHistoryForRequestStatus, arg.Rid, arg.Pid)
+	_, err := q.exec(ctx, q.createHistoryForRequestStatusStmt, createHistoryForRequestStatus, arg.RID, arg.PID)
 	return err
 }
 
@@ -50,11 +50,11 @@ INSERT INTO requests (type, pid) VALUES (?, ?)
 
 type CreateRequestParams struct {
 	Type string
-	Pid  int64
+	PID  int64
 }
 
 func (q *Queries) CreateRequest(ctx context.Context, arg CreateRequestParams) (sql.Result, error) {
-	return q.exec(ctx, q.createRequestStmt, createRequest, arg.Type, arg.Pid)
+	return q.exec(ctx, q.createRequestStmt, createRequest, arg.Type, arg.PID)
 }
 
 const getRequest = `-- name: GetRequest :one
@@ -69,8 +69,8 @@ func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
 		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Vid,
-		&i.Pid,
+		&i.VID,
+		&i.PID,
 		&i.ID,
 		&i.New,
 	)
@@ -104,8 +104,8 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.Vid,
-			&i.Pid,
+			&i.VID,
+			&i.PID,
 			&i.ID,
 			&i.New,
 		); err != nil {
@@ -131,6 +131,7 @@ type UpdateRequestStatusParams struct {
 	ID     int64
 }
 
+// TODO: Move this to a more complex set of queries that pivot on the current status of the request
 func (q *Queries) UpdateRequestStatus(ctx context.Context, arg UpdateRequestStatusParams) error {
 	_, err := q.exec(ctx, q.updateRequestStatusStmt, updateRequestStatus, arg.Status, arg.ID)
 	return err

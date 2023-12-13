@@ -19,12 +19,12 @@ VALUES
 
 type AddCommentToRequestParams struct {
 	Text string
-	Pid  int64
-	Rid  int64
+	PID  int64
+	RID  int64
 }
 
 func (q *Queries) AddCommentToRequest(ctx context.Context, arg AddCommentToRequestParams) (sql.Result, error) {
-	return q.exec(ctx, q.addCommentToRequestStmt, addCommentToRequest, arg.Text, arg.Pid, arg.Rid)
+	return q.exec(ctx, q.addCommentToRequestStmt, addCommentToRequest, arg.Text, arg.PID, arg.RID)
 }
 
 const addCommentToRequestField = `-- name: AddCommentToRequestField :execresult
@@ -37,18 +37,18 @@ VALUES
 type AddCommentToRequestFieldParams struct {
 	Text  string
 	Field string
-	Pid   int64
-	Rid   int64
-	Vid   int64
+	PID   int64
+	RID   int64
+	VID   int64
 }
 
 func (q *Queries) AddCommentToRequestField(ctx context.Context, arg AddCommentToRequestFieldParams) (sql.Result, error) {
 	return q.exec(ctx, q.addCommentToRequestFieldStmt, addCommentToRequestField,
 		arg.Text,
 		arg.Field,
-		arg.Pid,
-		arg.Rid,
-		arg.Vid,
+		arg.PID,
+		arg.RID,
+		arg.VID,
 	)
 }
 
@@ -61,17 +61,17 @@ VALUES
 
 type AddReplyToCommentParams struct {
 	Text string
-	Cid  int64
-	Pid  int64
-	Rid  int64
+	CID  int64
+	PID  int64
+	RID  int64
 }
 
 func (q *Queries) AddReplyToComment(ctx context.Context, arg AddReplyToCommentParams) (sql.Result, error) {
 	return q.exec(ctx, q.addReplyToCommentStmt, addReplyToComment,
 		arg.Text,
-		arg.Cid,
-		arg.Pid,
-		arg.Rid,
+		arg.CID,
+		arg.PID,
+		arg.RID,
 	)
 }
 
@@ -85,18 +85,18 @@ VALUES
 type AddReplyToFieldCommentParams struct {
 	Text  string
 	Field string
-	Cid   int64
-	Pid   int64
-	Rid   int64
+	CID   int64
+	PID   int64
+	RID   int64
 }
 
 func (q *Queries) AddReplyToFieldComment(ctx context.Context, arg AddReplyToFieldCommentParams) (sql.Result, error) {
 	return q.exec(ctx, q.addReplyToFieldCommentStmt, addReplyToFieldComment,
 		arg.Text,
 		arg.Field,
-		arg.Cid,
-		arg.Pid,
-		arg.Rid,
+		arg.CID,
+		arg.PID,
+		arg.RID,
 	)
 }
 
@@ -114,10 +114,10 @@ func (q *Queries) GetRequestComment(ctx context.Context, id int64) (RequestComme
 		&i.Text,
 		&i.Field,
 		&i.Deleted,
-		&i.Cid,
-		&i.Rid,
-		&i.Vid,
-		&i.Pid,
+		&i.CID,
+		&i.RID,
+		&i.VID,
+		&i.PID,
 		&i.ID,
 	)
 	return i, err
@@ -143,10 +143,10 @@ func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]Requ
 			&i.Text,
 			&i.Field,
 			&i.Deleted,
-			&i.Cid,
-			&i.Rid,
-			&i.Vid,
-			&i.Pid,
+			&i.CID,
+			&i.RID,
+			&i.VID,
+			&i.PID,
 			&i.ID,
 		); err != nil {
 			return nil, err
@@ -182,10 +182,10 @@ func (q *Queries) ListRepliesToComment(ctx context.Context, cid int64) ([]Reques
 			&i.Text,
 			&i.Field,
 			&i.Deleted,
-			&i.Cid,
-			&i.Rid,
-			&i.Vid,
-			&i.Pid,
+			&i.CID,
+			&i.RID,
+			&i.VID,
+			&i.PID,
 			&i.ID,
 		); err != nil {
 			return nil, err

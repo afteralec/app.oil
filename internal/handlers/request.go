@@ -46,7 +46,7 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.Pid != pid {
+		if req.PID != pid {
 			// TODO: Check permissions on the commenting player to see if they can comment on this application
 			c.Status(fiber.StatusUnauthorized)
 			return nil
@@ -62,9 +62,9 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 		if r.Cid == 0 {
 			if len(r.Field) > 0 {
 				_, err := i.Queries.AddCommentToRequestField(context.Background(), queries.AddCommentToRequestFieldParams{
-					Rid: rid,
-					Vid: req.Vid,
-					Pid: pid.(int64),
+					RID: rid,
+					VID: req.VID,
+					PID: pid.(int64),
 					// TODO: Validate this field based on the type of the request
 					// TODO: Keep a list of valid fields by request type?
 					Field: r.Field,
@@ -79,8 +79,8 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 				return nil
 			} else {
 				_, err := i.Queries.AddCommentToRequest(context.Background(), queries.AddCommentToRequestParams{
-					Rid:  rid,
-					Pid:  pid.(int64),
+					RID:  rid,
+					PID:  pid.(int64),
 					Text: r.Text,
 				})
 				if err != nil {
@@ -102,8 +102,8 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 			_, err = i.Queries.AddReplyToFieldComment(context.Background(), queries.AddReplyToFieldCommentParams{
-				Rid:   rid,
-				Pid:   pid.(int64),
+				RID:   rid,
+				PID:   pid.(int64),
 				Field: rc.Field,
 				Text:  r.Text,
 			})

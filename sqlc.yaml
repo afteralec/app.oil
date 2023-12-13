@@ -10,3 +10,8 @@ sql:
         sql_driver: "github.com/go-sql-driver/mysql"
         out: "internal/queries"
         emit_prepared_queries: true
+        rename:
+          pid: "PID"
+          rid: "RID"
+          vid: "VID"
+          cid: "CID"

@@ -80,7 +80,7 @@ func (q *Queries) GetCharacterApplicationContent(ctx context.Context, id int64) 
 		&i.ShortDescription,
 		&i.Name,
 		&i.Gender,
-		&i.Rid,
+		&i.RID,
 		&i.ID,
 	)
 	return i, err
@@ -101,7 +101,7 @@ func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, 
 		&i.ShortDescription,
 		&i.Name,
 		&i.Gender,
-		&i.Rid,
+		&i.RID,
 		&i.ID,
 	)
 	return i, err
@@ -134,7 +134,7 @@ func (q *Queries) ListCharacterApplicationContentForPlayer(ctx context.Context, 
 			&i.ShortDescription,
 			&i.Name,
 			&i.Gender,
-			&i.Rid,
+			&i.RID,
 			&i.ID,
 		); err != nil {
 			return nil, err
@@ -191,14 +191,14 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 			&i.CharacterApplicationContent.ShortDescription,
 			&i.CharacterApplicationContent.Name,
 			&i.CharacterApplicationContent.Gender,
-			&i.CharacterApplicationContent.Rid,
+			&i.CharacterApplicationContent.RID,
 			&i.CharacterApplicationContent.ID,
 			&i.Request.Type,
 			&i.Request.Status,
 			&i.Request.CreatedAt,
 			&i.Request.UpdatedAt,
-			&i.Request.Vid,
-			&i.Request.Pid,
+			&i.Request.VID,
+			&i.Request.PID,
 			&i.Request.ID,
 			&i.Request.New,
 		); err != nil {
@@ -221,11 +221,11 @@ UPDATE character_application_content SET backstory = ? WHERE rid = ?
 
 type UpdateCharacterApplicationContentBackstoryParams struct {
 	Backstory string
-	Rid       int64
+	RID       int64
 }
 
 func (q *Queries) UpdateCharacterApplicationContentBackstory(ctx context.Context, arg UpdateCharacterApplicationContentBackstoryParams) error {
-	_, err := q.exec(ctx, q.updateCharacterApplicationContentBackstoryStmt, updateCharacterApplicationContentBackstory, arg.Backstory, arg.Rid)
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentBackstoryStmt, updateCharacterApplicationContentBackstory, arg.Backstory, arg.RID)
 	return err
 }
 
@@ -235,11 +235,11 @@ UPDATE character_application_content SET description = ? WHERE rid = ?
 
 type UpdateCharacterApplicationContentDescriptionParams struct {
 	Description string
-	Rid         int64
+	RID         int64
 }
 
 func (q *Queries) UpdateCharacterApplicationContentDescription(ctx context.Context, arg UpdateCharacterApplicationContentDescriptionParams) error {
-	_, err := q.exec(ctx, q.updateCharacterApplicationContentDescriptionStmt, updateCharacterApplicationContentDescription, arg.Description, arg.Rid)
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentDescriptionStmt, updateCharacterApplicationContentDescription, arg.Description, arg.RID)
 	return err
 }
 
@@ -249,11 +249,11 @@ UPDATE character_application_content SET gender = ? WHERE rid = ?
 
 type UpdateCharacterApplicationContentGenderParams struct {
 	Gender string
-	Rid    int64
+	RID    int64
 }
 
 func (q *Queries) UpdateCharacterApplicationContentGender(ctx context.Context, arg UpdateCharacterApplicationContentGenderParams) error {
-	_, err := q.exec(ctx, q.updateCharacterApplicationContentGenderStmt, updateCharacterApplicationContentGender, arg.Gender, arg.Rid)
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentGenderStmt, updateCharacterApplicationContentGender, arg.Gender, arg.RID)
 	return err
 }
 
@@ -263,11 +263,11 @@ UPDATE character_application_content SET name = ? WHERE rid = ?
 
 type UpdateCharacterApplicationContentNameParams struct {
 	Name string
-	Rid  int64
+	RID  int64
 }
 
 func (q *Queries) UpdateCharacterApplicationContentName(ctx context.Context, arg UpdateCharacterApplicationContentNameParams) error {
-	_, err := q.exec(ctx, q.updateCharacterApplicationContentNameStmt, updateCharacterApplicationContentName, arg.Name, arg.Rid)
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentNameStmt, updateCharacterApplicationContentName, arg.Name, arg.RID)
 	return err
 }
 
@@ -277,10 +277,10 @@ UPDATE character_application_content SET short_description = ? WHERE rid = ?
 
 type UpdateCharacterApplicationContentShortDescriptionParams struct {
 	ShortDescription string
-	Rid              int64
+	RID              int64
 }
 
 func (q *Queries) UpdateCharacterApplicationContentShortDescription(ctx context.Context, arg UpdateCharacterApplicationContentShortDescriptionParams) error {
-	_, err := q.exec(ctx, q.updateCharacterApplicationContentShortDescriptionStmt, updateCharacterApplicationContentShortDescription, arg.ShortDescription, arg.Rid)
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentShortDescriptionStmt, updateCharacterApplicationContentShortDescription, arg.ShortDescription, arg.RID)
 	return err
 }

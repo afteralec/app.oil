@@ -86,7 +86,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.Pid != pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -160,7 +160,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.Pid != pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -243,7 +243,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 			return nil
 		}
 
-		if req.Pid != pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -319,7 +319,7 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.Pid != pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -395,7 +395,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.Pid != pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -471,7 +471,7 @@ func CharacterApplicationReviewPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.Pid != pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -493,6 +493,7 @@ func CharacterApplicationReviewPage(i *shared.Interfaces) fiber.Handler {
 		b["Statuses"] = statuses
 		b["Ready"] = character.IsApplicationReady(&app)
 		b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
+		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
 		return c.Render("web/views/character/application/review", b, "web/views/layouts/standalone")
 	}
 }
@@ -526,7 +527,7 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		qtx := i.Queries.WithTx(tx)
 
 		result, err := qtx.CreateRequest(context.Background(), queries.CreateRequestParams{
-			Pid:  pid.(int64),
+			PID:  pid.(int64),
 			Type: request.TypeCharacterApplication,
 		})
 		if err != nil {
@@ -605,7 +606,7 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.Pid != pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -622,7 +623,7 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 
 		err = i.Queries.UpdateCharacterApplicationContentName(context.Background(), queries.UpdateCharacterApplicationContentNameParams{
 			Name: name,
-			Rid:  rid,
+			RID:  rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -672,7 +673,7 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.Pid != pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -699,7 +700,7 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 
 		err = i.Queries.UpdateCharacterApplicationContentGender(context.Background(), queries.UpdateCharacterApplicationContentGenderParams{
 			Gender: r.Gender,
-			Rid:    rid,
+			RID:    rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -749,7 +750,7 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 			return nil
 		}
 
-		if req.Pid != pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -776,7 +777,7 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 
 		err = i.Queries.UpdateCharacterApplicationContentShortDescription(context.Background(), queries.UpdateCharacterApplicationContentShortDescriptionParams{
 			ShortDescription: r.ShortDescription,
-			Rid:              rid,
+			RID:              rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -826,7 +827,7 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.Pid != pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -853,7 +854,7 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 
 		err = i.Queries.UpdateCharacterApplicationContentDescription(context.Background(), queries.UpdateCharacterApplicationContentDescriptionParams{
 			Description: r.Description,
-			Rid:         rid,
+			RID:         rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -903,7 +904,7 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.Pid != pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -927,7 +928,7 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 
 		err = i.Queries.UpdateCharacterApplicationContentBackstory(context.Background(), queries.UpdateCharacterApplicationContentBackstoryParams{
 			Backstory: r.Backstory,
-			Rid:       rid,
+			RID:       rid,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -982,13 +983,26 @@ func SubmitCharacterApplication(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if pid != req.Pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
-		err = qtx.IncrementRequestVersion(context.Background(), rid)
-		if err != nil {
+		if req.VID == 0 {
+			if err = qtx.IncrementRequestVersion(context.Background(), rid); err != nil {
+				if err == sql.ErrNoRows {
+					c.Status(fiber.StatusNotFound)
+					return nil
+				}
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+
+		if err = qtx.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
+			ID:     rid,
+			Status: request.StatusSubmitted,
+		}); err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				return nil
@@ -1014,7 +1028,7 @@ func CharacterApplicationSubmittedPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return nil
+			return c.Render("web/views/login", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -1054,8 +1068,18 @@ func CharacterApplicationSubmittedPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if pid != req.Pid {
+		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
@@ -1065,6 +1089,8 @@ func CharacterApplicationSubmittedPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusOK)
-		return nil
+		b := c.Locals(shared.Bind).(fiber.Map)
+		b["Name"] = app.Name
+		return c.Render("web/views/character/application/submitted", b, "web/views/layouts/standalone")
 	}
 }

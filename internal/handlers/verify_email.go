@@ -72,7 +72,7 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/500", c.Locals(shared.Bind), "web/views/layouts/standalone")
 		}
 
-		if e.Pid != pid {
+		if e.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}

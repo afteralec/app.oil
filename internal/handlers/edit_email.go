@@ -99,7 +99,7 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/edit/err-internal", &fiber.Map{}, "")
 		}
 
-		if e.Pid != pid.(int64) {
+		if e.PID != pid.(int64) {
 			c.Append("HX-Retarget", "profile-email-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
@@ -125,7 +125,7 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 
 		result, err := qtx.CreateEmail(context.Background(), queries.CreateEmailParams{
 			Address: ne.Address,
-			Pid:     pid.(int64),
+			PID:     pid.(int64),
 		})
 		if err != nil {
 			c.Append("HX-Retarget", "profile-email-error")

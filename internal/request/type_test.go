@@ -18,7 +18,7 @@ func TestIsTypeDBTrue(t *testing.T) {
 
 	r, err := i.Queries.CreateRequest(context.Background(), queries.CreateRequestParams{
 		Type: TypeCharacterApplication,
-		Pid:  1,
+		PID:  1,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -54,7 +54,7 @@ func TestIsTypeTxTrue(t *testing.T) {
 
 	r, err := qtx.CreateRequest(context.Background(), queries.CreateRequestParams{
 		Type: TypeCharacterApplication,
-		Pid:  1,
+		PID:  1,
 	})
 	if err != nil {
 		t.Fatal(err)

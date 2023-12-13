@@ -65,7 +65,7 @@ func Resend(i *shared.Interfaces) fiber.Handler {
 			c.Append(shared.HeaderHXAcceptable, "true")
 			return c.Render("web/views/partials/profile/email/resend/err-conflict", &fiber.Map{}, "")
 		}
-		if e.Pid != pid.(int64) {
+		if e.PID != pid.(int64) {
 			c.Status(fiber.StatusForbidden)
 			c.Append(shared.HeaderHXAcceptable, "true")
 			return c.Render("web/views/partials/profile/email/resend/err-internal", &fiber.Map{}, "")

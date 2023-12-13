@@ -42,5 +42,6 @@
     {{ template "web/views/partials/character/application/status/list-complete" .Statuses }}
     {{ end -}}
   </div>
-  {{ template "web/views/partials/character/application/submit-dialog" }}
+  {{ template "web/views/partials/character/application/submit-dialog"
+  .SubmitCharacterApplicationPath }}
 </main>

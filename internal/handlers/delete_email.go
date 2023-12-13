@@ -67,7 +67,7 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render("web/views/partials/profile/email/delete/err-internal", &fiber.Map{}, "")
 		}
 
-		if e.Pid != pid.(int64) {
+		if e.PID != pid.(int64) {
 			c.Append("HX-Retarget", "profile-email-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")

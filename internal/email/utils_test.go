@@ -8,8 +8,8 @@ import (
 )
 
 func TestVerified(t *testing.T) {
-	u := queries.Email{ID: 1, Pid: 69, Address: "test@test.com", Verified: false}
-	v := queries.Email{ID: 2, Pid: 69, Address: "testagain@test.com", Verified: true}
+	u := queries.Email{ID: 1, PID: 69, Address: "test@test.com", Verified: false}
+	v := queries.Email{ID: 2, PID: 69, Address: "testagain@test.com", Verified: true}
 	emails := []queries.Email{u, v}
 	expected := []queries.Email{v}
 	require.Equal(t, expected, Verified(emails))

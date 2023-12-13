@@ -12,7 +12,7 @@
   >
     Create Account
   </button>
-  {{ template "web/views/partials/modal/overlay" }}
+  {{ template "web/views/partials/modal/overlay" "showModal" }}
   <div
     class="z-3 fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-background p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%]"
     @click.away="showModal = false"

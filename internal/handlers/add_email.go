@@ -96,7 +96,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 
 		result, err := qtx.CreateEmail(
 			context.Background(),
-			queries.CreateEmailParams{Pid: pid.(int64), Address: e.Address},
+			queries.CreateEmailParams{PID: pid.(int64), Address: e.Address},
 		)
 		if err != nil {
 			if me, ok := err.(*mysql.MySQLError); ok {
