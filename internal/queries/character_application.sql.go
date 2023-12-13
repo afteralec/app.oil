@@ -152,7 +152,7 @@ func (q *Queries) ListCharacterApplicationContentForPlayer(ctx context.Context, 
 
 const listCharacterApplicationsForPlayer = `-- name: ListCharacterApplicationsForPlayer :many
 SELECT
-  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, requests.type, requests.status, requests.created_at, requests.updated_at, requests.vid, requests.pid, requests.id, requests.new
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, requests.type, requests.status, requests.created_at, requests.updated_at, requests.pid, requests.id, requests.vid, requests.new
 FROM
   requests
 JOIN
@@ -197,9 +197,9 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 			&i.Request.Status,
 			&i.Request.CreatedAt,
 			&i.Request.UpdatedAt,
-			&i.Request.VID,
 			&i.Request.PID,
 			&i.Request.ID,
+			&i.Request.VID,
 			&i.Request.New,
 		); err != nil {
 			return nil, err

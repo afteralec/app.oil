@@ -39,7 +39,7 @@ type AddCommentToRequestFieldParams struct {
 	Field string
 	PID   int64
 	RID   int64
-	VID   int64
+	VID   int32
 }
 
 func (q *Queries) AddCommentToRequestField(ctx context.Context, arg AddCommentToRequestFieldParams) (sql.Result, error) {
@@ -101,7 +101,7 @@ func (q *Queries) AddReplyToFieldComment(ctx context.Context, arg AddReplyToFiel
 }
 
 const getRequestComment = `-- name: GetRequestComment :one
-SELECT created_at, updated_at, deleted_at, text, field, deleted, cid, rid, vid, pid, id FROM request_comments WHERE id = ?
+SELECT created_at, updated_at, deleted_at, text, field, rid, pid, cid, id, vid, deleted FROM request_comments WHERE id = ?
 `
 
 func (q *Queries) GetRequestComment(ctx context.Context, id int64) (RequestComment, error) {
@@ -113,18 +113,18 @@ func (q *Queries) GetRequestComment(ctx context.Context, id int64) (RequestComme
 		&i.DeletedAt,
 		&i.Text,
 		&i.Field,
-		&i.Deleted,
-		&i.CID,
 		&i.RID,
-		&i.VID,
 		&i.PID,
+		&i.CID,
 		&i.ID,
+		&i.VID,
+		&i.Deleted,
 	)
 	return i, err
 }
 
 const listCommentsForRequest = `-- name: ListCommentsForRequest :many
-SELECT created_at, updated_at, deleted_at, text, field, deleted, cid, rid, vid, pid, id FROM request_comments WHERE rid = ?
+SELECT created_at, updated_at, deleted_at, text, field, rid, pid, cid, id, vid, deleted FROM request_comments WHERE rid = ?
 `
 
 func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]RequestComment, error) {
@@ -142,12 +142,12 @@ func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]Requ
 			&i.DeletedAt,
 			&i.Text,
 			&i.Field,
-			&i.Deleted,
-			&i.CID,
 			&i.RID,
-			&i.VID,
 			&i.PID,
+			&i.CID,
 			&i.ID,
+			&i.VID,
+			&i.Deleted,
 		); err != nil {
 			return nil, err
 		}
@@ -163,7 +163,7 @@ func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]Requ
 }
 
 const listRepliesToComment = `-- name: ListRepliesToComment :many
-SELECT created_at, updated_at, deleted_at, text, field, deleted, cid, rid, vid, pid, id FROM request_comments WHERE cid = ?
+SELECT created_at, updated_at, deleted_at, text, field, rid, pid, cid, id, vid, deleted FROM request_comments WHERE cid = ?
 `
 
 func (q *Queries) ListRepliesToComment(ctx context.Context, cid int64) ([]RequestComment, error) {
@@ -181,12 +181,12 @@ func (q *Queries) ListRepliesToComment(ctx context.Context, cid int64) ([]Reques
 			&i.DeletedAt,
 			&i.Text,
 			&i.Field,
-			&i.Deleted,
-			&i.CID,
 			&i.RID,
-			&i.VID,
 			&i.PID,
+			&i.CID,
 			&i.ID,
+			&i.VID,
+			&i.Deleted,
 		); err != nil {
 			return nil, err
 		}

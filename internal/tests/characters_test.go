@@ -1863,7 +1863,7 @@ func TestSubmitCharacterApplicationVersionZero(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	require.Equal(t, int64(1), r.VID)
+	require.Equal(t, int32(1), r.VID)
 }
 
 func TestSubmitCharacterApplicationVersionOne(t *testing.T) {
@@ -1895,7 +1895,7 @@ func TestSubmitCharacterApplicationVersionOne(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	require.Equal(t, int64(1), r.VID)
+	require.Equal(t, int32(1), r.VID)
 }
 
 func TestCharacterApplicationSubmittedPageUnauthorized(t *testing.T) {
