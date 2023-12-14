@@ -81,6 +81,40 @@ func (q *Queries) GetPlayerUsernameById(ctx context.Context, id int64) (string, 
 	return username, err
 }
 
+const searchPlayersByUsername = `-- name: SearchPlayersByUsername :many
+SELECT created_at, updated_at, pw_hash, username, role, id FROM players WHERE username LIKE ?
+`
+
+func (q *Queries) SearchPlayersByUsername(ctx context.Context, username string) ([]Player, error) {
+	rows, err := q.query(ctx, q.searchPlayersByUsernameStmt, searchPlayersByUsername, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Player
+	for rows.Next() {
+		var i Player
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.PwHash,
+			&i.Username,
+			&i.Role,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updatePlayerPassword = `-- name: UpdatePlayerPassword :execresult
 UPDATE players SET pw_hash = ? WHERE id = ?
 `

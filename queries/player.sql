@@ -15,3 +15,6 @@ SELECT (username) FROM players WHERE username = ?;
 
 -- name: GetPlayerUsernameById :one
 SELECT (username) FROM players WHERE id = ?;
+
+-- name: SearchPlayersByUsername :many
+SELECT * FROM players WHERE username LIKE ?;

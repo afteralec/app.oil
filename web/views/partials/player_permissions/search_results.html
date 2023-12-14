@@ -1,0 +1,4 @@
+{{ range .Players -}}
+<!-- TODO: Get this in a passed var -->
+<a href="/player/permissions/{{ .Username }}">{{ .Username }}</a>
+{{ end -}}

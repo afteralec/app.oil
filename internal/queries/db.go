@@ -84,9 +84,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getEmailStmt, err = db.PrepareContext(ctx, getEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query GetEmail: %w", err)
 	}
-	if q.getPermissionForPlayerStmt, err = db.PrepareContext(ctx, getPermissionForPlayer); err != nil {
-		return nil, fmt.Errorf("error preparing query GetPermissionForPlayer: %w", err)
-	}
 	if q.getPlayerStmt, err = db.PrepareContext(ctx, getPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayer: %w", err)
 	}
@@ -143,6 +140,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.markRequestSubmittedStmt, err = db.PrepareContext(ctx, markRequestSubmitted); err != nil {
 		return nil, fmt.Errorf("error preparing query MarkRequestSubmitted: %w", err)
+	}
+	if q.searchPlayersByUsernameStmt, err = db.PrepareContext(ctx, searchPlayersByUsername); err != nil {
+		return nil, fmt.Errorf("error preparing query SearchPlayersByUsername: %w", err)
 	}
 	if q.updateCharacterApplicationContentBackstoryStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentBackstory); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentBackstory: %w", err)
@@ -267,11 +267,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getEmailStmt: %w", cerr)
 		}
 	}
-	if q.getPermissionForPlayerStmt != nil {
-		if cerr := q.getPermissionForPlayerStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getPermissionForPlayerStmt: %w", cerr)
-		}
-	}
 	if q.getPlayerStmt != nil {
 		if cerr := q.getPlayerStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPlayerStmt: %w", cerr)
@@ -367,6 +362,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing markRequestSubmittedStmt: %w", cerr)
 		}
 	}
+	if q.searchPlayersByUsernameStmt != nil {
+		if cerr := q.searchPlayersByUsernameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing searchPlayersByUsernameStmt: %w", cerr)
+		}
+	}
 	if q.updateCharacterApplicationContentBackstoryStmt != nil {
 		if cerr := q.updateCharacterApplicationContentBackstoryStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateCharacterApplicationContentBackstoryStmt: %w", cerr)
@@ -456,7 +456,6 @@ type Queries struct {
 	getCharacterApplicationContentStmt                    *sql.Stmt
 	getCharacterApplicationContentForRequestStmt          *sql.Stmt
 	getEmailStmt                                          *sql.Stmt
-	getPermissionForPlayerStmt                            *sql.Stmt
 	getPlayerStmt                                         *sql.Stmt
 	getPlayerByUsernameStmt                               *sql.Stmt
 	getPlayerUsernameStmt                                 *sql.Stmt
@@ -476,6 +475,7 @@ type Queries struct {
 	markEmailVerifiedStmt                                 *sql.Stmt
 	markRequestReadyStmt                                  *sql.Stmt
 	markRequestSubmittedStmt                              *sql.Stmt
+	searchPlayersByUsernameStmt                           *sql.Stmt
 	updateCharacterApplicationContentBackstoryStmt        *sql.Stmt
 	updateCharacterApplicationContentDescriptionStmt      *sql.Stmt
 	updateCharacterApplicationContentGenderStmt           *sql.Stmt
@@ -508,7 +508,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getCharacterApplicationContentStmt:                    q.getCharacterApplicationContentStmt,
 		getCharacterApplicationContentForRequestStmt:          q.getCharacterApplicationContentForRequestStmt,
 		getEmailStmt:                                          q.getEmailStmt,
-		getPermissionForPlayerStmt:                            q.getPermissionForPlayerStmt,
 		getPlayerStmt:                                         q.getPlayerStmt,
 		getPlayerByUsernameStmt:                               q.getPlayerByUsernameStmt,
 		getPlayerUsernameStmt:                                 q.getPlayerUsernameStmt,
@@ -528,6 +527,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		markEmailVerifiedStmt:                                 q.markEmailVerifiedStmt,
 		markRequestReadyStmt:                                  q.markRequestReadyStmt,
 		markRequestSubmittedStmt:                              q.markRequestSubmittedStmt,
+		searchPlayersByUsernameStmt:                           q.searchPlayersByUsernameStmt,
 		updateCharacterApplicationContentBackstoryStmt:        q.updateCharacterApplicationContentBackstoryStmt,
 		updateCharacterApplicationContentDescriptionStmt:      q.updateCharacterApplicationContentDescriptionStmt,
 		updateCharacterApplicationContentGenderStmt:           q.updateCharacterApplicationContentGenderStmt,

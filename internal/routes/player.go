@@ -1,5 +1,7 @@
 package routes
 
+import "fmt"
+
 const (
 	Login                  = "/login"
 	Logout                 = "/logout"
@@ -14,4 +16,9 @@ const (
 	RecoverPasswordSuccess = "/recover/password/success"
 	ResetPassword          = "/reset/password"
 	ResetPasswordSuccess   = "/reset/password/success"
+	SearchPlayer           = "/player/search"
 )
+
+func SearchPlayerPath(dest string) string {
+	return fmt.Sprintf("%s/%s", SearchPlayer, dest)
+}

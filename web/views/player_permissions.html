@@ -1,5 +1,33 @@
-<main class="flex flex-col items-center justify-center">
+<main
+  class="flex flex-col items-center justify-center"
+  x-data="getPlayerPermissionsData()"
+>
   <div class="w-full text-foreground md:w-[750px] md:px-4 lg:w-[1000px]">
-    <h1 class="text-lg font-semibold leading-none">Permissions</h1>
+    <header class="px-6 pt-2">
+      <h2
+        class="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl"
+      >
+        Player Permissions
+      </h2>
+      <p class="leading-7 text-muted-foreground">
+        Adjust permissions for individual players here
+      </p>
+    </header>
+    <section id="search-players" class="px-6 pt-4">
+      <!-- TODO: Move this hx-post path to a passed var -->
+      <input
+        type="search"
+        id="player-permissions-username"
+        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        hx-post="/player/search/player-permissions"
+        hx-trigger="input changed delay:500ms, search"
+        hx-target="#player-permissions-search-results"
+        placeholder=""
+        name="search"
+        value=""
+        autofocus
+      />
+      <article id="player-permissions-search-results"></article>
+    </section>
   </div>
 </main>

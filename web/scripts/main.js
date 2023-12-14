@@ -308,6 +308,13 @@ export function getCharacterApplicationReviewData() {
   };
 }
 
+export function getPlayerPermissionsData() {
+  return {
+    username: "",
+    sanitizeUsername,
+  };
+}
+
 const HEADER_CSRF_TOKEN = "X-CSRF-Token";
 const HEADER_HX_ACCEPTABLE = "X-HX-Acceptable";
 const HX_ACCEPTABLE_STATUSES = {
@@ -351,3 +358,4 @@ window.getCharacterApplicationDescriptionData =
 window.getCharacterApplicationBackstoryData =
   getCharacterApplicationBackstoryData;
 window.getCharacterApplicationReviewData = getCharacterApplicationReviewData;
+window.getPlayerPermissionsData = getPlayerPermissionsData;
