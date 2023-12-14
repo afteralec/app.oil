@@ -64,4 +64,6 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Get(routes.ResetPassword, handlers.ResetPasswordPage())
 	app.Post(routes.ResetPassword, handlers.ResetPassword(i))
 	app.Get(routes.ResetPasswordSuccess, handlers.ResetPasswordSuccessPage())
+
+	app.Get(routes.PlayerPermissions, handlers.PermissionsPage(i))
 }

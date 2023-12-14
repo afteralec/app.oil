@@ -1,8 +1,5 @@
--- name: CreatePlayerPermission :exec
+-- name: CreatePlayerPermission :execresult
 INSERT INTO player_permissions (permission, pid, ipid) VALUES (?, ?, ?);
-
--- name: GetPermissionForPlayer :one
-SELECT * FROM player_permissions WHERE permission = ? AND pid = ?;
 
 -- name: ListPlayerPermissions :many
 SELECT * FROM player_permissions WHERE pid = ?;

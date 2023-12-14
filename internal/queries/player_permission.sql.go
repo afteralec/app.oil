@@ -7,9 +7,10 @@ package queries
 
 import (
 	"context"
+	"database/sql"
 )
 
-const createPlayerPermission = `-- name: CreatePlayerPermission :exec
+const createPlayerPermission = `-- name: CreatePlayerPermission :execresult
 INSERT INTO player_permissions (permission, pid, ipid) VALUES (?, ?, ?)
 `
 
@@ -19,9 +20,8 @@ type CreatePlayerPermissionParams struct {
 	IPID       int64
 }
 
-func (q *Queries) CreatePlayerPermission(ctx context.Context, arg CreatePlayerPermissionParams) error {
-	_, err := q.exec(ctx, q.createPlayerPermissionStmt, createPlayerPermission, arg.Permission, arg.PID, arg.IPID)
-	return err
+func (q *Queries) CreatePlayerPermission(ctx context.Context, arg CreatePlayerPermissionParams) (sql.Result, error) {
+	return q.exec(ctx, q.createPlayerPermissionStmt, createPlayerPermission, arg.Permission, arg.PID, arg.IPID)
 }
 
 const createPlayerPermissionIssuedChangeHistory = `-- name: CreatePlayerPermissionIssuedChangeHistory :exec

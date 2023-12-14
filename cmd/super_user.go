@@ -91,11 +91,12 @@ var superUserCmd = &cobra.Command{
 			return err
 		}
 
-		if err := qtx.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
+		_, err = qtx.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
 			PID:        pid,
 			IPID:       pid,
 			Permission: permission.PlayerAssignAllPermissions,
-		}); err != nil {
+		})
+		if err != nil {
 			return err
 		}
 
