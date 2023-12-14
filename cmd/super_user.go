@@ -11,6 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"petrichormud.com/app/internal/password"
+	"petrichormud.com/app/internal/permission"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/username"
 )
@@ -46,7 +47,7 @@ var superUserCmd = &cobra.Command{
 			return err
 		}
 
-		// TODO: Move this database setup to its own function
+		// TODO: Move this database setup to its own function so it's repeatable
 		_, err = db.Exec("SET GLOBAL local_infile=true;")
 		if err != nil {
 			return err
@@ -69,7 +70,7 @@ var superUserCmd = &cobra.Command{
 			return errors.New("error while hashing password")
 		}
 
-		_, err = qtx.CreatePlayer(context.Background(), queries.CreatePlayerParams{
+		result, err := qtx.CreatePlayer(context.Background(), queries.CreatePlayerParams{
 			Username: u,
 			PwHash:   pwHash,
 		})
@@ -77,7 +78,32 @@ var superUserCmd = &cobra.Command{
 			return err
 		}
 
-		msg := fmt.Sprintf("super-user called with %s and %s.", u, pw)
+		pid, err := result.LastInsertId()
+		if err != nil {
+			return err
+		}
+
+		if err := qtx.CreatePlayerPermissionIssuedChangeHistory(context.Background(), queries.CreatePlayerPermissionIssuedChangeHistoryParams{
+			PID:        pid,
+			IPID:       pid,
+			Permission: permission.PlayerAssignAllPermissions,
+		}); err != nil {
+			return err
+		}
+
+		if err := qtx.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
+			PID:        pid,
+			IPID:       pid,
+			Permission: permission.PlayerAssignAllPermissions,
+		}); err != nil {
+			return err
+		}
+
+		if err = tx.Commit(); err != nil {
+			return err
+		}
+
+		msg := fmt.Sprintf("User %s created and seeded with the root permission.", u)
 		fmt.Println(msg)
 		return nil
 	},
@@ -86,7 +112,7 @@ var superUserCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(superUserCmd)
 
-	superUserCmd.Flags().StringP("db-url", "d", "root:pass@127.0.0.1/test", "The URL for the database.")
+	superUserCmd.Flags().StringP("db-url", "d", "root:pass@/test", "The URL for the database.")
 	superUserCmd.Flags().StringP("username", "u", "", "The username for the new user.")
 	superUserCmd.Flags().StringP("password", "p", "", "The password for the user.")
 	superUserCmd.MarkFlagRequired("username")
