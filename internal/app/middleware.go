@@ -9,6 +9,7 @@ import (
 
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/middleware/bind"
+	"petrichormud.com/app/internal/middleware/permissions"
 	"petrichormud.com/app/internal/middleware/session"
 	"petrichormud.com/app/internal/shared"
 )
@@ -25,5 +26,6 @@ func Middleware(a *fiber.App, i *shared.Interfaces) {
 	}
 
 	a.Use(session.New(i))
+	a.Use(permissions.New(i))
 	a.Use(bind.New())
 }

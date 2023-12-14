@@ -1,0 +1,47 @@
+<li class="dropdown relative">
+  <button
+    class="cursor:pointer group inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50"
+    @click="menuOpen = !menuOpen"
+  >
+    Permissions
+    <iconify-icon
+      class="icon"
+      icon="tabler:chevron-down"
+      height="16"
+      width="16"
+    ></iconify-icon>
+  </button>
+  <div class="dropdown-content z-3 absolute right-0 w-56 origin-top-right pt-2">
+    <div
+      class="divide-y divide-gray-100 rounded-md bg-background shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none"
+      role="menu"
+      aria-orientation="vertical"
+      aria-labelledby="menu-button"
+      tabindex="-1"
+    >
+      <div role="none">
+        {{ if .PlayerPermissionsView -}}
+        <p
+          class="block bg-muted px-4 py-2 text-sm"
+          role="menuitem"
+          tabindex="-1"
+          id="account-menu-0"
+        >
+          Player Permissions
+        </p>
+        {{ else -}}
+        <!-- TODO: Move these paths to a bind variable -->
+        <a
+          href="/player/permissions"
+          class="block bg-background px-4 py-2 text-sm hover:bg-muted"
+          role="menuitem"
+          tabindex="-1"
+          id="account-menu-0"
+        >
+          Player Permissions
+        </a>
+        {{ end -}}
+      </div>
+    </div>
+  </div>
+</li>

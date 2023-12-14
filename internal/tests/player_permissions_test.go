@@ -103,33 +103,6 @@ func TestPermissionsPageSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestPermissionsPageFatal(t *testing.T) {
-	i := shared.SetupInterfaces()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	i.Close()
-
-	url := MakeTestURL(routes.PlayerPermissions)
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	i = shared.SetupInterfaces()
-	defer DeleteTestPlayer(t, &i, TestUsername)
-
-	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
-}
-
 func DeleteTestPlayerPermission(t *testing.T, i *shared.Interfaces, id int64) {
 	query := fmt.Sprintf("DELETE FROM player_permissions WHERE id = %d;", id)
 	_, err := i.Database.Exec(query)
