@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
-	"github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
@@ -21,8 +20,7 @@ func TestSubmitCharacterApplicationUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -41,8 +39,7 @@ func TestSubmitCharacterApplicationUnowned(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -68,8 +65,7 @@ func TestSubmitCharacterApplicationSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -95,8 +91,7 @@ func TestSubmitCharacterApplicationNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -117,8 +112,7 @@ func TestSubmitCharacterApplicationNotFound(t *testing.T) {
 func TestSubmitCharacterApplicationFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -143,8 +137,7 @@ func TestSubmitCharacterApplicationVersionZero(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -175,8 +168,7 @@ func TestSubmitCharacterApplicationVersionOne(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -210,8 +202,7 @@ func TestCharacterApplicationSubmittedSuccessPageUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -232,8 +223,7 @@ func TestCharacterApplicationSubmittedSuccessPageUnowned(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -263,8 +253,7 @@ func TestCharacterApplicationSubmittedSuccessPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -290,8 +279,7 @@ func TestCharacterApplicationSubmittedSuccessPageWrongStatus(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -313,8 +301,7 @@ func TestCharacterApplicationSubmittedSuccessPageNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -335,8 +322,7 @@ func TestCharacterApplicationSubmittedSuccessPageNotFound(t *testing.T) {
 func TestCharacterApplicationSubmittedSuccessPageFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -362,8 +348,7 @@ func TestCharacterApplicationSubmittedPageUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -384,8 +369,7 @@ func TestCharacterApplicationSubmittedPageUnowned(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -415,8 +399,7 @@ func TestCharacterApplicationSubmittedPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -442,8 +425,7 @@ func TestCharacterApplicationSubmittedPageWrongStatus(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -465,8 +447,7 @@ func TestCharacterApplicationSubmittedPageNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -487,8 +468,7 @@ func TestCharacterApplicationSubmittedPageNotFound(t *testing.T) {
 func TestCharacterApplicationSubmittedPageFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

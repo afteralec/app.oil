@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
-	html "github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
@@ -22,8 +21,7 @@ func TestLoginPage(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	config := configs.Fiber(views)
+	config := configs.Fiber()
 	a := fiber.New(config)
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
@@ -44,8 +42,7 @@ func TestLoginPageRedirectsIfAlreadyLoggedIn(t *testing.T) {
 
 	SetupTestLogin(t, &i, TestUsername)
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -67,8 +64,7 @@ func TestLoginNonExistantUser(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	config := configs.Fiber(views)
+	config := configs.Fiber()
 	a := fiber.New(config)
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
@@ -85,8 +81,7 @@ func TestLoginSuccess(t *testing.T) {
 
 	SetupTestLogin(t, &i, TestUsername)
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -101,8 +96,7 @@ func TestLoginWithWrongPassword(t *testing.T) {
 
 	SetupTestLogin(t, &i, TestUsername)
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -117,8 +111,7 @@ func TestLoginWithMalformedFormData(t *testing.T) {
 
 	SetupTestLogin(t, &i, TestUsername)
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

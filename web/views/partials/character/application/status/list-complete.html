@@ -2,10 +2,10 @@
   <!-- prettier-ignore -->
   {{ range . }}
     {{ if .Current }}
-      {{ template "web/views/partials/character/application/status/current" . }}
+      {{ template "views/partials/character/application/status/current" . }}
     {{ else -}}
       {{ if .Ready }}
-        {{ template "web/views/partials/character/application/status/ready" . }}
+        {{ template "views/partials/character/application/status/ready" . }}
       {{ end -}}
     {{ end -}}
   {{ end -}}

@@ -12,7 +12,6 @@ import (
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
-	html "github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
@@ -27,8 +26,7 @@ func TestCreateCommentUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -56,8 +54,7 @@ func TestCreateCommentSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -86,8 +83,7 @@ func TestCreateCommentNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -115,8 +111,7 @@ func TestCreateCommentFatal(t *testing.T) {
 
 	i := shared.SetupInterfaces()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -148,8 +143,7 @@ func TestCreateFieldCommentUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -178,8 +172,7 @@ func TestCreateFieldCommentSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -209,8 +202,7 @@ func TestCreateFieldCommentNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -239,8 +231,7 @@ func TestCreateFieldCommentFatal(t *testing.T) {
 
 	i := shared.SetupInterfaces()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -273,8 +264,7 @@ func TestCreateReplyCommentUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -305,8 +295,7 @@ func TestCreateReplyCommentSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -338,8 +327,7 @@ func TestCreateReplyCommentNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -371,8 +359,7 @@ func TestCreateReplyCommentCIDNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -403,8 +390,7 @@ func TestCreateReplyCommentFatal(t *testing.T) {
 
 	i := shared.SetupInterfaces()
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

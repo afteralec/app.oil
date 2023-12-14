@@ -9,7 +9,6 @@ import (
 
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/roles"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
 )
@@ -34,7 +33,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 
 		u := username.Sanitize(p.Username)
 
-		if !username.Validate(u) {
+		if !username.IsValid(u) {
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
@@ -42,7 +41,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			return c.Render("views/partials/register/err-invalid", c.Locals(shared.Bind), "")
 		}
 
-		if !password.Validate(p.Password) {
+		if !password.IsValid(p.Password) {
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
@@ -58,7 +57,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			return c.Render("views/partials/register/err-invalid", c.Locals(shared.Bind), "")
 		}
 
-		pw_hash, err := password.Hash(p.Password)
+		pwHash, err := password.Hash(p.Password)
 		if err != nil {
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")
@@ -82,8 +81,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			context.Background(),
 			queries.CreatePlayerParams{
 				Username: u,
-				Role:     roles.Player,
-				PwHash:   pw_hash,
+				PwHash:   pwHash,
 			},
 		)
 		if err != nil {

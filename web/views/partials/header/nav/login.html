@@ -12,7 +12,7 @@
   >
     Log In
   </button>
-  {{ template "web/views/partials/modal/overlay" "showModal" }}
+  {{ template "views/partials/modal/overlay" "showModal" }}
   <div
     class="z-3 fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-background p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%]"
     @click.away="showModal = false"
@@ -20,7 +20,7 @@
     x-show="showModal"
   >
     <div id="login-error"></div>
-    {{ template "web/views/partials/modal/close" "showModal" }}
+    {{ template "views/partials/modal/close" "showModal" }}
     <p class="pt-4">Please log in:</p>
     <form
       class="space-y-4 px-4 pt-4"

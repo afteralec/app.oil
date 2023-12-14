@@ -2,10 +2,12 @@ package handlers
 
 import (
 	fiber "github.com/gofiber/fiber/v2"
+
+	"petrichormud.com/app/internal/shared"
 )
 
 func RecoverPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("views/recover", c.Locals("b"), "views/layouts/standalone")
+		return c.Render("views/recover", c.Locals(shared.Bind), "views/layouts/standalone")
 	}
 }

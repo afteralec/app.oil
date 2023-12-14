@@ -5,17 +5,14 @@ package cmd
 
 import (
 	"log"
-	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
-	html "github.com/gofiber/template/html/v2"
 	"github.com/spf13/cobra"
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/shared"
-	"petrichormud.com/app/web"
 )
 
 var runCmd = &cobra.Command{
@@ -26,8 +23,7 @@ var runCmd = &cobra.Command{
 		i := shared.SetupInterfaces()
 		defer i.Close()
 
-		views := html.NewFileSystem(http.FS(web.ViewsFS), ".html")
-		a := fiber.New(configs.Fiber(views))
+		a := fiber.New(configs.Fiber())
 
 		app.Middleware(a, &i)
 		app.Handlers(a, &i)

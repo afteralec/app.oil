@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
-	html "github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
@@ -25,8 +24,7 @@ func TestRegister(t *testing.T) {
 
 	SetupTestRegister(t, &i, TestUsername)
 
-	views := html.New("../..", ".html")
-	a := fiber.New(configs.Fiber(views))
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

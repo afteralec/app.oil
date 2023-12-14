@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
-	html "github.com/gofiber/template/html/v2"
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
@@ -19,8 +18,7 @@ func TestHomePage(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	views := html.New("../..", ".html")
-	config := configs.Fiber(views)
+	config := configs.Fiber()
 	a := fiber.New(config)
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)

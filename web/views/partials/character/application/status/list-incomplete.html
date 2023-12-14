@@ -2,11 +2,11 @@
   <!-- prettier-ignore -->
   {{ range . }}
     {{ if .Current }}
-      {{ template "web/views/partials/character/application/status/current" . }}
+      {{ template "views/partials/character/application/status/current" . }}
     {{ else -}}
       {{ if .Ready }}
       {{ else -}}
-        {{ template "web/views/partials/character/application/status/incomplete" . }}
+        {{ template "views/partials/character/application/status/incomplete" . }}
       {{ end -}}
     {{ end -}}
   {{ end -}}

@@ -11,7 +11,7 @@
   </header>
   <div class="flex gap-4 pt-4">
     <div class="flex flex-col items-center justify-center">
-      {{ template "web/views/partials/profile/avatar/avatar" . }}
+      {{ template "views/partials/profile/avatar/avatar" . }}
     </div>
     <div class="flex flex-col">
       <div>
@@ -61,13 +61,13 @@
     </div>
     <div class="relative flex flex-col gap-2 pl-4" x-data="{ open: false }">
       <!-- prettier-ignore -->
-      {{ template "web/views/partials/profile/avatar/gv-emails" . }}
-      {{ template "web/views/partials/profile/avatar/gh-username" . }}
+      {{ template "views/partials/profile/avatar/gv-emails" . }}
+      {{ template "views/partials/profile/avatar/gh-username" . }}
     </div>
     <div class="pl-8">
       <!-- prettier-ignore -->
-      {{ template "web/views/partials/profile/avatar/gv-desc" }}
-      {{ template "web/views/partials/profile/avatar/gh-desc" }}
+      {{ template "views/partials/profile/avatar/gv-desc" }}
+      {{ template "views/partials/profile/avatar/gh-desc" }}
     </div>
   </div>
 </article>

@@ -38,7 +38,7 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		v := username.Validate(r.Username)
+		v := username.IsValid(r.Username)
 		if !v {
 			c.Status(fiber.StatusBadRequest)
 			return nil

@@ -5,7 +5,7 @@ const (
 	MaxLength = 255
 )
 
-func Validate(pw string) bool {
+func IsValid(pw string) bool {
 	if len(pw) < MinLength {
 		return false
 	}

@@ -6,14 +6,17 @@ import (
 	"time"
 
 	fiber "github.com/gofiber/fiber/v2"
+
+	"petrichormud.com/app/web"
 )
 
-func Fiber(views fiber.Views) fiber.Config {
+func Fiber() fiber.Config {
+	// TODO: Error handling here
 	readTimeoutSecondsCount, _ := strconv.Atoi(os.Getenv("SERVER_READ_TIMEOUT"))
 	readTimeout := time.Second * time.Duration(readTimeoutSecondsCount)
 	return fiber.Config{
-		Views:       views,
-		ViewsLayout: "web/views/layouts/main",
+		Views:       web.ViewsEngine(),
+		ViewsLayout: "views/layouts/main",
 		ReadTimeout: readTimeout,
 	}
 }

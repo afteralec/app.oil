@@ -1,11 +1,11 @@
-{{ template "web/views/partials/modal/overlay" "showSubmitDialog" }}
+{{ template "views/partials/modal/overlay" "showSubmitDialog" }}
 <div
   class="z-3 fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-background p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%]"
   @click.away="showSubmitDialog = false"
   x-cloak
   x-show="showSubmitDialog"
 >
-  {{ template "web/views/partials/modal/close" "showSubmitDialog" }}
+  {{ template "views/partials/modal/close" "showSubmitDialog" }}
   <h3 class="pt-4 text-sm font-semibold">Submit this application?</h3>
   <p>
     Once your character application is put in review, this cannot be undone.

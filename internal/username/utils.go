@@ -16,13 +16,11 @@ func Sanitize(u string) string {
 	return s
 }
 
-func Validate(u string) bool {
-	slen := len(u)
-
-	if slen < MinLength {
+func IsValid(u string) bool {
+	if len(u) < MinLength {
 		return false
 	}
-	if slen > MaxLength {
+	if len(u) > MaxLength {
 		return false
 	}
 

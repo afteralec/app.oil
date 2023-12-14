@@ -10,7 +10,7 @@
     </h2>
     {{ if .Ready }}
     <!-- prettier-ignore -->
-    {{ template "web/views/partials/character/application/status/list-complete" .Statuses }}
+    {{ template "views/partials/character/application/status/list-complete" .Statuses }}
     <div>
       Looks like everything's ready! Feel free to make any adjustments to the
       above sections, or, if you're ready to submit this application, click
@@ -36,12 +36,12 @@
     {{ else -}}
     <p>Incomplete:</p>
     <!-- prettier-ignore -->
-    {{ template "web/views/partials/character/application/status/list-incomplete" .Statuses }}
+    {{ template "views/partials/character/application/status/list-incomplete" .Statuses }}
     <p>Complete:</p>
     <!-- prettier-ignore -->
-    {{ template "web/views/partials/character/application/status/list-complete" .Statuses }}
+    {{ template "views/partials/character/application/status/list-complete" .Statuses }}
     {{ end -}}
   </div>
-  {{ template "web/views/partials/character/application/submit-dialog"
+  {{ template "views/partials/character/application/submit-dialog"
   .SubmitCharacterApplicationPath }}
 </main>

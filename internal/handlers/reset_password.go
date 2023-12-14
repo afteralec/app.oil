@@ -48,7 +48,7 @@ func ResetPassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		vu := username.Validate(r.Username)
+		vu := username.IsValid(r.Username)
 		if !vu {
 			c.Status(fiber.StatusUnauthorized)
 			return nil
@@ -59,7 +59,7 @@ func ResetPassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		vp := password.Validate(r.Password)
+		vp := password.IsValid(r.Password)
 		if !vp {
 			c.Status(fiber.StatusUnauthorized)
 			return nil

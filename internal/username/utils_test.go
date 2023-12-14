@@ -20,16 +20,16 @@ func TestSanitize(t *testing.T) {
 	}
 }
 
-type ValidateTestInput struct {
+type isValidTestInput struct {
 	Input string
 	Want  bool
 }
 
-func TestValidate(t *testing.T) {
-	tests := [3]ValidateTestInput{{"tst", false}, {"test", true}, {"test-_test-_test-", false}}
+func TestIsValid(t *testing.T) {
+	tests := [3]isValidTestInput{{"tst", false}, {"test", true}, {"test-_test-_test-", false}}
 	for i := 0; i < len(tests); i++ {
 		test := tests[i]
-		got := Validate(test.Input)
+		got := IsValid(test.Input)
 		if got != test.Want {
 			t.Errorf("got: %t, wanted: %t", got, test.Want)
 		}

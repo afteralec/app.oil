@@ -15,10 +15,10 @@
     >
       <!-- prettier-ignore -->
       {{ if .PID -}}
-        {{ template "web/views/partials/header/nav/account" . }}
+        {{ template "views/partials/header/nav/account" . }}
       {{ else -}}
-        {{ template "web/views/partials/header/nav/login" }}
-        {{ template "web/views/partials/header/nav/register" }}
+        {{ template "views/partials/header/nav/login" }}
+        {{ template "views/partials/header/nav/register" }}
       {{ end -}}
     </ul>
   </nav>

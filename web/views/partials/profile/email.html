@@ -7,15 +7,15 @@
   </header>
   <div id="profile-email-error" class="w-[60%]"></div>
   <!-- prettier-ignore -->
-  {{ template "web/views/partials/profile/email/no-email" }}
-  {{ template "web/views/partials/profile/email/add-email" . }}
+  {{ template "views/partials/profile/email/no-email" }}
+  {{ template "views/partials/profile/email/add-email" . }}
   <div id="emails" class="flex flex-col gap-2">
     <!-- prettier-ignore -->
     {{ range .Emails }}
       {{ if .Verified }}
-        {{ template "web/views/partials/profile/email/verified" . }}
+        {{ template "views/partials/profile/email/verified" . }}
       {{- else }}
-        {{ template "web/views/partials/profile/email/unverified" . }}
+        {{ template "views/partials/profile/email/unverified" . }}
       {{- end}}
     {{- end }}
   </div>
