@@ -1,8 +1,15 @@
 package permission
 
+type Player struct {
+	Name  string
+	Tag   string
+	Title string
+	About string
+}
+
 const (
-	PlayerAssignAllPermissions        string = "AssignAllPermissions"
-	PlayerReviewCharacterApplications string = "ReviewCharacterApplications"
+	PlayerAssignAllPermissionsName        string = "AssignAllPermissions"
+	PlayerReviewCharacterApplicationsName string = "ReviewCharacterApplications"
 )
 
 const (
@@ -11,36 +18,39 @@ const (
 )
 
 const (
+	PlayerAssignAllPermissionsTitle        string = "Assign All Permissions"
+	PlayerReviewCharacterApplicationsTitle string = "Review Character Applications"
+)
+
+const (
 	PlayerAssignAllPermissionsAbout        string = "The root permission. Only one person should have this at a time."
 	PlayerReviewCharacterApplicationsAbout string = "Enable this player to review Character Applications."
 )
 
-type PlayerPermission struct {
-	Name  string
-	Tag   string
-	About string
+var PlayerAssignAllPermissions Player = Player{
+	Name:  PlayerAssignAllPermissionsName,
+	Tag:   PlayerAssignAllPermissionsTag,
+	Title: PlayerAssignAllPermissionsTitle,
+	About: PlayerAssignAllPermissionsAbout,
 }
 
-var PlayerPermissions map[string]PlayerPermission = map[string]PlayerPermission{
-	PlayerAssignAllPermissions: {
-		Name:  PlayerAssignAllPermissions,
-		Tag:   PlayerAssignAllPermissionsTag,
-		About: "The root permission. Only one person should have this at a time.",
-	},
-	PlayerReviewCharacterApplications: {
-		Name:  PlayerReviewCharacterApplications,
-		Tag:   PlayerReviewCharacterApplicationsTag,
-		About: "The permission to review Character Applications.",
-	},
+var PlayerReviewCharacterApplications Player = Player{
+	Name:  PlayerReviewCharacterApplicationsName,
+	Tag:   PlayerReviewCharacterApplicationsTag,
+	Title: PlayerReviewCharacterApplicationsTitle,
+	About: PlayerAssignAllPermissionsAbout,
 }
-
-var PlayerPermissionsByTag map[string]PlayerPermission = map[string]PlayerPermission{}
 
 var ShowPermissionViewPermissions []string = []string{
+	PlayerAssignAllPermissionsName,
+}
+
+var AllPlayer []Player = []Player{
 	PlayerAssignAllPermissions,
+	PlayerReviewCharacterApplications,
 }
 
 var AllPlayerPermissionDetails [][]string = [][]string{
-	{PlayerAssignAllPermissions, "The root permission. Only one person should have this at a time."},
-	{PlayerReviewCharacterApplications, "The permission to review Character Applications."},
+	{PlayerAssignAllPermissionsName, "The root permission. Only one person should have this at a time."},
+	{PlayerReviewCharacterApplicationsName, "The permission to review Character Applications."},
 }

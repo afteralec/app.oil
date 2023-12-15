@@ -5,7 +5,7 @@ import "petrichormud.com/app/internal/queries"
 func filterInvalidPlayerPermissions(perms []queries.PlayerPermission) []queries.PlayerPermission {
 	result := []queries.PlayerPermission{}
 	for _, perm := range perms {
-		if perm.Permission == PlayerAssignAllPermissions {
+		if perm.Permission == PlayerAssignAllPermissionsName {
 			result = append(result, perm)
 		}
 	}

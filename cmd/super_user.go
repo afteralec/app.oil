@@ -86,7 +86,7 @@ var superUserCmd = &cobra.Command{
 		if err := qtx.CreatePlayerPermissionIssuedChangeHistory(context.Background(), queries.CreatePlayerPermissionIssuedChangeHistoryParams{
 			PID:        pid,
 			IPID:       pid,
-			Permission: permission.PlayerAssignAllPermissions,
+			Permission: permission.PlayerAssignAllPermissions.Name,
 		}); err != nil {
 			return err
 		}
@@ -94,7 +94,7 @@ var superUserCmd = &cobra.Command{
 		_, err = qtx.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
 			PID:        pid,
 			IPID:       pid,
-			Permission: permission.PlayerAssignAllPermissions,
+			Permission: permission.PlayerAssignAllPermissions.Name,
 		})
 		if err != nil {
 			return err

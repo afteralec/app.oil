@@ -28,7 +28,7 @@ func PlayerPermissionsPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		perms, ok := lperms.(permission.PlayerIssuedPermissions)
+		perms, ok := lperms.(permission.PlayerIssued)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
@@ -65,7 +65,7 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		iperms, ok := lperms.(permission.PlayerIssuedPermissions)
+		iperms, ok := lperms.(permission.PlayerIssued)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
@@ -93,7 +93,6 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 		p, err := qtx.GetPlayerByUsername(context.Background(), u)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				log.Println("User not found")
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
@@ -107,7 +106,7 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		perms := permission.MakePlayerPermissions(p.ID, pperms)
+		perms := permission.MakePlayerIssued(p.ID, pperms)
 
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -115,13 +114,12 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		allPermDetails := []playerPermissionDetail{}
-		for _, pd := range permission.AllPlayerPermissionDetails {
-			perm, about := pd[0], pd[1]
+		for _, pr := range permission.AllPlayer {
 			allPermDetails = append(allPermDetails, playerPermissionDetail{
-				Permission: perm,
-				About:      about,
+				Permission: pr.Name,
+				About:      pr.About,
 				Link:       routes.PlayerPermissionsPath(strconv.FormatInt(p.ID, 10)),
-				Issued:     perms.Permissions[perm],
+				Issued:     perms.Permissions[pr.Name],
 			})
 		}
 
@@ -150,7 +148,7 @@ func UpdatePlayerPermission(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		iperms, ok := lperms.(permission.PlayerIssuedPermissions)
+		iperms, ok := lperms.(permission.PlayerIssued)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
@@ -198,7 +196,7 @@ func UpdatePlayerPermission(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		_ = permission.MakePlayerPermissions(p.ID, pperms)
+		_ = permission.MakePlayerIssued(p.ID, pperms)
 
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
