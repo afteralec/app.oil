@@ -169,7 +169,7 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if character.IsApplicationReady(&app) {
+		if req.Status != request.StatusReady && character.IsApplicationReady(&app) {
 			if err = qtx.MarkRequestReady(context.Background(), rid); err != nil {
 				if err == sql.ErrNoRows {
 					c.Status(fiber.StatusNotFound)
@@ -285,7 +285,7 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if character.IsApplicationReady(&app) {
+		if req.Status != request.StatusReady && character.IsApplicationReady(&app) {
 			if err = qtx.MarkRequestReady(context.Background(), rid); err != nil {
 				if err == sql.ErrNoRows {
 					c.Status(fiber.StatusNotFound)
@@ -401,7 +401,7 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 			return nil
 		}
 
-		if character.IsApplicationReady(&app) {
+		if req.Status != request.StatusReady && character.IsApplicationReady(&app) {
 			if err = qtx.MarkRequestReady(context.Background(), rid); err != nil {
 				if err == sql.ErrNoRows {
 					c.Status(fiber.StatusNotFound)
@@ -518,7 +518,7 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if character.IsApplicationReady(&app) {
+		if req.Status != request.StatusReady && character.IsApplicationReady(&app) {
 			if err = qtx.MarkRequestReady(context.Background(), rid); err != nil {
 				if err == sql.ErrNoRows {
 					c.Status(fiber.StatusNotFound)
@@ -632,7 +632,7 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if character.IsApplicationReady(&app) {
+		if req.Status != request.StatusReady && character.IsApplicationReady(&app) {
 			if err = qtx.MarkRequestReady(context.Background(), rid); err != nil {
 				if err == sql.ErrNoRows {
 					c.Status(fiber.StatusNotFound)
