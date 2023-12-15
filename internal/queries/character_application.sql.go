@@ -215,6 +215,71 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 	return items, nil
 }
 
+const listOpenCharacterApplications = `-- name: ListOpenCharacterApplications :many
+SELECT
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.pid, requests.id, requests.vid, requests.new
+FROM
+  requests
+JOIN
+  character_application_content
+ON
+  requests.id = character_application_content.rid
+WHERE
+  requests.type = "CharacterApplication"
+AND
+  requests.status = "Submitted"
+OR
+  requests.status = "InReview"
+OR
+  requests.status = "Reviewed"
+`
+
+type ListOpenCharacterApplicationsRow struct {
+	CharacterApplicationContent CharacterApplicationContent
+	Request                     Request
+}
+
+func (q *Queries) ListOpenCharacterApplications(ctx context.Context) ([]ListOpenCharacterApplicationsRow, error) {
+	rows, err := q.query(ctx, q.listOpenCharacterApplicationsStmt, listOpenCharacterApplications)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListOpenCharacterApplicationsRow
+	for rows.Next() {
+		var i ListOpenCharacterApplicationsRow
+		if err := rows.Scan(
+			&i.CharacterApplicationContent.CreatedAt,
+			&i.CharacterApplicationContent.UpdatedAt,
+			&i.CharacterApplicationContent.Backstory,
+			&i.CharacterApplicationContent.Description,
+			&i.CharacterApplicationContent.ShortDescription,
+			&i.CharacterApplicationContent.Name,
+			&i.CharacterApplicationContent.Gender,
+			&i.CharacterApplicationContent.RID,
+			&i.CharacterApplicationContent.ID,
+			&i.Request.CreatedAt,
+			&i.Request.UpdatedAt,
+			&i.Request.Type,
+			&i.Request.Status,
+			&i.Request.PID,
+			&i.Request.ID,
+			&i.Request.VID,
+			&i.Request.New,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateCharacterApplicationContentBackstory = `-- name: UpdateCharacterApplicationContentBackstory :exec
 UPDATE character_application_content SET backstory = ? WHERE rid = ?
 `

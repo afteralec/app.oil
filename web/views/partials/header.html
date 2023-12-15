@@ -14,7 +14,11 @@
       class="flex-l group ml-auto flex list-none items-center justify-center space-x-[1.5]"
     >
       <!-- prettier-ignore -->
-      {{ if .ShouldShowPermissionsMenu -}}
+      {{ if .ShouldShowMenus.Review -}}
+        {{ template "views/partials/header/nav/review" . }}
+      {{ end -}}
+      <!-- prettier-ignore -->
+      {{ if .ShouldShowMenus.Permissions -}}
         {{ template "views/partials/header/nav/permissions" . }}
       {{ end -}}
       <!-- prettier-ignore -->

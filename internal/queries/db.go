@@ -123,6 +123,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
 	}
+	if q.listOpenCharacterApplicationsStmt, err = db.PrepareContext(ctx, listOpenCharacterApplications); err != nil {
+		return nil, fmt.Errorf("error preparing query ListOpenCharacterApplications: %w", err)
+	}
 	if q.listPlayerPermissionsStmt, err = db.PrepareContext(ctx, listPlayerPermissions); err != nil {
 		return nil, fmt.Errorf("error preparing query ListPlayerPermissions: %w", err)
 	}
@@ -335,6 +338,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listEmailsStmt: %w", cerr)
 		}
 	}
+	if q.listOpenCharacterApplicationsStmt != nil {
+		if cerr := q.listOpenCharacterApplicationsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listOpenCharacterApplicationsStmt: %w", cerr)
+		}
+	}
 	if q.listPlayerPermissionsStmt != nil {
 		if cerr := q.listPlayerPermissionsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listPlayerPermissionsStmt: %w", cerr)
@@ -477,6 +485,7 @@ type Queries struct {
 	listCharacterApplicationsForPlayerStmt                *sql.Stmt
 	listCommentsForRequestStmt                            *sql.Stmt
 	listEmailsStmt                                        *sql.Stmt
+	listOpenCharacterApplicationsStmt                     *sql.Stmt
 	listPlayerPermissionsStmt                             *sql.Stmt
 	listRepliesToCommentStmt                              *sql.Stmt
 	listRequestsForPlayerStmt                             *sql.Stmt
@@ -530,6 +539,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listCharacterApplicationsForPlayerStmt:                q.listCharacterApplicationsForPlayerStmt,
 		listCommentsForRequestStmt:                            q.listCommentsForRequestStmt,
 		listEmailsStmt:                                        q.listEmailsStmt,
+		listOpenCharacterApplicationsStmt:                     q.listOpenCharacterApplicationsStmt,
 		listPlayerPermissionsStmt:                             q.listPlayerPermissionsStmt,
 		listRepliesToCommentStmt:                              q.listRepliesToCommentStmt,
 		listRequestsForPlayerStmt:                             q.listRequestsForPlayerStmt,

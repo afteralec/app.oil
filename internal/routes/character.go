@@ -3,8 +3,9 @@ package routes
 import "fmt"
 
 const (
-	Characters           = "/characters"
-	CharacterApplication = "/character/application"
+	Characters            = "/characters"
+	CharacterApplication  = "/character/application"
+	CharacterApplications = "/character/applications"
 )
 
 func NewCharacterApplicationPath() string {
@@ -49,4 +50,28 @@ func CharacterApplicationSubmittedPath(id string) string {
 
 func CharacterApplicationSubmittedSuccessPath(id string) string {
 	return fmt.Sprintf("%s/success", CharacterApplicationSubmittedPath(id))
+}
+
+func ReviewCharacterApplicationsPath() string {
+	return fmt.Sprintf("%s/review", CharacterApplications)
+}
+
+func CharacterApplicationNameReviewPath(id string) string {
+	return fmt.Sprintf("%s/%s/name/review", CharacterApplication, id)
+}
+
+func CharacterApplicationGenderReviewPath(id string) string {
+	return fmt.Sprintf("%s/%s/gender/review", CharacterApplication, id)
+}
+
+func CharacterApplicationShortDescriptionReviewPath(id string) string {
+	return fmt.Sprintf("%s/%s/sdesc/review", CharacterApplication, id)
+}
+
+func CharacterApplicationDescriptionReviewPath(id string) string {
+	return fmt.Sprintf("%s/%s/description/review", CharacterApplication, id)
+}
+
+func CharacterApplicationBackstoryReviewPath(id string) string {
+	return fmt.Sprintf("%s/%s/backstory/review", CharacterApplication, id)
 }

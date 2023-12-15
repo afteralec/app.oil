@@ -32,6 +32,8 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Get(routes.CharacterApplicationSubmittedSuccessPath(routes.ID), handlers.CharacterApplicationSubmittedSuccessPage(i))
 	app.Get(routes.CharacterApplicationSubmittedPath(routes.ID), handlers.CharacterApplicationSubmittedPage(i))
 
+	app.Get(routes.ReviewCharacterApplicationsPath(), handlers.ReviewCharacterApplicationsPage(i))
+
 	app.Post(routes.Login, handlers.Login(i))
 	app.Get(routes.Login, handlers.LoginPage())
 	app.Post(routes.Logout, handlers.Logout(i))

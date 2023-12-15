@@ -20,6 +20,9 @@ func New(i *shared.Interfaces) fiber.Handler {
 		// TODO: This will require an API for updating the value in Redis on change
 		ps, err := i.Queries.ListPlayerPermissions(context.Background(), pid.(int64))
 		if err != nil {
+			// TODO: Split up the bind variables into different middleware
+			// That way the non-permissions required variables can be loaded here
+			// And we can return a generic 500 here by returning early
 			return c.Next()
 		}
 		if len(ps) == 0 {
@@ -27,7 +30,6 @@ func New(i *shared.Interfaces) fiber.Handler {
 		}
 
 		perms := permission.MakePlayerGranted(pid.(int64), ps)
-
 		c.Locals("perms", perms)
 		return c.Next()
 	}
