@@ -103,7 +103,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		b["Name"] = app.Name
 		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["Statuses"] = statuses
-		return c.Render("views/character/application/name", b, "views/layouts/standalone")
+		return c.Render("views/character/application/name/edit", b, "views/layouts/standalone")
 	}
 }
 
@@ -207,7 +207,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationGenderPath"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		b["Statuses"] = statuses
 		b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/gender", b, "views/layouts/standalone")
+		return c.Render("views/character/application/gender/edit", b, "views/layouts/standalone")
 	}
 }
 
@@ -303,7 +303,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 		b["CharacterApplicationShortDescriptionPath"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		b["Statuses"] = statuses
 		b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/sdesc", b, "views/layouts/standalone")
+		return c.Render("views/character/application/sdesc/edit", b, "views/layouts/standalone")
 	}
 }
 
@@ -399,7 +399,7 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationDescriptionPath"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		b["Statuses"] = statuses
 		b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/description", b, "views/layouts/standalone")
+		return c.Render("views/character/application/description/edit", b, "views/layouts/standalone")
 	}
 }
 
@@ -493,7 +493,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 		b["Backstory"] = app.Backstory
 		b["Statuses"] = statuses
 		b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/backstory", b, "views/layouts/standalone")
+		return c.Render("views/character/application/backstory/edit", b, "views/layouts/standalone")
 	}
 }
 
