@@ -1,0 +1,53 @@
+<main class="flex h-screen w-screen flex-col items-center justify-center">
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/status/list" .Statuses }}
+  <div class="w-full max-w-lg rounded-md border p-6">
+    <h3 class="whitespace-nowrap text-base font-semibold tracking-tight">
+      Backstory:
+    </h3>
+    <div class="pb-2 text-xs leading-none text-muted-foreground">
+      This is your character's private backstory.
+    </div>
+    <div class="pb-2 text-sm leading-none">
+      <!-- TODO: Write a helpfile for description and link to it here -->
+      Have some fun! This is primarily to provide some context for your
+      character's personality, flaws and goals.
+    </div>
+    <div class="pb-2 text-sm leading-none">
+      <!-- TODO: Write a helpfile for description and link to it here -->
+      You don't need to be extremely detailed - for example, we don't want to
+      see a full timeline of the first three decades of {{ .Name }}'s life - but
+      definitely hit the highlights. Parentage (or lack thereof, if you're
+      feeling edgy), early life and one or two pivotal events is plenty.
+    </div>
+    <div class="pb-1 text-sm leading-none">
+      <!-- TODO: Link to description change helpfile here -->
+      This is only ever visible to you and specific staff, so don't worry about
+      providing secrets here. In fact, we expect them to be here!
+    </div>
+
+    <div class="mb-4 border-b pt-4"></div>
+
+    <p class="text-sm leading-none tracking-tight text-muted-foreground">
+      {{ .Name }}'s backstory:
+    </p>
+    <p class="text-base leading-none tracking-tight">{{ .Backstory }}</p>
+    <div class="flex justify-end gap-2 pt-4">
+      {{ if .BackLink }}
+      <a
+        href="{{ .BackLink }}"
+        class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      >
+        Back
+      </a>
+      {{ end -}}
+      <button
+        :disabled="!isCharacterBackstoryValid(backstory)"
+        class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        type="submit"
+      >
+        Review
+      </button>
+    </div>
+  </div>
+</main>

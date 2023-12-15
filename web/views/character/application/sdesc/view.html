@@ -1,0 +1,48 @@
+<main class="flex h-screen w-screen flex-col items-center justify-center">
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/status/list" .Statuses }}
+  <div class="w-full max-w-lg rounded-md border p-6">
+    <h3 class="whitespace-nowrap text-base font-semibold tracking-tight">
+      Short description:
+    </h3>
+    <div class="pb-2 text-xs leading-none text-muted-foreground">
+      This is how your character will appear in third-person descriptions during
+      the game.
+    </div>
+    <div class="pb-2 text-sm leading-none">
+      Your short description will be prefixed with the correct article.
+    </div>
+    <div class="pb-2 text-sm font-semibold leading-none">
+      You don't need to add "the" or "a" to the front of your description.
+    </div>
+    <div class="pb-1 text-sm leading-none">
+      <!-- TODO: Write a helpfile for sdesc and link to it here -->
+      You <span class="font-semibold">should</span> include a single primary
+      noun. For example, 'woman', 'waif', 'hulk', 'man'.
+    </div>
+
+    <div class="mb-4 border-b pt-4"></div>
+
+    <p class="text-sm leading-none tracking-tight text-muted-foreground">
+      Your short description will be displayed in-game as:
+    </p>
+    <p>The {{ .ShortDescription }}</p>
+    <div class="flex justify-end gap-2 pt-4">
+      {{ if .BackLink }}
+      <a
+        href="{{ .BackLink }}"
+        class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        type=""
+      >
+        Back
+      </a>
+      {{ end -}}
+      <button
+        class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        type="submit"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</main>

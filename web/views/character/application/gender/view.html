@@ -1,0 +1,26 @@
+<main class="flex h-screen w-screen flex-col items-center justify-center">
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/status/list" .Statuses }}
+  <div class="w-full max-w-lg rounded-md border p-6">
+    <h2 class="text-base font-semibold leading-none tracking-tight">
+      {{ .Name }}'s gender: <span class="font-medium">{{ .Gender }}</span>
+    </h2>
+    <div class="flex justify-end gap-2 pt-4">
+      {{ if .BackLink }}
+      <a
+        href="{{ .BackLink }}"
+        class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        type=""
+      >
+        Back
+      </a>
+      {{ end -}}
+      <button
+        class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        type="submit"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</main>
