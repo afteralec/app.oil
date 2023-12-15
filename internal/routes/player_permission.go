@@ -11,3 +11,7 @@ func PlayerPermissionsSearchPath() string {
 func PlayerPermissionsDetailPath(u string) string {
 	return fmt.Sprintf("%s/%s", PlayerPermissions, u)
 }
+
+func PlayerPermissionsPath(id string) string {
+	return fmt.Sprintf("%s/%s", PlayerPermissions, id)
+}

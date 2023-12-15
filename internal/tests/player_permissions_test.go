@@ -192,7 +192,7 @@ func TestPlayerPermissionsDetailPageSuccess(t *testing.T) {
 	}
 	defer DeleteTestPlayerPermission(t, &i, permid)
 
-	url := MakeTestURL(routes.PlayerPermissionsDetailPath(strconv.FormatInt(p.ID, 10)))
+	url := MakeTestURL(routes.PlayerPermissionsDetailPath(TestUsername))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = a.Test(req)

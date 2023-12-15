@@ -32,7 +32,7 @@ func New() fiber.Handler {
 func determineShouldShowPermissionsMenu(c *fiber.Ctx) bool {
 	lperms := c.Locals("perms")
 	if lperms != nil {
-		perms, ok := lperms.(permission.PlayerPermissions)
+		perms, ok := lperms.(permission.PlayerIssuedPermissions)
 		if !ok {
 			return false
 		}

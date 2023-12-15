@@ -25,13 +25,10 @@ func New(i *shared.Interfaces) fiber.Handler {
 		if len(ps) == 0 {
 			return c.Next()
 		}
-		perms, err := permission.MakePlayerPermissions(ps)
-		if err != nil {
-			return c.Next()
-		}
+
+		perms := permission.MakePlayerPermissions(pid.(int64), ps)
 
 		c.Locals("perms", perms)
-
 		return c.Next()
 	}
 }
