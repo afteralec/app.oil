@@ -48,7 +48,6 @@ type Player struct {
 	UpdatedAt time.Time
 	PwHash    string
 	Username  string
-	Role      string
 	ID        int64
 }
 

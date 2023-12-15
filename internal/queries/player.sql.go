@@ -11,21 +11,20 @@ import (
 )
 
 const createPlayer = `-- name: CreatePlayer :execresult
-INSERT INTO players (username, role, pw_hash) VALUES (?, ?, ?)
+INSERT INTO players (username, pw_hash) VALUES (?, ?)
 `
 
 type CreatePlayerParams struct {
 	Username string
-	Role     string
 	PwHash   string
 }
 
 func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (sql.Result, error) {
-	return q.exec(ctx, q.createPlayerStmt, createPlayer, arg.Username, arg.Role, arg.PwHash)
+	return q.exec(ctx, q.createPlayerStmt, createPlayer, arg.Username, arg.PwHash)
 }
 
 const getPlayer = `-- name: GetPlayer :one
-SELECT created_at, updated_at, pw_hash, username, role, id FROM players WHERE id = ?
+SELECT created_at, updated_at, pw_hash, username, id FROM players WHERE id = ?
 `
 
 func (q *Queries) GetPlayer(ctx context.Context, id int64) (Player, error) {
@@ -36,14 +35,13 @@ func (q *Queries) GetPlayer(ctx context.Context, id int64) (Player, error) {
 		&i.UpdatedAt,
 		&i.PwHash,
 		&i.Username,
-		&i.Role,
 		&i.ID,
 	)
 	return i, err
 }
 
 const getPlayerByUsername = `-- name: GetPlayerByUsername :one
-SELECT created_at, updated_at, pw_hash, username, role, id FROM players WHERE username = ?
+SELECT created_at, updated_at, pw_hash, username, id FROM players WHERE username = ?
 `
 
 func (q *Queries) GetPlayerByUsername(ctx context.Context, username string) (Player, error) {
@@ -54,7 +52,6 @@ func (q *Queries) GetPlayerByUsername(ctx context.Context, username string) (Pla
 		&i.UpdatedAt,
 		&i.PwHash,
 		&i.Username,
-		&i.Role,
 		&i.ID,
 	)
 	return i, err
@@ -82,7 +79,7 @@ func (q *Queries) GetPlayerUsernameById(ctx context.Context, id int64) (string, 
 }
 
 const searchPlayersByUsername = `-- name: SearchPlayersByUsername :many
-SELECT created_at, updated_at, pw_hash, username, role, id FROM players WHERE username LIKE ?
+SELECT created_at, updated_at, pw_hash, username, id FROM players WHERE username LIKE ?
 `
 
 func (q *Queries) SearchPlayersByUsername(ctx context.Context, username string) ([]Player, error) {
@@ -99,7 +96,6 @@ func (q *Queries) SearchPlayersByUsername(ctx context.Context, username string) 
 			&i.UpdatedAt,
 			&i.PwHash,
 			&i.Username,
-			&i.Role,
 			&i.ID,
 		); err != nil {
 			return nil, err

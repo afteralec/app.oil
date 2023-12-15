@@ -1,5 +1,5 @@
 -- name: CreatePlayer :execresult
-INSERT INTO players (username, role, pw_hash) VALUES (?, ?, ?);
+INSERT INTO players (username, pw_hash) VALUES (?, ?);
 
 -- name: UpdatePlayerPassword :execresult
 UPDATE players SET pw_hash = ? WHERE id = ?;

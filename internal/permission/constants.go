@@ -8,34 +8,34 @@ type Player struct {
 }
 
 const (
-	PlayerAssignAllPermissionsName        string = "AssignAllPermissions"
+	PlayerGrantAllPermissionsName         string = "GrantAllPermissions"
 	PlayerRevokeAllPermissionsName        string = "RevokeAllPermissions"
 	PlayerReviewCharacterApplicationsName string = "ReviewCharacterApplications"
 )
 
 const (
-	PlayerAssignAllPermissionsTag        string = "assign-all"
+	PlayerGrantAllPermissionsTag         string = "grant-all"
 	PlayerRevokeAllPermissionsTag        string = "revoke-all"
 	PlayerReviewCharacterApplicationsTag string = "review-character-applications"
 )
 
 const (
-	PlayerAssignAllPermissionsTitle        string = "Assign All Permissions"
+	PlayerGrantAllPermissionsTitle         string = "Grant All Permissions"
 	PlayerRevokeAllPermissionsTitle        string = "Revoke All Permissions"
 	PlayerReviewCharacterApplicationsTitle string = "Review Character Applications"
 )
 
 const (
-	PlayerAssignAllPermissionsAbout        string = "The root permission. Only one person should have this at a time."
+	PlayerGrantAllPermissionsAbout         string = "The root permission. Only one person should have this at a time."
 	PlayerRevokeAllPermissionsAbout        string = "The root revocation permission. Only one person should have this at a time."
 	PlayerReviewCharacterApplicationsAbout string = "Enable this player to review Character Applications."
 )
 
-var PlayerAssignAllPermissions Player = Player{
-	Name:  PlayerAssignAllPermissionsName,
-	Tag:   PlayerAssignAllPermissionsTag,
-	Title: PlayerAssignAllPermissionsTitle,
-	About: PlayerAssignAllPermissionsAbout,
+var PlayerGrantAllPermissions Player = Player{
+	Name:  PlayerGrantAllPermissionsName,
+	Tag:   PlayerGrantAllPermissionsTag,
+	Title: PlayerGrantAllPermissionsTitle,
+	About: PlayerGrantAllPermissionsAbout,
 }
 
 var PlayerRevokeAllPermissions Player = Player{
@@ -53,28 +53,28 @@ var PlayerReviewCharacterApplications Player = Player{
 }
 
 var ShowPermissionViewPermissions []string = []string{
-	PlayerAssignAllPermissionsName,
+	PlayerGrantAllPermissionsName,
 }
 
 var AllPlayer []Player = []Player{
-	PlayerAssignAllPermissions,
+	PlayerGrantAllPermissions,
 	PlayerRevokeAllPermissions,
 	PlayerReviewCharacterApplications,
 }
 
 var AllPlayerByName map[string]Player = map[string]Player{
-	PlayerAssignAllPermissionsName:        PlayerAssignAllPermissions,
+	PlayerGrantAllPermissionsName:         PlayerGrantAllPermissions,
 	PlayerRevokeAllPermissionsName:        PlayerRevokeAllPermissions,
 	PlayerReviewCharacterApplicationsName: PlayerReviewCharacterApplications,
 }
 
 var AllPlayerByTag map[string]Player = map[string]Player{
-	PlayerAssignAllPermissionsTag:        PlayerAssignAllPermissions,
+	PlayerGrantAllPermissionsTag:         PlayerGrantAllPermissions,
 	PlayerRevokeAllPermissionsTag:        PlayerRevokeAllPermissions,
 	PlayerReviewCharacterApplicationsTag: PlayerReviewCharacterApplications,
 }
 
 var RootPlayerByName map[string]Player = map[string]Player{
-	PlayerAssignAllPermissionsName: PlayerAssignAllPermissions,
+	PlayerGrantAllPermissionsName:  PlayerGrantAllPermissions,
 	PlayerRevokeAllPermissionsName: PlayerRevokeAllPermissions,
 }

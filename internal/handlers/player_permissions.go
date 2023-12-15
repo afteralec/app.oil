@@ -162,7 +162,7 @@ func TogglePlayerPermission(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
 		}
-		if !iperms.Permissions[permission.PlayerAssignAllPermissionsName] {
+		if !iperms.Permissions[permission.PlayerGrantAllPermissionsName] {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}

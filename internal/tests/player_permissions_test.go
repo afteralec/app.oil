@@ -82,7 +82,7 @@ func TestPlayerPermissionsPageSuccess(t *testing.T) {
 	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
 		PID:        p.ID,
 		IPID:       p.ID,
-		Permission: permission.PlayerAssignAllPermissions.Name,
+		Permission: permission.PlayerGrantAllPermissions.Name,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -181,7 +181,7 @@ func TestPlayerPermissionsDetailPageSuccess(t *testing.T) {
 	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
 		PID:        p.ID,
 		IPID:       p.ID,
-		Permission: permission.PlayerAssignAllPermissions.Name,
+		Permission: permission.PlayerGrantAllPermissions.Name,
 	})
 	if err != nil {
 		t.Fatal(err)

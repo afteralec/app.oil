@@ -91,3 +91,19 @@ func (i *Interfaces) Close() {
 	i.Database.Close()
 	i.Redis.Close()
 }
+
+func SetupDB(db *sql.DB) error {
+	_, err := db.Exec("SET GLOBAL local_infile=true;")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func PingDB(db *sql.DB) error {
+	if err := db.Ping(); err != nil {
+		return err
+	}
+	return nil
+}

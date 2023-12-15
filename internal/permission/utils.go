@@ -11,7 +11,7 @@ func filterInvalidPlayerPermissions(perms []queries.PlayerPermission) []queries.
 	result := []queries.PlayerPermission{}
 	for _, perm := range perms {
 		// TODO: Turn this into a map check or a  list
-		if perm.Permission == PlayerAssignAllPermissionsName {
+		if perm.Permission == PlayerGrantAllPermissionsName {
 			result = append(result, perm)
 		}
 		if perm.Permission == PlayerReviewCharacterApplicationsName {

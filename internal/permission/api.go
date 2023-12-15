@@ -43,7 +43,7 @@ func (p *PlayerGranted) CanGrantPermission(perm string) bool {
 		return false
 	}
 
-	_, ok = p.Permissions[PlayerAssignAllPermissionsName]
+	_, ok = p.Permissions[PlayerGrantAllPermissionsName]
 	return ok
 }
 
@@ -58,6 +58,6 @@ func (p *PlayerGranted) CanRevokePermission(perm string) bool {
 		return false
 	}
 
-	_, ok = p.Permissions[PlayerAssignAllPermissionsName]
+	_, ok = p.Permissions[PlayerGrantAllPermissionsName]
 	return ok
 }
