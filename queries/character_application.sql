@@ -34,25 +34,25 @@ AND
   requests.status != "Canceled";
 
 -- name: ListOpenCharacterApplications :many
-SELECT
+SELECT 
   sqlc.embed(character_application_content), sqlc.embed(players), sqlc.embed(requests)
-FROM
+FROM 
   requests
-JOIN
+JOIN 
   character_application_content
-ON
+ON 
   requests.id = character_application_content.rid
-JOIN
+JOIN 
   players
-ON
+ON 
   players.id = requests.pid
-WHERE
+WHERE 
   requests.type = "CharacterApplication"
-AND
+AND 
   requests.status = "Submitted"
-OR
+OR 
   requests.status = "InReview"
-OR
+OR 
   requests.status = "Reviewed";
 
 -- name: CountOpenCharacterApplicationsForPlayer :one

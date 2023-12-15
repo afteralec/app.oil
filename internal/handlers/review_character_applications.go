@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -39,13 +40,27 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 
 		apps, err := i.Queries.ListOpenCharacterApplications(context.Background())
 		if err != nil {
+			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(shared.Bind))
 		}
 
 		summaries := []character.ApplicationSummary{}
 		for _, app := range apps {
-			summaries = append(summaries, character.NewSummaryFromApplication(&app.Player, &app.Request, &app.CharacterApplicationContent))
+			reviewer := ""
+			if app.Request.RPID > 0 {
+				p, err := i.Queries.GetPlayer(context.Background(), app.Request.RPID)
+				if err != nil {
+					// TODO: Sort out this edge case
+					// if err == sql.ErrNoRows {
+					// TODO: Log this error here, this means we need to reset the reviewer and status on the request
+					// }
+					c.Status(fiber.StatusInternalServerError)
+					return c.Render("views/500", c.Locals(shared.Bind))
+				}
+				reviewer = p.Username
+			}
+			summaries = append(summaries, character.NewSummaryFromApplication(&app.Player, reviewer, &app.Request, &app.CharacterApplicationContent))
 		}
 
 		b := c.Locals(shared.Bind).(fiber.Map)

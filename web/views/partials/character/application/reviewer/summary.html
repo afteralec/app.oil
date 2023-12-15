@@ -1,4 +1,7 @@
-<div class="flex items-center gap-4 border-b px-4 py-3">
+<div
+  class="flex items-center gap-4 border-b px-4 py-3"
+  x-data="{ {{ .ReviewDialog.Variable }}: false }"
+>
   <div class="flex flex-col items-center justify-center px-6">
     {{ template "views/partials/character/application/summary/status" . }}
   </div>
@@ -13,7 +16,19 @@
     <p class="text-sm leading-none text-muted-foreground">
       Author: {{ .Author }}
     </p>
+    <!-- prettier-ignore -->
+    {{ if .Reviewed -}}
+    {{ if .StatusInReview -}}
+    <p class="text-sm leading-none text-muted-foreground">
+      Being reviewed by {{ .Reviewer }}
+    </p>
+    {{ else -}}
+    <p class="text-sm leading-none text-muted-foreground">
+      Last reviewed by {{ .Reviewer }}
+    </p>
+    {{ end -}} {{ else -}}
     <p class="text-sm leading-none text-muted-foreground">Never reviewed</p>
+    {{ end -}}
   </div>
   <div class="ml-auto flex items-center justify-center gap-2">
     <a
@@ -23,10 +38,13 @@
       View
     </a>
     <button
+      @click.prevent="{{ .ReviewDialog.Variable }} = true"
       class="htmx-trade-indicator-out inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       type="button"
     >
       Review
     </button>
   </div>
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/reviewer/review-dialog" .ReviewDialog }}
 </div>

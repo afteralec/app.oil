@@ -45,7 +45,7 @@ func (q *Queries) CreateHistoryForRequestStatus(ctx context.Context, arg CreateH
 }
 
 const createRequest = `-- name: CreateRequest :execresult
-INSERT INTO requests (type, pid) VALUES (?, ?)
+INSERT INTO requests (type, pid, rpid) VALUES (?, ?, pid)
 `
 
 type CreateRequestParams struct {
@@ -58,7 +58,7 @@ func (q *Queries) CreateRequest(ctx context.Context, arg CreateRequestParams) (s
 }
 
 const getRequest = `-- name: GetRequest :one
-SELECT created_at, updated_at, type, status, pid, id, vid, new FROM requests WHERE id = ?
+SELECT created_at, updated_at, type, status, rpid, pid, id, vid, new FROM requests WHERE id = ?
 `
 
 func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
@@ -69,6 +69,7 @@ func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
 		&i.UpdatedAt,
 		&i.Type,
 		&i.Status,
+		&i.RPID,
 		&i.PID,
 		&i.ID,
 		&i.VID,
@@ -87,7 +88,7 @@ func (q *Queries) IncrementRequestVersion(ctx context.Context, id int64) error {
 }
 
 const listRequestsForPlayer = `-- name: ListRequestsForPlayer :many
-SELECT created_at, updated_at, type, status, pid, id, vid, new FROM requests WHERE pid = ?
+SELECT created_at, updated_at, type, status, rpid, pid, id, vid, new FROM requests WHERE pid = ?
 `
 
 func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Request, error) {
@@ -104,6 +105,7 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 			&i.UpdatedAt,
 			&i.Type,
 			&i.Status,
+			&i.RPID,
 			&i.PID,
 			&i.ID,
 			&i.VID,

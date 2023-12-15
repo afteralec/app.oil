@@ -1,6 +1,7 @@
 package character
 
 import (
+	"fmt"
 	"strconv"
 
 	"petrichormud.com/app/internal/queries"
@@ -8,12 +9,20 @@ import (
 	"petrichormud.com/app/internal/routes"
 )
 
+type ReviewDialogData struct {
+	Path     string
+	Variable string
+}
+
 type ApplicationSummary struct {
+	ReviewDialog     ReviewDialogData
 	Status           string
 	Link             string
 	Name             string
 	Author           string
+	Reviewer         string
 	ID               int64
+	RPID             int64
 	StatusIncomplete bool
 	StatusReady      bool
 	StatusSubmitted  bool
@@ -23,17 +32,25 @@ type ApplicationSummary struct {
 	StatusRejected   bool
 	StatusArchived   bool
 	StatusCanceled   bool
+	Reviewed         bool
 }
 
 const DefaultApplicationSummaryName = "Unnamed"
 
-func NewSummaryFromApplication(p *queries.Player, req *queries.Request, app *queries.CharacterApplicationContent) ApplicationSummary {
+func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.Request, app *queries.CharacterApplicationContent) ApplicationSummary {
 	name := app.Name
 	if len(app.Name) == 0 {
 		name = DefaultApplicationSummaryName
 	}
 
+	reviewed := len(reviewer) > 0
+
 	return ApplicationSummary{
+		Reviewed: reviewed,
+		ReviewDialog: ReviewDialogData{
+			Path:     "/put/character/application/in/review/test/path",
+			Variable: fmt.Sprintf("showReviewDialogFor%s%s", app.Name, p.Username),
+		},
 		Status:           req.Status,
 		StatusIncomplete: req.Status == request.StatusIncomplete,
 		StatusReady:      req.Status == request.StatusReady,
@@ -48,6 +65,7 @@ func NewSummaryFromApplication(p *queries.Player, req *queries.Request, app *que
 		ID:               req.ID,
 		Name:             name,
 		Author:           p.Username,
+		Reviewer:         reviewer,
 	}
 }
 

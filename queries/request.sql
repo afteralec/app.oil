@@ -13,7 +13,7 @@ WHERE
   pid = ? AND status != "Archived" AND status != "Canceled";
 
 -- name: CreateRequest :execresult
-INSERT INTO requests (type, pid) VALUES (?, ?);
+INSERT INTO requests (type, pid, rpid) VALUES (?, ?, pid);
 
 -- name: IncrementRequestVersion :exec
 UPDATE requests SET vid = vid + 1 WHERE id = ?;

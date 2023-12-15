@@ -152,7 +152,7 @@ func (q *Queries) ListCharacterApplicationContentForPlayer(ctx context.Context, 
 
 const listCharacterApplicationsForPlayer = `-- name: ListCharacterApplicationsForPlayer :many
 SELECT
-  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, players.created_at, players.updated_at, players.pw_hash, players.username, players.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.pid, requests.id, requests.vid, requests.new
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, players.created_at, players.updated_at, players.pw_hash, players.username, players.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id, requests.vid, requests.new
 FROM
   requests
 JOIN
@@ -207,6 +207,7 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 			&i.Request.UpdatedAt,
 			&i.Request.Type,
 			&i.Request.Status,
+			&i.Request.RPID,
 			&i.Request.PID,
 			&i.Request.ID,
 			&i.Request.VID,
@@ -226,25 +227,25 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 }
 
 const listOpenCharacterApplications = `-- name: ListOpenCharacterApplications :many
-SELECT
-  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, players.created_at, players.updated_at, players.pw_hash, players.username, players.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.pid, requests.id, requests.vid, requests.new
-FROM
+SELECT 
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, players.created_at, players.updated_at, players.pw_hash, players.username, players.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id, requests.vid, requests.new
+FROM 
   requests
-JOIN
+JOIN 
   character_application_content
-ON
+ON 
   requests.id = character_application_content.rid
-JOIN
+JOIN 
   players
-ON
+ON 
   players.id = requests.pid
-WHERE
+WHERE 
   requests.type = "CharacterApplication"
-AND
+AND 
   requests.status = "Submitted"
-OR
+OR 
   requests.status = "InReview"
-OR
+OR 
   requests.status = "Reviewed"
 `
 
@@ -282,6 +283,7 @@ func (q *Queries) ListOpenCharacterApplications(ctx context.Context) ([]ListOpen
 			&i.Request.UpdatedAt,
 			&i.Request.Type,
 			&i.Request.Status,
+			&i.Request.RPID,
 			&i.Request.PID,
 			&i.Request.ID,
 			&i.Request.VID,

@@ -7,3 +7,6 @@ web/static
 
 # ick
 node_modules
+
+# Built artifacts
+bin/

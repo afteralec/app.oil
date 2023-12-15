@@ -73,6 +73,7 @@ type Request struct {
 	UpdatedAt time.Time
 	Type      string
 	Status    string
+	RPID      int64
 	PID       int64
 	ID        int64
 	VID       int32
