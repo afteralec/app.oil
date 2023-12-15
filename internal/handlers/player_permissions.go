@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"log"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -50,7 +49,8 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 		Permission string
 		About      string
 		Link       string
-		Issued     bool
+		Granted    bool
+		Disabled   bool
 	}
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
@@ -101,13 +101,11 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		log.Println(p.ID)
 		pperms, err := qtx.ListPlayerPermissions(context.Background(), p.ID)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-		log.Println(pperms)
 
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -117,15 +115,22 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 		perms := permission.MakePlayerGranted(p.ID, pperms)
 		allPerms := []fiber.Map{}
 		for _, perm := range permission.AllPlayer {
-			pm := fiber.Map{
-				"Name":   perm.Name,
-				"Tag":    perm.Tag,
-				"Title":  perm.Title,
-				"About":  perm.About,
-				"Link":   routes.PlayerPermissionsTogglePath(strconv.FormatInt(p.ID, 10), perm.Tag),
-				"Issued": perms.Permissions[perm.Name],
+			granted := perms.Permissions[perm.Name]
+			disabled := true
+			if granted {
+				disabled = !iperms.CanRevokePermission(perm.Name)
+			} else {
+				disabled = !iperms.CanGrantPermission(perm.Name)
 			}
-			log.Println(pm)
+			pm := fiber.Map{
+				"Name":     perm.Name,
+				"Tag":      perm.Tag,
+				"Title":    perm.Title,
+				"About":    perm.About,
+				"Link":     routes.PlayerPermissionsTogglePath(strconv.FormatInt(p.ID, 10), perm.Tag),
+				"Granted":  granted,
+				"Disabled": disabled,
+			}
 			allPerms = append(allPerms, pm)
 		}
 
@@ -138,7 +143,7 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 
 func TogglePlayerPermission(i *shared.Interfaces) fiber.Handler {
 	type input struct {
-		Issued bool `form:"issued"`
+		Grant bool `form:"issued"`
 	}
 	return func(c *fiber.Ctx) error {
 		ipid := c.Locals("pid")
@@ -206,9 +211,9 @@ func TogglePlayerPermission(i *shared.Interfaces) fiber.Handler {
 
 		perms := permission.MakePlayerGranted(pid, pperms)
 		perm := permission.AllPlayerByTag[ptag]
-		_, ok = perms.Permissions[perm.Name]
+		_, granted := perms.Permissions[perm.Name]
 
-		if r.Issued && ok {
+		if r.Grant && granted {
 			if err = tx.Commit(); err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return nil
@@ -218,7 +223,12 @@ func TogglePlayerPermission(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if r.Issued && !ok {
+		if r.Grant && !granted {
+			if !perms.CanGrantPermission(perm.Name) {
+				c.Status(fiber.StatusForbidden)
+				return nil
+			}
+
 			params := queries.CreatePlayerPermissionIssuedChangeHistoryParams{
 				IPID:       ipid.(int64),
 				PID:        pid,
@@ -246,7 +256,12 @@ func TogglePlayerPermission(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if !r.Issued && ok {
+		if !r.Grant && granted {
+			if !perms.CanRevokePermission(perm.Name) {
+				c.Status(fiber.StatusForbidden)
+				return nil
+			}
+
 			params := queries.CreatePlayerPermissionRevokedChangeHistoryParams{
 				IPID:       ipid.(int64),
 				PID:        pid,
@@ -272,7 +287,7 @@ func TogglePlayerPermission(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if !r.Issued && !ok {
+		if !r.Grant && !granted {
 			if err = tx.Commit(); err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return nil

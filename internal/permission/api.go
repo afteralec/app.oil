@@ -32,11 +32,32 @@ func (p *PlayerGranted) HasPermissionInSet(set []string) bool {
 	return false
 }
 
+// TODO: This is to enable adding sub-permissions to grant individual or groups of permissions
 func (p *PlayerGranted) CanGrantPermission(perm string) bool {
 	if !IsValid(perm) {
 		return false
 	}
 
-	_, ok := p.Permissions[PlayerAssignAllPermissionsName]
+	_, ok := RootPlayerByName[perm]
+	if ok {
+		return false
+	}
+
+	_, ok = p.Permissions[PlayerAssignAllPermissionsName]
+	return ok
+}
+
+// TODO: This is to enable adding sub-permissions to grant individual or groups of permissions
+func (p *PlayerGranted) CanRevokePermission(perm string) bool {
+	if !IsValid(perm) {
+		return false
+	}
+
+	_, ok := RootPlayerByName[perm]
+	if ok {
+		return false
+	}
+
+	_, ok = p.Permissions[PlayerAssignAllPermissionsName]
 	return ok
 }

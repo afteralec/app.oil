@@ -70,6 +70,12 @@ var superUserCmd = &cobra.Command{
 			return errors.New("error while hashing password")
 		}
 
+		// TODO: Add a flow to this to override an existing user,
+		// or add these permissions to an existing user
+		//
+		// TODO: Maybe just make this an all-around permission Command
+		// and remove the player creation aspect of it
+
 		result, err := qtx.CreatePlayer(context.Background(), queries.CreatePlayerParams{
 			Username: u,
 			PwHash:   pwHash,
@@ -90,11 +96,26 @@ var superUserCmd = &cobra.Command{
 		}); err != nil {
 			return err
 		}
-
 		_, err = qtx.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
 			PID:        pid,
 			IPID:       pid,
 			Permission: permission.PlayerAssignAllPermissions.Name,
+		})
+		if err != nil {
+			return err
+		}
+
+		if err := qtx.CreatePlayerPermissionIssuedChangeHistory(context.Background(), queries.CreatePlayerPermissionIssuedChangeHistoryParams{
+			PID:        pid,
+			IPID:       pid,
+			Permission: permission.PlayerRevokeAllPermissions.Name,
+		}); err != nil {
+			return err
+		}
+		_, err = qtx.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
+			PID:        pid,
+			IPID:       pid,
+			Permission: permission.PlayerRevokeAllPermissions.Name,
 		})
 		if err != nil {
 			return err

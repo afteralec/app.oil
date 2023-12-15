@@ -3,8 +3,36 @@
     <h2 class="text-base font-semibold leading-none">{{ .Title }}</h2>
     <p class="text-sm leading-none text-muted-foreground">{{ .About }}</p>
   </div>
+  <!-- prettier-ignore -->
+  {{ if .Disabled -}}
+  {{ if .Granted -}}
+  <!-- prettier-ignore -->
+  <label class="relative inline-flex items-center">
+    <input
+      name="issued"
+      type="checkbox"
+      value="true"
+      class="peer sr-only"
+      disabled
+      checked
+    />
+    {{ template "views/partials/switch" }}
+  </label>
+  {{ else -}}
+  <label class="relative inline-flex items-center">
+    <input
+      name="issued"
+      type="checkbox"
+      value="true"
+      class="peer sr-only"
+      disabled
+    />
+    {{ template "views/partials/switch" }}
+  </label>
+  {{ end -}}
+  <!-- prettier-ignore -->
+  {{ else if .Granted -}}
   <label class="relative inline-flex cursor-pointer items-center">
-    {{ if .Issued -}}
     <input
       hx-post="{{ .Link }}"
       hx-trigger="click"
@@ -15,7 +43,10 @@
       class="peer sr-only"
       checked
     />
-    {{ else -}}
+    {{ template "views/partials/switch" }}
+  </label>
+  {{ else -}}
+  <label class="relative inline-flex cursor-pointer items-center">
     <input
       hx-post="{{ .Link }}"
       hx-trigger="click"
@@ -25,9 +56,7 @@
       value="true"
       class="peer sr-only"
     />
-    {{ end -}}
-    <div
-      class="peer h-6 w-11 rounded-full bg-gray-400 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-white after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary rtl:peer-checked:after:-translate-x-full"
-    ></div>
+    {{ template "views/partials/switch" }}
   </label>
+  {{ end -}}
 </div>
