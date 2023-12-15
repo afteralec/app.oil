@@ -50,7 +50,7 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 
 		b := c.Locals(shared.Bind).(fiber.Map)
 		b["ThereAreCharacterApplications"] = len(summaries) > 0
-		b["CharacterApplications"] = summaries
+		b["CharacterApplicationSummaries"] = summaries
 		return c.Render("views/character/applications/review", b)
 	}
 }

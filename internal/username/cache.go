@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
 
@@ -15,13 +16,23 @@ const (
 	FiveMinutesInNanoSeconds    = 5 * 60 * 1000 * 1000 * 1000
 )
 
-func Get(r *redis.Client, pid int64) (string, error) {
+func Get(i *shared.Interfaces, pid int64) (string, error) {
 	key := Key(pid)
-	username, err := r.Get(context.Background(), key).Result()
+	username, err := i.Redis.Get(context.Background(), key).Result()
 	if err != nil {
+		if err == redis.Nil {
+			u, err := i.Queries.GetPlayerUsername(context.Background(), pid)
+			if err != nil {
+				return "", err
+			}
+			if err = Cache(i.Redis, pid, u); err != nil {
+				return "", err
+			}
+			return u, nil
+		}
 		return "", err
 	}
-	err = r.Expire(context.Background(), key, ThirtyTwoHoursInNanoseconds).Err()
+	err = i.Redis.Expire(context.Background(), key, ThirtyTwoHoursInNanoseconds).Err()
 	if err != nil {
 		return "", err
 	}

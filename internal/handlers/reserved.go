@@ -20,7 +20,7 @@ func Reserved(i *shared.Interfaces) fiber.Handler {
 			return err
 		}
 
-		u, err := i.Queries.GetPlayerUsername(context.Background(), r.Username)
+		p, err := i.Queries.GetPlayerByUsername(context.Background(), r.Username)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
@@ -36,7 +36,7 @@ func Reserved(i *shared.Interfaces) fiber.Handler {
 			}, "views/layouts/csrf")
 		}
 
-		if r.Username == u {
+		if r.Username == p.Username {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusConflict)

@@ -12,6 +12,7 @@ type ApplicationSummary struct {
 	Status           string
 	Link             string
 	Name             string
+	Author           string
 	ID               int64
 	StatusIncomplete bool
 	StatusReady      bool

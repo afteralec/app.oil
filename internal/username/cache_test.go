@@ -1,11 +1,10 @@
 package username
 
 import (
-	"os"
 	"testing"
 
-	redis "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/require"
+	"petrichormud.com/app/internal/shared"
 )
 
 func TestKey(t *testing.T) {
@@ -14,22 +13,17 @@ func TestKey(t *testing.T) {
 }
 
 func TestCache(t *testing.T) {
-	r := redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_ADDR"),
-		Password: "",
-		DB:       0,
-		Protocol: 3,
-	})
-	defer r.Close()
+	i := shared.SetupInterfaces()
+	defer i.Close()
 
 	var pid int64 = 69
 
-	err := Cache(r, pid, "nice")
+	err := Cache(i.Redis, pid, "nice")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	u, err := Get(r, pid)
+	u, err := Get(&i, pid)
 	if err != nil {
 		t.Fatal(err)
 	}

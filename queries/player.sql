@@ -11,7 +11,7 @@ SELECT * FROM players WHERE id = ?;
 SELECT * FROM players WHERE username = ?;
 
 -- name: GetPlayerUsername :one
-SELECT (username) FROM players WHERE username = ?;
+SELECT (username) FROM players WHERE id = ?;
 
 -- name: GetPlayerUsernameById :one
 SELECT (username) FROM players WHERE id = ?;

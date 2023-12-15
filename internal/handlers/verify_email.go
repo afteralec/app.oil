@@ -92,7 +92,7 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		un, err := username.Get(i.Redis, pid.(int64))
+		un, err := username.Get(i, pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
@@ -102,7 +102,6 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 		b["VerifyToken"] = c.Query("t")
 		b["Address"] = e.Address
 		b["Username"] = un
-
 		return c.Render("views/verify-email", b, "views/layouts/standalone")
 	}
 }
