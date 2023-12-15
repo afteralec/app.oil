@@ -3,7 +3,7 @@
   {{ template "views/partials/character/application/status/list" .Statuses }}
   <div class="w-full max-w-lg rounded-md border p-6">
     <h3 class="whitespace-nowrap text-base font-semibold tracking-tight">
-      Short description:
+      Short Description:
     </h3>
     <div class="pb-2 text-xs leading-none text-muted-foreground">
       This is how your character will appear in third-person descriptions during
@@ -37,12 +37,15 @@
         Back
       </a>
       {{ end -}}
-      <button
+      <!-- prettier-ignore -->
+      {{ if .NextLink -}}
+      <a
+        href="{{ .NextLink }}"
         class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-        type="submit"
       >
         Next
-      </button>
+      </a>
+      {{ end -}}
     </div>
   </div>
 </main>
