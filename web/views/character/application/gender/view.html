@@ -2,9 +2,16 @@
   <!-- prettier-ignore -->
   {{ template "views/partials/character/application/status/list" .Statuses }}
   <div class="w-full max-w-lg rounded-md border p-6">
-    <h2 class="text-base font-semibold leading-none tracking-tight">
-      {{ .Name }}'s gender: <span class="font-medium">{{ .Gender }}</span>
-    </h2>
+    <!-- prettier-ignore -->
+    {{ template "views/partials/character/application/gender/header/player" }}
+
+    <div class="mb-4 border-b pt-4"></div>
+
+    <p class="text-sm leading-none tracking-tight text-muted-foreground">
+      {{ .Name }}'s gender:
+    </p>
+    <p class="text-base leading-none tracking-tight">{{ .Gender }}</p>
+
     <div class="flex justify-end gap-2 pt-4">
       {{ if .BackLink }}
       <a
