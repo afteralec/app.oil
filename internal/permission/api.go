@@ -33,12 +33,12 @@ func (p *PlayerGranted) HasPermissionInSet(set []string) bool {
 }
 
 // TODO: This is to enable adding sub-permissions to grant individual or groups of permissions
-func (p *PlayerGranted) CanGrantPermission(perm string) bool {
-	if !IsValid(perm) {
+func (p *PlayerGranted) CanGrantPermission(name string) bool {
+	if !IsValidName(name) {
 		return false
 	}
 
-	_, ok := RootPlayerByName[perm]
+	_, ok := RootPlayerByName[name]
 	if ok {
 		return false
 	}
@@ -48,12 +48,12 @@ func (p *PlayerGranted) CanGrantPermission(perm string) bool {
 }
 
 // TODO: This is to enable adding sub-permissions to grant individual or groups of permissions
-func (p *PlayerGranted) CanRevokePermission(perm string) bool {
-	if !IsValid(perm) {
+func (p *PlayerGranted) CanRevokePermission(name string) bool {
+	if !IsValidName(name) {
 		return false
 	}
 
-	_, ok := RootPlayerByName[perm]
+	_, ok := RootPlayerByName[name]
 	if ok {
 		return false
 	}

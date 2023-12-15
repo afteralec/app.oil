@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"petrichormud.com/app/internal/password"
@@ -165,14 +166,14 @@ var grantPlayerPermissionCmd = &cobra.Command{
 		if err := qtx.CreatePlayerPermissionIssuedChangeHistory(context.Background(), queries.CreatePlayerPermissionIssuedChangeHistoryParams{
 			PID:        p.ID,
 			IPID:       p.ID,
-			Permission: permission.PlayerGrantAllPermissions.Name,
+			Permission: perm.Name,
 		}); err != nil {
 			return err
 		}
 		_, err = qtx.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
 			PID:        p.ID,
 			IPID:       p.ID,
-			Permission: permission.PlayerGrantAllPermissions.Name,
+			Permission: perm.Name,
 		})
 		if err != nil {
 			return err
@@ -183,6 +184,63 @@ var grantPlayerPermissionCmd = &cobra.Command{
 		}
 
 		msg := fmt.Sprintf("User %s granted permission %s.", u, perm.Name)
+		fmt.Println(msg)
+		return nil
+	},
+}
+
+var listPlayerPermissionCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List a player's current permissions.",
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		dbURL, err := cmd.Flags().GetString("db-url")
+		if err != nil {
+			return err
+		}
+		u, err := cmd.Flags().GetString("username")
+		if err != nil {
+			return err
+		}
+
+		if !username.IsValid(u) {
+			return errors.New("please enter a valid username")
+		}
+
+		db, err := sql.Open("mysql", fmt.Sprintf("%s?parseTime=true", dbURL))
+		if err != nil {
+			return err
+		}
+		if err = shared.SetupDB(db); err != nil {
+			return errors.New("error while setting up DB")
+		}
+		if err = shared.PingDB(db); err != nil {
+			return errors.New("error while pinging DB")
+		}
+
+		q := queries.New(db)
+		tx, err := db.Begin()
+		if err != nil {
+			return err
+		}
+		defer tx.Rollback()
+		qtx := q.WithTx(tx)
+
+		p, err := qtx.GetPlayerByUsername(context.Background(), u)
+		if err != nil {
+			return err
+		}
+
+		ps, err := qtx.ListPlayerPermissions(context.Background(), p.ID)
+		if err != nil {
+			return err
+		}
+
+		if err = tx.Commit(); err != nil {
+			return err
+		}
+
+		perms := permission.MakePlayerGranted(p.ID, ps)
+		msg := fmt.Sprintf("User %s has permissions %s.", u, strings.Join(perms.PermissionsList, ", "))
 		fmt.Println(msg)
 		return nil
 	},
@@ -204,4 +262,8 @@ func init() {
 	grantPlayerPermissionCmd.Flags().StringP("username", "u", "", "The username for the player.")
 	grantPlayerPermissionCmd.Flags().StringP("permission", "p", "", "The tag for the permission to grant.")
 	grantPlayerPermissionCmd.Flags().StringP("db-url", "d", "root:pass@/test", "The URL for the database.")
+
+	playerPermissionCmd.AddCommand(listPlayerPermissionCmd)
+	listPlayerPermissionCmd.Flags().StringP("username", "u", "", "The username for the player.")
+	listPlayerPermissionCmd.Flags().StringP("db-url", "d", "root:pass@/test", "The URL for the database.")
 }
