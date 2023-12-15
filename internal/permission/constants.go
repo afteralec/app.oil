@@ -50,7 +50,7 @@ var AllPlayer []Player = []Player{
 	PlayerReviewCharacterApplications,
 }
 
-var AllPlayerPermissionDetails [][]string = [][]string{
-	{PlayerAssignAllPermissionsName, "The root permission. Only one person should have this at a time."},
-	{PlayerReviewCharacterApplicationsName, "The permission to review Character Applications."},
+var AllPlayerByTag map[string]Player = map[string]Player{
+	PlayerAssignAllPermissionsTag:        PlayerAssignAllPermissions,
+	PlayerReviewCharacterApplicationsTag: PlayerReviewCharacterApplications,
 }

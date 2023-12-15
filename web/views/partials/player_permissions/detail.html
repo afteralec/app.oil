@@ -1,6 +1,6 @@
 <div class="flex items-center justify-between gap-2 border-b px-4 py-3">
   <div>
-    <h2 class="text-base font-semibold leading-none">{{ .Permission }}</h2>
+    <h2 class="text-base font-semibold leading-none">{{ .Title }}</h2>
     <p class="text-sm leading-none text-muted-foreground">{{ .About }}</p>
   </div>
   <label class="relative inline-flex cursor-pointer items-center">
@@ -8,8 +8,7 @@
       hx-post="{{ .Link }}"
       hx-trigger="click"
       hx-swap="none"
-      hx-include="#permissions-detail-form"
-      name="permission"
+      name="issued"
       type="checkbox"
       value="true"
       class="peer sr-only"

@@ -15,3 +15,7 @@ func PlayerPermissionsDetailPath(u string) string {
 func PlayerPermissionsPath(id string) string {
 	return fmt.Sprintf("%s/%s", PlayerPermissions, id)
 }
+
+func PlayerPermissionsTogglePath(id, tag string) string {
+	return fmt.Sprintf("%s/%s/%s", PlayerPermissions, id, tag)
+}
