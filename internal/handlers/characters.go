@@ -27,7 +27,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 
 		summaries := []character.ApplicationSummary{}
 		for _, app := range apps {
-			summaries = append(summaries, character.NewSummaryFromApplication(&app.Request, &app.CharacterApplicationContent))
+			summaries = append(summaries, character.NewSummaryFromApplication(&app.Player, &app.Request, &app.CharacterApplicationContent))
 		}
 
 		b := c.Locals(shared.Bind).(fiber.Map)

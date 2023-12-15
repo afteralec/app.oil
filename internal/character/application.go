@@ -27,11 +27,12 @@ type ApplicationSummary struct {
 
 const DefaultApplicationSummaryName = "Unnamed"
 
-func NewSummaryFromApplication(req *queries.Request, app *queries.CharacterApplicationContent) ApplicationSummary {
+func NewSummaryFromApplication(p *queries.Player, req *queries.Request, app *queries.CharacterApplicationContent) ApplicationSummary {
 	name := app.Name
 	if len(app.Name) == 0 {
 		name = DefaultApplicationSummaryName
 	}
+
 	return ApplicationSummary{
 		Status:           req.Status,
 		StatusIncomplete: req.Status == request.StatusIncomplete,
@@ -46,6 +47,7 @@ func NewSummaryFromApplication(req *queries.Request, app *queries.CharacterAppli
 		Link:             GetApplicationLink(req, app),
 		ID:               req.ID,
 		Name:             name,
+		Author:           p.Username,
 	}
 }
 

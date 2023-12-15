@@ -13,13 +13,17 @@ SELECT * FROM character_application_content WHERE rid = ?;
 
 -- name: ListCharacterApplicationsForPlayer :many
 SELECT
-  sqlc.embed(character_application_content), sqlc.embed(requests)
+  sqlc.embed(character_application_content), sqlc.embed(players), sqlc.embed(requests)
 FROM
   requests
 JOIN
   character_application_content
 ON
   requests.id = character_application_content.rid
+JOIN
+  players
+ON
+  players.id = requests.pid
 WHERE
   requests.pid = ?
 AND
@@ -31,13 +35,17 @@ AND
 
 -- name: ListOpenCharacterApplications :many
 SELECT
-  sqlc.embed(character_application_content), sqlc.embed(requests)
+  sqlc.embed(character_application_content), sqlc.embed(players), sqlc.embed(requests)
 FROM
   requests
 JOIN
   character_application_content
 ON
   requests.id = character_application_content.rid
+JOIN
+  players
+ON
+  players.id = requests.pid
 WHERE
   requests.type = "CharacterApplication"
 AND

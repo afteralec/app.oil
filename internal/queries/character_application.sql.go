@@ -152,13 +152,17 @@ func (q *Queries) ListCharacterApplicationContentForPlayer(ctx context.Context, 
 
 const listCharacterApplicationsForPlayer = `-- name: ListCharacterApplicationsForPlayer :many
 SELECT
-  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.pid, requests.id, requests.vid, requests.new
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, players.created_at, players.updated_at, players.pw_hash, players.username, players.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.pid, requests.id, requests.vid, requests.new
 FROM
   requests
 JOIN
   character_application_content
 ON
   requests.id = character_application_content.rid
+JOIN
+  players
+ON
+  players.id = requests.pid
 WHERE
   requests.pid = ?
 AND
@@ -171,6 +175,7 @@ AND
 
 type ListCharacterApplicationsForPlayerRow struct {
 	CharacterApplicationContent CharacterApplicationContent
+	Player                      Player
 	Request                     Request
 }
 
@@ -193,6 +198,11 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 			&i.CharacterApplicationContent.Gender,
 			&i.CharacterApplicationContent.RID,
 			&i.CharacterApplicationContent.ID,
+			&i.Player.CreatedAt,
+			&i.Player.UpdatedAt,
+			&i.Player.PwHash,
+			&i.Player.Username,
+			&i.Player.ID,
 			&i.Request.CreatedAt,
 			&i.Request.UpdatedAt,
 			&i.Request.Type,
@@ -217,13 +227,17 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 
 const listOpenCharacterApplications = `-- name: ListOpenCharacterApplications :many
 SELECT
-  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.pid, requests.id, requests.vid, requests.new
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, players.created_at, players.updated_at, players.pw_hash, players.username, players.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.pid, requests.id, requests.vid, requests.new
 FROM
   requests
 JOIN
   character_application_content
 ON
   requests.id = character_application_content.rid
+JOIN
+  players
+ON
+  players.id = requests.pid
 WHERE
   requests.type = "CharacterApplication"
 AND
@@ -236,6 +250,7 @@ OR
 
 type ListOpenCharacterApplicationsRow struct {
 	CharacterApplicationContent CharacterApplicationContent
+	Player                      Player
 	Request                     Request
 }
 
@@ -258,6 +273,11 @@ func (q *Queries) ListOpenCharacterApplications(ctx context.Context) ([]ListOpen
 			&i.CharacterApplicationContent.Gender,
 			&i.CharacterApplicationContent.RID,
 			&i.CharacterApplicationContent.ID,
+			&i.Player.CreatedAt,
+			&i.Player.UpdatedAt,
+			&i.Player.PwHash,
+			&i.Player.Username,
+			&i.Player.ID,
 			&i.Request.CreatedAt,
 			&i.Request.UpdatedAt,
 			&i.Request.Type,
