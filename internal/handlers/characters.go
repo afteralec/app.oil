@@ -19,7 +19,15 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
 		}
 
-		apps, err := i.Queries.ListCharacterApplicationsForPlayer(context.Background(), pid.(int64))
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		apps, err := qtx.ListCharacterApplicationsForPlayer(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(shared.Bind))
@@ -29,7 +37,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 		for _, app := range apps {
 			reviewer := ""
 			if app.Request.RPID > 0 {
-				p, err := i.Queries.GetPlayer(context.Background(), app.Request.RPID)
+				p, err := qtx.GetPlayer(context.Background(), app.Request.RPID)
 				if err != nil {
 					// TODO: Sort out this edge case
 					// if err == sql.ErrNoRows {
@@ -41,6 +49,11 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 				reviewer = p.Username
 			}
 			summaries = append(summaries, character.NewSummaryFromApplication(&app.Player, reviewer, &app.Request, &app.CharacterApplicationContent))
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
 		}
 
 		b := c.Locals(shared.Bind).(fiber.Map)

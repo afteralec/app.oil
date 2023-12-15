@@ -38,7 +38,15 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		apps, err := i.Queries.ListOpenCharacterApplications(context.Background())
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		apps, err := qtx.ListOpenCharacterApplications(context.Background())
 		if err != nil {
 			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
@@ -49,7 +57,7 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 		for _, app := range apps {
 			reviewer := ""
 			if app.Request.RPID > 0 {
-				p, err := i.Queries.GetPlayer(context.Background(), app.Request.RPID)
+				p, err := qtx.GetPlayer(context.Background(), app.Request.RPID)
 				if err != nil {
 					// TODO: Sort out this edge case
 					// if err == sql.ErrNoRows {
@@ -61,6 +69,11 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 				reviewer = p.Username
 			}
 			summaries = append(summaries, character.NewSummaryFromApplication(&app.Player, reviewer, &app.Request, &app.CharacterApplicationContent))
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
 		}
 
 		b := c.Locals(shared.Bind).(fiber.Map)
