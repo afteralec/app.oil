@@ -26,7 +26,7 @@ func New(i *shared.Interfaces) fiber.Handler {
 			return c.Next()
 		}
 
-		perms := permission.MakePlayerIssued(pid.(int64), ps)
+		perms := permission.MakePlayerGranted(pid.(int64), ps)
 
 		c.Locals("perms", perms)
 		return c.Next()

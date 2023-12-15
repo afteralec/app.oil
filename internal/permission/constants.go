@@ -38,7 +38,7 @@ var PlayerReviewCharacterApplications Player = Player{
 	Name:  PlayerReviewCharacterApplicationsName,
 	Tag:   PlayerReviewCharacterApplicationsTag,
 	Title: PlayerReviewCharacterApplicationsTitle,
-	About: PlayerAssignAllPermissionsAbout,
+	About: PlayerReviewCharacterApplicationsAbout,
 }
 
 var ShowPermissionViewPermissions []string = []string{
@@ -48,6 +48,11 @@ var ShowPermissionViewPermissions []string = []string{
 var AllPlayer []Player = []Player{
 	PlayerAssignAllPermissions,
 	PlayerReviewCharacterApplications,
+}
+
+var AllPlayerByName map[string]Player = map[string]Player{
+	PlayerAssignAllPermissionsName:        PlayerAssignAllPermissions,
+	PlayerReviewCharacterApplicationsName: PlayerReviewCharacterApplications,
 }
 
 var AllPlayerByTag map[string]Player = map[string]Player{

@@ -54,6 +54,20 @@ func (q *Queries) CreatePlayerPermissionRevokedChangeHistory(ctx context.Context
 	return err
 }
 
+const deletePlayerPermission = `-- name: DeletePlayerPermission :exec
+DELETE FROM player_permissions WHERE permission = ? AND pid = ?
+`
+
+type DeletePlayerPermissionParams struct {
+	Permission string
+	PID        int64
+}
+
+func (q *Queries) DeletePlayerPermission(ctx context.Context, arg DeletePlayerPermissionParams) error {
+	_, err := q.exec(ctx, q.deletePlayerPermissionStmt, deletePlayerPermission, arg.Permission, arg.PID)
+	return err
+}
+
 const listPlayerPermissions = `-- name: ListPlayerPermissions :many
 SELECT created_at, permission, ipid, pid, id FROM player_permissions WHERE pid = ?
 `
