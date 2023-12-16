@@ -95,7 +95,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 			b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 			b["CharacterApplicationParts"] = parts
 			b["NextLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
-			return c.Render("views/character/application/name/view", b, "views/layouts/standalone")
+			return c.Render("views/character/application/name/view", b)
 		}
 
 		parts := character.MakeApplicationParts("name", &app)
@@ -103,7 +103,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		b["Name"] = app.Name
 		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
-		return c.Render("views/character/application/name/edit", b, "views/layouts/standalone")
+		return c.Render("views/character/application/name/edit", b)
 	}
 }
 
@@ -187,10 +187,10 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 			b["Name"] = app.Name
 			b["Gender"] = app.Gender
 			b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
-			b["ApplicationParts"] = parts
+			b["CharacterApplicationParts"] = parts
 			b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 			b["NextLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
-			return c.Render("views/character/application/gender/view", b, "views/layouts/standalone")
+			return c.Render("views/character/application/gender/view", b)
 		}
 
 		parts := character.MakeApplicationParts("gender", &app)
@@ -207,7 +207,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationGenderPath"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/gender/edit", b, "views/layouts/standalone")
+		return c.Render("views/character/application/gender/edit", b)
 	}
 }
 
@@ -293,7 +293,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 			b["CharacterApplicationParts"] = parts
 			b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 			b["NextLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
-			return c.Render("views/character/application/sdesc/view", b, "views/layouts/standalone")
+			return c.Render("views/character/application/sdesc/view", b)
 		}
 
 		parts := character.MakeApplicationParts("sdesc", &app)
@@ -303,7 +303,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 		b["CharacterApplicationShortDescriptionPath"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/sdesc/edit", b, "views/layouts/standalone")
+		return c.Render("views/character/application/sdesc/edit", b)
 	}
 }
 
@@ -389,7 +389,7 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			b["CharacterApplicationParts"] = parts
 			b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 			b["NextLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
-			return c.Render("views/character/application/description/view", b, "views/layouts/standalone")
+			return c.Render("views/character/application/description/view", b)
 		}
 
 		parts := character.MakeApplicationParts("description", &app)
@@ -399,7 +399,7 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationDescriptionPath"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/description/edit", b, "views/layouts/standalone")
+		return c.Render("views/character/application/description/edit", b)
 	}
 }
 
@@ -484,7 +484,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 			b["Backstory"] = app.Backstory
 			b["CharacterApplicationParts"] = parts
 			b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
-			return c.Render("views/character/application/backstory/view", b, "views/layouts/standalone")
+			return c.Render("views/character/application/backstory/view", b)
 		}
 
 		parts := character.MakeApplicationParts("backstory", &app)
@@ -578,7 +578,7 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 			b["Name"] = app.Name
 			b["CharacterApplicationParts"] = parts
 			b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
-			return c.Render("views/character/application/summary/view", b, "views/layouts/standalone")
+			return c.Render("views/character/application/summary/view", b)
 		}
 
 		parts := character.MakeApplicationParts("review", &app)
@@ -587,6 +587,6 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
 		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/summary/edit", b, "views/layouts/standalone")
+		return c.Render("views/character/application/summary/edit", b)
 	}
 }
