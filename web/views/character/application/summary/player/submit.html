@@ -1,0 +1,47 @@
+<main
+  class="flex h-screen w-screen flex-col items-center justify-center"
+  x-data="getCharacterApplicationReviewData()"
+>
+  <div class="w-full max-w-lg">
+    <h2
+      class="scroll-m-20 pb-4 text-3xl font-extrabold tracking-tight lg:text-4xl"
+    >
+      {{ .Name }}
+    </h2>
+    {{ if .Ready }}
+    <!-- prettier-ignore -->
+    {{ template "views/partials/character/application/status/list-complete" .Statuses }}
+    <div>
+      Looks like everything's ready! Feel free to make any adjustments to the
+      above sections, or, if you're ready to submit this application, click
+      Submit below.
+    </div>
+    <div class="flex justify-end gap-2">
+      {{ if .BackLink }}
+      <a
+        href="{{ .BackLink }}"
+        class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      >
+        Back
+      </a>
+      {{ end -}}
+      <button
+        @click.prevent="showSubmitDialog = true"
+        class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        type="button"
+      >
+        Submit
+      </button>
+    </div>
+    {{ else -}}
+    <p>Incomplete:</p>
+    <!-- prettier-ignore -->
+    {{ template "views/partials/character/application/status/list-incomplete" .Statuses }}
+    <p>Complete:</p>
+    <!-- prettier-ignore -->
+    {{ template "views/partials/character/application/status/list-complete" .Statuses }}
+    {{ end -}}
+  </div>
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/submit-dialog" .SubmitCharacterApplicationPath }}
+</main>

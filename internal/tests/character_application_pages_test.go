@@ -548,7 +548,7 @@ func TestCharacterBackstoryPageFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
-func TestCharacterReviewPageUnauthorized(t *testing.T) {
+func TestCharacterSummaryPageUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -559,7 +559,7 @@ func TestCharacterReviewPageUnauthorized(t *testing.T) {
 	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	url := MakeTestURL(routes.CharacterApplicationReviewPath(strconv.FormatInt(rid, 10)))
+	url := MakeTestURL(routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -569,7 +569,7 @@ func TestCharacterReviewPageUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestCharacterReviewPageUnowned(t *testing.T) {
+func TestCharacterSummaryPageUnowned(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -583,7 +583,7 @@ func TestCharacterReviewPageUnowned(t *testing.T) {
 	CallRegister(t, a, TestUsernameTwo, TestPassword)
 	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
 	sessionCookie := res.Cookies()[0]
-	url := MakeTestURL(routes.CharacterApplicationReviewPath(strconv.FormatInt(rid, 10)))
+	url := MakeTestURL(routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -594,7 +594,7 @@ func TestCharacterReviewPageUnowned(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestCharacterReviewPageSuccess(t *testing.T) {
+func TestCharacterSummaryPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -603,7 +603,7 @@ func TestCharacterReviewPageSuccess(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	url := MakeTestURL(routes.CharacterApplicationReviewPath(strconv.FormatInt(rid, 10)))
+	url := MakeTestURL(routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -614,7 +614,7 @@ func TestCharacterReviewPageSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestCharacterReviewPageNotFound(t *testing.T) {
+func TestCharacterSummaryPageNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -623,7 +623,7 @@ func TestCharacterReviewPageNotFound(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	url := MakeTestURL(routes.CharacterApplicationReviewPath(strconv.FormatInt(rid+1, 10)))
+	url := MakeTestURL(routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid+1, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -634,7 +634,7 @@ func TestCharacterReviewPageNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
-func TestCharacterReviewPageFatal(t *testing.T) {
+func TestCharacterSummaryPageFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 
 	a := fiber.New(configs.Fiber())
@@ -643,7 +643,7 @@ func TestCharacterReviewPageFatal(t *testing.T) {
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	i.Close()
-	url := MakeTestURL(routes.CharacterApplicationReviewPath(strconv.FormatInt(rid, 10)))
+	url := MakeTestURL(routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)

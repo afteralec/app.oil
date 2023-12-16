@@ -497,7 +497,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func CharacterApplicationReviewPage(i *shared.Interfaces) fiber.Handler {
+func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -569,6 +569,6 @@ func CharacterApplicationReviewPage(i *shared.Interfaces) fiber.Handler {
 		b["Ready"] = character.IsApplicationReady(&app)
 		b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
 		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/review", b, "views/layouts/standalone")
+		return c.Render("views/character/application/summary/player/submit", b, "views/layouts/standalone")
 	}
 }

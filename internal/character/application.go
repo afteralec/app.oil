@@ -96,5 +96,5 @@ func GetApplicationLink(req *queries.Request, app *queries.CharacterApplicationC
 		return routes.CharacterApplicationBackstoryPath(strid)
 	}
 
-	return routes.CharacterApplicationReviewPath(strconv.FormatInt(req.ID, 10))
+	return routes.CharacterApplicationSummaryPath(strconv.FormatInt(req.ID, 10))
 }
