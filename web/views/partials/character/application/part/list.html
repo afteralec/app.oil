@@ -1,0 +1,14 @@
+<div class="flex w-full max-w-lg flex-col gap-2 pb-4">
+  <!-- prettier-ignore -->
+  {{ range . }}
+    {{ if .Current }}
+      {{ template "views/partials/character/application/part/current" . }}
+    {{ else -}}
+      {{ if .Ready }}
+        {{ template "views/partials/character/application/part/ready" . }}
+      {{ else -}}
+        {{ template "views/partials/character/application/part/incomplete" . }}
+      {{ end -}}
+    {{ end -}}
+  {{ end -}}
+</div>

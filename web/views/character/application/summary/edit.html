@@ -1,0 +1,61 @@
+<main
+  class="flex h-screen w-screen flex-col items-center justify-center"
+  x-data="getCharacterApplicationReviewData()"
+>
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/name" . }}
+
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/part/list" .CharacterApplicationParts }}
+  <div class="w-full max-w-lg rounded-md border p-6">
+    <!-- prettier-ignore -->
+    {{ template "views/partials/character/application/summary/header/player" }}
+
+    {{ template "views/partials/character/application/divider" }}
+
+    {{ if .StatusReady -}}
+    <p class="text-base leading-none tracking-tight">
+      Looks like everything's ready! Feel free to make any adjustments to the
+      above sections, or, if you're ready to submit this application, click
+      Submit below.
+    </p>
+    {{ else -}}
+    <p class="text-base leading-none tracking-tight">
+      Looks like you still have some things to finish before submitting. Check
+      the tabs above for the incomplete sections, then come back here once
+      you're ready to submit the application.
+    </p>
+    {{ end -}}
+    <div class="flex justify-end gap-2 pt-4">
+      {{ if .BackLink }}
+      <a
+        href="{{ .BackLink }}"
+        class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      >
+        Back
+      </a>
+      {{ end -}}
+      <!-- prettier-ignore -->
+      {{ if .StatusReady -}}
+      <button
+        @click.prevent="showSubmitDialog = true"
+        class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        type="button"
+      >
+        Submit
+      </button>
+      {{ else -}}
+      <button
+        disabled
+        @click.prevent=""
+        class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        type="button"
+      >
+        Submit
+      </button>
+      {{ end -}}
+    </div>
+    <!-- prettier-ignore -->
+    {{ template "views/partials/character/application/submit-dialog" .SubmitCharacterApplicationPath }}
+  </div>
+</main>

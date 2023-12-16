@@ -3,7 +3,10 @@
   x-data="getCharacterApplicationDescriptionData('{{ .Description }}')"
 >
   <!-- prettier-ignore -->
-  {{ template "views/partials/character/application/status/list" .Statuses }}
+  {{ template "views/partials/character/application/name" . }}
+
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/part/list" .CharacterApplicationParts }}
   <div class="w-full max-w-lg rounded-md border p-6">
     <div id="character-application-flow-error"></div>
     <!-- prettier-ignore -->

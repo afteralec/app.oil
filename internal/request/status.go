@@ -1,6 +1,10 @@
 package request
 
-import "petrichormud.com/app/internal/queries"
+import (
+	fiber "github.com/gofiber/fiber/v2"
+
+	"petrichormud.com/app/internal/queries"
+)
 
 const (
 	StatusIncomplete = "Incomplete"
@@ -44,4 +48,17 @@ func IsEditable(req *queries.Request) bool {
 	}
 
 	return true
+}
+
+func BindStatuses(b fiber.Map, req *queries.Request) fiber.Map {
+	b["StatusIncomplete"] = req.Status == StatusIncomplete
+	b["StatusReady"] = req.Status == StatusReady
+	b["StatusSubmitted"] = req.Status == StatusSubmitted
+	b["StatusInReview"] = req.Status == StatusInReview
+	b["StatusApproved"] = req.Status == StatusApproved
+	b["StatusReviewed"] = req.Status == StatusReviewed
+	b["StatusRejected"] = req.Status == StatusRejected
+	b["StatusArchived"] = req.Status == StatusArchived
+	b["StatusCanceled"] = req.Status == StatusCanceled
+	return b
 }

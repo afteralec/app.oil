@@ -89,20 +89,20 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 
-			statuses := character.MakeApplicationPartStatuses("name", &app)
-			b := c.Locals(shared.Bind).(fiber.Map)
+			parts := character.MakeApplicationParts("name", &app)
+			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 			b["Name"] = app.Name
 			b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
-			b["Statuses"] = statuses
+			b["CharacterApplicationParts"] = parts
 			b["NextLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 			return c.Render("views/character/application/name/view", b, "views/layouts/standalone")
 		}
 
-		statuses := character.MakeApplicationPartStatuses("name", &app)
-		b := c.Locals(shared.Bind).(fiber.Map)
+		parts := character.MakeApplicationParts("name", &app)
+		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["Name"] = app.Name
 		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
-		b["Statuses"] = statuses
+		b["CharacterApplicationParts"] = parts
 		return c.Render("views/character/application/name/edit", b, "views/layouts/standalone")
 	}
 }
@@ -182,20 +182,20 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 
-			statuses := character.MakeApplicationPartStatuses("gender", &app)
-			b := c.Locals(shared.Bind).(fiber.Map)
+			parts := character.MakeApplicationParts("gender", &app)
+			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 			b["Name"] = app.Name
 			b["Gender"] = app.Gender
 			b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
-			b["Statuses"] = statuses
+			b["ApplicationParts"] = parts
 			b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 			b["NextLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 			return c.Render("views/character/application/gender/view", b, "views/layouts/standalone")
 		}
 
-		statuses := character.MakeApplicationPartStatuses("gender", &app)
+		parts := character.MakeApplicationParts("gender", &app)
 		gender := character.SanitizeGender(app.Gender)
-		b := c.Locals(shared.Bind).(fiber.Map)
+		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["Name"] = app.Name
 		b["GenderNonBinary"] = character.GenderNonBinary
 		b["GenderFemale"] = character.GenderFemale
@@ -205,7 +205,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		b["GenderIsFemale"] = gender == character.GenderFemale
 		b["GenderIsMale"] = gender == character.GenderMale
 		b["CharacterApplicationGenderPath"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
-		b["Statuses"] = statuses
+		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		return c.Render("views/character/application/gender/edit", b, "views/layouts/standalone")
 	}
@@ -286,22 +286,22 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 				return nil
 			}
 
-			statuses := character.MakeApplicationPartStatuses("sdesc", &app)
-			b := c.Locals(shared.Bind).(fiber.Map)
+			parts := character.MakeApplicationParts("sdesc", &app)
+			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 			b["Name"] = app.Name
 			b["ShortDescription"] = app.ShortDescription
-			b["Statuses"] = statuses
+			b["CharacterApplicationParts"] = parts
 			b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 			b["NextLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 			return c.Render("views/character/application/sdesc/view", b, "views/layouts/standalone")
 		}
 
-		statuses := character.MakeApplicationPartStatuses("sdesc", &app)
-		b := c.Locals(shared.Bind).(fiber.Map)
+		parts := character.MakeApplicationParts("sdesc", &app)
+		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["Name"] = app.Name
 		b["ShortDescription"] = app.ShortDescription
 		b["CharacterApplicationShortDescriptionPath"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
-		b["Statuses"] = statuses
+		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		return c.Render("views/character/application/sdesc/edit", b, "views/layouts/standalone")
 	}
@@ -382,22 +382,22 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 
-			statuses := character.MakeApplicationPartStatuses("description", &app)
-			b := c.Locals(shared.Bind).(fiber.Map)
+			parts := character.MakeApplicationParts("description", &app)
+			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 			b["Name"] = app.Name
 			b["Description"] = app.Description
-			b["Statuses"] = statuses
+			b["CharacterApplicationParts"] = parts
 			b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 			b["NextLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
 			return c.Render("views/character/application/description/view", b, "views/layouts/standalone")
 		}
 
-		statuses := character.MakeApplicationPartStatuses("description", &app)
-		b := c.Locals(shared.Bind).(fiber.Map)
+		parts := character.MakeApplicationParts("description", &app)
+		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["Name"] = app.Name
 		b["Description"] = app.Description
 		b["CharacterApplicationDescriptionPath"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
-		b["Statuses"] = statuses
+		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		return c.Render("views/character/application/description/edit", b, "views/layouts/standalone")
 	}
@@ -478,20 +478,20 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 
-			statuses := character.MakeApplicationPartStatuses("backstory", &app)
-			b := c.Locals(shared.Bind).(fiber.Map)
+			parts := character.MakeApplicationParts("backstory", &app)
+			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 			b["Name"] = app.Name
 			b["Backstory"] = app.Backstory
-			b["Statuses"] = statuses
+			b["CharacterApplicationParts"] = parts
 			b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 			return c.Render("views/character/application/backstory/view", b, "views/layouts/standalone")
 		}
 
-		statuses := character.MakeApplicationPartStatuses("backstory", &app)
-		b := c.Locals(shared.Bind).(fiber.Map)
+		parts := character.MakeApplicationParts("backstory", &app)
+		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["Name"] = app.Name
 		b["Backstory"] = app.Backstory
-		b["Statuses"] = statuses
+		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		return c.Render("views/character/application/backstory/edit", b, "views/layouts/standalone")
 	}
@@ -562,13 +562,12 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		statuses := character.MakeApplicationPartStatuses("review", &app)
-		b := c.Locals(shared.Bind).(fiber.Map)
+		parts := character.MakeApplicationParts("review", &app)
+		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["Name"] = app.Name
-		b["Statuses"] = statuses
-		b["Ready"] = character.IsApplicationReady(&app)
+		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
 		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/summary/player/submit", b, "views/layouts/standalone")
+		return c.Render("views/character/application/summary/edit", b, "views/layouts/standalone")
 	}
 }
