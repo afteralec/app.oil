@@ -103,7 +103,11 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		b["Name"] = app.Name
 		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
-		return c.Render("views/character/application/name/edit", b)
+		if request.IsEditable(&req) {
+			return c.Render("views/character/application/name/edit", b)
+		} else {
+			return c.Render("views/character/application/name/view", b)
+		}
 	}
 }
 
@@ -207,7 +211,11 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationGenderPath"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/gender/edit", b)
+		if request.IsEditable(&req) {
+			return c.Render("views/character/application/gender/edit", b)
+		} else {
+			return c.Render("views/character/application/gender/view", b)
+		}
 	}
 }
 
@@ -303,7 +311,11 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 		b["CharacterApplicationShortDescriptionPath"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/sdesc/edit", b)
+		if request.IsEditable(&req) {
+			return c.Render("views/character/application/sdesc/edit", b)
+		} else {
+			return c.Render("views/character/application/sdesc/view", b)
+		}
 	}
 }
 
@@ -399,7 +411,11 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationDescriptionPath"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/description/edit", b)
+		if request.IsEditable(&req) {
+			return c.Render("views/character/application/description/edit", b)
+		} else {
+			return c.Render("views/character/application/description/view", b)
+		}
 	}
 }
 
@@ -493,7 +509,11 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 		b["Backstory"] = app.Backstory
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/backstory/edit", b, "views/layouts/standalone")
+		if request.IsEditable(&req) {
+			return c.Render("views/character/application/backstory/edit", b)
+		} else {
+			return c.Render("views/character/application/backstory/view", b)
+		}
 	}
 }
 
@@ -587,6 +607,10 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
 		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
-		return c.Render("views/character/application/summary/edit", b)
+		if request.IsEditable(&req) {
+			return c.Render("views/character/application/summary/edit", b)
+		} else {
+			return c.Render("views/character/application/summary/view", b)
+		}
 	}
 }
