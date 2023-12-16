@@ -1,4 +1,8 @@
-<div class="flex w-full max-w-lg flex-col gap-2 pb-4">
+<div
+  x-cloak
+  x-show="partsOpen"
+  class="flex w-full max-w-lg flex-col gap-2 pb-4"
+>
   <!-- prettier-ignore -->
   {{ range . }}
     {{ if .Current }}

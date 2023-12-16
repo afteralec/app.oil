@@ -115,6 +115,14 @@ body {
   transition: transform 250ms;
 }
 
+.hard-dropdown .icon {
+  transition: transform 250ms;
+}
+
+.hard-dropdown.open .icon {
+  transform: rotate(-180deg);
+}
+
 .dropdown:hover .icon {
   transform: rotate(-180deg);
 }

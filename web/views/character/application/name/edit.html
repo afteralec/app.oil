@@ -10,6 +10,11 @@
   <div class="w-full max-w-lg rounded-md border p-6">
     <div id="character-application-flow-error"></div>
     <!-- prettier-ignore -->
+    {{ if .StatusReady -}}
+    {{ template "views/partials/character/application/submit-notice" . }}
+    {{ end -}}
+
+    <!-- prettier-ignore -->
     {{ template "views/partials/character/application/name/header/player" }}
 
     {{ template "views/partials/character/application/divider" }}
@@ -59,4 +64,6 @@
       </div>
     </form>
   </div>
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/submit-dialog" .SubmitCharacterApplicationPath }}
 </main>

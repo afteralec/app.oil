@@ -89,6 +89,12 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 
+			// TODO: After putting an application in review,
+			// This should check if the request is in review
+			// and then show the review version of this page.
+			// The review version of this page essentially just allows
+			// the reviewer to comment and finish the review.
+
 			parts := character.MakeApplicationParts("name", &app)
 			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 			b["Name"] = app.Name
@@ -100,9 +106,11 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 
 		parts := character.MakeApplicationParts("name", &app)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
+		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
 		b["Name"] = app.Name
 		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
+		b["NextLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/name/edit", b)
 		} else {
@@ -200,6 +208,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		parts := character.MakeApplicationParts("gender", &app)
 		gender := character.SanitizeGender(app.Gender)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
+		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
 		b["Name"] = app.Name
 		b["GenderNonBinary"] = character.GenderNonBinary
 		b["GenderFemale"] = character.GenderFemale
@@ -211,6 +220,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationGenderPath"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
+		b["NextLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/gender/edit", b)
 		} else {
@@ -306,11 +316,13 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 
 		parts := character.MakeApplicationParts("sdesc", &app)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
+		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
 		b["Name"] = app.Name
 		b["ShortDescription"] = app.ShortDescription
 		b["CharacterApplicationShortDescriptionPath"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
+		b["NextLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/sdesc/edit", b)
 		} else {
@@ -406,11 +418,13 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 
 		parts := character.MakeApplicationParts("description", &app)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
+		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
 		b["Name"] = app.Name
 		b["Description"] = app.Description
 		b["CharacterApplicationDescriptionPath"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
+		b["NextLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/description/edit", b)
 		} else {
@@ -500,15 +514,18 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 			b["Backstory"] = app.Backstory
 			b["CharacterApplicationParts"] = parts
 			b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
+			b["NextLink"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
 			return c.Render("views/character/application/backstory/view", b)
 		}
 
 		parts := character.MakeApplicationParts("backstory", &app)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
+		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
 		b["Name"] = app.Name
 		b["Backstory"] = app.Backstory
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
+		b["NextLink"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/backstory/edit", b)
 		} else {
@@ -603,10 +620,10 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 
 		parts := character.MakeApplicationParts("review", &app)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
+		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
 		b["Name"] = app.Name
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
-		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/summary/edit", b)
 		} else {

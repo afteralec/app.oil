@@ -1,0 +1,19 @@
+<div
+  id="character-application-submit-notice"
+  class="mb-6 flex items-center rounded-md bg-sky-100 px-4 py-3 text-sm text-sky-800"
+>
+  <div class="pr-2">
+    <div class="flex items-center justify-center rounded-[50%]">
+      <iconify-icon icon="gg:check-o" height="32" width="32"></iconify-icon>
+    </div>
+  </div>
+  <div>
+    This application is ready to be submitted.
+    <br />
+    <span
+      @click.prevent="submitDialogOpen = true;"
+      class="cursor-pointer font-semibold underline hover:text-sky-600"
+      >Click here to submit the application</span
+    >
+  </div>
+</div>

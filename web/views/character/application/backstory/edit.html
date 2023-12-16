@@ -10,6 +10,11 @@
   <div class="w-full max-w-lg rounded-md border p-6">
     <div id="character-application-flow-error"></div>
     <!-- prettier-ignore -->
+    {{ if .StatusReady -}}
+    {{ template "views/partials/character/application/submit-notice" . }}
+    {{ end -}}
+
+    <!-- prettier-ignore -->
     {{ template "views/partials/character/application/backstory/header/player" }}
 
     {{ template "views/partials/character/application/divider" }}
@@ -28,7 +33,7 @@
             eval.bs.len = true;
             backstory = sanitizeCharacterBackstory(event.target.value);
           "
-          class="flex min-h-[10rem] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          class="flex min-h-[8rem] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="backstory"
           autofocus
@@ -58,4 +63,6 @@
       </div>
     </form>
   </div>
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/submit-dialog" .SubmitCharacterApplicationPath }}
 </main>

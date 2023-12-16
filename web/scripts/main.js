@@ -254,12 +254,16 @@ export function getCharacterApplicationNameData(name) {
     },
     sanitizeCharacterName,
     isCharacterNameValid,
+    showSubmitDialog: false,
+    partsOpen: false,
   };
 }
 
 export function getCharacterApplicationGenderData(gender) {
   return {
     gender,
+    showSubmitDialog: false,
+    partsOpen: false,
   };
 }
 
@@ -273,6 +277,8 @@ export function getCharacterApplicationShortDescriptionData(sdesc) {
     },
     sanitizeCharacterShortDescription,
     isCharacterShortDescriptionValid,
+    showSubmitDialog: false,
+    partsOpen: false,
   };
 }
 
@@ -286,6 +292,8 @@ export function getCharacterApplicationDescriptionData(description) {
     },
     sanitizeCharacterDescription,
     isCharacterDescriptionValid,
+    showSubmitDialog: false,
+    partsOpen: false,
   };
 }
 
@@ -299,12 +307,22 @@ export function getCharacterApplicationBackstoryData(backstory) {
     },
     sanitizeCharacterBackstory,
     isCharacterBackstoryValid,
+    showSubmitDialog: false,
+    partsOpen: false,
   };
 }
 
-export function getCharacterApplicationReviewData() {
+export function getCharacterApplicationSummaryData() {
   return {
     showSubmitDialog: false,
+    partsOpen: true,
+  };
+}
+
+export function getCharacterApplicationData() {
+  return {
+    showSubmitDialog: false,
+    partsOpen: false,
   };
 }
 
@@ -357,5 +375,6 @@ window.getCharacterApplicationDescriptionData =
   getCharacterApplicationDescriptionData;
 window.getCharacterApplicationBackstoryData =
   getCharacterApplicationBackstoryData;
-window.getCharacterApplicationReviewData = getCharacterApplicationReviewData;
+window.getCharacterApplicationSummaryData = getCharacterApplicationSummaryData;
+window.getCharacterApplicationData = getCharacterApplicationData;
 window.getPlayerPermissionsData = getPlayerPermissionsData;
