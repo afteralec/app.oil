@@ -558,8 +558,27 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		if req.PID != pid {
-			c.Status(fiber.StatusForbidden)
-			return nil
+			lperms := c.Locals("perms")
+			if lperms == nil {
+				c.Status(fiber.StatusForbidden)
+				return nil
+			}
+			iperms, ok := lperms.(permission.PlayerGranted)
+			if !ok {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+			}
+			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
+				c.Status(fiber.StatusForbidden)
+				return nil
+			}
+
+			parts := character.MakeApplicationParts("name", &app)
+			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
+			b["Name"] = app.Name
+			b["CharacterApplicationParts"] = parts
+			b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
+			return c.Render("views/character/application/summary/view", b, "views/layouts/standalone")
 		}
 
 		parts := character.MakeApplicationParts("review", &app)

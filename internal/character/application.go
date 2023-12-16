@@ -61,7 +61,7 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 		StatusRejected:   req.Status == request.StatusRejected,
 		StatusArchived:   req.Status == request.StatusArchived,
 		StatusCanceled:   req.Status == request.StatusCanceled,
-		Link:             GetApplicationLink(req, app),
+		Link:             GetApplicationLink(p.ID, req, app),
 		ID:               req.ID,
 		Name:             name,
 		Author:           p.Username,
@@ -69,31 +69,25 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 	}
 }
 
-func GetApplicationLink(req *queries.Request, app *queries.CharacterApplicationContent) string {
-	if req.Status == request.StatusSubmitted {
-		return routes.CharacterApplicationSubmittedPath(strconv.FormatInt(req.ID, 10))
+func GetApplicationLink(pid int64, req *queries.Request, app *queries.CharacterApplicationContent) string {
+	if pid != req.PID {
+		return routes.CharacterApplicationSummaryPath(strconv.FormatInt(req.ID, 10))
 	}
-
-	strid := strconv.FormatInt(req.ID, 10)
 
 	if !IsNameValid(app.Name) {
-		return routes.CharacterApplicationNamePath(strid)
+		return routes.CharacterApplicationNamePath(strconv.FormatInt(req.ID, 10))
 	}
-
 	if !IsGenderValid(app.Gender) {
-		return routes.CharacterApplicationGenderPath(strid)
+		return routes.CharacterApplicationGenderPath(strconv.FormatInt(req.ID, 10))
 	}
-
 	if !IsShortDescriptionValid(app.ShortDescription) {
-		return routes.CharacterApplicationShortDescriptionPath(strid)
+		return routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(req.ID, 10))
 	}
-
 	if !IsDescriptionValid(app.Description) {
-		return routes.CharacterApplicationDescriptionPath(strid)
+		return routes.CharacterApplicationDescriptionPath(strconv.FormatInt(req.ID, 10))
 	}
-
 	if !IsBackstoryValid(app.Backstory) {
-		return routes.CharacterApplicationBackstoryPath(strid)
+		return routes.CharacterApplicationBackstoryPath(strconv.FormatInt(req.ID, 10))
 	}
 
 	return routes.CharacterApplicationSummaryPath(strconv.FormatInt(req.ID, 10))
