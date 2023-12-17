@@ -18,12 +18,14 @@
     x-show="actionsOpen"
     class="flex items-center justify-end gap-3 py-1 pr-3"
   >
+    {{ if .ShowCancelActions -}}
     <div
       @click.prevent="showCancelDialog = true;"
       class="cursor-pointer text-sm leading-none text-rose-800 hover:text-rose-700 hover:underline"
     >
       Cancel
     </div>
+    {{ end -}}
     <a
       href="{{ .CharacterApplicationSummaryPath }}"
       class="cursor-pointer text-sm leading-none text-primary hover:underline"

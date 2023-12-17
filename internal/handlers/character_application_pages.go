@@ -106,6 +106,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("views/character/application/name/view", b)
 		}
 
+		// TODO: Consolidate the common properties into a function
 		parts := character.MakeApplicationParts("name", &app)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["CharacterApplicationPath"] = routes.CharacterApplicationPath(strconv.FormatInt(rid, 10))
@@ -115,6 +116,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
 		b["NextLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
+		b["ShowCancelAction"] = true
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/name/edit", b)
 		} else {
@@ -229,6 +231,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
+		b["ShowCancelAction"] = true
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/gender/edit", b)
 		} else {
@@ -335,6 +338,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
+		b["ShowCancelAction"] = true
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/sdesc/edit", b)
 		} else {
@@ -441,6 +445,7 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
+		b["ShowCancelAction"] = true
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/description/edit", b)
 		} else {
@@ -546,6 +551,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
+		b["ShowCancelAction"] = true
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/backstory/edit", b)
 		} else {
@@ -644,6 +650,7 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 		b["Name"] = app.Name
 		b["CharacterApplicationParts"] = parts
 		b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
+		b["ShowCancelAction"] = true
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/summary/edit", b)
 		} else {
