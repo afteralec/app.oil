@@ -98,6 +98,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 			parts := character.MakeApplicationParts("name", &app)
 			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 			b["Name"] = app.Name
+			b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
 			b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 			b["CharacterApplicationParts"] = parts
 			b["NextLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
@@ -107,6 +108,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		parts := character.MakeApplicationParts("name", &app)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
+		b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
 		b["Name"] = app.Name
 		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
@@ -196,6 +198,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 
 			parts := character.MakeApplicationParts("gender", &app)
 			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
+			b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
 			b["Name"] = app.Name
 			b["Gender"] = app.Gender
 			b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
@@ -209,6 +212,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		gender := character.SanitizeGender(app.Gender)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
+		b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
 		b["Name"] = app.Name
 		b["GenderNonBinary"] = character.GenderNonBinary
 		b["GenderFemale"] = character.GenderFemale
@@ -306,6 +310,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 
 			parts := character.MakeApplicationParts("sdesc", &app)
 			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
+			b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
 			b["Name"] = app.Name
 			b["ShortDescription"] = app.ShortDescription
 			b["CharacterApplicationParts"] = parts
@@ -317,6 +322,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 		parts := character.MakeApplicationParts("sdesc", &app)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
+		b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
 		b["Name"] = app.Name
 		b["ShortDescription"] = app.ShortDescription
 		b["CharacterApplicationShortDescriptionPath"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
@@ -408,6 +414,7 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 
 			parts := character.MakeApplicationParts("description", &app)
 			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
+			b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
 			b["Name"] = app.Name
 			b["Description"] = app.Description
 			b["CharacterApplicationParts"] = parts
@@ -419,6 +426,7 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 		parts := character.MakeApplicationParts("description", &app)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
+		b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
 		b["Name"] = app.Name
 		b["Description"] = app.Description
 		b["CharacterApplicationDescriptionPath"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
@@ -510,6 +518,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 
 			parts := character.MakeApplicationParts("backstory", &app)
 			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
+			b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
 			b["Name"] = app.Name
 			b["Backstory"] = app.Backstory
 			b["CharacterApplicationParts"] = parts
@@ -521,6 +530,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 		parts := character.MakeApplicationParts("backstory", &app)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
+		b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
 		b["Name"] = app.Name
 		b["Backstory"] = app.Backstory
 		b["CharacterApplicationParts"] = parts

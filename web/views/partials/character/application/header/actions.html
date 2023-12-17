@@ -13,18 +13,21 @@
       ></iconify-icon>
     </div>
   </div>
-  <div x-cloak x-show="actionsOpen" class="flex items-center justify-end gap-2">
-    <button
-      type="button"
-      class="inline-flex h-10 items-center justify-center rounded-md border border-rose-800 px-4 py-2 text-sm font-medium text-rose-800 ring-offset-background transition-colors hover:border-rose-700 hover:text-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+  <div
+    x-cloak
+    x-show="actionsOpen"
+    class="flex items-center justify-end gap-3 py-1 pr-3"
+  >
+    <div
+      class="cursor-pointer text-sm leading-none text-rose-800 hover:text-rose-700 hover:underline"
     >
       Cancel
-    </button>
-    <button
-      type="button"
-      class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+    </div>
+    <a
+      href="{{ .CharacterApplicationSummaryPath }}"
+      class="cursor-pointer text-sm leading-none text-primary hover:underline"
     >
       Summary
-    </button>
+    </a>
   </div>
 </div>
