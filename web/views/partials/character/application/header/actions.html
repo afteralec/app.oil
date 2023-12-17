@@ -13,7 +13,18 @@
       ></iconify-icon>
     </div>
   </div>
-  <div x-cloak x-show="actionsOpen" class="flex items-center justify-end">
-    Actions
+  <div x-cloak x-show="actionsOpen" class="flex items-center justify-end gap-2">
+    <button
+      type="button"
+      class="inline-flex h-10 items-center justify-center rounded-md border border-rose-800 px-4 py-2 text-sm font-medium text-rose-800 ring-offset-background transition-colors hover:border-rose-700 hover:text-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+    >
+      Summary
+    </button>
   </div>
 </div>
