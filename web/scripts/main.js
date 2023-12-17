@@ -255,6 +255,7 @@ export function getCharacterApplicationNameData(name) {
     sanitizeCharacterName,
     isCharacterNameValid,
     showSubmitDialog: false,
+    showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
   };
@@ -264,6 +265,7 @@ export function getCharacterApplicationGenderData(gender) {
   return {
     gender,
     showSubmitDialog: false,
+    showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
   };
@@ -280,6 +282,7 @@ export function getCharacterApplicationShortDescriptionData(sdesc) {
     sanitizeCharacterShortDescription,
     isCharacterShortDescriptionValid,
     showSubmitDialog: false,
+    showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
   };
@@ -296,6 +299,7 @@ export function getCharacterApplicationDescriptionData(description) {
     sanitizeCharacterDescription,
     isCharacterDescriptionValid,
     showSubmitDialog: false,
+    showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
   };
@@ -312,14 +316,17 @@ export function getCharacterApplicationBackstoryData(backstory) {
     sanitizeCharacterBackstory,
     isCharacterBackstoryValid,
     showSubmitDialog: false,
+    showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
   };
 }
 
+// TODO: Roll this and the generalized func into one?
 export function getCharacterApplicationSummaryData() {
   return {
     showSubmitDialog: false,
+    showCancelDialog: false,
     partsOpen: true,
     actionsOpen: true,
   };
@@ -328,6 +335,7 @@ export function getCharacterApplicationSummaryData() {
 export function getCharacterApplicationData() {
   return {
     showSubmitDialog: false,
+    showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
   };

@@ -23,7 +23,15 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		count, err := i.Queries.CountOpenCharacterApplicationsForPlayer(context.Background(), pid.(int64))
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		count, err := qtx.CountOpenCharacterApplicationsForPlayer(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -33,14 +41,6 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-
-		tx, err := i.Database.Begin()
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-		defer tx.Rollback()
-		qtx := i.Queries.WithTx(tx)
 
 		result, err := qtx.CreateRequest(context.Background(), queries.CreateRequestParams{
 			PID:  pid.(int64),

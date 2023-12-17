@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -48,7 +47,6 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 
 		apps, err := qtx.ListOpenCharacterApplications(context.Background())
 		if err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(shared.Bind))
 		}

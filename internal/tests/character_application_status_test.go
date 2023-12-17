@@ -489,3 +489,120 @@ func TestCharacterApplicationSubmittedPageFatal(t *testing.T) {
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
+
+func TestCancelCharacterApplicationUnauthorized(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestCancelCharacterApplicationUnowned(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	CallRegister(t, a, "testify2", TestPassword)
+	res := CallLogin(t, a, "testify2", TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	sessionCookie := res.Cookies()[0]
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestCancelCharacterApplicationSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	// TODO: This is a hack. Rework this to use valid content and the existing handlers
+	if err := i.Queries.MarkRequestReady(context.Background(), rid); err != nil {
+		t.Fatal(err)
+	}
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestCancelCharacterApplicationNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid+1, 10)))
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestCancelCharacterApplicationFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
+	i.Close()
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	i = shared.SetupInterfaces()
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}

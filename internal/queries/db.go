@@ -141,6 +141,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.markEmailVerifiedStmt, err = db.PrepareContext(ctx, markEmailVerified); err != nil {
 		return nil, fmt.Errorf("error preparing query MarkEmailVerified: %w", err)
 	}
+	if q.markRequestCanceledStmt, err = db.PrepareContext(ctx, markRequestCanceled); err != nil {
+		return nil, fmt.Errorf("error preparing query MarkRequestCanceled: %w", err)
+	}
 	if q.markRequestReadyStmt, err = db.PrepareContext(ctx, markRequestReady); err != nil {
 		return nil, fmt.Errorf("error preparing query MarkRequestReady: %w", err)
 	}
@@ -368,6 +371,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing markEmailVerifiedStmt: %w", cerr)
 		}
 	}
+	if q.markRequestCanceledStmt != nil {
+		if cerr := q.markRequestCanceledStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing markRequestCanceledStmt: %w", cerr)
+		}
+	}
 	if q.markRequestReadyStmt != nil {
 		if cerr := q.markRequestReadyStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing markRequestReadyStmt: %w", cerr)
@@ -491,6 +499,7 @@ type Queries struct {
 	listRequestsForPlayerStmt                             *sql.Stmt
 	listVerifiedEmailsStmt                                *sql.Stmt
 	markEmailVerifiedStmt                                 *sql.Stmt
+	markRequestCanceledStmt                               *sql.Stmt
 	markRequestReadyStmt                                  *sql.Stmt
 	markRequestSubmittedStmt                              *sql.Stmt
 	searchPlayersByUsernameStmt                           *sql.Stmt
@@ -545,6 +554,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listRequestsForPlayerStmt:                             q.listRequestsForPlayerStmt,
 		listVerifiedEmailsStmt:                                q.listVerifiedEmailsStmt,
 		markEmailVerifiedStmt:                                 q.markEmailVerifiedStmt,
+		markRequestCanceledStmt:                               q.markRequestCanceledStmt,
 		markRequestReadyStmt:                                  q.markRequestReadyStmt,
 		markRequestSubmittedStmt:                              q.markRequestSubmittedStmt,
 		searchPlayersByUsernameStmt:                           q.searchPlayersByUsernameStmt,

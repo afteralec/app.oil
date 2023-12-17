@@ -31,7 +31,7 @@ INSERT INTO
   request_status_changes
   (rid, vid, status, pid)
 VALUES
-  (?, (SELECT vid FROM requests WHERE requests.rid = rid), (SELECT status FROM requests WHERE requests.rid = rid), ?)
+  (?, (SELECT vid FROM requests WHERE requests.id = rid), (SELECT status FROM requests WHERE requests.id = rid), ?)
 `
 
 type CreateHistoryForRequestStatusParams struct {
@@ -122,6 +122,15 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 		return nil, err
 	}
 	return items, nil
+}
+
+const markRequestCanceled = `-- name: MarkRequestCanceled :exec
+UPDATE requests SET status = "Canceled" WHERE id = ?
+`
+
+func (q *Queries) MarkRequestCanceled(ctx context.Context, id int64) error {
+	_, err := q.exec(ctx, q.markRequestCanceledStmt, markRequestCanceled, id)
+	return err
 }
 
 const markRequestReady = `-- name: MarkRequestReady :exec

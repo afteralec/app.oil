@@ -23,10 +23,13 @@ INSERT INTO
   request_status_changes
   (rid, vid, status, pid)
 VALUES
-  (?, (SELECT vid FROM requests WHERE requests.rid = rid), (SELECT status FROM requests WHERE requests.rid = rid), ?);
+  (?, (SELECT vid FROM requests WHERE requests.id = rid), (SELECT status FROM requests WHERE requests.id = rid), ?);
 
 -- name: MarkRequestReady :exec
 UPDATE requests SET status = "Ready" WHERE id = ?;
 
 -- name: MarkRequestSubmitted :exec
 UPDATE requests SET status = "Submitted" WHERE id = ?;
+
+-- name: MarkRequestCanceled :exec
+UPDATE requests SET status = "Canceled" WHERE id = ?;
