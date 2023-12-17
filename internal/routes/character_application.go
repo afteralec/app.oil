@@ -40,8 +40,13 @@ func CharacterApplicationSummaryPath(id string) string {
 	return fmt.Sprintf("%s/%s/summary", CharacterApplication, id)
 }
 
+// TODO: Maybe make these a /status/submitte and /status/in-review, etc route?
 func SubmitCharacterApplicationPath(id string) string {
 	return fmt.Sprintf("%s/%s/submit", CharacterApplication, id)
+}
+
+func PutCharacterApplicationInReviewPath(id string) string {
+	return fmt.Sprintf("%s/%s/in-review", CharacterApplication, id)
 }
 
 func CharacterApplicationSubmittedPath(id string) string {

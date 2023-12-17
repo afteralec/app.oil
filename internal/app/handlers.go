@@ -28,6 +28,7 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Patch(routes.CharacterApplicationBackstoryPath(routes.ID), handlers.UpdateCharacterApplicationBackstory(i))
 
 	app.Post(routes.SubmitCharacterApplicationPath(routes.ID), handlers.SubmitCharacterApplication(i))
+	app.Post(routes.PutCharacterApplicationInReviewPath(routes.ID), handlers.PutCharacterApplicationInReview(i))
 	app.Delete(routes.CharacterApplicationPath(routes.ID), handlers.CancelCharacterApplication(i))
 
 	app.Get(routes.CharacterApplicationSubmittedSuccessPath(routes.ID), handlers.CharacterApplicationSubmittedSuccessPage(i))

@@ -31,5 +31,8 @@ UPDATE requests SET status = "Ready" WHERE id = ?;
 -- name: MarkRequestSubmitted :exec
 UPDATE requests SET status = "Submitted" WHERE id = ?;
 
+-- name: MarkRequestInReview :exec
+UPDATE requests SET status = "InReview" WHERE id = ?;
+
 -- name: MarkRequestCanceled :exec
 UPDATE requests SET status = "Canceled" WHERE id = ?;

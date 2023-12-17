@@ -133,6 +133,15 @@ func (q *Queries) MarkRequestCanceled(ctx context.Context, id int64) error {
 	return err
 }
 
+const markRequestInReview = `-- name: MarkRequestInReview :exec
+UPDATE requests SET status = "InReview" WHERE id = ?
+`
+
+func (q *Queries) MarkRequestInReview(ctx context.Context, id int64) error {
+	_, err := q.exec(ctx, q.markRequestInReviewStmt, markRequestInReview, id)
+	return err
+}
+
 const markRequestReady = `-- name: MarkRequestReady :exec
 UPDATE requests SET status = "Ready" WHERE id = ?
 `
