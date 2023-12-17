@@ -323,6 +323,7 @@ export function getCharacterApplicationData() {
   return {
     showSubmitDialog: false,
     partsOpen: false,
+    actionsOpen: false,
   };
 }
 
