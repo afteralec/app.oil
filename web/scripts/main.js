@@ -256,6 +256,7 @@ export function getCharacterApplicationNameData(name) {
     isCharacterNameValid,
     showSubmitDialog: false,
     partsOpen: false,
+    actionsOpen: false,
   };
 }
 
@@ -264,6 +265,7 @@ export function getCharacterApplicationGenderData(gender) {
     gender,
     showSubmitDialog: false,
     partsOpen: false,
+    actionsOpen: false,
   };
 }
 
@@ -279,6 +281,7 @@ export function getCharacterApplicationShortDescriptionData(sdesc) {
     isCharacterShortDescriptionValid,
     showSubmitDialog: false,
     partsOpen: false,
+    actionsOpen: false,
   };
 }
 
@@ -294,6 +297,7 @@ export function getCharacterApplicationDescriptionData(description) {
     isCharacterDescriptionValid,
     showSubmitDialog: false,
     partsOpen: false,
+    actionsOpen: false,
   };
 }
 
@@ -309,6 +313,7 @@ export function getCharacterApplicationBackstoryData(backstory) {
     isCharacterBackstoryValid,
     showSubmitDialog: false,
     partsOpen: false,
+    actionsOpen: false,
   };
 }
 
@@ -316,6 +321,7 @@ export function getCharacterApplicationSummaryData() {
   return {
     showSubmitDialog: false,
     partsOpen: true,
+    actionsOpen: true,
   };
 }
 

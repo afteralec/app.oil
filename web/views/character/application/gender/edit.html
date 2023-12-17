@@ -7,159 +7,164 @@
 
   <!-- prettier-ignore -->
   {{ template "views/partials/character/application/part/list" .CharacterApplicationParts }}
-  <div class="w-full max-w-lg rounded-md border p-6">
-    <div id="character-application-flow-error"></div>
+  <div class="w-full max-w-lg rounded-md border">
     <!-- prettier-ignore -->
-    {{ if .StatusReady -}}
-    {{ template "views/partials/character/application/submit-notice" . }}
-    {{ end -}}
+    {{ template "views/partials/character/application/header/actions" . }}
 
-    <!-- prettier-ignore -->
-    {{ template "views/partials/character/application/gender/header/player" }}
+    <div class="w-full px-6 pb-6">
+      <div id="character-application-flow-error"></div>
+      <!-- prettier-ignore -->
+      {{ if .StatusReady -}}
+      {{ template "views/partials/character/application/submit-notice" . }}
+      {{ end -}}
 
-    {{ template "views/partials/character/application/divider" }}
+      <!-- prettier-ignore -->
+      {{ template "views/partials/character/application/gender/header/player" }}
 
-    <form
-      class="space-y-4 px-4 pt-4"
-      @submit.prevent=""
-      hx-patch="{{ .CharacterApplicationGenderPath }}"
-      hx-swap="none"
-    >
-      <div class="space-y-4">
-        <div
-          @click="gender = '{{ .GenderNonBinary }}'"
-          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
-          :class="{
+      {{ template "views/partials/character/application/divider" }}
+
+      <form
+        class="space-y-4 px-4 pt-4"
+        @submit.prevent=""
+        hx-patch="{{ .CharacterApplicationGenderPath }}"
+        hx-swap="none"
+      >
+        <div class="space-y-4">
+          <div
+            @click="gender = '{{ .GenderNonBinary }}'"
+            class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+            :class="{
             'cursor-pointer': gender !== '{{ .GenderNonBinary }}',
             'border-black': gender == '{{ .GenderNonBinary }}',
           }"
-        >
-          {{ if .GenderIsNonBinary }}
-          <input
-            x-model="gender"
-            id="character-application-flow-gender-nonbinary"
-            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            type="radio"
-            name="gender"
-            value="{{ .GenderNonBinary }}"
-            checked
-            autofocus
-          />
-          {{ else -}}
-          <input
-            x-model="gender"
-            id="character-application-flow-gender-nonbinary"
-            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            type="radio"
-            name="gender"
-            value="{{ .GenderNonBinary }}"
-          />
-          {{ end -}}
-          <label
-            class="cursor-pointer text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            for="character-application-flow-gender-nonbinary"
           >
-            Non-binary
-            <span class="text-xs font-medium text-muted-foreground"
-              >(They/Them)</span
+            {{ if .GenderIsNonBinary }}
+            <input
+              x-model="gender"
+              id="character-application-flow-gender-nonbinary"
+              class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              type="radio"
+              name="gender"
+              value="{{ .GenderNonBinary }}"
+              checked
+              autofocus
+            />
+            {{ else -}}
+            <input
+              x-model="gender"
+              id="character-application-flow-gender-nonbinary"
+              class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              type="radio"
+              name="gender"
+              value="{{ .GenderNonBinary }}"
+            />
+            {{ end -}}
+            <label
+              class="cursor-pointer text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              for="character-application-flow-gender-nonbinary"
             >
-          </label>
-        </div>
-        <div
-          @click="gender = '{{ .GenderFemale }}'"
-          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
-          :class="{
+              Non-binary
+              <span class="text-xs font-medium text-muted-foreground"
+                >(They/Them)</span
+              >
+            </label>
+          </div>
+          <div
+            @click="gender = '{{ .GenderFemale }}'"
+            class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+            :class="{
             'cursor-pointer': gender !== '{{ .GenderFemale }}',
             'border-black': gender == '{{ .GenderFemale }}',
           }"
-        >
-          {{ if .GenderIsFemale }}
-          <input
-            x-model="gender"
-            id="character-application-flow-gender-female"
-            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            type="radio"
-            name="gender"
-            value="{{ .GenderFemale }}"
-            checked
-            autofocus
-          />
-          {{ else -}}
-          <input
-            x-model="gender"
-            id="character-application-flow-gender-female"
-            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            type="radio"
-            name="gender"
-            value="{{ .GenderFemale }}"
-          />
-          {{ end -}}
-          <label
-            class="cursor-pointer text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            for="character-application-flow-gender-female"
           >
-            Female
-            <span class="text-xs font-medium text-muted-foreground"
-              >(She/Her)</span
+            {{ if .GenderIsFemale }}
+            <input
+              x-model="gender"
+              id="character-application-flow-gender-female"
+              class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              type="radio"
+              name="gender"
+              value="{{ .GenderFemale }}"
+              checked
+              autofocus
+            />
+            {{ else -}}
+            <input
+              x-model="gender"
+              id="character-application-flow-gender-female"
+              class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              type="radio"
+              name="gender"
+              value="{{ .GenderFemale }}"
+            />
+            {{ end -}}
+            <label
+              class="cursor-pointer text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              for="character-application-flow-gender-female"
             >
-          </label>
-        </div>
-        <div
-          @click="gender = '{{ .GenderMale }}'"
-          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
-          :class="{
+              Female
+              <span class="text-xs font-medium text-muted-foreground"
+                >(She/Her)</span
+              >
+            </label>
+          </div>
+          <div
+            @click="gender = '{{ .GenderMale }}'"
+            class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+            :class="{
             'cursor-pointer': gender !== '{{ .GenderMale }}',
             'border-black': gender == '{{ .GenderMale }}',
           }"
-        >
-          {{ if .GenderIsMale }}
-          <input
-            x-model="gender"
-            id="character-application-flow-gender-male"
-            type="radio"
-            name="gender"
-            value="{{ .GenderMale }}"
-            checked
-            autofocus
-          />
-          {{ else -}}
-          <input
-            x-model="gender"
-            id="character-application-flow-gender-male"
-            type="radio"
-            name="gender"
-            value="{{ .GenderMale }}"
-          />
-          {{ end -}}
-          <label
-            class="cursor-pointer text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            for="character-application-flow-gender-male"
           >
-            Male
-            <span class="text-xs font-medium text-muted-foreground"
-              >(He/Him)</span
+            {{ if .GenderIsMale }}
+            <input
+              x-model="gender"
+              id="character-application-flow-gender-male"
+              type="radio"
+              name="gender"
+              value="{{ .GenderMale }}"
+              checked
+              autofocus
+            />
+            {{ else -}}
+            <input
+              x-model="gender"
+              id="character-application-flow-gender-male"
+              type="radio"
+              name="gender"
+              value="{{ .GenderMale }}"
+            />
+            {{ end -}}
+            <label
+              class="cursor-pointer text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              for="character-application-flow-gender-male"
             >
-          </label>
+              Male
+              <span class="text-xs font-medium text-muted-foreground"
+                >(He/Him)</span
+              >
+            </label>
+          </div>
         </div>
-      </div>
-      <div class="flex justify-end gap-2">
-        {{ if .BackLink }}
-        <a
-          href="{{ .BackLink }}"
-          class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-          type=""
-        >
-          Back
-        </a>
-        {{ end -}}
-        <button
-          class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-          type="submit"
-        >
-          Next
-        </button>
-      </div>
-    </form>
+        <div class="flex justify-end gap-2">
+          {{ if .BackLink }}
+          <a
+            href="{{ .BackLink }}"
+            class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            type=""
+          >
+            Back
+          </a>
+          {{ end -}}
+          <button
+            class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            type="submit"
+          >
+            Next
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
   <!-- prettier-ignore -->
   {{ template "views/partials/character/application/submit-dialog" .SubmitCharacterApplicationPath }}
