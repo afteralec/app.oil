@@ -45,7 +45,7 @@ func (q *Queries) CreateHistoryForRequestStatus(ctx context.Context, arg CreateH
 }
 
 const createRequest = `-- name: CreateRequest :execresult
-INSERT INTO requests (type, pid, rpid) VALUES (?, ?, pid)
+INSERT INTO requests (type, pid) VALUES (?, ?)
 `
 
 type CreateRequestParams struct {
@@ -134,11 +134,16 @@ func (q *Queries) MarkRequestCanceled(ctx context.Context, id int64) error {
 }
 
 const markRequestInReview = `-- name: MarkRequestInReview :exec
-UPDATE requests SET status = "InReview" WHERE id = ?
+UPDATE requests SET status = "InReview", rpid = ? WHERE id = ?
 `
 
-func (q *Queries) MarkRequestInReview(ctx context.Context, id int64) error {
-	_, err := q.exec(ctx, q.markRequestInReviewStmt, markRequestInReview, id)
+type MarkRequestInReviewParams struct {
+	RPID int64
+	ID   int64
+}
+
+func (q *Queries) MarkRequestInReview(ctx context.Context, arg MarkRequestInReviewParams) error {
+	_, err := q.exec(ctx, q.markRequestInReviewStmt, markRequestInReview, arg.RPID, arg.ID)
 	return err
 }
 

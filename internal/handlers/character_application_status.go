@@ -111,12 +111,14 @@ func SubmitCharacterApplication(i *shared.Interfaces) fiber.Handler {
 
 func PutCharacterApplicationInReview(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		// TODO: Write a utility to extract this as an int64 along with a nil and other errors
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
 			return nil
 		}
 
+		// TODO: Write a utility to extract this as an int64 along with a nil and other errors
 		lperms := c.Locals("perms")
 		if lperms == nil {
 			c.Status(fiber.StatusForbidden)
@@ -186,7 +188,10 @@ func PutCharacterApplicationInReview(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-		if err = qtx.MarkRequestInReview(context.Background(), rid); err != nil {
+		if err = qtx.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+			ID:   rid,
+			RPID: pid.(int64),
+		}); err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				return nil
