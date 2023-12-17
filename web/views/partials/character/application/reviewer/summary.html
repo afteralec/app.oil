@@ -3,16 +3,16 @@
   x-data="{ {{ .ReviewDialog.Variable }}: false }"
 >
   <div class="flex flex-col items-center justify-center px-6">
-    {{ template
-    "views/partials/character/application/reviewer/summary/status/icon" . }}
+    <!-- prettier-ignore -->
+    {{ template "views/partials/character/application/reviewer/summary/status/icon" . }}
   </div>
   <div>
     <h2 class="text-base font-semibold leading-none tracking-tight">
       {{ .Name }}
     </h2>
 
-    {{ template
-    "views/partials/character/application/reviewer/summary/status/text" . }}
+    <!-- prettier-ignore -->
+    {{ template "views/partials/character/application/reviewer/summary/status/text" . }}
   </div>
   <div>
     <p class="text-sm leading-none text-muted-foreground">
