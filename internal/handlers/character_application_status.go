@@ -14,6 +14,8 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+// TODO: See how many of these can be moved to Request generalized endpoints
+
 func SubmitCharacterApplication(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")

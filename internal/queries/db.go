@@ -78,6 +78,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.deletePlayerPermissionStmt, err = db.PrepareContext(ctx, deletePlayerPermission); err != nil {
 		return nil, fmt.Errorf("error preparing query DeletePlayerPermission: %w", err)
 	}
+	if q.getCharacterApplicationStmt, err = db.PrepareContext(ctx, getCharacterApplication); err != nil {
+		return nil, fmt.Errorf("error preparing query GetCharacterApplication: %w", err)
+	}
 	if q.getCharacterApplicationContentStmt, err = db.PrepareContext(ctx, getCharacterApplicationContent); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCharacterApplicationContent: %w", err)
 	}
@@ -267,6 +270,11 @@ func (q *Queries) Close() error {
 	if q.deletePlayerPermissionStmt != nil {
 		if cerr := q.deletePlayerPermissionStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deletePlayerPermissionStmt: %w", cerr)
+		}
+	}
+	if q.getCharacterApplicationStmt != nil {
+		if cerr := q.getCharacterApplicationStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getCharacterApplicationStmt: %w", cerr)
 		}
 	}
 	if q.getCharacterApplicationContentStmt != nil {
@@ -486,6 +494,7 @@ type Queries struct {
 	createRequestStmt                                     *sql.Stmt
 	deleteEmailStmt                                       *sql.Stmt
 	deletePlayerPermissionStmt                            *sql.Stmt
+	getCharacterApplicationStmt                           *sql.Stmt
 	getCharacterApplicationContentStmt                    *sql.Stmt
 	getCharacterApplicationContentForRequestStmt          *sql.Stmt
 	getEmailStmt                                          *sql.Stmt
@@ -542,6 +551,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createRequestStmt:                                     q.createRequestStmt,
 		deleteEmailStmt:                                       q.deleteEmailStmt,
 		deletePlayerPermissionStmt:                            q.deletePlayerPermissionStmt,
+		getCharacterApplicationStmt:                           q.getCharacterApplicationStmt,
 		getCharacterApplicationContentStmt:                    q.getCharacterApplicationContentStmt,
 		getCharacterApplicationContentForRequestStmt:          q.getCharacterApplicationContentForRequestStmt,
 		getEmailStmt:                                          q.getEmailStmt,

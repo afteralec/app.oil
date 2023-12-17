@@ -8,6 +8,18 @@ VALUES
 -- name: GetCharacterApplicationContent :one
 SELECT * FROM character_application_content WHERE id = ?;
 
+-- name: GetCharacterApplication :one
+SELECT
+  sqlc.embed(character_application_content), sqlc.embed(requests)
+FROM
+  requests
+JOIN
+  character_application_content
+ON
+  character_application_content.rid = requests.id
+WHERE
+  requests.id = ?;
+
 -- name: GetCharacterApplicationContentForRequest :one
 SELECT * FROM character_application_content WHERE rid = ?;
 

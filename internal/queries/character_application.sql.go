@@ -65,6 +65,50 @@ func (q *Queries) CreateHistoryForCharacterApplication(ctx context.Context, rid 
 	return err
 }
 
+const getCharacterApplication = `-- name: GetCharacterApplication :one
+SELECT
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id, requests.vid, requests.new
+FROM
+  requests
+JOIN
+  character_application_content
+ON
+  character_application_content.rid = requests.id
+WHERE
+  requests.id = ?
+`
+
+type GetCharacterApplicationRow struct {
+	CharacterApplicationContent CharacterApplicationContent
+	Request                     Request
+}
+
+func (q *Queries) GetCharacterApplication(ctx context.Context, id int64) (GetCharacterApplicationRow, error) {
+	row := q.queryRow(ctx, q.getCharacterApplicationStmt, getCharacterApplication, id)
+	var i GetCharacterApplicationRow
+	err := row.Scan(
+		&i.CharacterApplicationContent.CreatedAt,
+		&i.CharacterApplicationContent.UpdatedAt,
+		&i.CharacterApplicationContent.Backstory,
+		&i.CharacterApplicationContent.Description,
+		&i.CharacterApplicationContent.ShortDescription,
+		&i.CharacterApplicationContent.Name,
+		&i.CharacterApplicationContent.Gender,
+		&i.CharacterApplicationContent.RID,
+		&i.CharacterApplicationContent.ID,
+		&i.Request.CreatedAt,
+		&i.Request.UpdatedAt,
+		&i.Request.Type,
+		&i.Request.Status,
+		&i.Request.RPID,
+		&i.Request.PID,
+		&i.Request.ID,
+		&i.Request.VID,
+		&i.Request.New,
+	)
+	return i, err
+}
+
 const getCharacterApplicationContent = `-- name: GetCharacterApplicationContent :one
 SELECT created_at, updated_at, backstory, description, short_description, name, gender, rid, id FROM character_application_content WHERE id = ?
 `
