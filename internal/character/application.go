@@ -48,7 +48,7 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 	return ApplicationSummary{
 		Reviewed: reviewed,
 		ReviewDialog: ReviewDialogData{
-			Path:     "/put/character/application/in/review/test/path",
+			Path:     routes.PutCharacterApplicationInReviewPath(strconv.FormatInt(req.ID, 10)),
 			Variable: fmt.Sprintf("showReviewDialogFor%s%s", app.Name, p.Username),
 		},
 		Status:           req.Status,

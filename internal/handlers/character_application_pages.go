@@ -17,7 +17,6 @@ import (
 func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
-
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
@@ -43,6 +42,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
+		// TODO: Combine these into a single query?
 		app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -116,6 +116,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["CharacterApplicationParts"] = parts
 		b["NextLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
+		// TODO: Make this a ViewedByPlayer vs ViewedByReviewer toggle?
 		b["ShowCancelAction"] = true
 		if request.IsEditable(&req) {
 			return c.Render("views/character/application/name/edit", b)
@@ -636,7 +637,7 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 
-			parts := character.MakeApplicationParts("name", &app)
+			parts := character.MakeApplicationParts("summary", &app)
 			b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 			b["Name"] = app.Name
 			b["CharacterApplicationParts"] = parts
@@ -644,7 +645,7 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("views/character/application/summary/view", b)
 		}
 
-		parts := character.MakeApplicationParts("review", &app)
+		parts := character.MakeApplicationParts("summary", &app)
 		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &req)
 		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
 		b["Name"] = app.Name
