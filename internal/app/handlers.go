@@ -14,12 +14,12 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Get(routes.Characters, handlers.CharactersPage(i))
 
 	app.Post(routes.NewCharacterApplicationPath(), handlers.NewCharacterApplication(i))
+	app.Get(routes.CharacterApplicationPath(routes.ID), handlers.CharacterApplicationPage(i))
 	app.Get(routes.CharacterApplicationNamePath(routes.ID), handlers.CharacterApplicationNamePage(i))
 	app.Get(routes.CharacterApplicationGenderPath(routes.ID), handlers.CharacterApplicationGenderPage(i))
 	app.Get(routes.CharacterApplicationShortDescriptionPath(routes.ID), handlers.CharacterApplicationShortDescriptionPage(i))
 	app.Get(routes.CharacterApplicationDescriptionPath(routes.ID), handlers.CharacterApplicationDescriptionPage(i))
 	app.Get(routes.CharacterApplicationBackstoryPath(routes.ID), handlers.CharacterApplicationBackstoryPage(i))
-	app.Get(routes.CharacterApplicationSummaryPath(routes.ID), handlers.CharacterApplicationSummaryPage(i))
 
 	app.Patch(routes.CharacterApplicationNamePath(routes.ID), handlers.UpdateCharacterApplicationName(i))
 	app.Patch(routes.CharacterApplicationGenderPath(routes.ID), handlers.UpdateCharacterApplicationGender(i))
@@ -30,9 +30,6 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Post(routes.SubmitCharacterApplicationPath(routes.ID), handlers.SubmitCharacterApplication(i))
 	app.Post(routes.PutCharacterApplicationInReviewPath(routes.ID), handlers.PutCharacterApplicationInReview(i))
 	app.Delete(routes.CharacterApplicationPath(routes.ID), handlers.CancelCharacterApplication(i))
-
-	app.Get(routes.CharacterApplicationSubmittedSuccessPath(routes.ID), handlers.CharacterApplicationSubmittedSuccessPage(i))
-	app.Get(routes.CharacterApplicationSubmittedPath(routes.ID), handlers.CharacterApplicationSubmittedPage(i))
 
 	app.Get(routes.ReviewCharacterApplicationsPath(), handlers.ReviewCharacterApplicationsPage(i))
 

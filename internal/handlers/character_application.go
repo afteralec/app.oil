@@ -649,7 +649,7 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		c.Append("HX-Redirect", routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10)))
+		c.Append("HX-Redirect", routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
 		c.Status(fiber.StatusOK)
 		return nil
 	}

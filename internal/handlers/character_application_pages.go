@@ -439,7 +439,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
 		b["CharacterApplicationParts"] = character.MakeApplicationParts("backstory", &row.CharacterApplicationContent)
 		b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
-		b["NextLink"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
+		b["NextLink"] = routes.CharacterApplicationPath(strconv.FormatInt(rid, 10))
 
 		if !request.IsEditable(&row.Request) {
 			return c.Render("views/character/application/backstory/view", b)
@@ -453,7 +453,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
+func CharacterApplicationPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -528,13 +528,13 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 		b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
 
 		if !request.IsEditable(&row.Request) {
-			return c.Render("views/character/application/backstory/view", b)
+			return c.Render("views/character/application/view", b)
 		}
 
 		if row.Request.PID != pid {
-			return c.Render("views/character/application/backstory/view", b)
+			return c.Render("views/character/application/view", b)
 		}
 
-		return c.Render("views/character/application/backstory/edit", b)
+		return c.Render("views/character/application/edit", b)
 	}
 }

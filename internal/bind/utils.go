@@ -35,7 +35,6 @@ func CharacterApplicationPaths(b fiber.Map, req *queries.Request) fiber.Map {
 	b["CharacterApplicationShortDescriptionPath"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(req.ID, 10))
 	b["CharacterApplicationDescriptionPath"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(req.ID, 10))
 	b["CharacterApplicationBackstoryPath"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(req.ID, 10))
-	b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(req.ID, 10))
 	b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(req.ID, 10))
 	return b
 }

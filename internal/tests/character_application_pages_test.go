@@ -15,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func TestCharacterNamePageUnauthorized(t *testing.T) {
+func TestCharacterApplicationNamePageUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -36,7 +36,7 @@ func TestCharacterNamePageUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestCharacterNamePageUnowned(t *testing.T) {
+func TestCharacterApplicationNamePageUnowned(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -62,7 +62,7 @@ func TestCharacterNamePageUnowned(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestCharacterNamePageSuccess(t *testing.T) {
+func TestCharacterApplicationNamePageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -82,7 +82,7 @@ func TestCharacterNamePageSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestCharacterNamePageNotFound(t *testing.T) {
+func TestCharacterApplicationNamePageNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -102,7 +102,7 @@ func TestCharacterNamePageNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
-func TestCharacterNamePageFatal(t *testing.T) {
+func TestCharacterApplicationNamePageFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 
 	a := fiber.New(configs.Fiber())
@@ -122,7 +122,7 @@ func TestCharacterNamePageFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
-func TestCharacterGenderPageUnauthorized(t *testing.T) {
+func TestCharacterApplicationGenderPageUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -143,7 +143,7 @@ func TestCharacterGenderPageUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestCharacterGenderPageUnowned(t *testing.T) {
+func TestCharacterApplicationGenderPageUnowned(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -168,7 +168,7 @@ func TestCharacterGenderPageUnowned(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestCharacterGenderPageSuccess(t *testing.T) {
+func TestCharacterApplicationGenderPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -188,7 +188,7 @@ func TestCharacterGenderPageSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestCharacterGenderPageNotFound(t *testing.T) {
+func TestCharacterApplicationGenderPageNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -208,7 +208,7 @@ func TestCharacterGenderPageNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
-func TestCharacterGenderPageFatal(t *testing.T) {
+func TestCharacterApplicationGenderPageFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 
 	a := fiber.New(configs.Fiber())
@@ -228,7 +228,7 @@ func TestCharacterGenderPageFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
-func TestCharacterSdescPageUnauthorized(t *testing.T) {
+func TestCharacterApplicationSdescPageUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -249,7 +249,7 @@ func TestCharacterSdescPageUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestCharacterShortDescriptionPageUnowned(t *testing.T) {
+func TestCharacterApplicationShortDescriptionPageUnowned(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -275,7 +275,7 @@ func TestCharacterShortDescriptionPageUnowned(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestCharacterShortDescriptionPageSuccess(t *testing.T) {
+func TestCharacterApplicationShortDescriptionPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -295,7 +295,7 @@ func TestCharacterShortDescriptionPageSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestCharacterSdescPageNotFound(t *testing.T) {
+func TestCharacterApplicationSdescPageNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -315,7 +315,7 @@ func TestCharacterSdescPageNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
-func TestCharacterShortDescriptionPageFatal(t *testing.T) {
+func TestCharacterApplicationShortDescriptionPageFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 
 	a := fiber.New(configs.Fiber())
@@ -335,7 +335,7 @@ func TestCharacterShortDescriptionPageFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
-func TestCharacterDescriptionPageUnauthorized(t *testing.T) {
+func TestCharacterApplicationDescriptionPageUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -356,7 +356,7 @@ func TestCharacterDescriptionPageUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestCharacterDescriptionPageUnowned(t *testing.T) {
+func TestCharacterApplicationDescriptionPageUnowned(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -382,7 +382,7 @@ func TestCharacterDescriptionPageUnowned(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestCharacterDescriptionPageSuccess(t *testing.T) {
+func TestCharacterApplicationDescriptionPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -402,7 +402,7 @@ func TestCharacterDescriptionPageSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestCharacterDescriptionPageNotFound(t *testing.T) {
+func TestCharacterApplicationDescriptionPageNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -422,7 +422,7 @@ func TestCharacterDescriptionPageNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
-func TestCharacterDescriptionPageFatal(t *testing.T) {
+func TestCharacterApplicationDescriptionPageFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 
 	a := fiber.New(configs.Fiber())
@@ -442,7 +442,7 @@ func TestCharacterDescriptionPageFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
-func TestCharacterBackstoryPageUnauthorized(t *testing.T) {
+func TestCharacterApplicationBackstoryPageUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -463,7 +463,7 @@ func TestCharacterBackstoryPageUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestCharacterBackstoryPageUnowned(t *testing.T) {
+func TestCharacterApplicationBackstoryPageUnowned(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -488,7 +488,7 @@ func TestCharacterBackstoryPageUnowned(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestCharacterBackstoryPageSuccess(t *testing.T) {
+func TestCharacterApplicationBackstoryPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -508,7 +508,7 @@ func TestCharacterBackstoryPageSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestCharacterBackstoryPageNotFound(t *testing.T) {
+func TestCharacterBackstoryApplicationPageNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -528,7 +528,7 @@ func TestCharacterBackstoryPageNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
-func TestCharacterBackstoryPageFatal(t *testing.T) {
+func TestCharacterApplicationBackstoryPageFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 
 	a := fiber.New(configs.Fiber())
@@ -548,7 +548,7 @@ func TestCharacterBackstoryPageFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
-func TestCharacterSummaryPageUnauthorized(t *testing.T) {
+func TestCharacterApplicationPageUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -559,7 +559,7 @@ func TestCharacterSummaryPageUnauthorized(t *testing.T) {
 	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	url := MakeTestURL(routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10)))
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -569,7 +569,7 @@ func TestCharacterSummaryPageUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestCharacterSummaryPageUnowned(t *testing.T) {
+func TestCharacterApplicationPageUnowned(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -583,7 +583,7 @@ func TestCharacterSummaryPageUnowned(t *testing.T) {
 	CallRegister(t, a, TestUsernameTwo, TestPassword)
 	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
 	sessionCookie := res.Cookies()[0]
-	url := MakeTestURL(routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10)))
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -594,7 +594,7 @@ func TestCharacterSummaryPageUnowned(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestCharacterSummaryPageSuccess(t *testing.T) {
+func TestCharacterApplicationPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -603,7 +603,7 @@ func TestCharacterSummaryPageSuccess(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	url := MakeTestURL(routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10)))
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -614,7 +614,7 @@ func TestCharacterSummaryPageSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestCharacterSummaryPageNotFound(t *testing.T) {
+func TestCharacterApplicationPageNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -623,7 +623,7 @@ func TestCharacterSummaryPageNotFound(t *testing.T) {
 	app.Handlers(a, &i)
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	url := MakeTestURL(routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid+1, 10)))
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid+1, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -634,7 +634,7 @@ func TestCharacterSummaryPageNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
-func TestCharacterSummaryPageFatal(t *testing.T) {
+func TestCharacterApplicationPageFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 
 	a := fiber.New(configs.Fiber())
@@ -643,7 +643,7 @@ func TestCharacterSummaryPageFatal(t *testing.T) {
 
 	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	i.Close()
-	url := MakeTestURL(routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10)))
+	url := MakeTestURL(routes.CharacterApplicationPath(strconv.FormatInt(rid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)

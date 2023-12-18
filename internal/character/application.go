@@ -71,7 +71,7 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 
 func GetApplicationLink(pid int64, req *queries.Request, app *queries.CharacterApplicationContent) string {
 	if pid != req.PID {
-		return routes.CharacterApplicationSummaryPath(strconv.FormatInt(req.ID, 10))
+		return routes.CharacterApplicationPath(strconv.FormatInt(req.ID, 10))
 	}
 
 	if !IsNameValid(app.Name) {
@@ -90,5 +90,5 @@ func GetApplicationLink(pid int64, req *queries.Request, app *queries.CharacterA
 		return routes.CharacterApplicationBackstoryPath(strconv.FormatInt(req.ID, 10))
 	}
 
-	return routes.CharacterApplicationSummaryPath(strconv.FormatInt(req.ID, 10))
+	return routes.CharacterApplicationPath(strconv.FormatInt(req.ID, 10))
 }

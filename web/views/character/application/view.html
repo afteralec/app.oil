@@ -1,0 +1,97 @@
+<main
+  class="flex h-screen w-screen flex-col items-center"
+  x-data="getCharacterApplicationSummaryData()"
+>
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/header" . }}
+
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/part/list" .CharacterApplicationParts }}
+  <div class="w-full max-w-lg rounded-md border p-6">
+    {{ if .StatusIncomplete -}}
+    <p class="text-base leading-none tracking-tight">
+      Looks like you still have some things to finish before submitting. Check
+      the tabs above for the incomplete sections, then come back here once
+      you're ready to submit the application.
+    </p>
+    {{ end -}}
+
+    <!-- prettier-ignore -->
+    {{ if .StatusReady -}}
+    <p class="text-base leading-none tracking-tight">
+      Looks like everything's ready! Feel free to make any adjustments to the
+      above sections, or, if you're ready to submit this application, click
+      Submit below.
+    </p>
+    {{ end -}}
+
+    <!-- prettier-ignore -->
+    {{ if .StatusSubmitted -}}
+    <p class="text-base leading-none tracking-tight">
+      This application's been submitted successfully and is waiting to be picked
+      up for review.
+    </p>
+    {{ end -}}
+
+    <!-- prettier-ignore -->
+    {{ if .StatusInReview -}}
+    <p class="text-base leading-none tracking-tight">
+      This application is currently in review.
+    </p>
+    {{ end -}}
+
+    <!-- prettier-ignore -->
+    {{ if .StatusApproved -}}
+    <p class="text-base leading-none tracking-tight">
+      This application is approved! You can now create this character. If you'd
+      like, you can make changes, but that will put the application back through
+      the review process.
+    </p>
+    {{ end -}}
+
+    <!-- prettier-ignore -->
+    {{ if .StatusReviewed -}}
+    <p class="text-base leading-none tracking-tight">
+      This application has been reviewed.
+    </p>
+    {{ end -}}
+
+    <!-- prettier-ignore -->
+    {{ if .StatusRejected -}}
+    <p class="text-base leading-none tracking-tight">
+      This application has been rejected.
+    </p>
+    {{ end -}}
+
+    <!-- prettier-ignore -->
+    {{ if .StatusCanceled -}}
+    <!-- TODO: Mark when this application was canceled -->
+    <p class="text-base leading-none tracking-tight">
+      You've canceled this application; it can no longer be edited and will be
+      automatically deleted.
+    </p>
+    {{ end -}}
+
+    <!-- prettier-ignore -->
+    {{ if .StatusArchived -}}
+    <!-- TODO: Mark when this application was canceled -->
+    <p class="text-base leading-none tracking-tight">
+      This application's been archived. It can no longer be edited.
+    </p>
+    {{ end -}}
+
+    <div class="flex justify-end gap-2 pt-4">
+      {{ if .BackLink }}
+      <a
+        href="{{ .BackLink }}"
+        class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      >
+        Back
+      </a>
+      {{ end -}}
+    </div>
+    <!-- prettier-ignore -->
+    {{ template "views/partials/character/application/dialogs/submit" .SubmitCharacterApplicationPath }}
+    {{ template "views/partials/character/application/dialogs/cancel" .CharacterApplicationPath }}
+  </div>
+</main>
