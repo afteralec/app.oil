@@ -15,6 +15,7 @@ type ReviewDialogData struct {
 }
 
 type ApplicationSummary struct {
+	StatusIcon       request.StatusIcon
 	ReviewDialog     ReviewDialogData
 	Status           string
 	Link             string
@@ -66,6 +67,7 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 		Name:             name,
 		Author:           p.Username,
 		Reviewer:         reviewer,
+		StatusIcon:       request.MakeStatusIcon(req.Status, 48),
 	}
 }
 
