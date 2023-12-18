@@ -5,8 +5,25 @@
   </h2>
   <div class="flex h-full items-center justify-center gap-2">
     <!-- prettier-ignore -->
-    {{ template "views/partials/character/application/header/status" . }}
-
+    {{ if .StatusIncomplete }}
+      {{ template "views/partials/request/status/icon/incomplete" .HeaderStatusIcon }}
+    {{ else if .StatusReady }}
+      {{ template "views/partials/request/status/icon/ready" .HeaderStatusIcon }}
+    {{ else if .StatusSubmitted }}
+      {{ template "views/partials/request/status/icon/submitted" .HeaderStatusIcon }}
+    {{ else if .StatusInReview }}
+      {{ template "views/partials/request/status/icon/in-review" .HeaderStatusIcon }}
+    {{ else if .StatusApproved }}
+      {{ template "views/partials/request/status/icon/approved" .HeaderStatusIcon }}
+    {{ else if .StatusReviewed }}
+      {{ template "views/partials/request/status/icon/reviewed" .HeaderStatusIcon }}
+    {{ else if .StatusRejected }}
+      {{ template "views/partials/request/status/icon/rejected" .HeaderStatusIcon }}
+    {{ else if .StatusArchived }}
+      {{ template "views/partials/request/status/icon/archived" .HeaderStatusIcon }}
+    {{ else if .StatusCanceled }}
+      {{ template "views/partials/request/status/icon/canceled" .HeaderStatusIcon }}
+    {{ end -}}
     <div
       @click.prevent="partsOpen = !partsOpen;"
       :class="{ 'open': partsOpen }"

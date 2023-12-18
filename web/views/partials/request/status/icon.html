@@ -1,0 +1,20 @@
+<!-- prettier-ignore -->
+{{ if .StatusIncomplete }}
+  {{ template "views/partials/request/status/icon/incomplete" . }}
+{{ else if .StatusReady }}
+  {{ template "views/partials/request/status/icon/ready" . }}
+{{ else if .StatusSubmitted }}
+  {{ template "views/partials/request/status/icon/submitted" . }}
+{{ else if .StatusInReview }}
+  {{ template "views/partials/request/status/icon/in-review" . }}
+{{ else if .StatusApproved }}
+  {{ template "views/partials/request/status/icon/approved" . }}
+{{ else if .StatusReviewed }}
+  {{ template "views/partials/request/status/icon/reviewed" . }}
+{{ else if .StatusRejected }}
+  {{ template "views/partials/request/status/icon/rejected" . }}
+{{ else if .StatusArchived }}
+  {{ template "views/partials/request/status/icon/archived" . }}
+{{ else if .StatusCanceled }}
+  {{ template "views/partials/request/status/icon/canceled" . }}
+{{ end -}}

@@ -44,6 +44,11 @@ func CharacterApplicationNav(b fiber.Map, app *queries.CharacterApplicationConte
 	return b
 }
 
+func CharacterApplicationHeaderStatusIcon(b fiber.Map, req *queries.Request) fiber.Map {
+	b["HeaderStatusIcon"] = request.MakeStatusIcon(req.Status, 36)
+	return b
+}
+
 func CharacterApplicationGender(b fiber.Map, app *queries.CharacterApplicationContent) fiber.Map {
 	b["GenderNonBinary"] = character.GenderNonBinary
 	b["GenderFemale"] = character.GenderFemale

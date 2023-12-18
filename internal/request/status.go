@@ -1,7 +1,7 @@
 package request
 
 import (
-	fiber "github.com/gofiber/fiber/v2"
+	"strconv"
 
 	"petrichormud.com/app/internal/queries"
 )
@@ -17,6 +17,68 @@ const (
 	StatusArchived   = "Archived"
 	StatusCanceled   = "Canceled"
 )
+
+var StatusByName map[string]string = map[string]string{
+	StatusIncomplete: "Incomplete",
+	StatusReady:      "Ready",
+	StatusSubmitted:  "Submitted",
+	StatusInReview:   "In Review",
+	StatusApproved:   "Approved",
+	StatusReviewed:   "Reviewed",
+	StatusRejected:   "Rejected",
+	StatusArchived:   "Archived",
+	StatusCanceled:   "Canceled",
+}
+
+func StatusIsValid(str string) bool {
+	_, ok := StatusByName[str]
+	return ok
+}
+
+var StatusIcons map[string]string = map[string]string{
+	StatusIncomplete: "ph:dots-three-outline-fill",
+	StatusReady:      "fe:check",
+	StatusSubmitted:  "fe:check-circle-o",
+	StatusInReview:   "fe:question",
+	StatusApproved:   "fe:check-circle",
+	StatusReviewed:   "fe:warning",
+	StatusRejected:   "fe:warning",
+	StatusArchived:   "ic:round-lock",
+	StatusCanceled:   "fe:outline-close",
+}
+
+var StatusColors map[string]string = map[string]string{
+	StatusIncomplete: "text-gray-700",
+	StatusReady:      "text-primary",
+	StatusSubmitted:  "text-sky-700",
+	StatusInReview:   "text-amber-700",
+	StatusApproved:   "text-emerald-700",
+	StatusReviewed:   "text-amber-700",
+	StatusRejected:   "text-rose-700",
+	StatusArchived:   "text-gray-700",
+	StatusCanceled:   "text-gray-700",
+}
+
+// TODO: This can be shared across multiple packages
+type StatusIcon struct {
+	Size  string
+	Color string
+}
+
+func MakeStatusIcon(status string, size int64) StatusIcon {
+	color, ok := StatusColors[status]
+	if !ok {
+		return StatusIcon{
+			Size:  strconv.FormatInt(size, 10),
+			Color: StatusColors[StatusIncomplete],
+		}
+	}
+
+	return StatusIcon{
+		Size:  strconv.FormatInt(size, 10),
+		Color: color,
+	}
+}
 
 func IsEditable(req *queries.Request) bool {
 	if req.Status == StatusSubmitted {
@@ -48,17 +110,4 @@ func IsEditable(req *queries.Request) bool {
 	}
 
 	return true
-}
-
-func BindStatuses(b fiber.Map, req *queries.Request) fiber.Map {
-	b["StatusIncomplete"] = req.Status == StatusIncomplete
-	b["StatusReady"] = req.Status == StatusReady
-	b["StatusSubmitted"] = req.Status == StatusSubmitted
-	b["StatusInReview"] = req.Status == StatusInReview
-	b["StatusApproved"] = req.Status == StatusApproved
-	b["StatusReviewed"] = req.Status == StatusReviewed
-	b["StatusRejected"] = req.Status == StatusRejected
-	b["StatusArchived"] = req.Status == StatusArchived
-	b["StatusCanceled"] = req.Status == StatusCanceled
-	return b
 }
