@@ -39,8 +39,8 @@ func CharacterApplicationPaths(b fiber.Map, req *queries.Request) fiber.Map {
 	return b
 }
 
-func CharacterApplicationNav(b fiber.Map, app *queries.CharacterApplicationContent) fiber.Map {
-	b["CharacterApplicationNav"] = character.MakeApplicationNav("name", app)
+func CharacterApplicationNav(b fiber.Map, app *queries.CharacterApplicationContent, field string) fiber.Map {
+	b["CharacterApplicationNav"] = character.MakeApplicationNav(field, app)
 	return b
 }
 
