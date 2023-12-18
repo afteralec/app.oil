@@ -4,15 +4,53 @@
 >
   <div class="flex flex-col items-center justify-center px-6">
     <!-- prettier-ignore -->
-    {{ template "views/partials/character/application/reviewer/summary/status/icon" . }}
+    {{ if .StatusIncomplete }}
+      {{ template "views/partials/request/status/icon/incomplete" .StatusIcon }}
+    {{ else if .StatusReady }}
+      {{ template "views/partials/request/status/icon/ready" .StatusIcon }}
+    {{ else if .StatusSubmitted }}
+      {{ template "views/partials/request/status/icon/submitted" .StatusIcon }}
+    {{ else if .StatusInReview }}
+      {{ template "views/partials/request/status/icon/in-review" .StatusIcon }}
+    {{ else if .StatusApproved }}
+      {{ template "views/partials/request/status/icon/approved" .StatusIcon }}
+    {{ else if .StatusReviewed }}
+      {{ template "views/partials/request/status/icon/reviewed" .StatusIcon }}
+    {{ else if .StatusRejected }}
+      {{ template "views/partials/request/status/icon/rejected" .StatusIcon }}
+    {{ else if .StatusArchived }}
+      {{ template "views/partials/request/status/icon/archived" .StatusIcon }}
+    {{ else if .StatusCanceled }}
+      {{ template "views/partials/request/status/icon/canceled" .StatusIcon }}
+    {{ end -}}
   </div>
   <div>
     <h2 class="text-base font-semibold leading-none tracking-tight">
       {{ .Name }}
     </h2>
 
+    <!-- TODO: Update these to use passed-in colors and text -->
+
     <!-- prettier-ignore -->
-    {{ template "views/partials/character/application/reviewer/summary/status/text" . }}
+    {{ if .StatusIncomplete }}
+    <p class="text-sm font-semibold leading-none text-gray-600">Incomplete</p>
+    {{ else if .StatusReady }}
+    <p class="text-sm font-semibold leading-none text-primary">Ready</p>
+    {{ else if .StatusSubmitted }}
+    <p class="text-sm font-semibold leading-none text-sky-700">Submitted</p>
+    {{ else if .StatusInReview }}
+    <p class="text-sm font-semibold leading-none text-amber-700">In Review</p>
+    {{ else if .StatusApproved }}
+    <p class="text-sm font-semibold leading-none text-emerald-700">Approved</p>
+    {{ else if .StatusReviewed }}
+    <p class="text-sm font-semibold leading-none text-amber-700">Reviewed</p>
+    {{ else if .StatusRejected }}
+    <p class="text-sm font-semibold leading-none text-rose-700">Rejected</p>
+    {{ else if .StatusArchived }}
+    <p class="text-sm font-semibold leading-none text-gray-700">Archived</p>
+    {{ else if .StatusCanceled }}
+    <p class="text-sm font-semibold leading-none text-gray-700">Canceled</p>
+    {{ end -}}
   </div>
   <div>
     <p class="text-sm leading-none text-muted-foreground">

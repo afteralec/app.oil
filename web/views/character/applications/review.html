@@ -14,7 +14,7 @@
       <!-- prettier-ignore -->
       {{ if .ThereAreCharacterApplications -}}
         {{ range .CharacterApplicationSummaries -}}
-          {{ template "views/partials/character/application/reviewer/summary" . }}
+          {{ template "views/partials/character/application/summary/reviewer" . }}
         {{ end -}}
       {{ else -}}
       <span class="leading-none text-muted-foreground"
