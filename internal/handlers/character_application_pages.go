@@ -8,7 +8,6 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/bind"
-	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
@@ -91,7 +90,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
 		b = bind.CharacterApplicationPaths(b, &row.Request)
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
-		b["CharacterApplicationParts"] = character.MakeApplicationParts("name", &row.CharacterApplicationContent)
+		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent)
 		b["NextLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 
 		if !request.IsEditable(&row.Request) {
@@ -178,7 +177,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		b = bind.CharacterApplicationPaths(b, &row.Request)
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
 		b = bind.CharacterApplicationGender(b, &row.CharacterApplicationContent)
-		b["CharacterApplicationParts"] = character.MakeApplicationParts("gender", &row.CharacterApplicationContent)
+		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent)
 		b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 
@@ -265,7 +264,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
 		b = bind.CharacterApplicationPaths(b, &row.Request)
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
-		b["CharacterApplicationParts"] = character.MakeApplicationParts("sdesc", &row.CharacterApplicationContent)
+		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent)
 		b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 
@@ -351,7 +350,7 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
 		b = bind.CharacterApplicationPaths(b, &row.Request)
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
-		b["CharacterApplicationParts"] = character.MakeApplicationParts("description", &row.CharacterApplicationContent)
+		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent)
 		b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
 
@@ -437,7 +436,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
 		b = bind.CharacterApplicationPaths(b, &row.Request)
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
-		b["CharacterApplicationParts"] = character.MakeApplicationParts("backstory", &row.CharacterApplicationContent)
+		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent)
 		b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationPath(strconv.FormatInt(rid, 10))
 
@@ -524,7 +523,7 @@ func CharacterApplicationPage(i *shared.Interfaces) fiber.Handler {
 		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
 		b = bind.CharacterApplicationPaths(b, &row.Request)
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
-		b["CharacterApplicationParts"] = character.MakeApplicationParts("summary", &row.CharacterApplicationContent)
+		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent)
 		b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
 
 		if !request.IsEditable(&row.Request) {

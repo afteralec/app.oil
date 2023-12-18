@@ -39,6 +39,11 @@ func CharacterApplicationPaths(b fiber.Map, req *queries.Request) fiber.Map {
 	return b
 }
 
+func CharacterApplicationNav(b fiber.Map, app *queries.CharacterApplicationContent) fiber.Map {
+	b["CharacterApplicationNav"] = character.MakeApplicationNav("name", app)
+	return b
+}
+
 func CharacterApplicationGender(b fiber.Map, app *queries.CharacterApplicationContent) fiber.Map {
 	b["GenderNonBinary"] = character.GenderNonBinary
 	b["GenderFemale"] = character.GenderFemale
