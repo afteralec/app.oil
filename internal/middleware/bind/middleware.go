@@ -5,25 +5,23 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/permission"
-	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 )
 
 func New() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		c.Locals(shared.Bind, fiber.Map{
-			"CSRF":            c.Locals("csrf"),
-			"PID":             c.Locals("pid"),
+		b := fiber.Map{
+			"CSRF": c.Locals("csrf"),
+			"PID":  c.Locals("pid"),
+			// TODO: Starting in 2024, have this be 2023 - current year
 			"CopyrightYear":   time.Now().Year(),
 			"Title":           "Petrichor",
 			"MetaContent":     "Petrichor MUD - a modern take on a classic MUD style of game.",
-			"HomeView":        c.Path() == routes.Home,
-			"ProfileView":     c.Path() == routes.Profile || c.Path() == routes.Me,
-			"CharactersView":  c.Path() == routes.Characters,
-			"PermissionsView": c.Path() == routes.PlayerPermissions,
 			"ShouldShowMenus": determineShouldShowMenus(c),
-		})
+		}
+		b = bind.CurrentView(b, c)
+		c.Locals(bind.Name, b)
 
 		return c.Next()
 	}

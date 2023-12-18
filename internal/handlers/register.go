@@ -7,6 +7,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/shared"
@@ -28,7 +29,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(shared.Bind), "")
+			return c.Render("views/partials/register/err-internal", c.Locals(bind.Name), "")
 		}
 
 		u := username.Sanitize(p.Username)
@@ -38,7 +39,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return c.Render("views/partials/register/err-invalid", c.Locals(shared.Bind), "")
+			return c.Render("views/partials/register/err-invalid", c.Locals(bind.Name), "")
 		}
 
 		if !password.IsValid(p.Password) {
@@ -46,7 +47,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return c.Render("views/partials/register/err-invalid", c.Locals(shared.Bind), "")
+			return c.Render("views/partials/register/err-invalid", c.Locals(bind.Name), "")
 		}
 
 		if p.Password != p.ConfirmPassword {
@@ -54,7 +55,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return c.Render("views/partials/register/err-invalid", c.Locals(shared.Bind), "")
+			return c.Render("views/partials/register/err-invalid", c.Locals(bind.Name), "")
 		}
 
 		pwHash, err := password.Hash(p.Password)
@@ -63,7 +64,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(shared.Bind), "")
+			return c.Render("views/partials/register/err-internal", c.Locals(bind.Name), "")
 		}
 
 		tx, err := i.Database.Begin()
@@ -72,7 +73,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(shared.Bind), "")
+			return c.Render("views/partials/register/err-internal", c.Locals(bind.Name), "")
 		}
 		defer tx.Rollback()
 
@@ -91,20 +92,20 @@ func Register(i *shared.Interfaces) fiber.Handler {
 				c.Append("HX-Reswap", "outerHTML")
 				c.Append(shared.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render("views/partials/register/err-internal", c.Locals(shared.Bind), "")
+				return c.Render("views/partials/register/err-internal", c.Locals(bind.Name), "")
 			}
 			if me.Number == mysqlerr.ER_DUP_ENTRY {
 				c.Append("HX-Retarget", "#register-error")
 				c.Append("HX-Reswap", "outerHTML")
 				c.Append(shared.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusConflict)
-				return c.Render("views/partials/register/err-conflict", c.Locals(shared.Bind), "")
+				return c.Render("views/partials/register/err-conflict", c.Locals(bind.Name), "")
 			}
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(shared.Bind), "")
+			return c.Render("views/partials/register/err-internal", c.Locals(bind.Name), "")
 		}
 
 		pid, err := result.LastInsertId()
@@ -113,7 +114,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(shared.Bind), "")
+			return c.Render("views/partials/register/err-internal", c.Locals(bind.Name), "")
 		}
 
 		err = tx.Commit()
@@ -122,7 +123,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(shared.Bind), "")
+			return c.Render("views/partials/register/err-internal", c.Locals(bind.Name), "")
 		}
 
 		username.Cache(i.Redis, pid, p.Username)
@@ -133,7 +134,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(shared.Bind), "")
+			return c.Render("views/partials/register/err-internal", c.Locals(bind.Name), "")
 		}
 
 		sess.Set("pid", pid)
@@ -142,7 +143,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(shared.Bind), "")
+			return c.Render("views/partials/register/err-internal", c.Locals(bind.Name), "")
 		}
 
 		c.Append("HX-Trigger-After-Swap", "ptrcr:register-success")

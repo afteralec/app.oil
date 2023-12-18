@@ -7,6 +7,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/shared"
 )
@@ -22,7 +23,7 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")

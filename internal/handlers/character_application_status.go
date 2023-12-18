@@ -7,6 +7,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/permission"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/request"
@@ -129,7 +130,7 @@ func PutCharacterApplicationInReview(i *shared.Interfaces) fiber.Handler {
 		perms, ok := lperms.(permission.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 		if !perms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
 			c.Status(fiber.StatusForbidden)
@@ -298,7 +299,7 @@ func CharacterApplicationSubmittedSuccessPage(i *shared.Interfaces) fiber.Handle
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -359,7 +360,7 @@ func CharacterApplicationSubmittedSuccessPage(i *shared.Interfaces) fiber.Handle
 		}
 
 		c.Status(fiber.StatusOK)
-		b := c.Locals(shared.Bind).(fiber.Map)
+		b := c.Locals(bind.Name).(fiber.Map)
 		b["Name"] = app.Name
 		b["CharactersPath"] = routes.Characters
 		return c.Render("views/character/application/submitted/success", b, "views/layouts/standalone")
@@ -372,7 +373,7 @@ func CharacterApplicationSubmittedPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -433,7 +434,7 @@ func CharacterApplicationSubmittedPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusOK)
-		b := c.Locals(shared.Bind).(fiber.Map)
+		b := c.Locals(bind.Name).(fiber.Map)
 		b["Name"] = app.Name
 		b["CharactersPath"] = routes.Characters
 		return c.Render("views/character/application/submitted", b, "views/layouts/standalone")

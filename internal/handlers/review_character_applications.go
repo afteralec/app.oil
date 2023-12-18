@@ -5,6 +5,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/permission"
 	"petrichormud.com/app/internal/shared"
@@ -16,7 +17,7 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		lperms := c.Locals("perms")
@@ -28,7 +29,7 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 		perms, ok := lperms.(permission.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		_, ok = perms.Permissions[permission.PlayerReviewCharacterApplicationsName]
@@ -48,7 +49,7 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 		apps, err := qtx.ListOpenCharacterApplications(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(shared.Bind))
+			return c.Render("views/500", c.Locals(bind.Name))
 		}
 
 		summaries := []character.ApplicationSummary{}
@@ -62,7 +63,7 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 					// TODO: Log this error here, this means we need to reset the reviewer and status on the request
 					// }
 					c.Status(fiber.StatusInternalServerError)
-					return c.Render("views/500", c.Locals(shared.Bind))
+					return c.Render("views/500", c.Locals(bind.Name))
 				}
 				reviewer = p.Username
 			}
@@ -74,7 +75,7 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		b := c.Locals(shared.Bind).(fiber.Map)
+		b := c.Locals(bind.Name).(fiber.Map)
 		b["ThereAreCharacterApplications"] = len(summaries) > 0
 		b["CharacterApplicationSummaries"] = summaries
 		return c.Render("views/character/applications/review", b)

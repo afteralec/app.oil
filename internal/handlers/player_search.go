@@ -6,6 +6,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -17,7 +18,7 @@ func SearchPlayer(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		r := new(input)
@@ -41,7 +42,7 @@ func SearchPlayer(i *shared.Interfaces) fiber.Handler {
 
 		if dest == "player-permissions" {
 			// TODO: Move this to a constant and inject it
-			b := c.Locals(shared.Bind).(fiber.Map)
+			b := c.Locals(bind.Name).(fiber.Map)
 			b["Players"] = players
 
 			c.Status(fiber.StatusOK)

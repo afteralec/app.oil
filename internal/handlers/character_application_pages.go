@@ -7,6 +7,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/permission"
 	"petrichormud.com/app/internal/request"
@@ -19,7 +20,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -72,7 +73,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 			iperms, ok := lperms.(permission.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 			}
 			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
@@ -86,18 +87,12 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		// The review version of this page essentially just allows
 		// the reviewer to comment and finish the review.
 
-		// TODO: Consolidate the common properties into a function
-		parts := character.MakeApplicationParts("name", &row.CharacterApplicationContent)
-		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &row.Request)
-		b["CharacterApplicationPath"] = routes.CharacterApplicationPath(strconv.FormatInt(rid, 10))
-		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
-		b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
-		b["Name"] = row.CharacterApplicationContent.Name
-		b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
-		b["CharacterApplicationParts"] = parts
+		b := bind.RequestStatus(c.Locals(bind.Name).(fiber.Map), &row.Request)
+		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
+		b = bind.CharacterApplicationPaths(b, &row.Request)
+		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
+		b["CharacterApplicationParts"] = character.MakeApplicationParts("name", &row.CharacterApplicationContent)
 		b["NextLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
-		// TODO: Make this a ViewedByPlayer vs ViewedByReviewer toggle?
-		b["ShowCancelAction"] = row.Request.PID == pid
 
 		if !request.IsEditable(&row.Request) {
 			return c.Render("views/character/application/name/view", b)
@@ -117,7 +112,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -170,7 +165,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 			iperms, ok := lperms.(permission.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 			}
 			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
@@ -178,25 +173,14 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 			}
 		}
 
-		parts := character.MakeApplicationParts("gender", &row.CharacterApplicationContent)
-		gender := character.SanitizeGender(row.CharacterApplicationContent.Gender)
-		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &row.Request)
-		b["CharacterApplicationPath"] = routes.CharacterApplicationPath(strconv.FormatInt(rid, 10))
-		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
-		b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
-		b["Name"] = row.CharacterApplicationContent.Name
-		b["GenderNonBinary"] = character.GenderNonBinary
-		b["GenderFemale"] = character.GenderFemale
-		b["GenderMale"] = character.GenderMale
-		b["Gender"] = gender
-		b["GenderIsNonBinary"] = gender == character.GenderNonBinary
-		b["GenderIsFemale"] = gender == character.GenderFemale
-		b["GenderIsMale"] = gender == character.GenderMale
-		b["CharacterApplicationGenderPath"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
-		b["CharacterApplicationParts"] = parts
+		b := bind.RequestStatus(c.Locals(bind.Name).(fiber.Map), &row.Request)
+		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
+		b = bind.CharacterApplicationPaths(b, &row.Request)
+		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
+		b = bind.CharacterApplicationGender(b, &row.CharacterApplicationContent)
+		b["CharacterApplicationParts"] = character.MakeApplicationParts("gender", &row.CharacterApplicationContent)
 		b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
-		b["ShowCancelAction"] = row.Request.PID == pid
 
 		if !request.IsEditable(&row.Request) {
 			return c.Render("views/character/application/gender/view", b)
@@ -216,7 +200,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -269,7 +253,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 			iperms, ok := lperms.(permission.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 			}
 			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
@@ -277,18 +261,13 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 			}
 		}
 
-		parts := character.MakeApplicationParts("sdesc", &row.CharacterApplicationContent)
-		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &row.Request)
-		b["CharacterApplicationPath"] = routes.CharacterApplicationPath(strconv.FormatInt(rid, 10))
-		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
-		b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
-		b["Name"] = row.CharacterApplicationContent.Name
-		b["ShortDescription"] = row.CharacterApplicationContent.ShortDescription
-		b["CharacterApplicationShortDescriptionPath"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
-		b["CharacterApplicationParts"] = parts
+		b := bind.RequestStatus(c.Locals(bind.Name).(fiber.Map), &row.Request)
+		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
+		b = bind.CharacterApplicationPaths(b, &row.Request)
+		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
+		b["CharacterApplicationParts"] = character.MakeApplicationParts("sdesc", &row.CharacterApplicationContent)
 		b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
-		b["ShowCancelAction"] = row.Request.PID == pid
 
 		if !request.IsEditable(&row.Request) {
 			return c.Render("views/character/application/sdesc/view", b)
@@ -307,7 +286,7 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -360,7 +339,7 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			iperms, ok := lperms.(permission.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 			}
 			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
@@ -368,18 +347,13 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			}
 		}
 
-		parts := character.MakeApplicationParts("description", &row.CharacterApplicationContent)
-		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &row.Request)
-		b["CharacterApplicationPath"] = routes.CharacterApplicationPath(strconv.FormatInt(rid, 10))
-		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
-		b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
-		b["Name"] = row.CharacterApplicationContent.Name
-		b["Description"] = row.CharacterApplicationContent.Description
-		b["CharacterApplicationDescriptionPath"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
-		b["CharacterApplicationParts"] = parts
+		b := bind.RequestStatus(c.Locals(bind.Name).(fiber.Map), &row.Request)
+		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
+		b = bind.CharacterApplicationPaths(b, &row.Request)
+		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
+		b["CharacterApplicationParts"] = character.MakeApplicationParts("description", &row.CharacterApplicationContent)
 		b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
-		b["ShowCancelAction"] = row.Request.PID == pid
 
 		if !request.IsEditable(&row.Request) {
 			return c.Render("views/character/application/description/view", b)
@@ -398,7 +372,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -451,7 +425,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 			iperms, ok := lperms.(permission.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 			}
 			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
@@ -459,17 +433,13 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 			}
 		}
 
-		parts := character.MakeApplicationParts("backstory", &row.CharacterApplicationContent)
-		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &row.Request)
-		b["CharacterApplicationPath"] = routes.CharacterApplicationPath(strconv.FormatInt(rid, 10))
-		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
-		b["CharacterApplicationSummaryPath"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
-		b["Name"] = row.CharacterApplicationContent.Name
-		b["Backstory"] = row.CharacterApplicationContent.Backstory
-		b["CharacterApplicationParts"] = parts
+		b := bind.RequestStatus(c.Locals(bind.Name).(fiber.Map), &row.Request)
+		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
+		b = bind.CharacterApplicationPaths(b, &row.Request)
+		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
+		b["CharacterApplicationParts"] = character.MakeApplicationParts("backstory", &row.CharacterApplicationContent)
 		b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationSummaryPath(strconv.FormatInt(rid, 10))
-		b["ShowCancelAction"] = row.Request.PID == pid
 
 		if !request.IsEditable(&row.Request) {
 			return c.Render("views/character/application/backstory/view", b)
@@ -489,7 +459,7 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -542,7 +512,7 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 			iperms, ok := lperms.(permission.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 			}
 			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
@@ -550,13 +520,12 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 			}
 		}
 
-		parts := character.MakeApplicationParts("summary", &row.CharacterApplicationContent)
-		b := request.BindStatuses(c.Locals(shared.Bind).(fiber.Map), &row.Request)
-		b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10))
-		b["Name"] = row.CharacterApplicationContent.Name
-		b["CharacterApplicationParts"] = parts
+		b := bind.RequestStatus(c.Locals(bind.Name).(fiber.Map), &row.Request)
+		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
+		b = bind.CharacterApplicationPaths(b, &row.Request)
+		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
+		b["CharacterApplicationParts"] = character.MakeApplicationParts("summary", &row.CharacterApplicationContent)
 		b["BackLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
-		b["ShowCancelAction"] = row.Request.PID == pid
 
 		if !request.IsEditable(&row.Request) {
 			return c.Render("views/character/application/backstory/view", b)

@@ -8,6 +8,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 	redis "github.com/redis/go-redis/v9"
 
+	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
@@ -19,7 +20,7 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		token := c.Query("t")
@@ -28,11 +29,11 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 		exists, err := i.Redis.Exists(context.Background(), key).Result()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 		if exists != 1 {
 			c.Status(fiber.StatusNotFound)
-			b := c.Locals(shared.Bind).(fiber.Map)
+			b := c.Locals(bind.Name).(fiber.Map)
 			b["NotFoundMessage"] = "Sorry, it looks like this link has expired."
 			b["NotFoundButtonLink"] = routes.Profile
 			b["NotFoundButtonText"] = "Return to Profile"
@@ -43,15 +44,15 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			if err == redis.Nil {
 				c.Status(fiber.StatusNotFound)
-				return c.Render("views/404", c.Locals(shared.Bind), "views/layouts/standalone")
+				return c.Render("views/404", c.Locals(bind.Name), "views/layouts/standalone")
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 		id, err := strconv.ParseInt(eid, 10, 64)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		tx, err := i.Database.Begin()
@@ -66,10 +67,10 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render("views/404", c.Locals(shared.Bind), "views/layouts/standalone")
+				return c.Render("views/404", c.Locals(bind.Name), "views/layouts/standalone")
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		if e.PID != pid {
@@ -80,11 +81,11 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 		ve, err := qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
 		if err != nil && err != sql.ErrNoRows {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 		if err == nil && ve.Verified {
 			c.Status(fiber.StatusConflict)
-			return c.Render("views/verify-email-409", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/verify-email-409", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
 		if err = tx.Commit(); err != nil {
@@ -95,10 +96,10 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 		un, err := username.Get(i, pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(shared.Bind), "views/layouts/standalone")
+			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
-		b := c.Locals(shared.Bind).(fiber.Map)
+		b := c.Locals(bind.Name).(fiber.Map)
 		b["VerifyToken"] = c.Query("t")
 		b["Address"] = e.Address
 		b["Username"] = un
