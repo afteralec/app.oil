@@ -15,7 +15,7 @@
       <div id="character-application-flow-error"></div>
       <!-- prettier-ignore -->
       {{ if .StatusReady -}}
-      {{ template "views/partials/character/application/submit-notice" . }}
+      {{ template "views/partials/character/application/notifications/submit" . }}
       {{ end -}}
 
       <!-- prettier-ignore -->
@@ -70,6 +70,6 @@
     </div>
   </div>
   <!-- prettier-ignore -->
-  {{ template "views/partials/character/application/submit-dialog" .SubmitCharacterApplicationPath }}
-  {{ template "views/partials/character/application/cancel-dialog" .CharacterApplicationPath }}
+  {{ template "views/partials/character/application/dialogs/submit" .SubmitCharacterApplicationPath }}
+  {{ template "views/partials/character/application/dialogs/cancel" .CharacterApplicationPath }}
 </main>
