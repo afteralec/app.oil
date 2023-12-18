@@ -13,7 +13,7 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/permission"
+	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
@@ -82,7 +82,7 @@ func TestPlayerPermissionsPageSuccess(t *testing.T) {
 	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
 		PID:        p.ID,
 		IPID:       p.ID,
-		Permission: permission.PlayerGrantAllPermissions.Name,
+		Permission: permissions.PlayerGrantAllPermissions.Name,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -181,7 +181,7 @@ func TestPlayerPermissionsDetailPageSuccess(t *testing.T) {
 	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
 		PID:        p.ID,
 		IPID:       p.ID,
-		Permission: permission.PlayerGrantAllPermissions.Name,
+		Permission: permissions.PlayerGrantAllPermissions.Name,
 	})
 	if err != nil {
 		t.Fatal(err)

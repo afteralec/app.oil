@@ -8,7 +8,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/bind"
-	"petrichormud.com/app/internal/permission"
+	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
@@ -127,12 +127,12 @@ func PutCharacterApplicationInReview(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		perms, ok := lperms.(permission.PlayerGranted)
+		perms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 		}
-		if !perms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
+		if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}

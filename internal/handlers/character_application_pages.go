@@ -9,7 +9,7 @@ import (
 
 	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/character"
-	"petrichormud.com/app/internal/permission"
+	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
@@ -70,12 +70,12 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
-			iperms, ok := lperms.(permission.PlayerGranted)
+			iperms, ok := lperms.(permissions.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 			}
-			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
+			if !iperms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
@@ -162,12 +162,12 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
-			iperms, ok := lperms.(permission.PlayerGranted)
+			iperms, ok := lperms.(permissions.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 			}
-			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
+			if !iperms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
@@ -250,12 +250,12 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
-			iperms, ok := lperms.(permission.PlayerGranted)
+			iperms, ok := lperms.(permissions.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 			}
-			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
+			if !iperms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
@@ -336,12 +336,12 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
-			iperms, ok := lperms.(permission.PlayerGranted)
+			iperms, ok := lperms.(permissions.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 			}
-			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
+			if !iperms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
@@ -422,12 +422,12 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
-			iperms, ok := lperms.(permission.PlayerGranted)
+			iperms, ok := lperms.(permissions.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 			}
-			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
+			if !iperms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
@@ -509,12 +509,12 @@ func CharacterApplicationSummaryPage(i *shared.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
-			iperms, ok := lperms.(permission.PlayerGranted)
+			iperms, ok := lperms.(permissions.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 			}
-			if !iperms.Permissions[permission.PlayerReviewCharacterApplicationsName] {
+			if !iperms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}

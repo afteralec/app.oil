@@ -12,7 +12,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"petrichormud.com/app/internal/password"
-	"petrichormud.com/app/internal/permission"
+	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
@@ -121,7 +121,7 @@ var grantPlayerPermissionCmd = &cobra.Command{
 			return errors.New("please enter a valid username")
 		}
 
-		perm, ok := permission.AllPlayerByTag[ptag]
+		perm, ok := permissions.AllPlayerByTag[ptag]
 		if !ok {
 			return errors.New("please enter a valid permission tag")
 		}
@@ -155,7 +155,7 @@ var grantPlayerPermissionCmd = &cobra.Command{
 			return err
 		}
 
-		perms := permission.MakePlayerGranted(p.ID, ps)
+		perms := permissions.MakePlayerGranted(p.ID, ps)
 		_, granted := perms.Permissions[perm.Name]
 		if granted {
 			msg := fmt.Sprintf("Player %s already has permission %s.", u, perm.Name)
@@ -239,7 +239,7 @@ var listPlayerPermissionCmd = &cobra.Command{
 			return err
 		}
 
-		perms := permission.MakePlayerGranted(p.ID, ps)
+		perms := permissions.MakePlayerGranted(p.ID, ps)
 		msg := fmt.Sprintf("User %s has permissions %s.", u, strings.Join(perms.PermissionsList, ", "))
 		fmt.Println(msg)
 		return nil

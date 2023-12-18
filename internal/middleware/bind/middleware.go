@@ -6,7 +6,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/bind"
-	"petrichormud.com/app/internal/permission"
+	"petrichormud.com/app/internal/permissions"
 )
 
 func New() fiber.Handler {
@@ -36,7 +36,7 @@ type shouldShowMenus struct {
 func determineShouldShowMenus(c *fiber.Ctx) shouldShowMenus {
 	lperms := c.Locals("perms")
 	if lperms != nil {
-		perms, ok := lperms.(permission.PlayerGranted)
+		perms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			return shouldShowMenus{
 				Review:                      false,
@@ -46,9 +46,9 @@ func determineShouldShowMenus(c *fiber.Ctx) shouldShowMenus {
 		}
 
 		return shouldShowMenus{
-			Review:                      perms.Permissions[permission.PlayerReviewCharacterApplicationsName],
-			ReviewCharacterApplications: perms.Permissions[permission.PlayerReviewCharacterApplicationsName],
-			Permissions:                 perms.Permissions[permission.PlayerGrantAllPermissionsName],
+			Review:                      perms.Permissions[permissions.PlayerReviewCharacterApplicationsName],
+			ReviewCharacterApplications: perms.Permissions[permissions.PlayerReviewCharacterApplicationsName],
+			Permissions:                 perms.Permissions[permissions.PlayerGrantAllPermissionsName],
 		}
 	}
 

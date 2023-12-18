@@ -1,4 +1,4 @@
-package permission
+package permissions
 
 import "petrichormud.com/app/internal/queries"
 

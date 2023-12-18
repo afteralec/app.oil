@@ -1,4 +1,4 @@
-package permission
+package permissions
 
 type Player struct {
 	Name  string

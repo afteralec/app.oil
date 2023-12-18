@@ -7,7 +7,7 @@ import (
 
 	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/character"
-	"petrichormud.com/app/internal/permission"
+	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -26,13 +26,13 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		perms, ok := lperms.(permission.PlayerGranted)
+		perms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 		}
 
-		_, ok = perms.Permissions[permission.PlayerReviewCharacterApplicationsName]
+		_, ok = perms.Permissions[permissions.PlayerReviewCharacterApplicationsName]
 		if !ok {
 			c.Status(fiber.StatusForbidden)
 			return nil
