@@ -11,6 +11,8 @@ module.exports = {
     "./web/views/partials/**/**/**/*.html",
     "./web/views/layouts/*.html",
   ],
+  // TODO: Add all of the status colors to this list
+  safelist: ["text-amber-700", "text-sky-700"],
   theme: {
     extend: {
       colors: {

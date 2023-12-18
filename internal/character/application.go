@@ -18,6 +18,8 @@ type ApplicationSummary struct {
 	StatusIcon       request.StatusIcon
 	ReviewDialog     ReviewDialogData
 	Status           string
+	StatusColor      string
+	StatusText       string
 	Link             string
 	Name             string
 	Author           string
@@ -53,6 +55,8 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 			Variable: fmt.Sprintf("showReviewDialogFor%s%s", app.Name, p.Username),
 		},
 		Status:           req.Status,
+		StatusColor:      request.StatusColors[req.Status],
+		StatusText:       request.StatusTexts[req.Status],
 		StatusIncomplete: req.Status == request.StatusIncomplete,
 		StatusReady:      req.Status == request.StatusReady,
 		StatusSubmitted:  req.Status == request.StatusSubmitted,

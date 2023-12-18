@@ -18,7 +18,7 @@ const (
 	StatusCanceled   = "Canceled"
 )
 
-var StatusByName map[string]string = map[string]string{
+var StatusTexts map[string]string = map[string]string{
 	StatusIncomplete: "Incomplete",
 	StatusReady:      "Ready",
 	StatusSubmitted:  "Submitted",
@@ -28,11 +28,6 @@ var StatusByName map[string]string = map[string]string{
 	StatusRejected:   "Rejected",
 	StatusArchived:   "Archived",
 	StatusCanceled:   "Canceled",
-}
-
-func StatusIsValid(str string) bool {
-	_, ok := StatusByName[str]
-	return ok
 }
 
 var StatusIcons map[string]string = map[string]string{

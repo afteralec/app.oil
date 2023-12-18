@@ -29,28 +29,9 @@
       {{ .Name }}
     </h2>
 
-    <!-- TODO: Update these to use passed-in colors and text -->
-
-    <!-- prettier-ignore -->
-    {{ if .StatusIncomplete }}
-    <p class="text-sm font-semibold leading-none text-gray-600">Incomplete</p>
-    {{ else if .StatusReady }}
-    <p class="text-sm font-semibold leading-none text-primary">Ready</p>
-    {{ else if .StatusSubmitted }}
-    <p class="text-sm font-semibold leading-none text-sky-700">Submitted</p>
-    {{ else if .StatusInReview }}
-    <p class="text-sm font-semibold leading-none text-amber-700">In Review</p>
-    {{ else if .StatusApproved }}
-    <p class="text-sm font-semibold leading-none text-emerald-700">Approved</p>
-    {{ else if .StatusReviewed }}
-    <p class="text-sm font-semibold leading-none text-amber-700">Reviewed</p>
-    {{ else if .StatusRejected }}
-    <p class="text-sm font-semibold leading-none text-rose-700">Rejected</p>
-    {{ else if .StatusArchived }}
-    <p class="text-sm font-semibold leading-none text-gray-700">Archived</p>
-    {{ else if .StatusCanceled }}
-    <p class="text-sm font-semibold leading-none text-gray-700">Canceled</p>
-    {{ end -}}
+    <p class="text-sm font-semibold leading-none {{ .StatusColor }}">
+      {{ .StatusText }}
+    </p>
   </div>
   <div>
     <p class="text-sm leading-none text-muted-foreground">
