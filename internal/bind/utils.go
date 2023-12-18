@@ -74,6 +74,6 @@ func RequestStatus(b fiber.Map, req *queries.Request) fiber.Map {
 
 func RequestViewedBy(b fiber.Map, req *queries.Request, pid int64) fiber.Map {
 	b["ViewedByPlayer"] = req.PID == pid
-	b["ViewedByReviewer"] = req.PID != pid
+	b["ViewedByReviewer"] = req.RPID == pid
 	return b
 }

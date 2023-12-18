@@ -3,9 +3,8 @@ package routes
 import "fmt"
 
 const (
-	Characters            = "/characters"
-	CharacterApplication  = "/character/application"
-	CharacterApplications = "/character/applications"
+	Characters           = "/characters"
+	CharacterApplication = "/character/application"
 )
 
 func NewCharacterApplicationPath() string {
@@ -36,6 +35,10 @@ func CharacterApplicationBackstoryPath(id string) string {
 	return fmt.Sprintf("%s/%s/backstory", CharacterApplication, id)
 }
 
+func CharacterApplicationsQueuePath() string {
+	return fmt.Sprintf("%s/queue", CharacterApplication)
+}
+
 // TODO: Maybe make these a /status/submitte and /status/in-review, etc route?
 func SubmitCharacterApplicationPath(id string) string {
 	return fmt.Sprintf("%s/%s/submit", CharacterApplication, id)
@@ -43,16 +46,4 @@ func SubmitCharacterApplicationPath(id string) string {
 
 func PutCharacterApplicationInReviewPath(id string) string {
 	return fmt.Sprintf("%s/%s/in-review", CharacterApplication, id)
-}
-
-func CharacterApplicationSubmittedPath(id string) string {
-	return fmt.Sprintf("%s/%s/submitted", CharacterApplication, id)
-}
-
-func CharacterApplicationSubmittedSuccessPath(id string) string {
-	return fmt.Sprintf("%s/success", CharacterApplicationSubmittedPath(id))
-}
-
-func ReviewCharacterApplicationsPath() string {
-	return fmt.Sprintf("%s/review", CharacterApplications)
 }

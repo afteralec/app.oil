@@ -29,7 +29,7 @@ func TestReviewCharacterApplicationsPageUnauthorized(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	_ = CallLogin(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ReviewCharacterApplicationsPath())
+	url := MakeTestURL(routes.CharacterApplicationsQueuePath())
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -53,7 +53,7 @@ func TestReviewCharacterApplicationssPageNoPermission(t *testing.T) {
 	res := CallLogin(t, a, TestUsername, TestPassword)
 	sessionCookie := res.Cookies()[0]
 
-	url := MakeTestURL(routes.ReviewCharacterApplicationsPath())
+	url := MakeTestURL(routes.CharacterApplicationsQueuePath())
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -98,7 +98,7 @@ func TestReviewCharacterApplicationssPageSuccess(t *testing.T) {
 	res := CallLogin(t, a, TestUsername, TestPassword)
 	sessionCookie := res.Cookies()[0]
 
-	url := MakeTestURL(routes.ReviewCharacterApplicationsPath())
+	url := MakeTestURL(routes.CharacterApplicationsQueuePath())
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = a.Test(req)
@@ -142,7 +142,7 @@ func TestReviewCharacterApplicationsPageFatal(t *testing.T) {
 	sessionCookie := cookies[0]
 	i.Close()
 
-	url := MakeTestURL(routes.ReviewCharacterApplicationsPath())
+	url := MakeTestURL(routes.CharacterApplicationsQueuePath())
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = a.Test(req)

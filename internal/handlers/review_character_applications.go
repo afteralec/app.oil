@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
+func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -78,6 +78,6 @@ func ReviewCharacterApplicationsPage(i *shared.Interfaces) fiber.Handler {
 		b := c.Locals(bind.Name).(fiber.Map)
 		b["ThereAreCharacterApplications"] = len(summaries) > 0
 		b["CharacterApplicationSummaries"] = summaries
-		return c.Render("views/character/applications/review", b)
+		return c.Render("views/character/application/queue", b)
 	}
 }

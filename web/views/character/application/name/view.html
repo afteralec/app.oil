@@ -1,3 +1,4 @@
+<!-- TODO: Update these tags to be more semantic -->
 <main
   class="flex h-screen w-screen flex-col items-center"
   x-data="getCharacterApplicationData()"
@@ -15,6 +16,7 @@
       <!-- prettier-ignore -->
       {{ template "views/partials/character/application/content/name/header" }}
 
+      <!-- prettier-ignore -->
       {{ template "views/partials/character/application/divider" }}
 
       <p class="text-sm leading-none tracking-tight text-muted-foreground">
@@ -22,28 +24,13 @@
       </p>
       <p class="text-base leading-none tracking-tight">{{ .Name }}</p>
 
-      <div class="flex justify-end gap-2 pt-4">
-        {{ if .BackLink -}}
-        <a
-          href="{{ .BackLink }}"
-          class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-          type=""
-        >
-          Back
-        </a>
-        {{ end -}}
-        <!-- prettier-ignore -->
-        {{ if .NextLink -}}
-        <a
-          href="{{ .NextLink }}"
-          class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-        >
-          Next
-        </a>
-        {{ end -}}
-      </div>
+      <!-- prettier-ignore -->
+      {{ template "views/partials/character/application/footer" . }}
+      <!-- prettier-ignore -->
+      {{ template "views/partials/character/application/comment/form" }}
     </div>
   </div>
+
   <!-- prettier-ignore -->
   {{ template "views/partials/character/application/dialogs/cancel" .CharacterApplicationPath }}
 </main>

@@ -13,6 +13,8 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 
 	app.Get(routes.Characters, handlers.CharactersPage(i))
 
+	app.Get(routes.CharacterApplicationsQueuePath(), handlers.CharacterApplicationsQueuePage(i))
+
 	app.Post(routes.NewCharacterApplicationPath(), handlers.NewCharacterApplication(i))
 	app.Get(routes.CharacterApplicationPath(routes.ID), handlers.CharacterApplicationPage(i))
 	app.Get(routes.CharacterApplicationNamePath(routes.ID), handlers.CharacterApplicationNamePage(i))
@@ -30,8 +32,6 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Post(routes.SubmitCharacterApplicationPath(routes.ID), handlers.SubmitCharacterApplication(i))
 	app.Post(routes.PutCharacterApplicationInReviewPath(routes.ID), handlers.PutCharacterApplicationInReview(i))
 	app.Delete(routes.CharacterApplicationPath(routes.ID), handlers.CancelCharacterApplication(i))
-
-	app.Get(routes.ReviewCharacterApplicationsPath(), handlers.ReviewCharacterApplicationsPage(i))
 
 	app.Post(routes.Login, handlers.Login(i))
 	app.Get(routes.Login, handlers.LoginPage())

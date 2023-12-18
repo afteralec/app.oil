@@ -108,6 +108,11 @@ export function sanitizeCharacterBackstory(bs) {
   return bs.replace(/[^a-zA-Z, '\-\.!()\r\n]+/gi, "");
 }
 
+export function sanitizeRequestComment(c = "") {
+  const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
+  return c.replace(regex, "");
+}
+
 // TODO: Pass these lengths in as constants
 export function isUsernameValid(u) {
   if (u.length < 4) return false;
@@ -156,6 +161,15 @@ export function isCharacterBackstoryValid(bs) {
   if (bs.length > 10000) return false;
   const regex = /[^a-zA-Z, '\-\.!()\r\n]+/gi;
   if (regex.test(bs)) return false;
+  return true;
+}
+
+// TODO: Test
+export function isRequestCommentValid(c = "") {
+  if (c.length < 32) return false;
+  if (c.length > 500) return false;
+  const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
+  if (regex.test(c)) return false;
   return true;
 }
 
@@ -258,6 +272,7 @@ export function getCharacterApplicationNameData(name) {
     showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
+    commentOpen: false,
   };
 }
 
@@ -268,6 +283,7 @@ export function getCharacterApplicationGenderData(gender) {
     showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
+    commentOpen: false,
   };
 }
 
@@ -285,6 +301,7 @@ export function getCharacterApplicationShortDescriptionData(sdesc) {
     showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
+    commentOpen: false,
   };
 }
 
@@ -302,6 +319,7 @@ export function getCharacterApplicationDescriptionData(description) {
     showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
+    commentOpen: false,
   };
 }
 
@@ -319,6 +337,7 @@ export function getCharacterApplicationBackstoryData(backstory) {
     showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
+    commentOpen: false,
   };
 }
 
@@ -334,10 +353,14 @@ export function getCharacterApplicationSummaryData() {
 
 export function getCharacterApplicationData() {
   return {
+    comment: "",
+    sanitizeRequestComment,
+    isRequestCommentValid,
     showSubmitDialog: false,
     showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
+    commentOpen: false,
   };
 }
 
