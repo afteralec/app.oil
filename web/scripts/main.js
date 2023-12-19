@@ -375,6 +375,13 @@ export function getCharacterApplicationData() {
   };
 }
 
+export function getRequestCommentData(c = "") {
+  return {
+    comment: c,
+    editOpen: false,
+  };
+}
+
 export function getPlayerPermissionsData() {
   return {
     username: "",
@@ -428,3 +435,4 @@ window.getCharacterApplicationBackstoryData =
 window.getCharacterApplicationSummaryData = getCharacterApplicationSummaryData;
 window.getCharacterApplicationData = getCharacterApplicationData;
 window.getPlayerPermissionsData = getPlayerPermissionsData;
+window.getRequestCommentData = getRequestCommentData;

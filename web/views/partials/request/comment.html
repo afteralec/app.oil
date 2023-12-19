@@ -1,4 +1,7 @@
-<article class="flex gap-3 rounded-md border px-4 py-3">
+<article
+  x-data="getRequestCommentData(`{{ .Text }}`)"
+  class="flex gap-3 rounded-md border px-4 py-3"
+>
   <div>
     <span class="relative flex h-7 w-7 shrink-0 overflow-hidden rounded-full"
       ><img
@@ -15,13 +18,15 @@
         {{ .Author }}
       </h2>
     </header>
-    <p class="py-3 text-sm leading-none">{{ .Text }}</p>
-    <div class="flex items-end justify-end pt-2">
+
+    <p x-show="!editOpen" class="py-3 text-sm leading-none">{{ .Text }}</p>
+    {{ template "views/partials/request/comment/edit" . }}
+
+    <footer x-show="!editOpen" class="flex items-end justify-end pt-2">
       {{ if .ViewedByAuthor -}}
-      <div
-        class="mr-auto flex items-end justify-end gap-2 text-muted-foreground"
-      >
+      <div class="mr-auto flex items-end justify-end gap-2">
         <div
+          @click.prevent="editOpen = true;"
           class="flex cursor-pointer items-end justify-end align-bottom text-xs leading-[0.9] text-muted-foreground hover:text-primary"
         >
           <iconify-icon icon="fe:pencil" height="12" width="12"></iconify-icon>
@@ -42,6 +47,6 @@
         x-text="parseTimeStamp({{ .CreatedAt }})"
         class="text-xs leading-[0.9] text-muted-foreground"
       ></p>
-    </div>
+    </footer>
   </div>
 </article>
