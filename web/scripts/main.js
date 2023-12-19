@@ -166,7 +166,7 @@ export function isCharacterBackstoryValid(bs) {
 
 // TODO: Test
 export function isRequestCommentValid(c = "") {
-  if (c.length < 32) return false;
+  if (c.length < 1) return false;
   if (c.length > 500) return false;
   const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
   if (regex.test(c)) return false;

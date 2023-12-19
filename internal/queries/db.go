@@ -24,18 +24,6 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
-	if q.addCommentToRequestStmt, err = db.PrepareContext(ctx, addCommentToRequest); err != nil {
-		return nil, fmt.Errorf("error preparing query AddCommentToRequest: %w", err)
-	}
-	if q.addCommentToRequestFieldStmt, err = db.PrepareContext(ctx, addCommentToRequestField); err != nil {
-		return nil, fmt.Errorf("error preparing query AddCommentToRequestField: %w", err)
-	}
-	if q.addReplyToCommentStmt, err = db.PrepareContext(ctx, addReplyToComment); err != nil {
-		return nil, fmt.Errorf("error preparing query AddReplyToComment: %w", err)
-	}
-	if q.addReplyToFieldCommentStmt, err = db.PrepareContext(ctx, addReplyToFieldComment); err != nil {
-		return nil, fmt.Errorf("error preparing query AddReplyToFieldComment: %w", err)
-	}
 	if q.countEmailsStmt, err = db.PrepareContext(ctx, countEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query CountEmails: %w", err)
 	}
@@ -72,6 +60,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createRequestStmt, err = db.PrepareContext(ctx, createRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateRequest: %w", err)
 	}
+	if q.createRequestCommentStmt, err = db.PrepareContext(ctx, createRequestComment); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateRequestComment: %w", err)
+	}
 	if q.deleteEmailStmt, err = db.PrepareContext(ctx, deleteEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteEmail: %w", err)
 	}
@@ -105,9 +96,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getRequestStmt, err = db.PrepareContext(ctx, getRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRequest: %w", err)
 	}
-	if q.getRequestCommentStmt, err = db.PrepareContext(ctx, getRequestComment); err != nil {
-		return nil, fmt.Errorf("error preparing query GetRequestComment: %w", err)
-	}
 	if q.getVerifiedEmailByAddressStmt, err = db.PrepareContext(ctx, getVerifiedEmailByAddress); err != nil {
 		return nil, fmt.Errorf("error preparing query GetVerifiedEmailByAddress: %w", err)
 	}
@@ -120,9 +108,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listCharacterApplicationsForPlayerStmt, err = db.PrepareContext(ctx, listCharacterApplicationsForPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query ListCharacterApplicationsForPlayer: %w", err)
 	}
-	if q.listCommentsForRequestStmt, err = db.PrepareContext(ctx, listCommentsForRequest); err != nil {
-		return nil, fmt.Errorf("error preparing query ListCommentsForRequest: %w", err)
-	}
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
 	}
@@ -131,9 +116,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.listPlayerPermissionsStmt, err = db.PrepareContext(ctx, listPlayerPermissions); err != nil {
 		return nil, fmt.Errorf("error preparing query ListPlayerPermissions: %w", err)
-	}
-	if q.listRepliesToCommentStmt, err = db.PrepareContext(ctx, listRepliesToComment); err != nil {
-		return nil, fmt.Errorf("error preparing query ListRepliesToComment: %w", err)
 	}
 	if q.listRequestsForPlayerStmt, err = db.PrepareContext(ctx, listRequestsForPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query ListRequestsForPlayer: %w", err)
@@ -182,26 +164,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
-	if q.addCommentToRequestStmt != nil {
-		if cerr := q.addCommentToRequestStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing addCommentToRequestStmt: %w", cerr)
-		}
-	}
-	if q.addCommentToRequestFieldStmt != nil {
-		if cerr := q.addCommentToRequestFieldStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing addCommentToRequestFieldStmt: %w", cerr)
-		}
-	}
-	if q.addReplyToCommentStmt != nil {
-		if cerr := q.addReplyToCommentStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing addReplyToCommentStmt: %w", cerr)
-		}
-	}
-	if q.addReplyToFieldCommentStmt != nil {
-		if cerr := q.addReplyToFieldCommentStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing addReplyToFieldCommentStmt: %w", cerr)
-		}
-	}
 	if q.countEmailsStmt != nil {
 		if cerr := q.countEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing countEmailsStmt: %w", cerr)
@@ -262,6 +224,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createRequestStmt: %w", cerr)
 		}
 	}
+	if q.createRequestCommentStmt != nil {
+		if cerr := q.createRequestCommentStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createRequestCommentStmt: %w", cerr)
+		}
+	}
 	if q.deleteEmailStmt != nil {
 		if cerr := q.deleteEmailStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteEmailStmt: %w", cerr)
@@ -317,11 +284,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getRequestStmt: %w", cerr)
 		}
 	}
-	if q.getRequestCommentStmt != nil {
-		if cerr := q.getRequestCommentStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getRequestCommentStmt: %w", cerr)
-		}
-	}
 	if q.getVerifiedEmailByAddressStmt != nil {
 		if cerr := q.getVerifiedEmailByAddressStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getVerifiedEmailByAddressStmt: %w", cerr)
@@ -342,11 +304,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listCharacterApplicationsForPlayerStmt: %w", cerr)
 		}
 	}
-	if q.listCommentsForRequestStmt != nil {
-		if cerr := q.listCommentsForRequestStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listCommentsForRequestStmt: %w", cerr)
-		}
-	}
 	if q.listEmailsStmt != nil {
 		if cerr := q.listEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listEmailsStmt: %w", cerr)
@@ -360,11 +317,6 @@ func (q *Queries) Close() error {
 	if q.listPlayerPermissionsStmt != nil {
 		if cerr := q.listPlayerPermissionsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listPlayerPermissionsStmt: %w", cerr)
-		}
-	}
-	if q.listRepliesToCommentStmt != nil {
-		if cerr := q.listRepliesToCommentStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listRepliesToCommentStmt: %w", cerr)
 		}
 	}
 	if q.listRequestsForPlayerStmt != nil {
@@ -476,10 +428,6 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db                                                    DBTX
 	tx                                                    *sql.Tx
-	addCommentToRequestStmt                               *sql.Stmt
-	addCommentToRequestFieldStmt                          *sql.Stmt
-	addReplyToCommentStmt                                 *sql.Stmt
-	addReplyToFieldCommentStmt                            *sql.Stmt
 	countEmailsStmt                                       *sql.Stmt
 	countOpenCharacterApplicationsForPlayerStmt           *sql.Stmt
 	countOpenRequestsStmt                                 *sql.Stmt
@@ -492,6 +440,7 @@ type Queries struct {
 	createPlayerPermissionIssuedChangeHistoryStmt         *sql.Stmt
 	createPlayerPermissionRevokedChangeHistoryStmt        *sql.Stmt
 	createRequestStmt                                     *sql.Stmt
+	createRequestCommentStmt                              *sql.Stmt
 	deleteEmailStmt                                       *sql.Stmt
 	deletePlayerPermissionStmt                            *sql.Stmt
 	getCharacterApplicationStmt                           *sql.Stmt
@@ -503,16 +452,13 @@ type Queries struct {
 	getPlayerUsernameStmt                                 *sql.Stmt
 	getPlayerUsernameByIdStmt                             *sql.Stmt
 	getRequestStmt                                        *sql.Stmt
-	getRequestCommentStmt                                 *sql.Stmt
 	getVerifiedEmailByAddressStmt                         *sql.Stmt
 	incrementRequestVersionStmt                           *sql.Stmt
 	listCharacterApplicationContentForPlayerStmt          *sql.Stmt
 	listCharacterApplicationsForPlayerStmt                *sql.Stmt
-	listCommentsForRequestStmt                            *sql.Stmt
 	listEmailsStmt                                        *sql.Stmt
 	listOpenCharacterApplicationsStmt                     *sql.Stmt
 	listPlayerPermissionsStmt                             *sql.Stmt
-	listRepliesToCommentStmt                              *sql.Stmt
 	listRequestsForPlayerStmt                             *sql.Stmt
 	listVerifiedEmailsStmt                                *sql.Stmt
 	markEmailVerifiedStmt                                 *sql.Stmt
@@ -531,13 +477,9 @@ type Queries struct {
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                           tx,
-		tx:                           tx,
-		addCommentToRequestStmt:      q.addCommentToRequestStmt,
-		addCommentToRequestFieldStmt: q.addCommentToRequestFieldStmt,
-		addReplyToCommentStmt:        q.addReplyToCommentStmt,
-		addReplyToFieldCommentStmt:   q.addReplyToFieldCommentStmt,
-		countEmailsStmt:              q.countEmailsStmt,
+		db:              tx,
+		tx:              tx,
+		countEmailsStmt: q.countEmailsStmt,
 		countOpenCharacterApplicationsForPlayerStmt:           q.countOpenCharacterApplicationsForPlayerStmt,
 		countOpenRequestsStmt:                                 q.countOpenRequestsStmt,
 		createCharacterApplicationContentStmt:                 q.createCharacterApplicationContentStmt,
@@ -549,6 +491,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createPlayerPermissionIssuedChangeHistoryStmt:         q.createPlayerPermissionIssuedChangeHistoryStmt,
 		createPlayerPermissionRevokedChangeHistoryStmt:        q.createPlayerPermissionRevokedChangeHistoryStmt,
 		createRequestStmt:                                     q.createRequestStmt,
+		createRequestCommentStmt:                              q.createRequestCommentStmt,
 		deleteEmailStmt:                                       q.deleteEmailStmt,
 		deletePlayerPermissionStmt:                            q.deletePlayerPermissionStmt,
 		getCharacterApplicationStmt:                           q.getCharacterApplicationStmt,
@@ -560,16 +503,13 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getPlayerUsernameStmt:                                 q.getPlayerUsernameStmt,
 		getPlayerUsernameByIdStmt:                             q.getPlayerUsernameByIdStmt,
 		getRequestStmt:                                        q.getRequestStmt,
-		getRequestCommentStmt:                                 q.getRequestCommentStmt,
 		getVerifiedEmailByAddressStmt:                         q.getVerifiedEmailByAddressStmt,
 		incrementRequestVersionStmt:                           q.incrementRequestVersionStmt,
 		listCharacterApplicationContentForPlayerStmt:          q.listCharacterApplicationContentForPlayerStmt,
 		listCharacterApplicationsForPlayerStmt:                q.listCharacterApplicationsForPlayerStmt,
-		listCommentsForRequestStmt:                            q.listCommentsForRequestStmt,
 		listEmailsStmt:                                        q.listEmailsStmt,
 		listOpenCharacterApplicationsStmt:                     q.listOpenCharacterApplicationsStmt,
 		listPlayerPermissionsStmt:                             q.listPlayerPermissionsStmt,
-		listRepliesToCommentStmt:                              q.listRepliesToCommentStmt,
 		listRequestsForPlayerStmt:                             q.listRequestsForPlayerStmt,
 		listVerifiedEmailsStmt:                                q.listVerifiedEmailsStmt,
 		markEmailVerifiedStmt:                                 q.markEmailVerifiedStmt,

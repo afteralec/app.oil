@@ -135,7 +135,7 @@ func TestSubmitCharacterApplicationFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
-func TestSubmitCharacterApplicationVersionZero(t *testing.T) {
+func TestSubmitCharacterApplicationSuccessVersionZero(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -166,7 +166,7 @@ func TestSubmitCharacterApplicationVersionZero(t *testing.T) {
 	require.Equal(t, int32(1), r.VID)
 }
 
-func TestSubmitCharacterApplicationVersionOne(t *testing.T) {
+func TestSubmitCharacterApplicationSuccessVersionOne(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 

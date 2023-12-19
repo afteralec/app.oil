@@ -11,6 +11,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+// TODO: Change this over to a Requests page
 func CharactersPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")

@@ -160,11 +160,13 @@ func TestResendInvalidID(t *testing.T) {
 	writer.Close()
 
 	url := MakeTestURL(routes.ResendEmailVerificationPath("invalid"))
+
 	req, err := http.NewRequest(http.MethodPost, url, body)
 	if err != nil {
 		t.Fatal(err)
 	}
 	req.AddCookie(sessionCookie)
+
 	res, err = a.Test(req)
 	if err != nil {
 		t.Fatal(err)

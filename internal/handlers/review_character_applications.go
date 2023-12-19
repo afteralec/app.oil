@@ -25,13 +25,11 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-
 		perms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
 		}
-
 		_, ok = perms.Permissions[permissions.PlayerReviewCharacterApplicationsName]
 		if !ok {
 			c.Status(fiber.StatusForbidden)

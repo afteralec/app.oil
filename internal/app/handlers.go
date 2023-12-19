@@ -11,6 +11,8 @@ import (
 func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Get(routes.Home, handlers.HomePage())
 
+	app.Post(routes.CreateRequestCommentPath(routes.ID, routes.Field), handlers.CreateRequestComment(i))
+
 	app.Get(routes.Characters, handlers.CharactersPage(i))
 
 	app.Get(routes.CharacterApplicationsQueuePath(), handlers.CharacterApplicationsQueuePage(i))
