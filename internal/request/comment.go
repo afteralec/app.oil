@@ -12,18 +12,20 @@ const (
 )
 
 type Comment struct {
-	Text       string
-	Author     string
-	AvatarLink string
-	CreatedAt  int64
+	Text           string
+	Author         string
+	AvatarLink     string
+	CreatedAt      int64
+	ViewedByAuthor bool
 }
 
 func (c *Comment) Bind() fiber.Map {
 	return fiber.Map{
-		"Text":       c.Text,
-		"Author":     c.Author,
-		"AvatarLink": c.AvatarLink,
-		"CreatedAt":  c.CreatedAt,
+		"Text":           c.Text,
+		"Author":         c.Author,
+		"AvatarLink":     c.AvatarLink,
+		"CreatedAt":      c.CreatedAt,
+		"ViewedByAuthor": c.ViewedByAuthor,
 	}
 }
 

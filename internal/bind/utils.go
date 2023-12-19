@@ -44,14 +44,15 @@ func RequestCommentPaths(b fiber.Map, req *queries.Request, field string) fiber.
 	return b
 }
 
-func RequestComments(b fiber.Map, comments []queries.ListCommentsForRequestWithAuthorRow) fiber.Map {
+func RequestComments(b fiber.Map, pid int64, comments []queries.ListCommentsForRequestWithAuthorRow) fiber.Map {
 	result := []request.Comment{}
 	for _, comment := range comments {
 		result = append(result, request.Comment{
-			Author:     comment.Player.Username,
-			Text:       comment.RequestComment.Text,
-			AvatarLink: "https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50.jpeg?f=y&r=m&s=256&d=retro",
-			CreatedAt:  comment.RequestComment.CreatedAt.Unix(),
+			Author:         comment.Player.Username,
+			Text:           comment.RequestComment.Text,
+			AvatarLink:     "https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50.jpeg?f=y&r=m&s=256&d=retro",
+			CreatedAt:      comment.RequestComment.CreatedAt.Unix(),
+			ViewedByAuthor: comment.RequestComment.PID == pid,
 		})
 	}
 	b["Comments"] = result

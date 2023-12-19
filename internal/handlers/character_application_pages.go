@@ -93,7 +93,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
 		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent, "name")
 		b = bind.CharacterApplicationHeaderStatusIcon(b, &row.Request)
-		b = bind.RequestComments(b, comments)
+		b = bind.RequestComments(b, pid.(int64), comments)
 		b["NextLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 
 		if !request.IsEditable(&row.Request) {
@@ -189,7 +189,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 		b = bind.CharacterApplicationGender(b, &row.CharacterApplicationContent)
 		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent, "gender")
 		b = bind.CharacterApplicationHeaderStatusIcon(b, &row.Request)
-		b = bind.RequestComments(b, comments)
+		b = bind.RequestComments(b, pid.(int64), comments)
 		b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 
@@ -285,7 +285,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
 		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent, "sdesc")
 		b = bind.CharacterApplicationHeaderStatusIcon(b, &row.Request)
-		b = bind.RequestComments(b, comments)
+		b = bind.RequestComments(b, pid.(int64), comments)
 		b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 
@@ -380,7 +380,7 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
 		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent, "description")
 		b = bind.CharacterApplicationHeaderStatusIcon(b, &row.Request)
-		b = bind.RequestComments(b, comments)
+		b = bind.RequestComments(b, pid.(int64), comments)
 		b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
 
@@ -475,7 +475,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
 		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent, "backstory")
 		b = bind.CharacterApplicationHeaderStatusIcon(b, &row.Request)
-		b = bind.RequestComments(b, comments)
+		b = bind.RequestComments(b, pid.(int64), comments)
 		b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationPath(strconv.FormatInt(rid, 10))
 

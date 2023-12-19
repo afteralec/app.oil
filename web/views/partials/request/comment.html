@@ -3,23 +3,44 @@
     <span class="relative flex h-7 w-7 shrink-0 overflow-hidden rounded-full"
       ><img
         class="aspect-square h-full w-full"
-        alt="@test"
+        alt="comment-avatar"
         src="{{ .AvatarLink }}"
     /></span>
   </div>
   <div class="w-full">
-    <header class="pr-6">
+    <header>
       <h2
-        class="w-full border-b text-xs font-semibold leading-none tracking-tight text-muted-foreground"
+        class="flex w-full items-end justify-between border-b text-xs font-semibold leading-none tracking-tight text-muted-foreground"
       >
         {{ .Author }}
       </h2>
     </header>
-    <p class="pt-1 text-sm leading-none">{{ .Text }}</p>
+    <p class="py-3 text-sm leading-none">{{ .Text }}</p>
     <div class="flex items-end justify-end pt-2">
+      {{ if .ViewedByAuthor -}}
+      <div
+        class="mr-auto flex items-end justify-end gap-2 text-muted-foreground"
+      >
+        <div
+          class="flex cursor-pointer items-end justify-end align-bottom text-xs leading-[0.9] text-muted-foreground hover:text-primary"
+        >
+          <iconify-icon icon="fe:pencil" height="12" width="12"></iconify-icon>
+
+          Edit
+        </div>
+        <div
+          class="flex cursor-pointer items-end justify-end text-xs leading-[0.9] text-muted-foreground hover:text-primary"
+        >
+          <iconify-icon icon="fe:trash" height="12" width="12"></iconify-icon>
+
+          Delete
+        </div>
+      </div>
+      {{ end -}}
+
       <p
         x-text="parseTimeStamp({{ .CreatedAt }})"
-        class="text-xs leading-none text-muted-foreground"
+        class="text-xs leading-[0.9] text-muted-foreground"
       ></p>
     </div>
   </div>
