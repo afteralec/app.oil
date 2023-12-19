@@ -33,6 +33,48 @@ func (q *Queries) CreateRequestComment(ctx context.Context, arg CreateRequestCom
 	)
 }
 
+const getCommentWithAuthor = `-- name: GetCommentWithAuthor :one
+SELECT 
+  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted
+FROM 
+  request_comments 
+JOIN
+  players
+ON
+  request_comments.pid = players.id
+WHERE 
+  request_comments.id = ?
+`
+
+type GetCommentWithAuthorRow struct {
+	Player         Player
+	RequestComment RequestComment
+}
+
+func (q *Queries) GetCommentWithAuthor(ctx context.Context, id int64) (GetCommentWithAuthorRow, error) {
+	row := q.queryRow(ctx, q.getCommentWithAuthorStmt, getCommentWithAuthor, id)
+	var i GetCommentWithAuthorRow
+	err := row.Scan(
+		&i.Player.CreatedAt,
+		&i.Player.UpdatedAt,
+		&i.Player.PwHash,
+		&i.Player.Username,
+		&i.Player.ID,
+		&i.RequestComment.CreatedAt,
+		&i.RequestComment.UpdatedAt,
+		&i.RequestComment.DeletedAt,
+		&i.RequestComment.Text,
+		&i.RequestComment.Field,
+		&i.RequestComment.RID,
+		&i.RequestComment.PID,
+		&i.RequestComment.CID,
+		&i.RequestComment.ID,
+		&i.RequestComment.VID,
+		&i.RequestComment.Deleted,
+	)
+	return i, err
+}
+
 const listCommentsForRequest = `-- name: ListCommentsForRequest :many
 SELECT created_at, updated_at, deleted_at, text, field, rid, pid, cid, id, vid, deleted FROM request_comments WHERE rid = ?
 `
@@ -58,6 +100,64 @@ func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]Requ
 			&i.ID,
 			&i.VID,
 			&i.Deleted,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listCommentsForRequestWithAuthor = `-- name: ListCommentsForRequestWithAuthor :many
+SELECT
+  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted
+FROM
+  request_comments
+JOIN
+  players
+ON
+  request_comments.pid = players.id
+WHERE
+  rid = ?
+`
+
+type ListCommentsForRequestWithAuthorRow struct {
+	Player         Player
+	RequestComment RequestComment
+}
+
+func (q *Queries) ListCommentsForRequestWithAuthor(ctx context.Context, rid int64) ([]ListCommentsForRequestWithAuthorRow, error) {
+	rows, err := q.query(ctx, q.listCommentsForRequestWithAuthorStmt, listCommentsForRequestWithAuthor, rid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListCommentsForRequestWithAuthorRow
+	for rows.Next() {
+		var i ListCommentsForRequestWithAuthorRow
+		if err := rows.Scan(
+			&i.Player.CreatedAt,
+			&i.Player.UpdatedAt,
+			&i.Player.PwHash,
+			&i.Player.Username,
+			&i.Player.ID,
+			&i.RequestComment.CreatedAt,
+			&i.RequestComment.UpdatedAt,
+			&i.RequestComment.DeletedAt,
+			&i.RequestComment.Text,
+			&i.RequestComment.Field,
+			&i.RequestComment.RID,
+			&i.RequestComment.PID,
+			&i.RequestComment.CID,
+			&i.RequestComment.ID,
+			&i.RequestComment.VID,
+			&i.RequestComment.Deleted,
 		); err != nil {
 			return nil, err
 		}

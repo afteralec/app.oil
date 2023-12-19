@@ -1,11 +1,31 @@
 package request
 
-import "regexp"
+import (
+	"regexp"
+
+	fiber "github.com/gofiber/fiber/v2"
+)
 
 const (
 	CommentMinLength = 1
 	CommentMaxLength = 500
 )
+
+type Comment struct {
+	Text       string
+	Author     string
+	AvatarLink string
+	CreatedAt  int64
+}
+
+func (c *Comment) Bind() fiber.Map {
+	return fiber.Map{
+		"Text":       c.Text,
+		"Author":     c.Author,
+		"AvatarLink": c.AvatarLink,
+		"CreatedAt":  c.CreatedAt,
+	}
+}
 
 func SanitizeComment(c string) string {
 	re := regexp.MustCompile("[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+")

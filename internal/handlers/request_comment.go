@@ -111,12 +111,23 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		_, err = qtx.CreateRequestComment(context.Background(), queries.CreateRequestCommentParams{
+		cr, err := qtx.CreateRequestComment(context.Background(), queries.CreateRequestCommentParams{
 			RID:   rid,
 			PID:   pid.(int64),
 			Text:  text,
 			Field: field,
 		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		cid, err := cr.LastInsertId()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		row, err := qtx.GetCommentWithAuthor(context.Background(), cid)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -127,6 +138,12 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		return c.Render("views/partials/request/comment", fiber.Map{}, "")
+		comment := request.Comment{
+			Author:     row.Player.Username,
+			Text:       row.RequestComment.Text,
+			AvatarLink: "https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50.jpeg?f=y&r=m&s=256&d=retro",
+			CreatedAt:  row.RequestComment.CreatedAt.Unix(),
+		}
+		return c.Render("views/partials/request/comment", comment.Bind(), "")
 	}
 }

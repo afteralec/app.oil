@@ -78,6 +78,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getCharacterApplicationContentForRequestStmt, err = db.PrepareContext(ctx, getCharacterApplicationContentForRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCharacterApplicationContentForRequest: %w", err)
 	}
+	if q.getCommentWithAuthorStmt, err = db.PrepareContext(ctx, getCommentWithAuthor); err != nil {
+		return nil, fmt.Errorf("error preparing query GetCommentWithAuthor: %w", err)
+	}
 	if q.getEmailStmt, err = db.PrepareContext(ctx, getEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query GetEmail: %w", err)
 	}
@@ -110,6 +113,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.listCommentsForRequestStmt, err = db.PrepareContext(ctx, listCommentsForRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query ListCommentsForRequest: %w", err)
+	}
+	if q.listCommentsForRequestWithAuthorStmt, err = db.PrepareContext(ctx, listCommentsForRequestWithAuthor); err != nil {
+		return nil, fmt.Errorf("error preparing query ListCommentsForRequestWithAuthor: %w", err)
 	}
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
@@ -257,6 +263,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getCharacterApplicationContentForRequestStmt: %w", cerr)
 		}
 	}
+	if q.getCommentWithAuthorStmt != nil {
+		if cerr := q.getCommentWithAuthorStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getCommentWithAuthorStmt: %w", cerr)
+		}
+	}
 	if q.getEmailStmt != nil {
 		if cerr := q.getEmailStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getEmailStmt: %w", cerr)
@@ -310,6 +321,11 @@ func (q *Queries) Close() error {
 	if q.listCommentsForRequestStmt != nil {
 		if cerr := q.listCommentsForRequestStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listCommentsForRequestStmt: %w", cerr)
+		}
+	}
+	if q.listCommentsForRequestWithAuthorStmt != nil {
+		if cerr := q.listCommentsForRequestWithAuthorStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listCommentsForRequestWithAuthorStmt: %w", cerr)
 		}
 	}
 	if q.listEmailsStmt != nil {
@@ -454,6 +470,7 @@ type Queries struct {
 	getCharacterApplicationStmt                           *sql.Stmt
 	getCharacterApplicationContentStmt                    *sql.Stmt
 	getCharacterApplicationContentForRequestStmt          *sql.Stmt
+	getCommentWithAuthorStmt                              *sql.Stmt
 	getEmailStmt                                          *sql.Stmt
 	getPlayerStmt                                         *sql.Stmt
 	getPlayerByUsernameStmt                               *sql.Stmt
@@ -465,6 +482,7 @@ type Queries struct {
 	listCharacterApplicationContentForPlayerStmt          *sql.Stmt
 	listCharacterApplicationsForPlayerStmt                *sql.Stmt
 	listCommentsForRequestStmt                            *sql.Stmt
+	listCommentsForRequestWithAuthorStmt                  *sql.Stmt
 	listEmailsStmt                                        *sql.Stmt
 	listOpenCharacterApplicationsStmt                     *sql.Stmt
 	listPlayerPermissionsStmt                             *sql.Stmt
@@ -506,6 +524,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getCharacterApplicationStmt:                           q.getCharacterApplicationStmt,
 		getCharacterApplicationContentStmt:                    q.getCharacterApplicationContentStmt,
 		getCharacterApplicationContentForRequestStmt:          q.getCharacterApplicationContentForRequestStmt,
+		getCommentWithAuthorStmt:                              q.getCommentWithAuthorStmt,
 		getEmailStmt:                                          q.getEmailStmt,
 		getPlayerStmt:                                         q.getPlayerStmt,
 		getPlayerByUsernameStmt:                               q.getPlayerByUsernameStmt,
@@ -517,6 +536,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listCharacterApplicationContentForPlayerStmt:          q.listCharacterApplicationContentForPlayerStmt,
 		listCharacterApplicationsForPlayerStmt:                q.listCharacterApplicationsForPlayerStmt,
 		listCommentsForRequestStmt:                            q.listCommentsForRequestStmt,
+		listCommentsForRequestWithAuthorStmt:                  q.listCommentsForRequestWithAuthorStmt,
 		listEmailsStmt:                                        q.listEmailsStmt,
 		listOpenCharacterApplicationsStmt:                     q.listOpenCharacterApplicationsStmt,
 		listPlayerPermissionsStmt:                             q.listPlayerPermissionsStmt,

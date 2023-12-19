@@ -53,7 +53,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		comments, err := qtx.ListCommentsForRequest(context.Background(), rid)
+		comments, err := qtx.ListCommentsForRequestWithAuthor(context.Background(), rid)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -148,7 +148,7 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		comments, err := qtx.ListCommentsForRequest(context.Background(), rid)
+		comments, err := qtx.ListCommentsForRequestWithAuthor(context.Background(), rid)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -245,7 +245,7 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 			return nil
 		}
 
-		comments, err := qtx.ListCommentsForRequest(context.Background(), rid)
+		comments, err := qtx.ListCommentsForRequestWithAuthor(context.Background(), rid)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -340,7 +340,7 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		comments, err := qtx.ListCommentsForRequest(context.Background(), rid)
+		comments, err := qtx.ListCommentsForRequestWithAuthor(context.Background(), rid)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -435,7 +435,7 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		comments, err := qtx.ListCommentsForRequest(context.Background(), rid)
+		comments, err := qtx.ListCommentsForRequestWithAuthor(context.Background(), rid)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil

@@ -12,10 +12,10 @@
       <h2
         class="w-full border-b text-xs font-semibold leading-none tracking-tight text-muted-foreground"
       >
-        author
+        {{ .Author }}
       </h2>
     </header>
-    <p class="pt-1 text-sm leading-none">Comment text</p>
+    <p class="pt-1 text-sm leading-none">{{ .Text }}</p>
     <div class="flex items-end justify-end pt-2">
       <p
         x-text="parseTimeStamp({{ .CreatedAt }})"
