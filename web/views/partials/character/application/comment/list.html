@@ -1,0 +1,8 @@
+{{ if .ViewedByReviewer -}}
+<section id="character-application-comments" class="flex flex-col gap-2">
+  <!-- prettier-ignore -->
+  {{ range .Comments -}}
+    {{ template "views/partials/request/comment" . }}
+  {{ end -}}
+</section>
+{{ end -}}

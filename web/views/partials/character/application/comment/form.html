@@ -1,4 +1,15 @@
-<form @submit.prevent="" x-cloak x-show="commentOpen" class="space-y-2 pt-4">
+<form
+  @submit.prevent="
+    comment = '';
+    commentOpen = false;
+  "
+  hx-post="{{ .CreateRequestCommentPath }}"
+  hx-swap="beforeend"
+  hx-target="#character-application-comments"
+  x-cloak
+  x-show="commentOpen"
+  class="space-y-2 pt-4"
+>
   <label
     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
     for="character-application-comment"

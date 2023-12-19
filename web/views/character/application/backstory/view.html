@@ -26,9 +26,13 @@
       <!-- prettier-ignore -->
       {{ template "views/partials/character/application/footer" . }}
       <!-- prettier-ignore -->
-      {{ template "views/partials/character/application/comment/form" }}
+      {{ template "views/partials/character/application/comment/form" . }}
     </div>
   </div>
+
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/comment/list" . }}
+
   <!-- prettier-ignore -->
   {{ template "views/partials/character/application/dialogs/cancel" .CharacterApplicationPath }}
 </main>

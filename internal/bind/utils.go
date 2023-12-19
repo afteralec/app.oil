@@ -39,6 +39,16 @@ func CharacterApplicationPaths(b fiber.Map, req *queries.Request) fiber.Map {
 	return b
 }
 
+func RequestCommentPaths(b fiber.Map, req *queries.Request, field string) fiber.Map {
+	b["CreateRequestCommentPath"] = routes.CreateRequestCommentPath(strconv.FormatInt(req.ID, 10), field)
+	return b
+}
+
+func RequestComments(b fiber.Map, comments []queries.RequestComment) fiber.Map {
+	b["Comments"] = comments
+	return b
+}
+
 func CharacterApplicationNav(b fiber.Map, app *queries.CharacterApplicationContent, field string) fiber.Map {
 	b["CharacterApplicationNav"] = character.MakeApplicationNav(field, app)
 	return b

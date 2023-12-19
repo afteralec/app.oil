@@ -53,6 +53,12 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		comments, err := qtx.ListCommentsForRequest(context.Background(), rid)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -80,18 +86,14 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 			}
 		}
 
-		// TODO: After putting an application in review,
-		// This should check if the request is in review
-		// and then show the review version of this page.
-		// The review version of this page essentially just allows
-		// the reviewer to comment and finish the review.
-
 		b := bind.RequestStatus(c.Locals(bind.Name).(fiber.Map), &row.Request)
 		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
+		b = bind.RequestCommentPaths(b, &row.Request, request.FieldName)
 		b = bind.CharacterApplicationPaths(b, &row.Request)
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
 		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent, "name")
 		b = bind.CharacterApplicationHeaderStatusIcon(b, &row.Request)
+		b = bind.RequestComments(b, comments)
 		b["NextLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 
 		if !request.IsEditable(&row.Request) {
@@ -146,6 +148,12 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		comments, err := qtx.ListCommentsForRequest(context.Background(), rid)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -175,11 +183,13 @@ func CharacterApplicationGenderPage(i *shared.Interfaces) fiber.Handler {
 
 		b := bind.RequestStatus(c.Locals(bind.Name).(fiber.Map), &row.Request)
 		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
+		b = bind.RequestCommentPaths(b, &row.Request, request.FieldGender)
 		b = bind.CharacterApplicationPaths(b, &row.Request)
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
 		b = bind.CharacterApplicationGender(b, &row.CharacterApplicationContent)
 		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent, "gender")
 		b = bind.CharacterApplicationHeaderStatusIcon(b, &row.Request)
+		b = bind.RequestComments(b, comments)
 		b["BackLink"] = routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 
@@ -235,6 +245,12 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 			return nil
 		}
 
+		comments, err := qtx.ListCommentsForRequest(context.Background(), rid)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -264,10 +280,12 @@ func CharacterApplicationShortDescriptionPage(i *shared.Interfaces) fiber.Handle
 
 		b := bind.RequestStatus(c.Locals(bind.Name).(fiber.Map), &row.Request)
 		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
+		b = bind.RequestCommentPaths(b, &row.Request, request.FieldShortDescription)
 		b = bind.CharacterApplicationPaths(b, &row.Request)
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
 		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent, "sdesc")
 		b = bind.CharacterApplicationHeaderStatusIcon(b, &row.Request)
+		b = bind.RequestComments(b, comments)
 		b["BackLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 
@@ -322,6 +340,12 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		comments, err := qtx.ListCommentsForRequest(context.Background(), rid)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -351,10 +375,12 @@ func CharacterApplicationDescriptionPage(i *shared.Interfaces) fiber.Handler {
 
 		b := bind.RequestStatus(c.Locals(bind.Name).(fiber.Map), &row.Request)
 		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
+		b = bind.RequestCommentPaths(b, &row.Request, request.FieldDescription)
 		b = bind.CharacterApplicationPaths(b, &row.Request)
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
 		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent, "description")
 		b = bind.CharacterApplicationHeaderStatusIcon(b, &row.Request)
+		b = bind.RequestComments(b, comments)
 		b["BackLink"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(rid, 10))
 
@@ -409,6 +435,12 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		comments, err := qtx.ListCommentsForRequest(context.Background(), rid)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -438,10 +470,12 @@ func CharacterApplicationBackstoryPage(i *shared.Interfaces) fiber.Handler {
 
 		b := bind.RequestStatus(c.Locals(bind.Name).(fiber.Map), &row.Request)
 		b = bind.RequestViewedBy(b, &row.Request, pid.(int64))
+		b = bind.RequestCommentPaths(b, &row.Request, request.FieldBackstory)
 		b = bind.CharacterApplicationPaths(b, &row.Request)
 		b = bind.CharacterApplicationContent(b, &row.CharacterApplicationContent)
 		b = bind.CharacterApplicationNav(b, &row.CharacterApplicationContent, "backstory")
 		b = bind.CharacterApplicationHeaderStatusIcon(b, &row.Request)
+		b = bind.RequestComments(b, comments)
 		b["BackLink"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(rid, 10))
 		b["NextLink"] = routes.CharacterApplicationPath(strconv.FormatInt(rid, 10))
 

@@ -32,3 +32,42 @@ func (q *Queries) CreateRequestComment(ctx context.Context, arg CreateRequestCom
 		arg.RID,
 	)
 }
+
+const listCommentsForRequest = `-- name: ListCommentsForRequest :many
+SELECT created_at, updated_at, deleted_at, text, field, rid, pid, cid, id, vid, deleted FROM request_comments WHERE rid = ?
+`
+
+func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]RequestComment, error) {
+	rows, err := q.query(ctx, q.listCommentsForRequestStmt, listCommentsForRequest, rid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestComment
+	for rows.Next() {
+		var i RequestComment
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+			&i.Text,
+			&i.Field,
+			&i.RID,
+			&i.PID,
+			&i.CID,
+			&i.ID,
+			&i.VID,
+			&i.Deleted,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

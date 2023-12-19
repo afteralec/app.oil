@@ -127,6 +127,6 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		return nil
+		return c.Render("views/partials/request/comment", fiber.Map{}, "")
 	}
 }
