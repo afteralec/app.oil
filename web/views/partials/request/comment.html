@@ -25,21 +25,44 @@
     <footer x-show="!editOpen" class="flex items-end justify-end pt-2">
       {{ if .ViewedByAuthor -}}
       <div class="mr-auto flex items-end justify-end gap-2">
-        <div
+        <button
+          type="button"
           @click.prevent="editOpen = true;"
           class="flex cursor-pointer items-end justify-end align-bottom text-xs leading-[0.9] text-muted-foreground hover:text-primary"
         >
           <iconify-icon icon="fe:pencil" height="12" width="12"></iconify-icon>
 
           Edit
-        </div>
-        <div
+        </button>
+        <button
+          x-show="!showDeleteConfirm"
+          @click.prevent="showDeleteConfirm = true;"
+          type="button"
           class="flex cursor-pointer items-end justify-end text-xs leading-[0.9] text-muted-foreground hover:text-primary"
         >
           <iconify-icon icon="fe:trash" height="12" width="12"></iconify-icon>
 
           Delete
-        </div>
+        </button>
+
+        <button
+          x-show="showDeleteConfirm"
+          @click.prevent="showDeleteConfirm = false;"
+          type="button"
+          class="flex cursor-pointer items-end justify-end text-xs leading-[0.9] text-muted-foreground hover:text-primary"
+        >
+          Don't Delete
+        </button>
+        <button
+          x-show="showDeleteConfirm"
+          @click.prevent="showDeleteConfirm = false;"
+          type="button"
+          class="flex cursor-pointer items-end justify-end text-xs leading-[0.9] text-rose-800 hover:text-rose-600"
+        >
+          <iconify-icon icon="fe:trash" height="12" width="12"></iconify-icon>
+
+          Delete Permanently
+        </button>
       </div>
       {{ end -}}
 

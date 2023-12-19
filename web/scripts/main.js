@@ -379,6 +379,7 @@ export function getRequestCommentData(c = "") {
   return {
     comment: c,
     editOpen: false,
+    showDeleteConfirm: false,
   };
 }
 
