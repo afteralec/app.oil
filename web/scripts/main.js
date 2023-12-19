@@ -254,8 +254,19 @@ export function getProfileAvatarSrc(
   if (avatarSource === "github") {
     return `https://github.com/${githubUsername}.png`;
   } else {
-    return `https://gravatar.com/avatar/${gravatarHash}.jpeg?s=256&d=retro`;
+    return `https://gravatar.com/avatar/${gravatarHash}.jpeg?f=y&r=m&s=256&d=retro`;
   }
+}
+
+export function parseTimeStamp(ts) {
+  const d = new Date(ts * 1000).toLocaleString("en-us", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  });
+  return d.toString();
 }
 
 export function getCharacterApplicationNameData(name) {
@@ -405,6 +416,7 @@ window.getProfileEmailData = getProfileEmailData;
 window.getEmailData = getEmailData;
 window.getGravatarEmailData = getGravatarEmailData;
 window.getProfileAvatarData = getProfileAvatarData;
+window.parseTimeStamp = parseTimeStamp;
 window.getCharacterApplicationNameData = getCharacterApplicationNameData;
 window.getCharacterApplicationGenderData = getCharacterApplicationGenderData;
 window.getCharacterApplicationShortDescriptionData =

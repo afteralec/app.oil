@@ -44,8 +44,20 @@ func RequestCommentPaths(b fiber.Map, req *queries.Request, field string) fiber.
 	return b
 }
 
+type RequestComment struct {
+	AvatarLink string
+	CreatedAt  int64
+}
+
 func RequestComments(b fiber.Map, comments []queries.RequestComment) fiber.Map {
-	b["Comments"] = comments
+	result := []RequestComment{}
+	for _, comment := range comments {
+		result = append(result, RequestComment{
+			AvatarLink: "https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50.jpeg?f=y&r=m&s=256&d=retro",
+			CreatedAt:  comment.CreatedAt.Unix(),
+		})
+	}
+	b["Comments"] = result
 	return b
 }
 
