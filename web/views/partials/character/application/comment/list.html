@@ -4,8 +4,8 @@
   class="flex w-full max-w-lg flex-col gap-3 pt-4"
 >
   <!-- prettier-ignore -->
-  {{ range .Comments -}}
-    {{ template "views/partials/request/comment" . }}
+  {{ range .CurrentComments -}}
+    {{ template "views/partials/request/comment/current" . }}
   {{ end -}}
 </section>
 {{ end -}}

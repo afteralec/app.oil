@@ -138,12 +138,14 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		// TODO: Move this type to the bind package
 		comment := request.Comment{
+			ID:         row.RequestComment.ID,
 			Author:     row.Player.Username,
 			Text:       row.RequestComment.Text,
 			AvatarLink: "https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50.jpeg?f=y&r=m&s=256&d=retro",
 			CreatedAt:  row.RequestComment.CreatedAt.Unix(),
 		}
-		return c.Render("views/partials/request/comment", comment.Bind(), "")
+		return c.Render("views/partials/request/comment/current", comment.Bind(), "")
 	}
 }
