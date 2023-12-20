@@ -55,6 +55,7 @@ func RequestComments(b fiber.Map, pid int64, vid int32, rows []queries.ListComme
 				AvatarLink:     "https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50.jpeg?f=y&r=m&s=256&d=retro",
 				CreatedAt:      row.RequestComment.CreatedAt.Unix(),
 				ViewedByAuthor: row.RequestComment.PID == pid,
+				Replies:        []request.Comment{},
 			}
 
 			replies, ok := repliesByCID[row.RequestComment.CID]
