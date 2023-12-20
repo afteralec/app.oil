@@ -69,17 +69,6 @@ func SubmitCharacterApplication(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.VID == 0 {
-			if err = qtx.IncrementRequestVersion(context.Background(), rid); err != nil {
-				if err == sql.ErrNoRows {
-					c.Status(fiber.StatusNotFound)
-					return nil
-				}
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
-		}
-
 		if err = qtx.CreateHistoryForRequestStatus(context.Background(), queries.CreateHistoryForRequestStatusParams{
 			PID: pid.(int64),
 			RID: rid,
@@ -195,6 +184,15 @@ func PutCharacterApplicationInReview(i *shared.Interfaces) fiber.Handler {
 			ID:   rid,
 			RPID: pid.(int64),
 		}); err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = qtx.IncrementRequestVersion(context.Background(), rid); err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				return nil

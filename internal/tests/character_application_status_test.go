@@ -135,71 +135,6 @@ func TestSubmitCharacterApplicationFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
-func TestSubmitCharacterApplicationSuccessVersionZero(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	defer DeleteTestCharacterApplication(t, &i, rid)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	if err := i.Queries.MarkRequestReady(context.Background(), rid); err != nil {
-		t.Fatal(err)
-	}
-	url := MakeTestURL(routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10)))
-	req := httptest.NewRequest(http.MethodPost, url, nil)
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusOK, res.StatusCode)
-
-	r, err := i.Queries.GetRequest(context.Background(), rid)
-	if err != nil {
-		t.Fatal(err)
-	}
-	require.Equal(t, int32(1), r.VID)
-}
-
-func TestSubmitCharacterApplicationSuccessVersionOne(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	defer DeleteTestCharacterApplication(t, &i, rid)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	if err := i.Queries.MarkRequestReady(context.Background(), rid); err != nil {
-		t.Fatal(err)
-	}
-	if err := i.Queries.IncrementRequestVersion(context.Background(), rid); err != nil {
-		t.Fatal(err)
-	}
-	url := MakeTestURL(routes.SubmitCharacterApplicationPath(strconv.FormatInt(rid, 10)))
-	req := httptest.NewRequest(http.MethodPost, url, nil)
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusOK, res.StatusCode)
-
-	r, err := i.Queries.GetRequest(context.Background(), rid)
-	if err != nil {
-		t.Fatal(err)
-	}
-	require.Equal(t, int32(1), r.VID)
-}
-
 func TestCancelCharacterApplicationUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
@@ -538,6 +473,63 @@ func TestPutCharacterApplicationInReviewSuccess(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestPutCharacterApplicationInReviewIncrementsVersion(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	// TODO: This is a hack. Rework this to use valid content and the existing handlers
+	if err := i.Queries.MarkRequestSubmitted(context.Background(), rid); err != nil {
+		t.Fatal(err)
+	}
+
+	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsernameTwo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rp, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
+		PID:        p.ID,
+		IPID:       p.ID,
+		Permission: permissions.PlayerReviewCharacterApplicationsName,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	permid, err := rp.LastInsertId()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer DeleteTestPlayerPermission(t, &i, permid)
+
+	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
+	sessionCookie := res.Cookies()[0]
+
+	url := MakeTestURL(routes.PutCharacterApplicationInReviewPath(strconv.FormatInt(rid, 10)))
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err = a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+
+	r, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, int32(1), r.VID)
 }
 
 func TestPutCharacterApplicationInReviewNotFound(t *testing.T) {
