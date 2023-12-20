@@ -239,6 +239,12 @@ func CreateTestRequestComment(params CreateTestRequestCommentParams) {
 	}
 }
 
+func FlushTestRedis(t *testing.T, i *shared.Interfaces) {
+	if err := i.Redis.FlushAll(context.Background()).Err(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func ListEmailsForPlayer(t *testing.T, i *shared.Interfaces, username string) []queries.Email {
 	p, err := i.Queries.GetPlayerByUsername(context.Background(), username)
 	if err != nil {

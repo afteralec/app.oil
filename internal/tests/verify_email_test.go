@@ -2,7 +2,6 @@ package tests
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -26,20 +25,10 @@ func TestVerifyEmailPageUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	if err := i.Redis.FlushAll(context.Background()).Err(); err != nil {
-		t.Fatal(err)
-	}
-	DeleteTestPlayer(t, &i, TestUsername)
-	CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	defer FlushTestRedis(t, &i)
 
 	keys, err := i.Redis.Keys(context.Background(), email.VerificationKey("*")).Result()
 	if err != nil {
@@ -48,8 +37,8 @@ func TestVerifyEmailPageUnauthorized(t *testing.T) {
 	keyParts := strings.Split(keys[0], ":")
 
 	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
-	req = httptest.NewRequest(http.MethodGet, url, nil)
-	res, err = a.Test(req)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,20 +54,12 @@ func TestVerifyEmailPageSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	if err := i.Redis.FlushAll(context.Background()).Err(); err != nil {
-		t.Fatal(err)
-	}
-	DeleteTestPlayer(t, &i, TestUsername)
-	CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	defer FlushTestRedis(t, &i)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	keys, err := i.Redis.Keys(context.Background(), email.VerificationKey("*")).Result()
 	if err != nil {
@@ -87,9 +68,9 @@ func TestVerifyEmailPageSuccess(t *testing.T) {
 	keyParts := strings.Split(keys[0], ":")
 
 	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
-	req = httptest.NewRequest(http.MethodGet, url, nil)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -97,7 +78,7 @@ func TestVerifyEmailPageSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestVerifyEmailPageUnowned(t *testing.T) {
+func TestVerifyEmailPageForbiddenUnowned(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -105,35 +86,27 @@ func TestVerifyEmailPageUnowned(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	if err := i.Redis.FlushAll(context.Background()).Err(); err != nil {
-		t.Fatal(err)
-	}
-	DeleteTestPlayer(t, &i, TestUsername)
-	CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	defer FlushTestRedis(t, &i)
 
-	rv, err := i.Redis.Keys(context.Background(), email.VerificationKey("*")).Result()
-	if err != nil {
-		t.Fatal(err)
-	}
-	rvParts := strings.Split(rv[0], ":")
-
-	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	res = CallLogin(t, a, TestUsernameTwo, TestPassword)
-	sessionCookie = res.Cookies()[0]
-	url := MakeTestURL(routes.VerifyEmailWithToken(rvParts[1]))
-	req = httptest.NewRequest(http.MethodGet, url, nil)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	keys, err := i.Redis.Keys(context.Background(), email.VerificationKey("*")).Result()
+	if err != nil {
+		t.Fatal(err)
+	}
+	keyParts := strings.Split(keys[0], ":")
+
+	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
+	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,20 +122,12 @@ func TestVerifyPageExpiredToken(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	if err := i.Redis.FlushAll(context.Background()).Err(); err != nil {
-		t.Fatal(err)
-	}
-	DeleteTestPlayer(t, &i, TestUsername)
-	CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	defer FlushTestRedis(t, &i)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	keys, err := i.Redis.Keys(context.Background(), email.VerificationKey("*")).Result()
 	if err != nil {
@@ -175,9 +140,10 @@ func TestVerifyPageExpiredToken(t *testing.T) {
 	keyParts := strings.Split(key, ":")
 
 	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
-	req = httptest.NewRequest(http.MethodGet, url, nil)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -185,7 +151,7 @@ func TestVerifyPageExpiredToken(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
-func TestVerifyEmailUnauthorized(t *testing.T) {
+func TestVerifyEmailUnauthorizedNotLoggedIn(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -193,20 +159,10 @@ func TestVerifyEmailUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	if err := i.Redis.FlushAll(context.Background()).Err(); err != nil {
-		t.Fatal(err)
-	}
-	DeleteTestPlayer(t, &i, TestUsername)
-	CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	defer FlushTestRedis(t, &i)
 
 	keys, err := i.Redis.Keys(context.Background(), email.VerificationKey("*")).Result()
 	if err != nil {
@@ -215,8 +171,8 @@ func TestVerifyEmailUnauthorized(t *testing.T) {
 	keyParts := strings.Split(keys[0], ":")
 
 	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[0]))
-	req = httptest.NewRequest(http.MethodPost, url, nil)
-	res, err = a.Test(req)
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -224,7 +180,7 @@ func TestVerifyEmailUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestVerifyEmailNoToken(t *testing.T) {
+func TestVerifyEmailBadRequestMissingToken(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -232,25 +188,18 @@ func TestVerifyEmailNoToken(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	if err := i.Redis.FlushAll(context.Background()).Err(); err != nil {
-		t.Fatal(err)
-	}
-	DeleteTestPlayer(t, &i, TestUsername)
-	CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	defer FlushTestRedis(t, &i)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	url := MakeTestURL(routes.VerifyEmail)
-	req = httptest.NewRequest(http.MethodPost, url, nil)
+	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -258,7 +207,7 @@ func TestVerifyEmailNoToken(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestVerifyEmailExpiredToken(t *testing.T) {
+func TestVerifyEmailNotFoundExpiredToken(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -266,35 +215,28 @@ func TestVerifyEmailExpiredToken(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	if err := i.Redis.FlushAll(context.Background()).Err(); err != nil {
-		t.Fatal(err)
-	}
-	DeleteTestPlayer(t, &i, TestUsername)
-	CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	defer FlushTestRedis(t, &i)
 
-	rv, err := i.Redis.Keys(context.Background(), email.VerificationKey("*")).Result()
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	keys, err := i.Redis.Keys(context.Background(), email.VerificationKey("*")).Result()
 	if err != nil {
 		t.Fatal(err)
 	}
-	key := rv[0]
+	key := keys[0]
 	if err := i.Redis.Expire(context.Background(), key, 0).Err(); err != nil {
 		t.Fatal(err)
 	}
 	keyParts := strings.Split(key, ":")
 
 	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
-	req = httptest.NewRequest(http.MethodPost, url, nil)
+	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -310,48 +252,27 @@ func TestVerifyEmailSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	if err := i.Redis.FlushAll(context.Background()).Err(); err != nil {
-		t.Fatal(err)
-	}
-	DeleteTestPlayer(t, &i, TestUsername)
-	CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	defer FlushTestRedis(t, &i)
 
-	rv, err := i.Redis.Keys(context.Background(), email.VerificationKey("*")).Result()
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	keys, err := i.Redis.Keys(context.Background(), email.VerificationKey("*")).Result()
 	if err != nil {
 		t.Fatal(err)
 	}
-	key := rv[0]
-	keyParts := strings.Split(key, ":")
+	keyParts := strings.Split(keys[0], ":")
 
 	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
-	req = httptest.NewRequest(http.MethodPost, url, nil)
+	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func SetupTestVerify(t *testing.T, i *shared.Interfaces, u string, e string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s';", u)
-	_, err := i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
-	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s';", e)
-	_, err = i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
 }
