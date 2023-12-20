@@ -437,8 +437,7 @@ func TestCreateRequestCommentSuccess(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
-	sessionCookie := res.Cookies()[0]
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -448,8 +447,8 @@ func TestCreateRequestCommentSuccess(t *testing.T) {
 	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.AddCookie(sessionCookie)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)
 	if err != nil {

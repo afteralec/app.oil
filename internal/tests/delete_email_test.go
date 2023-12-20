@@ -24,25 +24,15 @@ func TestDeleteEmailUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestDeleteEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
 
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
-	req = httptest.NewRequest(http.MethodDelete, url, nil)
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,7 +40,7 @@ func TestDeleteEmailUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestDeleteEmailDBError(t *testing.T) {
+func TestDeleteEmailFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -58,79 +48,53 @@ func TestDeleteEmailDBError(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestDeleteEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
-	req = httptest.NewRequest(http.MethodDelete, url, nil)
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
 	i.Close()
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	i = shared.SetupInterfaces()
+	defer i.Close()
+	defer DeleteTestPlayer(t, &i, TestUsername)
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
 func TestDeleteEmailUnowned(t *testing.T) {
-	// TODO: Figure out why this test isn't working
-	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
-	app.Handlers(a, &i)
 	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
-	SetupTestDeleteEmail(t, &i, TestUsername, TestEmailAddress)
-	SetupTestDeleteEmail(t, &i, "testify2", TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
 
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	// Log in as a different user
-	CallRegister(t, a, "testify2", TestPassword)
-	res = CallLogin(t, a, "testify2", TestPassword)
-	cookies = res.Cookies()
-	sessionCookie = cookies[0]
-	req = AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err = a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
-	req = httptest.NewRequest(http.MethodDelete, url, nil)
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -146,14 +110,14 @@ func TestDeleteEmailInvalidID(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestDeleteEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	url := MakeTestURL(routes.EmailPath("invalid"))
+
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -165,42 +129,25 @@ func TestDeleteEmailInvalidID(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestDeleteNonexistantEmail(t *testing.T) {
-	// TODO: Figure out why this test isn't working
-	t.Skip()
+func TestDeleteEmailNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
-	app.Handlers(a, &i)
 	app.Middleware(a, &i)
+	app.Handlers(a, &i)
 
-	SetupTestDeleteEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
-
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
-	req = httptest.NewRequest(http.MethodDelete, url, nil)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid+1, 10)))
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
-	_, err = a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -216,27 +163,17 @@ func TestDeleteEmailSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestDeleteEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
-
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
-	req = httptest.NewRequest(http.MethodDelete, url, nil)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -22,6 +22,9 @@ import (
 //
 // TODO: See if some of these could accept a session cookie and the PID instead of calling up the player itself
 // TODO: Turn some of these into transactions, or make a transaction-enabled version?
+//
+// TODO: Add a function to clean up resources starting with the test usernames -
+// pretty much everything can be traced up to a PID - and call it from the CLI
 
 func CreateTestPlayer(t *testing.T, i *shared.Interfaces, a *fiber.App, u, pw string) int64 {
 	body := new(bytes.Buffer)
