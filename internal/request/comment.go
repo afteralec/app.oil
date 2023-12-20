@@ -18,12 +18,16 @@ type Comment struct {
 	Replies        []Comment
 	ID             int64
 	CreatedAt      int64
+	VID            int32
 	ViewedByAuthor bool
+	Current        bool
 }
 
 func (c *Comment) Bind() fiber.Map {
 	return fiber.Map{
+		"Current":        c.Current,
 		"ID":             c.ID,
+		"VID":            c.VID,
 		"Text":           c.Text,
 		"Author":         c.Author,
 		"AvatarLink":     c.AvatarLink,
