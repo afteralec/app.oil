@@ -15,6 +15,7 @@ import (
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
@@ -27,32 +28,18 @@ func TestCreateRequestCommentUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsernameTwo)
-	if err != nil {
-		t.Fatal(err)
-	}
-	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
-		PID:        p.ID,
-		IPID:       p.ID,
-		Permission: permissions.PlayerReviewCharacterApplicationsName,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	prid, err := pr.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteTestPlayerPermission(t, &i, prid)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
 	// TODO: Make a map of valid Character Application fields
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), "name"))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)

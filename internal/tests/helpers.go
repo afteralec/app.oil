@@ -12,7 +12,6 @@ import (
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
-	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
@@ -120,11 +119,11 @@ func CreateTestEmail(t *testing.T, i *shared.Interfaces, a *fiber.App, e, u, pw 
 	return email.ID
 }
 
-func CreateTestPlayerPermission(t *testing.T, i *shared.Interfaces, pid int64) int64 {
+func CreateTestPlayerPermission(t *testing.T, i *shared.Interfaces, pid int64, permission string) int64 {
 	permissionResult, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
 		PID:        pid,
 		IPID:       pid,
-		Permission: permissions.PlayerReviewCharacterApplicationsName,
+		Permission: permission,
 	})
 	if err != nil {
 		t.Fatal(err)
