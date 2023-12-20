@@ -40,15 +40,14 @@ func TestLoginPageRedirectsIfAlreadyLoggedIn(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestLogin(t, &i, TestUsername)
-
 	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	req := httptest.NewRequest(http.MethodGet, MakeTestURL(routes.Login), nil)
 	req.AddCookie(sessionCookie)
@@ -69,9 +68,22 @@ func TestLoginNonExistantUser(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestLogin(t, &i, TestUsername)
+	url := MakeTestURL(routes.Login)
 
-	res := CallLogin(t, a, TestUsername, TestPassword)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("username", TestUsername)
+	writer.WriteField("password", TestPassword)
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
@@ -79,56 +91,88 @@ func TestLoginSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestLogin(t, &i, TestUsername)
-
 	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 
-func TestLoginWithWrongPassword(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	SetupTestLogin(t, &i, TestUsername)
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, "wrongpassword")
-	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
-}
-
-func TestLoginWithMalformedFormData(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	SetupTestLogin(t, &i, TestUsername)
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	CallRegister(t, a, TestUsername, TestPassword)
+	url := MakeTestURL(routes.Login)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("username", "testify")
+	writer.WriteField("username", TestUsername)
+	writer.WriteField("password", TestPassword)
 	writer.Close()
 
-	url := MakeTestURL(routes.Login)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestLoginUnauthorizedWrongPassword(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+
+	url := MakeTestURL(routes.Login)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("username", TestUsername)
+	writer.WriteField("password", fmt.Sprintf("%s!", TestPassword))
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestLoginBadRequestMalformedBody(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+
+	url := MakeTestURL(routes.Login)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("username", TestUsername)
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
@@ -148,12 +192,4 @@ func CallLogin(t *testing.T, app *fiber.App, u string, pw string) *http.Response
 	}
 
 	return res
-}
-
-func SetupTestLogin(t *testing.T, i *shared.Interfaces, u string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
-	_, err := i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
 }

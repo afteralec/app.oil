@@ -27,24 +27,12 @@ func TestEditEmailUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
-
-	req = EditEmailRequest(email.ID, TestEmailAddressTwo)
-	res, err = a.Test(req)
+	req := EditEmailRequest(eid, TestEmailAddressTwo)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,7 +40,7 @@ func TestEditEmailUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestEditEmailMissingInput(t *testing.T) {
+func TestEditEmailMissingBody(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -60,25 +48,13 @@ func TestEditEmailMissingInput(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
-
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
-	req = httptest.NewRequest(http.MethodPut, url, nil)
-	res, err = a.Test(req)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,32 +70,24 @@ func TestEditEmailMalformedInput(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("notemail", "malformed")
 	writer.Close()
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
-	req = httptest.NewRequest(http.MethodPut, url, body)
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
+
+	req := httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -127,38 +95,31 @@ func TestEditEmailMalformedInput(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestEditEmailDBError(t *testing.T) {
+func TestEditEmailFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
-	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
-	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
-	SetupTestEditEmail(t, &i, "testify2", TestEmailAddressTwo)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	req := EditEmailRequest(eid, TestEmailAddressTwo)
 	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
 
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
-
-	req = EditEmailRequest(email.ID, TestEmailAddressTwo)
-	req.AddCookie(sessionCookie)
-	// Close the connection to the DB to simulate a DB error
 	i.Close()
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	i = shared.SetupInterfaces()
+	defer i.Close()
+	defer DeleteTestPlayer(t, &i, TestUsername)
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
@@ -171,38 +132,19 @@ func TestEditEmailUnowned(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
-	SetupTestEditEmail(t, &i, "testify2", TestEmailAddressTwo)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	req := EditEmailRequest(eid, TestEmailAddressTwo)
 	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
 
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
-
-	// Log in as a different user
-	CallRegister(t, a, TestUsernameTwo, TestPassword)
-	res = CallLogin(t, a, TestUsernameTwo, TestPassword)
-	cookies = res.Cookies()
-	sessionCookie = cookies[0]
-	req = AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err = a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	req = EditEmailRequest(email.ID, TestEmailAddressTwo)
-	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -218,25 +160,26 @@ func TestEditEmailInvalidID(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.EmailPath("invalid"))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("email", TestEmailAddressTwo)
 	writer.Close()
 
-	url := MakeTestURL(routes.EmailPath("invalid"))
 	req, err := http.NewRequest(http.MethodPut, url, body)
 	if err != nil {
 		t.Fatal(err)
 	}
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -244,7 +187,7 @@ func TestEditEmailInvalidID(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestEditNonexistantEmail(t *testing.T) {
+func TestEditEmailNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -252,24 +195,15 @@ func TestEditNonexistantEmail(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
+	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
-	req, err = http.NewRequest(http.MethodDelete, url, nil)
+	req, err := http.NewRequest(http.MethodDelete, url, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -280,9 +214,10 @@ func TestEditNonexistantEmail(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req = EditEmailRequest(email.ID, TestEmailAddress)
+	req = EditEmailRequest(eid, TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -290,7 +225,7 @@ func TestEditNonexistantEmail(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
-func TestEditEmailUnverified(t *testing.T) {
+func TestEditEmailForbiddenUnverified(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -298,25 +233,16 @@ func TestEditEmailUnverified(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	req := EditEmailRequest(eid, TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
 
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
-
-	req = EditEmailRequest(email.ID, TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -332,29 +258,21 @@ func TestEditEmailSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestEditEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	_, err := i.Queries.MarkEmailVerified(context.Background(), eid)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
-	_, err = i.Queries.MarkEmailVerified(context.Background(), email.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	req = EditEmailRequest(email.ID, TestEmailAddress)
+	req := EditEmailRequest(eid, TestEmailAddress)
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -373,16 +291,4 @@ func SetupTestEditEmail(t *testing.T, i *shared.Interfaces, u string, e string) 
 	if err != nil {
 		t.Fatal(err)
 	}
-}
-
-func EditEmailRequest(id int64, e string) *http.Request {
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("email", e)
-	writer.Close()
-
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(id, 10)))
-	req := httptest.NewRequest(http.MethodPut, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	return req
 }

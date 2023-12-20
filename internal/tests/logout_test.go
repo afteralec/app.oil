@@ -14,25 +14,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func TestLogout(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	url := MakeTestURL(routes.Logout)
-	req := httptest.NewRequest(http.MethodPost, url, nil)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func TestLogoutPage(t *testing.T) {
+func TestLogoutPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -42,6 +24,25 @@ func TestLogoutPage(t *testing.T) {
 
 	url := MakeTestURL(routes.Logout)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+// TODO: Add some logic to verify that the user is logged out
+func TestLogoutSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	url := MakeTestURL(routes.Logout)
+	req := httptest.NewRequest(http.MethodPost, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
