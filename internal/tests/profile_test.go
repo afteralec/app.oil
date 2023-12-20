@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,7 +14,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func TestProfilePage(t *testing.T) {
+func TestProfilePageUnauthorizedNotLoggedIn(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -25,6 +24,7 @@ func TestProfilePage(t *testing.T) {
 
 	url := MakeTestURL(routes.Profile)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -41,28 +41,19 @@ func TestProfilePageSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestProfile(t, &i, TestUsername)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	url := MakeTestURL(routes.Profile)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func SetupTestProfile(t *testing.T, i *shared.Interfaces, u string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s';", u)
-	_, err := i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
 }
