@@ -21,13 +21,25 @@ func TestRegister(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	SetupTestRegister(t, &i, TestUsername)
-
 	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	res := CallRegister(t, a, TestUsername, TestPassword)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("username", TestUsername)
+	writer.WriteField("password", TestPassword)
+	writer.WriteField("confirmPassword", TestPassword)
+	writer.Close()
+
+	url := MakeTestURL(routes.Register)
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	require.Equal(t, fiber.StatusCreated, res.StatusCode)
 }
@@ -49,8 +61,4 @@ func CallRegister(t *testing.T, app *fiber.App, u string, pw string) *http.Respo
 	}
 
 	return res
-}
-
-func SetupTestRegister(t *testing.T, i *shared.Interfaces, u string) {
-	DeleteTestPlayer(t, i, u)
 }

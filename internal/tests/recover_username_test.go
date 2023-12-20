@@ -2,8 +2,6 @@ package tests
 
 import (
 	"bytes"
-	"context"
-	"fmt"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -18,7 +16,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func TestRecoverUsernamePage(t *testing.T) {
+func TestRecoverUsernamePageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -28,6 +26,7 @@ func TestRecoverUsernamePage(t *testing.T) {
 
 	url := MakeTestURL(routes.RecoverUsername)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -36,7 +35,7 @@ func TestRecoverUsernamePage(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestRecoverUsernameSuccessPageRedirectsWithoutToken(t *testing.T) {
+func TestRecoverUsernameSuccessPageFoundNoToken(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -46,6 +45,7 @@ func TestRecoverUsernameSuccessPageRedirectsWithoutToken(t *testing.T) {
 
 	url := MakeTestURL(routes.RecoverUsernameSuccess)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -54,15 +54,13 @@ func TestRecoverUsernameSuccessPageRedirectsWithoutToken(t *testing.T) {
 	require.Equal(t, fiber.StatusFound, res.StatusCode)
 }
 
-func TestRecoverUsernameMissingBody(t *testing.T) {
+func TestRecoverUsernameBadRequestMissingBody(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
-
-	SetupTestRecoverUsername(t, &i, TestUsername, TestEmailAddress)
 
 	url := MakeTestURL(routes.RecoverUsername)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
@@ -75,7 +73,7 @@ func TestRecoverUsernameMissingBody(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestRecoverUsernameMalformedBody(t *testing.T) {
+func TestRecoverUsernameBadRequestMalformedBody(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -83,13 +81,13 @@ func TestRecoverUsernameMalformedBody(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestRecoverUsername(t, &i, TestUsername, TestEmailAddress)
-
-	url := MakeTestURL(routes.RecoverUsername)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("notemail", "notanemail")
 	writer.Close()
+
+	url := MakeTestURL(routes.RecoverUsername)
+
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
@@ -109,52 +107,24 @@ func TestRecoverUsernameSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestRecoverUsername(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
-
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	email := emails[0]
-	_, err = i.Queries.MarkEmailVerified(context.Background(), email.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	url := MakeTestURL(routes.RecoverUsername)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("email", TestEmailAddress)
 	writer.Close()
-	req = httptest.NewRequest(http.MethodPost, url, body)
+
+	url := MakeTestURL(routes.RecoverUsername)
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func SetupTestRecoverUsername(t *testing.T, i *shared.Interfaces, u string, e string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s';", u)
-	_, err := i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
-	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s';", e)
-	_, err = i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
 }

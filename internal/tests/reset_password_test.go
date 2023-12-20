@@ -64,8 +64,6 @@ func TestResetPasswordMissingBody(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestResetPassword(t, &i, TestUsername, TestEmailAddress)
-
 	url := MakeTestURL(routes.ResetPassword)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
@@ -85,13 +83,13 @@ func TestResetPasswordMalformedBody(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestResetPassword(t, &i, TestUsername, TestEmailAddress)
-
-	url := MakeTestURL(routes.ResetPassword)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("notusername", "notausername")
 	writer.Close()
+
+	url := MakeTestURL(routes.ResetPassword)
+
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
@@ -112,54 +110,31 @@ func TestResetPasswordSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestRecoverPassword(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
-
-	req := AddEmailRequest(TestEmailAddress)
-	req.AddCookie(sessionCookie)
-	_, err := a.Test(req)
+	_, err := i.Queries.MarkEmailVerified(context.Background(), eid)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	emails := ListEmailsForPlayer(t, &i, TestUsername)
-	e := emails[0]
-
-	_, err = i.Queries.MarkEmailVerified(context.Background(), e.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	url := MakeTestURL(routes.RecoverPassword)
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("username", TestUsername)
 	writer.WriteField("password", TestPassword)
 	writer.WriteField("confirm", TestPassword)
 	writer.Close()
-	req = httptest.NewRequest(http.MethodPost, url, body)
+
+	url := MakeTestURL(routes.RecoverPassword)
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func SetupTestResetPassword(t *testing.T, i *shared.Interfaces, u string, e string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s';", u)
-	_, err := i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
-	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s';", e)
-	_, err = i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
 }

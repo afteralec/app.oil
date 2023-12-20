@@ -14,7 +14,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func TestRecoverPage(t *testing.T) {
+func TestRecoverPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -24,6 +24,7 @@ func TestRecoverPage(t *testing.T) {
 
 	url := MakeTestURL(routes.Recover)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)

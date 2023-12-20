@@ -2,7 +2,6 @@ package tests
 
 import (
 	"bytes"
-	"fmt"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -21,15 +20,12 @@ func TestReservedConflict(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	config := configs.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestReserved(&i, t)
-	defer SetupTestReserved(&i, t)
-
-	_ = CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -39,6 +35,7 @@ func TestReservedConflict(t *testing.T) {
 	url := MakeTestURL(routes.Reserved)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -55,9 +52,7 @@ func TestReservedFatal(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestReserved(&i, t)
-
-	_ = CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 
 	i.Close()
 
@@ -69,14 +64,15 @@ func TestReservedFatal(t *testing.T) {
 	url := MakeTestURL(routes.Reserved)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	it := shared.SetupInterfaces()
-	SetupTestReserved(&it, t)
-	it.Close()
+	i = shared.SetupInterfaces()
+	defer i.Close()
+	defer DeleteTestPlayer(t, &i, TestUsername)
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
@@ -89,8 +85,6 @@ func TestReservedOK(t *testing.T) {
 	a := fiber.New(config)
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
-
-	SetupTestReserved(&i, t)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -106,12 +100,4 @@ func TestReservedOK(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func SetupTestReserved(i *shared.Interfaces, t *testing.T) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s';", TestUsername)
-	_, err := i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
 }
