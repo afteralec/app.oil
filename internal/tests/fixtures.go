@@ -10,7 +10,20 @@ import (
 	"petrichormud.com/app/internal/routes"
 )
 
-// TODO: Rename this to include Fixture?
+// TODO: Rename these to include Fixture?
+
+func AddEmailRequest(e string) *http.Request {
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", e)
+	writer.Close()
+
+	url := MakeTestURL(routes.NewEmailPath())
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	return req
+}
+
 func EditEmailRequest(id int64, e string) *http.Request {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)

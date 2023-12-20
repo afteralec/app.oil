@@ -17,11 +17,6 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-const (
-	TestEmailAddress    = "testify@test.com"
-	TestEmailAddressTwo = "testify2@test.com"
-)
-
 func TestAddEmailSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
@@ -148,16 +143,4 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
-}
-
-func AddEmailRequest(e string) *http.Request {
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("email", e)
-	writer.Close()
-
-	url := MakeTestURL(routes.NewEmailPath())
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	return req
 }
