@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -179,17 +178,4 @@ func TestDeleteEmailSuccess(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func SetupTestDeleteEmail(t *testing.T, i *shared.Interfaces, u string, e string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
-	_, err := i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
-	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s'", e)
-	_, err = i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
 }
