@@ -250,6 +250,38 @@ func TestEditEmailForbiddenUnverified(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
+func TestEditEmailConflictVerified(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+
+	_, err := i.Queries.MarkEmailVerified(context.Background(), eid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.ResendEmailVerificationPath(strconv.FormatInt(eid, 10)))
+
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusConflict, res.StatusCode)
+}
+
 func TestEditEmailSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
