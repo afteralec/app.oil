@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -13,7 +12,6 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
@@ -36,7 +34,7 @@ func TestPlayerPermissionsPageUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestPlayerPermissionsPageForbidden(t *testing.T) {
+func TestPlayerPermissionsPageForbiddenNoPermission(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -44,13 +42,16 @@ func TestPlayerPermissionsPageForbidden(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
 	url := MakeTestURL(routes.PlayerPermissions)
+
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -67,35 +68,17 @@ func TestPlayerPermissionsPageSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	CallRegister(t, a, TestUsername, TestPassword)
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
+	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerGrantAllPermissionsName)
+	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// TODO: This is a hack. Update this test to simulate adding permissions via a dummy super-user
-	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
-		PID:        p.ID,
-		IPID:       p.ID,
-		Permission: permissions.PlayerGrantAllPermissions.Name,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	permid, err := pr.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteTestPlayerPermission(t, &i, permid)
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	url := MakeTestURL(routes.PlayerPermissions)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -111,15 +94,10 @@ func TestPlayerPermissionsDetailPageUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	CallRegister(t, a, TestUsername, TestPassword)
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	url := MakeTestURL(routes.PlayerPermissionsDetailPath(strconv.FormatInt(p.ID, 10)))
+	url := MakeTestURL(routes.PlayerPermissionsDetailPath(strconv.FormatInt(pid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -129,7 +107,7 @@ func TestPlayerPermissionsDetailPageUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestPlayerPermissionsDetailPageForbidden(t *testing.T) {
+func TestPlayerPermissionsDetailPageForbiddenNoPermission(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -137,20 +115,20 @@ func TestPlayerPermissionsDetailPageForbidden(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
 
-	url := MakeTestURL(routes.PlayerPermissionsDetailPath(strconv.FormatInt(p.ID, 10)))
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.PlayerPermissionsDetailPath(strconv.FormatInt(pid, 10)))
+
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -166,35 +144,19 @@ func TestPlayerPermissionsDetailPageSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	CallRegister(t, a, TestUsername, TestPassword)
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
+	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerGrantAllPermissionsName)
+	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// TODO: This is a hack. Update this test to simulate adding permissions via a dummy super-user
-	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
-		PID:        p.ID,
-		IPID:       p.ID,
-		Permission: permissions.PlayerGrantAllPermissions.Name,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	permid, err := pr.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteTestPlayerPermission(t, &i, permid)
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	url := MakeTestURL(routes.PlayerPermissionsDetailPath(TestUsername))
+
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -122,6 +122,7 @@ func CreateTestEmail(t *testing.T, i *shared.Interfaces, a *fiber.App, e, u, pw 
 	return email.ID
 }
 
+// TODO: Rework this to use endpoints on the app instead of interfaces directly
 func CreateTestPlayerPermission(t *testing.T, i *shared.Interfaces, pid int64, permission string) int64 {
 	permissionResult, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
 		PID:        pid,
