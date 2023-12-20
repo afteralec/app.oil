@@ -7,6 +7,9 @@ UPDATE emails SET verified = true WHERE id = ?;
 -- name: GetEmail :one
 SELECT * FROM emails WHERE id = ?;
 
+-- name: GetEmailByAddressForPlayer :one
+SELECT * FROM emails WHERE address = ? AND pid = ?;
+
 -- name: GetVerifiedEmailByAddress :one
 SELECT * FROM emails WHERE address = ? AND verified = true;
 

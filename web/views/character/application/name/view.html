@@ -23,13 +23,18 @@
 
       <!-- prettier-ignore -->
       {{ template "views/partials/character/application/footer" . }}
+
+      {{ if and .StatusInReview .ViewedByReviewer -}}
       <!-- prettier-ignore -->
       {{ template "views/partials/character/application/comment/form" . }}
+      {{ end -}}
     </div>
   </div>
 
+  {{ if and .StatusInReview .ViewedByReviewer -}}
   <!-- prettier-ignore -->
   {{ template "views/partials/character/application/comment/list" . }}
+  {{ end -}}
 
   <!-- prettier-ignore -->
   {{ template "views/partials/character/application/dialogs/cancel" .CharacterApplicationPath }}

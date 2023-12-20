@@ -18,9 +18,9 @@ INSERT INTO requests (type, pid) VALUES (?, ?);
 -- name: IncrementRequestVersion :exec
 UPDATE requests SET vid = vid + 1 WHERE id = ?;
 
--- name: CreateHistoryForRequestStatus :exec
+-- name: CreateHistoryForRequestStatusChange :exec
 INSERT INTO 
-  request_status_changes
+  request_status_change_history
   (rid, vid, status, pid)
 VALUES
   (?, (SELECT vid FROM requests WHERE requests.id = rid), (SELECT status FROM requests WHERE requests.id = rid), ?);

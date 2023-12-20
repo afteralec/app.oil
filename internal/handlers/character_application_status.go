@@ -69,7 +69,7 @@ func SubmitCharacterApplication(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if err = qtx.CreateHistoryForRequestStatus(context.Background(), queries.CreateHistoryForRequestStatusParams{
+		if err = qtx.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
 			PID: pid.(int64),
 			RID: rid,
 		}); err != nil {
@@ -169,7 +169,7 @@ func PutCharacterApplicationInReview(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if err = qtx.CreateHistoryForRequestStatus(context.Background(), queries.CreateHistoryForRequestStatusParams{
+		if err = qtx.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
 			PID: pid.(int64),
 			RID: rid,
 		}); err != nil {
@@ -259,7 +259,7 @@ func CancelCharacterApplication(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if err = qtx.CreateHistoryForRequestStatus(context.Background(), queries.CreateHistoryForRequestStatusParams{
+		if err = qtx.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
 			PID: pid.(int64),
 			RID: rid,
 		}); err != nil {

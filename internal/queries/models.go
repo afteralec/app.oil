@@ -77,7 +77,6 @@ type Request struct {
 	PID       int64
 	ID        int64
 	VID       int32
-	New       bool
 }
 
 type RequestComment struct {
@@ -98,12 +97,14 @@ type RequestCommentHistory struct {
 	CreatedAt time.Time
 	Text      string
 	Field     string
+	RID       int64
+	PID       int64
 	CID       int64
 	ID        int64
 	VID       int32
 }
 
-type RequestStatusChange struct {
+type RequestStatusChangeHistory struct {
 	CreatedAt time.Time
 	Status    string
 	RID       int64

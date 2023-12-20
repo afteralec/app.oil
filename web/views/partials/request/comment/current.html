@@ -65,6 +65,21 @@
           Delete Permanently
         </button>
       </div>
+      {{ else -}}
+      <div class="mr-auto flex items-end justify-end gap-2">
+        <button
+          type="button"
+          class="flex cursor-pointer items-end justify-end align-bottom text-xs leading-[0.9] text-muted-foreground hover:text-primary"
+        >
+          <iconify-icon
+            icon="ci:chat-conversation"
+            height="12"
+            width="12"
+          ></iconify-icon>
+
+          Reply
+        </button>
+      </div>
       {{ end -}}
 
       <p

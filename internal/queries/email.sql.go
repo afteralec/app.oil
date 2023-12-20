@@ -60,6 +60,29 @@ func (q *Queries) GetEmail(ctx context.Context, id int64) (Email, error) {
 	return i, err
 }
 
+const getEmailByAddressForPlayer = `-- name: GetEmailByAddressForPlayer :one
+SELECT created_at, updated_at, address, verified, pid, id FROM emails WHERE address = ? AND pid = ?
+`
+
+type GetEmailByAddressForPlayerParams struct {
+	Address string
+	PID     int64
+}
+
+func (q *Queries) GetEmailByAddressForPlayer(ctx context.Context, arg GetEmailByAddressForPlayerParams) (Email, error) {
+	row := q.queryRow(ctx, q.getEmailByAddressForPlayerStmt, getEmailByAddressForPlayer, arg.Address, arg.PID)
+	var i Email
+	err := row.Scan(
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Address,
+		&i.Verified,
+		&i.PID,
+		&i.ID,
+	)
+	return i, err
+}
+
 const getVerifiedEmailByAddress = `-- name: GetVerifiedEmailByAddress :one
 SELECT created_at, updated_at, address, verified, pid, id FROM emails WHERE address = ? AND verified = true
 `

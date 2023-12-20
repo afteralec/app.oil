@@ -30,15 +30,13 @@ func TestAddEmailSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
-
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -47,7 +45,7 @@ func TestAddEmailSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusCreated, res.StatusCode)
 }
 
-func TestAddEmailWithoutLogin(t *testing.T) {
+func TestAddEmailUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -56,9 +54,11 @@ func TestAddEmailWithoutLogin(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 
 	req := AddEmailRequest(TestEmailAddress)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -76,12 +76,9 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
-
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	// TODO: Add more test cases for possible inputs here
 	req := AddEmailRequest("invalid")
@@ -94,7 +91,7 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestAddEmailDBDisconnected(t *testing.T) {
+func TestAddEmailFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -103,20 +100,21 @@ func TestAddEmailDBDisconnected(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
 
 	i.Close()
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	i = shared.SetupInterfaces()
+	defer DeleteTestPlayer(t, &i, TestUsername)
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
@@ -130,12 +128,9 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	SetupTestAddEmail(t, &i, TestUsername, TestEmailAddress)
-
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -146,6 +141,7 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)

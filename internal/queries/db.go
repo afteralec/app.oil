@@ -42,8 +42,8 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createHistoryForCharacterApplicationStmt, err = db.PrepareContext(ctx, createHistoryForCharacterApplication); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateHistoryForCharacterApplication: %w", err)
 	}
-	if q.createHistoryForRequestStatusStmt, err = db.PrepareContext(ctx, createHistoryForRequestStatus); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateHistoryForRequestStatus: %w", err)
+	if q.createHistoryForRequestStatusChangeStmt, err = db.PrepareContext(ctx, createHistoryForRequestStatusChange); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateHistoryForRequestStatusChange: %w", err)
 	}
 	if q.createPlayerStmt, err = db.PrepareContext(ctx, createPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePlayer: %w", err)
@@ -83,6 +83,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getEmailStmt, err = db.PrepareContext(ctx, getEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query GetEmail: %w", err)
+	}
+	if q.getEmailByAddressForPlayerStmt, err = db.PrepareContext(ctx, getEmailByAddressForPlayer); err != nil {
+		return nil, fmt.Errorf("error preparing query GetEmailByAddressForPlayer: %w", err)
 	}
 	if q.getPlayerStmt, err = db.PrepareContext(ctx, getPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayer: %w", err)
@@ -203,9 +206,9 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createHistoryForCharacterApplicationStmt: %w", cerr)
 		}
 	}
-	if q.createHistoryForRequestStatusStmt != nil {
-		if cerr := q.createHistoryForRequestStatusStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createHistoryForRequestStatusStmt: %w", cerr)
+	if q.createHistoryForRequestStatusChangeStmt != nil {
+		if cerr := q.createHistoryForRequestStatusChangeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createHistoryForRequestStatusChangeStmt: %w", cerr)
 		}
 	}
 	if q.createPlayerStmt != nil {
@@ -271,6 +274,11 @@ func (q *Queries) Close() error {
 	if q.getEmailStmt != nil {
 		if cerr := q.getEmailStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getEmailStmt: %w", cerr)
+		}
+	}
+	if q.getEmailByAddressForPlayerStmt != nil {
+		if cerr := q.getEmailByAddressForPlayerStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getEmailByAddressForPlayerStmt: %w", cerr)
 		}
 	}
 	if q.getPlayerStmt != nil {
@@ -458,7 +466,7 @@ type Queries struct {
 	createCharacterApplicationContentStmt                 *sql.Stmt
 	createEmailStmt                                       *sql.Stmt
 	createHistoryForCharacterApplicationStmt              *sql.Stmt
-	createHistoryForRequestStatusStmt                     *sql.Stmt
+	createHistoryForRequestStatusChangeStmt               *sql.Stmt
 	createPlayerStmt                                      *sql.Stmt
 	createPlayerPermissionStmt                            *sql.Stmt
 	createPlayerPermissionIssuedChangeHistoryStmt         *sql.Stmt
@@ -472,6 +480,7 @@ type Queries struct {
 	getCharacterApplicationContentForRequestStmt          *sql.Stmt
 	getCommentWithAuthorStmt                              *sql.Stmt
 	getEmailStmt                                          *sql.Stmt
+	getEmailByAddressForPlayerStmt                        *sql.Stmt
 	getPlayerStmt                                         *sql.Stmt
 	getPlayerByUsernameStmt                               *sql.Stmt
 	getPlayerUsernameStmt                                 *sql.Stmt
@@ -512,7 +521,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createCharacterApplicationContentStmt:                 q.createCharacterApplicationContentStmt,
 		createEmailStmt:                                       q.createEmailStmt,
 		createHistoryForCharacterApplicationStmt:              q.createHistoryForCharacterApplicationStmt,
-		createHistoryForRequestStatusStmt:                     q.createHistoryForRequestStatusStmt,
+		createHistoryForRequestStatusChangeStmt:               q.createHistoryForRequestStatusChangeStmt,
 		createPlayerStmt:                                      q.createPlayerStmt,
 		createPlayerPermissionStmt:                            q.createPlayerPermissionStmt,
 		createPlayerPermissionIssuedChangeHistoryStmt:         q.createPlayerPermissionIssuedChangeHistoryStmt,
@@ -526,6 +535,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getCharacterApplicationContentForRequestStmt:          q.getCharacterApplicationContentForRequestStmt,
 		getCommentWithAuthorStmt:                              q.getCommentWithAuthorStmt,
 		getEmailStmt:                                          q.getEmailStmt,
+		getEmailByAddressForPlayerStmt:                        q.getEmailByAddressForPlayerStmt,
 		getPlayerStmt:                                         q.getPlayerStmt,
 		getPlayerByUsernameStmt:                               q.getPlayerByUsernameStmt,
 		getPlayerUsernameStmt:                                 q.getPlayerUsernameStmt,

@@ -26,21 +26,21 @@ func (q *Queries) CountOpenRequests(ctx context.Context, pid int64) (int64, erro
 	return count, err
 }
 
-const createHistoryForRequestStatus = `-- name: CreateHistoryForRequestStatus :exec
+const createHistoryForRequestStatusChange = `-- name: CreateHistoryForRequestStatusChange :exec
 INSERT INTO 
-  request_status_changes
+  request_status_change_history
   (rid, vid, status, pid)
 VALUES
   (?, (SELECT vid FROM requests WHERE requests.id = rid), (SELECT status FROM requests WHERE requests.id = rid), ?)
 `
 
-type CreateHistoryForRequestStatusParams struct {
+type CreateHistoryForRequestStatusChangeParams struct {
 	RID int64
 	PID int64
 }
 
-func (q *Queries) CreateHistoryForRequestStatus(ctx context.Context, arg CreateHistoryForRequestStatusParams) error {
-	_, err := q.exec(ctx, q.createHistoryForRequestStatusStmt, createHistoryForRequestStatus, arg.RID, arg.PID)
+func (q *Queries) CreateHistoryForRequestStatusChange(ctx context.Context, arg CreateHistoryForRequestStatusChangeParams) error {
+	_, err := q.exec(ctx, q.createHistoryForRequestStatusChangeStmt, createHistoryForRequestStatusChange, arg.RID, arg.PID)
 	return err
 }
 
@@ -58,7 +58,7 @@ func (q *Queries) CreateRequest(ctx context.Context, arg CreateRequestParams) (s
 }
 
 const getRequest = `-- name: GetRequest :one
-SELECT created_at, updated_at, type, status, rpid, pid, id, vid, new FROM requests WHERE id = ?
+SELECT created_at, updated_at, type, status, rpid, pid, id, vid FROM requests WHERE id = ?
 `
 
 func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
@@ -73,7 +73,6 @@ func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
 		&i.PID,
 		&i.ID,
 		&i.VID,
-		&i.New,
 	)
 	return i, err
 }
@@ -88,7 +87,7 @@ func (q *Queries) IncrementRequestVersion(ctx context.Context, id int64) error {
 }
 
 const listRequestsForPlayer = `-- name: ListRequestsForPlayer :many
-SELECT created_at, updated_at, type, status, rpid, pid, id, vid, new FROM requests WHERE pid = ?
+SELECT created_at, updated_at, type, status, rpid, pid, id, vid FROM requests WHERE pid = ?
 `
 
 func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Request, error) {
@@ -109,7 +108,6 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 			&i.PID,
 			&i.ID,
 			&i.VID,
-			&i.New,
 		); err != nil {
 			return nil, err
 		}

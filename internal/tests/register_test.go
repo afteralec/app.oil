@@ -2,7 +2,6 @@ package tests
 
 import (
 	"bytes"
-	"fmt"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -54,12 +53,4 @@ func CallRegister(t *testing.T, app *fiber.App, u string, pw string) *http.Respo
 
 func SetupTestRegister(t *testing.T, i *shared.Interfaces, u string) {
 	DeleteTestPlayer(t, i, u)
-}
-
-func DeleteTestPlayer(t *testing.T, i *shared.Interfaces, u string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s';", u)
-	_, err := i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
 }

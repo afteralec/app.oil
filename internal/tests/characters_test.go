@@ -154,18 +154,6 @@ func CreateTestPlayerAndCharacterApplication(t *testing.T, i *shared.Interfaces,
 	return r.Request.ID, sessionCookie
 }
 
-func DeleteTestCharacterApplication(t *testing.T, i *shared.Interfaces, rid int64) {
-	_, err := i.Database.Exec("DELETE FROM requests WHERE id = ?;", rid)
-	if err != nil && err != sql.ErrNoRows {
-		t.Fatal(err)
-	}
-
-	_, err = i.Database.Exec("DELETE FROM character_application_content_history WHERE rid = ?;", rid)
-	if err != nil && err != sql.ErrNoRows {
-		t.Fatal(err)
-	}
-}
-
 func NewCharacterApplicationRequest() *http.Request {
 	url := MakeTestURL(routes.NewCharacterApplicationPath())
 	return httptest.NewRequest(http.MethodPost, url, nil)

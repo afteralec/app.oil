@@ -2,7 +2,6 @@ package tests
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -201,12 +200,4 @@ func TestPlayerPermissionsDetailPageSuccess(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func DeleteTestPlayerPermission(t *testing.T, i *shared.Interfaces, id int64) {
-	query := fmt.Sprintf("DELETE FROM player_permissions WHERE id = %d;", id)
-	_, err := i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
 }
