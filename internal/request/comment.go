@@ -22,7 +22,7 @@ type Comment struct {
 
 func (c *Comment) Bind() fiber.Map {
 	return fiber.Map{
-		"CID":            c.ID,
+		"ID":             c.ID,
 		"Text":           c.Text,
 		"Author":         c.Author,
 		"AvatarLink":     c.AvatarLink,
