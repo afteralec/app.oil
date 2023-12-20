@@ -65,51 +65,31 @@ func TestCreateRequestCommentMissingBody(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsernameTwo)
-	if err != nil {
-		t.Fatal(err)
-	}
-	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
-		PID:        p.ID,
-		IPID:       p.ID,
-		Permission: permissions.PlayerReviewCharacterApplicationsName,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	prid, err := pr.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteTestPlayerPermission(t, &i, prid)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	if err = i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
-		RPID: p.ID,
+	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+		RPID: pid,
 		ID:   rid,
 	}); err != nil {
 		t.Fatal(t)
 	}
 
-	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
-	sessionCookie := res.Cookies()[0]
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), "name"))
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("comment", "This name is fantastic.")
-	writer.Close()
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,32 +105,18 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsernameTwo)
-	if err != nil {
-		t.Fatal(err)
-	}
-	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
-		PID:        p.ID,
-		IPID:       p.ID,
-		Permission: permissions.PlayerReviewCharacterApplicationsName,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	prid, err := pr.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteTestPlayerPermission(t, &i, prid)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	if err = i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
-		RPID: p.ID,
+	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+		RPID: pid,
 		ID:   rid,
 	}); err != nil {
 		t.Fatal(t)
@@ -159,7 +125,7 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
 	sessionCookie := res.Cookies()[0]
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), "name"))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -170,7 +136,7 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -186,32 +152,18 @@ func TestCreateRequestCommentBadField(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsernameTwo)
-	if err != nil {
-		t.Fatal(err)
-	}
-	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
-		PID:        p.ID,
-		IPID:       p.ID,
-		Permission: permissions.PlayerReviewCharacterApplicationsName,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	prid, err := pr.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteTestPlayerPermission(t, &i, prid)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	if err = i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
-		RPID: p.ID,
+	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+		RPID: pid,
 		ID:   rid,
 	}); err != nil {
 		t.Fatal(t)
@@ -231,7 +183,7 @@ func TestCreateRequestCommentBadField(t *testing.T) {
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -247,34 +199,26 @@ func TestCreateRequestCommentNotFound(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsernameTwo)
-	if err != nil {
-		t.Fatal(err)
-	}
-	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
-		PID:        p.ID,
-		IPID:       p.ID,
-		Permission: permissions.PlayerReviewCharacterApplicationsName,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	prid, err := pr.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteTestPlayerPermission(t, &i, prid)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
-	sessionCookie := res.Cookies()[0]
+	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+		RPID: pid,
+		ID:   rid,
+	}); err != nil {
+		t.Fatal(t)
+	}
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid+1, 10), "name"))
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid+1, 10), request.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -285,7 +229,7 @@ func TestCreateRequestCommentNotFound(t *testing.T) {
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -301,31 +245,21 @@ func TestCreateRequestCommentForbiddenOwnRequest(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	CallRegister(t, a, TestUsernameTwo, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsernameTwo)
-	if err != nil {
-		t.Fatal(err)
+	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+		RPID: pid,
+		ID:   rid,
+	}); err != nil {
+		t.Fatal(t)
 	}
-	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
-		PID:        p.ID,
-		IPID:       p.ID,
-		Permission: permissions.PlayerReviewCharacterApplicationsName,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	prid, err := pr.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteTestPlayerPermission(t, &i, prid)
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), "name"))
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -352,34 +286,19 @@ func TestCreateRequestCommentNotInReview(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsernameTwo)
-	if err != nil {
-		t.Fatal(err)
-	}
-	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
-		PID:        p.ID,
-		IPID:       p.ID,
-		Permission: permissions.PlayerReviewCharacterApplicationsName,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	prid, err := pr.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteTestPlayerPermission(t, &i, prid)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
-	sessionCookie := res.Cookies()[0]
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), "name"))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -390,7 +309,7 @@ func TestCreateRequestCommentNotInReview(t *testing.T) {
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -406,61 +325,31 @@ func TestCreateRequestCommentNotReviewer(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	CallRegister(t, a, TestUsernameTwo, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsernameTwo)
-	if err != nil {
-		t.Fatal(err)
-	}
-	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
-		PID:        p.ID,
-		IPID:       p.ID,
-		Permission: permissions.PlayerReviewCharacterApplicationsName,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	prid, err := pr.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteTestPlayerPermission(t, &i, prid)
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
-	CallRegister(t, a, TestUsernameThree, TestPassword)
+	pid = CreateTestPlayer(t, &i, a, TestUsernameThree, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameThree)
-	p, err = i.Queries.GetPlayerByUsername(context.Background(), TestUsernameThree)
-	if err != nil {
-		t.Fatal(err)
-	}
-	pr, err = i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
-		PID:        p.ID,
-		IPID:       p.ID,
-		Permission: permissions.PlayerReviewCharacterApplicationsName,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	prid, err = pr.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteTestPlayerPermission(t, &i, prid)
+	permissionID = CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
-	if err = i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
-		RPID: p.ID,
+	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+		RPID: pid,
 		ID:   rid,
 	}); err != nil {
 		t.Fatal(t)
 	}
 
-	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
-	sessionCookie := res.Cookies()[0]
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), "name"))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -471,7 +360,7 @@ func TestCreateRequestCommentNotReviewer(t *testing.T) {
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -487,39 +376,35 @@ func TestCreateRequestCommentNoPermission(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	CallRegister(t, a, TestUsernameTwo, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsernameTwo)
-	if err != nil {
-		t.Fatal(err)
-	}
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	if err = i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
-		RPID: p.ID,
+	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+		RPID: pid,
 		ID:   rid,
 	}); err != nil {
 		t.Fatal(t)
 	}
 
-	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
-	sessionCookie := res.Cookies()[0]
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("comment", "This name is fantastic.")
 	writer.Close()
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), "name"))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.AddCookie(sessionCookie)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -535,32 +420,18 @@ func TestCreateRequestCommentSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	CallRegister(t, a, TestUsernameTwo, TestPassword)
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsernameTwo)
-	if err != nil {
-		t.Fatal(err)
-	}
-	pr, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
-		PID:        p.ID,
-		IPID:       p.ID,
-		Permission: permissions.PlayerReviewCharacterApplicationsName,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	prid, err := pr.LastInsertId()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteTestPlayerPermission(t, &i, prid)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
-	if err = i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
-		RPID: p.ID,
+	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+		RPID: pid,
 		ID:   rid,
 	}); err != nil {
 		t.Fatal(t)
@@ -574,13 +445,13 @@ func TestCreateRequestCommentSuccess(t *testing.T) {
 	writer.WriteField("comment", "This name is fantastic.")
 	writer.Close()
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), "name"))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.AddCookie(sessionCookie)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}
