@@ -16,7 +16,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func TestSearchPlayersUnauthorized(t *testing.T) {
+func TestSearchPlayersUnauthorizedNotLoggedIn(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -24,16 +24,19 @@ func TestSearchPlayersUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
+
+	url := MakeTestURL(routes.SearchPlayerPath("player-permissions"))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("username", TestUsername)
 	writer.Close()
-	url := MakeTestURL(routes.SearchPlayerPath("player-permissions"))
+
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -42,7 +45,7 @@ func TestSearchPlayersUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestSearchPlayersMissingBody(t *testing.T) {
+func TestSearchPlayersBadRequestMissingBody(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -50,18 +53,16 @@ func TestSearchPlayersMissingBody(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	CallRegister(t, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	sessionCookie := res.Cookies()[0]
 
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("username", TestUsername)
-	writer.Close()
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
 	url := MakeTestURL(routes.SearchPlayerPath("player-permissions"))
+
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
