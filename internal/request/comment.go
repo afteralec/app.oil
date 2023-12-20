@@ -15,6 +15,7 @@ type Comment struct {
 	Text           string
 	Author         string
 	AvatarLink     string
+	Replies        []Comment
 	ID             int64
 	CreatedAt      int64
 	ViewedByAuthor bool

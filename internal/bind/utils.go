@@ -44,20 +44,52 @@ func RequestCommentPaths(b fiber.Map, req *queries.Request, field string) fiber.
 	return b
 }
 
-func RequestComments(b fiber.Map, pid int64, vid int32, comments []queries.ListCommentsForRequestWithAuthorRow) fiber.Map {
-	current := []request.Comment{}
-	for _, comment := range comments {
-		if comment.RequestComment.VID == vid {
-			current = append(current, request.Comment{
-				ID:             comment.RequestComment.ID,
-				Author:         comment.Player.Username,
-				Text:           comment.RequestComment.Text,
+func RequestComments(b fiber.Map, pid int64, vid int32, rows []queries.ListCommentsForRequestWithAuthorRow) fiber.Map {
+	repliesByCID := map[int64][]request.Comment{}
+	for _, row := range rows {
+		if row.RequestComment.CID > 0 {
+			reply := request.Comment{
+				ID:             row.RequestComment.CID,
+				Author:         row.Player.Username,
+				Text:           row.RequestComment.Text,
 				AvatarLink:     "https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50.jpeg?f=y&r=m&s=256&d=retro",
-				CreatedAt:      comment.RequestComment.CreatedAt.Unix(),
-				ViewedByAuthor: comment.RequestComment.PID == pid,
-			})
+				CreatedAt:      row.RequestComment.CreatedAt.Unix(),
+				ViewedByAuthor: row.RequestComment.PID == pid,
+			}
+
+			replies, ok := repliesByCID[row.RequestComment.CID]
+			if !ok {
+				repliesByCID[row.RequestComment.CID] = []request.Comment{
+					reply,
+				}
+			}
+
+			repliesByCID[row.RequestComment.CID] = append(replies, reply)
 		}
 	}
+
+	current := []request.Comment{}
+	for _, row := range rows {
+		if row.RequestComment.VID == vid && row.RequestComment.CID == 0 {
+			comment := request.Comment{
+				ID:             row.RequestComment.ID,
+				Author:         row.Player.Username,
+				Text:           row.RequestComment.Text,
+				AvatarLink:     "https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50.jpeg?f=y&r=m&s=256&d=retro",
+				CreatedAt:      row.RequestComment.CreatedAt.Unix(),
+				ViewedByAuthor: row.RequestComment.PID == pid,
+				Replies:        []request.Comment{},
+			}
+
+			replies, ok := repliesByCID[row.RequestComment.ID]
+			if ok {
+				comment.Replies = replies
+			}
+
+			current = append(current, comment)
+		}
+	}
+
 	b["CurrentComments"] = current
 	return b
 }
