@@ -12,6 +12,7 @@ require (
 	github.com/resendlabs/resend-go v1.7.0
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.8.4
+	github.com/a-h/templ v0.2.476
 	golang.org/x/crypto v0.17.0
 )
 

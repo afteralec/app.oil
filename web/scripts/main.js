@@ -362,6 +362,19 @@ export function getCharacterApplicationSummaryData() {
   };
 }
 
+export function getRequestData() {
+  return {
+    comment: "",
+    sanitizeRequestComment,
+    isRequestCommentValid,
+    showSubmitDialog: false,
+    showCancelDialog: false,
+    partsOpen: false,
+    actionsOpen: false,
+    commentOpen: false,
+  };
+}
+
 export function getCharacterApplicationData() {
   return {
     comment: "",
@@ -435,5 +448,6 @@ window.getCharacterApplicationBackstoryData =
   getCharacterApplicationBackstoryData;
 window.getCharacterApplicationSummaryData = getCharacterApplicationSummaryData;
 window.getCharacterApplicationData = getCharacterApplicationData;
+window.getRequestData = getRequestData;
 window.getPlayerPermissionsData = getPlayerPermissionsData;
 window.getRequestCommentData = getRequestCommentData;

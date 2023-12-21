@@ -1,0 +1,42 @@
+<form
+  @submit.prevent="
+    editOpen = false;
+  "
+  x-cloak
+  x-show="editOpen"
+  class="space-y-2 pt-4"
+>
+  <textarea
+    id="character-application-comment"
+    x-model="comment"
+    @input="
+      comment = sanitizeRequestComment(event.target.value);
+    "
+    class="flex min-h-[3rem] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    placeholder=""
+    name="comment"
+    autofocus
+  ></textarea>
+  <footer class="flex items-end justify-end gap-2">
+    <button
+      type="button"
+      @click.prevent="
+        editOpen = false;
+        comment = `{{ .Text }}`;
+      "
+      class="flex cursor-pointer items-end justify-end align-bottom text-xs leading-[0.9] text-muted-foreground hover:text-primary"
+    >
+      <iconify-icon icon="fe:trash" height="12" width="12"></iconify-icon>
+
+      Close
+    </button>
+    <button
+      type="submit"
+      class="flex cursor-pointer items-end justify-end text-xs leading-[0.9] text-muted-foreground hover:text-primary"
+    >
+      <iconify-icon icon="fe:pencil" height="12" width="12"></iconify-icon>
+
+      Update
+    </button>
+  </footer>
+</form>

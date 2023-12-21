@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="description" content="{{ .MetaContent }}" />
+    <meta id="csrf" name="csrf_" content="{{ .CSRF }}" />
+    <title>{{ .Title }}</title>
+    <link rel="stylesheet" type="text/css" href="/styles.min.css" />
+    <script src="/iconify-icon.min.js"></script>
+    <script src="/htmx.min.js"></script>
+    <script defer src="/main.min.js" type="module"></script>
+    <script defer src="/alpine.min.js"></script>
+  </head>
+
+  <body>
+    {{ template "views/partials/header" . }}
+
+    <main class="flex flex-col items-center" x-data="getReviewData()">
+      <!-- prettier-ignore -->
+      {{ template "views/partials/requests/header" . }}
+
+      {{ template "views/partials/character/application/nav/list" .CharacterApplicationNav }}
+      <div class="w-full max-w-lg rounded-md border">
+        {{ template "views/partials/requests/actions" . }}
+
+        <div class="w-full px-6 pb-6">
+          <!-- TODO: The embedded part here should likely be the header and body minus the footer -->
+          <!-- TODO: Maybe include the "guidance" bit in the body instead of making it a header? -->
+
+          {{ embed }}
+
+          <!-- prettier-ignore -->
+          {{ template "views/partials/requests/footer" . }}
+
+          <!-- prettier-ignore -->
+          {{ if and .StatusInReview .ViewedByReviewer -}}
+            {{ template "views/partials/requests/comments/form" . }}
+          {{ end -}}
+        </div>
+      </div>
+
+      <!-- prettier-ignore -->
+      {{ if and .StatusInReview .ViewedByReviewer -}}
+        {{ template "views/partials/requests/comments/list" . }}
+      {{ end -}}
+
+      {{ if and .StatusReady .ViewedByPlayer -}}
+        {{ template "views/partials/requests/dialogs/submit" .SubmitCharacterApplicationPath }}
+      {{ end -}}
+
+      {{ if and .StatusSubmitted .ViewedByReviewer -}}
+        {{ template "views/partials/requests/dialogs/review" .ReviewDialog }}
+      {{ end -}}
+
+      {{ template "views/partials/requests/dialogs/cancel" .CharacterApplicationPath }}
+    </main>
+
+    {{ template "views/partials/footer" . }}
+  </body>
+</html>

@@ -24,9 +24,9 @@
       <!-- prettier-ignore -->
       {{ template "views/partials/character/application/footer" . }}
 
-      {{ if and .StatusInReview .ViewedByReviewer -}}
       <!-- prettier-ignore -->
-      {{ template "views/partials/character/application/comment/form" . }}
+      {{ if and .StatusInReview .ViewedByReviewer -}}
+        {{ template "views/partials/requests/comments/form" . }}
       {{ end -}}
     </div>
   </div>
