@@ -1,3 +1,4 @@
+{{ define "header" }}
 <header class="flex items-center justify-center">
   <nav
     class="relative flex w-full max-w-10xl items-center justify-start px-6 py-2"
@@ -17,11 +18,11 @@
       {{ if .ShouldShowMenus.Review -}}
         {{ template "views/partials/header/nav/review" . }}
       {{ end -}}
-      <!-- prettier-ignore -->
+
       {{ if .ShouldShowMenus.Permissions -}}
         {{ template "views/partials/header/nav/permissions" . }}
       {{ end -}}
-      <!-- prettier-ignore -->
+
       {{ if .PID -}}
         {{ template "views/partials/header/nav/account" . }}
       {{ else -}}
@@ -31,3 +32,4 @@
     </ul>
   </nav>
 </header>
+{{ end }}
