@@ -279,11 +279,6 @@ export function getCharacterApplicationNameData(name) {
     },
     sanitizeCharacterName,
     isCharacterNameValid,
-    showSubmitDialog: false,
-    showCancelDialog: false,
-    partsOpen: false,
-    actionsOpen: false,
-    commentOpen: false,
   };
 }
 

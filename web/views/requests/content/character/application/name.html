@@ -1,1 +1,17 @@
-<p>To Be!</p>
+<!-- TODO: Find a way to move this logic up into the handler? -->
+<!-- prettier-ignore -->
+{{ if .ViewedByPlayer -}}
+  {{ if or .StatusReady .StatusIncomplete -}}
+    {{ template "views/partials/requests/content/character/application/name/help" . }}
+    {{ template "views/partials/requests/divider" . }}
+    {{ template "views/partials/requests/content/character/application/name/form" . }}
+  {{ else -}}
+    {{ template "views/partials/requests/content/character/application/name/help" . }}
+    {{ template "views/partials/requests/divider" . }}
+    {{ template "views/partials/requests/content/character/application/name/data" . }}
+  {{ end -}}
+{{ else if .ViewedByReviewer -}}
+    {{ template "views/partials/requests/content/character/application/name/help" . }}
+    {{ template "views/partials/requests/divider" . }}
+    {{ template "views/partials/requests/content/character/application/name/data" . }}
+{{ end -}}

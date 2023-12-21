@@ -96,15 +96,7 @@ func CharacterApplicationNamePage(i *shared.Interfaces) fiber.Handler {
 		b = bind.RequestComments(b, pid.(int64), row.Request.VID, comments)
 		b["NextLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
 
-		if !request.IsEditable(&row.Request) {
-			return c.Render("views/character/application/name/view", b)
-		}
-
-		if row.Request.PID != pid {
-			return c.Render("views/character/application/name/view", b)
-		}
-
-		return c.Render("views/character/application/name/edit", b)
+		return c.Render("views/requests/content/character/application/name", b, "views/layouts/requests")
 	}
 }
 

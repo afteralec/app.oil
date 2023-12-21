@@ -3,13 +3,13 @@
   {{ template "head" . }}
 
   <body>
-    {{ template "views/partials/header" . }}
+    {{ template "header" . }}
 
-    <main class="flex flex-col items-center" x-data="getReviewData()">
+    <main class="flex flex-col items-center" x-data="getRequestData()">
       <!-- prettier-ignore -->
       {{ template "views/partials/requests/header" . }}
 
-      {{ template "views/partials/requests/nav/list" .CharacterApplicationNavItems }}
+      {{ template "views/partials/requests/nav/list" .CharacterApplicationNav }}
       <div class="w-full max-w-lg rounded-md border">
         {{ template "views/partials/requests/actions" . }}
 
@@ -17,12 +17,11 @@
           <!-- TODO: The embedded part here should likely be the header and body minus the footer -->
           <!-- TODO: Maybe include the "guidance" bit in the body instead of making it a header? -->
 
+          <!-- prettier-ignore -->
           {{ embed }}
 
-          <!-- prettier-ignore -->
           {{ template "views/partials/requests/footer" . }}
 
-          <!-- prettier-ignore -->
           {{ if and .StatusInReview .ViewedByReviewer -}}
             {{ template "views/partials/requests/comments/form" . }}
           {{ end -}}
@@ -45,6 +44,6 @@
       {{ template "views/partials/requests/dialogs/cancel" .CharacterApplicationPath }}
     </main>
 
-    {{ template "views/partials/footer" . }}
+    {{ template "footer" . }}
   </body>
 </html>
