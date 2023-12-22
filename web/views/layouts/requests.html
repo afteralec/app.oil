@@ -14,8 +14,7 @@
         {{ template "views/partials/requests/actions" . }}
 
         <div class="w-full px-6 pb-6">
-          <!-- TODO: The embedded part here should likely be the header and body minus the footer -->
-          <!-- TODO: Maybe include the "guidance" bit in the body instead of making it a header? -->
+          {{ template "views/partials/requests/header" . }}
 
           <!-- prettier-ignore -->
           {{ embed }}
