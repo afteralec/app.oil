@@ -3,6 +3,7 @@ package request
 import (
 	"strconv"
 
+	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 )
 
@@ -60,6 +61,11 @@ type StatusIcon struct {
 	Color string
 }
 
+func IsStatusValid(status string) bool {
+	_, ok := StatusTexts[status]
+	return ok
+}
+
 func MakeStatusIcon(status string, size int64) StatusIcon {
 	color, ok := StatusColors[status]
 	if !ok {
@@ -105,4 +111,44 @@ func IsEditable(req *queries.Request) bool {
 	}
 
 	return true
+}
+
+func IsStatusUpdateOK(req *queries.Request, perms permissions.PlayerGranted, pid int64, status string) bool {
+	if status == StatusSubmitted {
+		return req.PID == pid && req.Status == StatusReady
+	}
+
+	if status == StatusCanceled {
+		return req.PID == pid
+	}
+
+	if status == StatusInReview {
+		if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
+			return false
+		}
+		return req.PID != pid && req.Status == StatusSubmitted
+	}
+
+	if status == StatusReviewed {
+		if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
+			return false
+		}
+		return req.PID != pid && req.Status == StatusInReview
+	}
+
+	if status == StatusApproved {
+		if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
+			return false
+		}
+		return req.PID != pid && req.Status == StatusInReview
+	}
+
+	if status == StatusRejected {
+		if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
+			return false
+		}
+		return req.PID != pid && req.Status == StatusInReview
+	}
+
+	return false
 }

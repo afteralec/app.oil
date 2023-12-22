@@ -1,3 +1,6 @@
+<!-- prettier-ignore -->
+{{ define "requests-character-application-name-form" }}
+
 <form
   x-data="getCharacterApplicationNameData(`{{ .Name }}`)"
   class="space-y-2 px-4 pt-4"
@@ -21,3 +24,5 @@
   <!-- prettier-ignore -->
   {{ template "views/partials/character/application/content/name/requirements" }}
 </form>
+
+{{ end }}

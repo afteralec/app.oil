@@ -162,3 +162,17 @@ func (q *Queries) MarkRequestSubmitted(ctx context.Context, id int64) error {
 	_, err := q.exec(ctx, q.markRequestSubmittedStmt, markRequestSubmitted, id)
 	return err
 }
+
+const updateRequestStatus = `-- name: UpdateRequestStatus :exec
+UPDATE requests SET status = ? WHERE id = ?
+`
+
+type UpdateRequestStatusParams struct {
+	Status string
+	ID     int64
+}
+
+func (q *Queries) UpdateRequestStatus(ctx context.Context, arg UpdateRequestStatusParams) error {
+	_, err := q.exec(ctx, q.updateRequestStatusStmt, updateRequestStatus, arg.Status, arg.ID)
+	return err
+}

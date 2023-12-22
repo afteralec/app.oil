@@ -25,6 +25,9 @@ INSERT INTO
 VALUES
   (?, (SELECT vid FROM requests WHERE requests.id = rid), (SELECT status FROM requests WHERE requests.id = rid), ?);
 
+-- name: UpdateRequestStatus :exec
+UPDATE requests SET status = ? WHERE id = ?;
+
 -- name: MarkRequestReady :exec
 UPDATE requests SET status = "Ready" WHERE id = ?;
 

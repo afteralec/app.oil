@@ -171,6 +171,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updatePlayerPasswordStmt, err = db.PrepareContext(ctx, updatePlayerPassword); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePlayerPassword: %w", err)
 	}
+	if q.updateRequestStatusStmt, err = db.PrepareContext(ctx, updateRequestStatus); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRequestStatus: %w", err)
+	}
 	return &q, nil
 }
 
@@ -421,6 +424,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updatePlayerPasswordStmt: %w", cerr)
 		}
 	}
+	if q.updateRequestStatusStmt != nil {
+		if cerr := q.updateRequestStatusStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRequestStatusStmt: %w", cerr)
+		}
+	}
 	return err
 }
 
@@ -509,6 +517,7 @@ type Queries struct {
 	updateCharacterApplicationContentNameStmt             *sql.Stmt
 	updateCharacterApplicationContentShortDescriptionStmt *sql.Stmt
 	updatePlayerPasswordStmt                              *sql.Stmt
+	updateRequestStatusStmt                               *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -564,5 +573,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updateCharacterApplicationContentNameStmt:             q.updateCharacterApplicationContentNameStmt,
 		updateCharacterApplicationContentShortDescriptionStmt: q.updateCharacterApplicationContentShortDescriptionStmt,
 		updatePlayerPasswordStmt:                              q.updatePlayerPasswordStmt,
+		updateRequestStatusStmt:                               q.updateRequestStatusStmt,
 	}
 }

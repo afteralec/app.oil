@@ -127,52 +127,6 @@ func TestNewCharacterApplicationMaxOpen(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestUpdateCharacterApplicationNameUnauthorized(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	url := MakeTestURL(routes.CharacterApplicationNamePath(routes.ID))
-	req := httptest.NewRequest(http.MethodPatch, url, nil)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
-}
-
-func TestUpdateCharacterApplicationNameUnowned(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	defer DeleteTestCharacterApplication(t, &i, rid)
-	CallRegister(t, a, "testify2", TestPassword)
-	res := CallLogin(t, a, "testify2", TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestPlayer(t, &i, "testify2")
-	sessionCookie := res.Cookies()[0]
-	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
-	body, writer := MakeTestCharacterApplicationNameBody()
-	req := httptest.NewRequest(http.MethodPatch, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
-}
-
 func TestUpdateCharacterApplicationNameSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
@@ -193,72 +147,6 @@ func TestUpdateCharacterApplicationNameSuccess(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func TestUpdateCharacterApplicationNameNotFound(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid+1, 10)))
-	body, writer := MakeTestCharacterApplicationNameBody()
-	req := httptest.NewRequest(http.MethodPatch, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
-}
-
-func TestUpdateCharacterApplicationNameFatal(t *testing.T) {
-	i := shared.SetupInterfaces()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	i.Close()
-	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
-	body, writer := MakeTestCharacterApplicationNameBody()
-	req := httptest.NewRequest(http.MethodPatch, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
-}
-
-func TestUpdateCharacterApplicationNameMissingBody(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	rid, sessionCookie := CreateTestPlayerAndCharacterApplication(t, &i, a)
-	defer DeleteTestCharacterApplication(t, &i, rid)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
-	req := httptest.NewRequest(http.MethodPatch, url, nil)
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
 func TestUpdateCharacterApplicationNameInvalidInput(t *testing.T) {

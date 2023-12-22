@@ -1,8 +1,9 @@
-<div class="mb-4 flex w-full max-w-lg justify-between border-b pr-4">
-  <h2 class="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
-    {{ .Name }}
+<header class="mb-4 flex w-full max-w-lg justify-between border-b pr-4">
+  <h2 class="text-lg font-extrabold leading-none tracking-tight">
+    {{ .Title }}
   </h2>
-  <div class="flex h-full items-center justify-center gap-2">
+  <section class="flex h-full items-center justify-center gap-2">
+    <!-- TODO: See if we can pass this in as a variable? -->
     <!-- prettier-ignore -->
     {{ if .StatusIncomplete }}
       {{ template "views/partials/request/status/icon/incomplete" .HeaderStatusIcon }}
@@ -35,5 +36,5 @@
         width="24"
       ></iconify-icon>
     </div>
-  </div>
-</div>
+  </section>
+</header>
