@@ -1,0 +1,34 @@
+{{ define "requests-character-application-sdesc-form" }}
+
+<form
+  class="space-y-2 px-4 pt-4"
+  hx-patch="{{ .CharacterApplicationShortDescriptionPath }}"
+  hx-swap="none"
+  x-data="getCharacterApplicationShortDescriptionData('{{ .ShortDescription }}')"
+>
+  <input
+    id="character-application-flow-sdesc"
+    x-model="sdesc"
+    @input="
+        eval.sdesc.len = true;
+        sdesc = sanitizeCharacterShortDescription(event.target.value);
+      "
+    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    placeholder=""
+    name="sdesc"
+    value=""
+    autofocus
+  />
+  <!-- prettier-ignore -->
+  {{ template "views/partials/character/application/content/sdesc/requirements" }}
+  <section
+    x-show="isCharacterShortDescriptionValid(sdesc)"
+    class="text-sm leading-none"
+  >
+    Your short description will be displayed in-game as:
+    <br />
+    The <span x-text="sdesc"></span>
+  </section>
+</form>
+
+{{ end }}

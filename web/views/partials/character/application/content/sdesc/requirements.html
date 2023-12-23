@@ -1,50 +1,52 @@
 <!-- TODO: Move these min and max numbers to injected variables? -->
 <!-- TODO: Move this alpine evaluation to htmx -->
-<div
-  id="character-application-sdesc-requirements"
-  class="pb-1 text-xs leading-none text-muted-foreground"
->
-  Your short description can include commas and dashes and will always be lower
-  case.
-</div>
-<div
-  class="flex items-center gap-1 text-xs leading-none text-muted-foreground"
-  x-cloak
-  x-show="!isCharacterShortDescriptionValid(sdesc) && !eval.sdesc.len"
->
-  <!-- TODO: Move this string to a passed variable? -->
-  <p>
-    Your character's short description should be between 8 and 300 characters
-    long.
-  </p>
-</div>
-<div
-  class="flex items-center gap-1 text-xs leading-none text-rose-800"
-  x-cloak
-  x-show="!isCharacterShortDescriptionValid(sdesc) && eval.sdesc.len && sdesc.length < 8"
->
-  <p>
-    Your character's short description should be between 8 and 300 characters
-    long.
-  </p>
-</div>
-<div
-  class="flex items-center gap-1 text-xs leading-none text-emerald-800"
-  x-cloak
-  x-show="!isCharacterShortDescriptionValid(sdesc) && eval.sdesc.len && sdesc.length >= 8 && sdesc.length <= 300"
->
-  <p>
-    Your character's short description should be between 8 and 300 characters
-    long.
-  </p>
-</div>
-<div
-  class="flex items-center gap-1 text-xs leading-none text-rose-800"
-  x-cloak
-  x-show="!isCharacterShortDescriptionValid(sdesc) && eval.sdesc.len && sdesc.length > 300"
->
-  <p>
-    Your character's short description should be between 8 and 300 characters
-    long.
-  </p>
-</div>
+<section>
+  <div
+    id="character-application-sdesc-requirements"
+    class="pb-1 text-xs leading-none text-muted-foreground"
+  >
+    Your short description can include commas and dashes and will always be
+    lower case.
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs leading-none text-muted-foreground"
+    x-cloak
+    x-show="!isCharacterShortDescriptionValid(sdesc) && !eval.sdesc.len"
+  >
+    <!-- TODO: Move this string to a passed variable? -->
+    <p>
+      Your character's short description should be between 8 and 300 characters
+      long.
+    </p>
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs leading-none text-rose-800"
+    x-cloak
+    x-show="!isCharacterShortDescriptionValid(sdesc) && eval.sdesc.len && sdesc.length < 8"
+  >
+    <p>
+      Your character's short description should be between 8 and 300 characters
+      long.
+    </p>
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs leading-none text-emerald-800"
+    x-cloak
+    x-show="!isCharacterShortDescriptionValid(sdesc) && eval.sdesc.len && sdesc.length >= 8 && sdesc.length <= 300"
+  >
+    <p>
+      Your character's short description should be between 8 and 300 characters
+      long.
+    </p>
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs leading-none text-rose-800"
+    x-cloak
+    x-show="!isCharacterShortDescriptionValid(sdesc) && eval.sdesc.len && sdesc.length > 300"
+  >
+    <p>
+      Your character's short description should be between 8 and 300 characters
+      long.
+    </p>
+  </div>
+</section>

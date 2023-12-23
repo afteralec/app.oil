@@ -1,0 +1,43 @@
+<section>
+  <div
+    class="flex items-center gap-1 text-xs leading-none text-muted-foreground"
+    x-cloak
+    x-show="!isCharacterBackstoryValid(backstory) && !eval.bs.len"
+  >
+    <!-- TODO: Move this string to a passed variable? -->
+    <p>
+      Your character's backstory should be between 500 and 10,000 characters
+      long.
+    </p>
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs leading-none text-rose-800"
+    x-cloak
+    x-show="!isCharacterBackstoryValid(backstory) && eval.bs.len && backstory.length < 500"
+  >
+    <p>
+      Your character's backstory should be between 500 and 10,000 characters
+      long.
+    </p>
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs leading-none text-emerald-800"
+    x-cloak
+    x-show="!isCharacterBackstoryValid(backstory) && eval.bs.len && backstory.length >= 500 && backstory.length <= 10000"
+  >
+    <p>
+      Your character's backstory should be between 500 and 10,000 characters
+      long.
+    </p>
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs leading-none text-rose-800"
+    x-cloak
+    x-show="!isCharacterBackstoryValid(backstory) && eval.bs.len && backstory.length > 100000"
+  >
+    <p>
+      Your character's backstory should be between 500 and 10,000 characters
+      long.
+    </p>
+  </div>
+</section>

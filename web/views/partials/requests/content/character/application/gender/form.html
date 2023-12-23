@@ -1,0 +1,121 @@
+{{ define "requests-character-application-gender-form" }}
+
+<form
+  x-data="getCharacterApplicationGenderData(`{{ .Gender }}`)"
+  class="space-y-2 px-4 pt-4"
+  @submit.prevent=""
+  hx-patch="{{ .CharacterApplicationGenderPath }}"
+  hx-swap="none"
+>
+  <section
+    @click="gender = '{{ .GenderNonBinary }}'"
+    class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+    :class="{
+      'cursor-pointer': gender !== '{{ .GenderNonBinary }}',
+      'border-black': gender == '{{ .GenderNonBinary }}',
+    }"
+  >
+    {{ if .GenderIsNonBinary }}
+    <input
+      x-model="gender"
+      id="character-application-flow-gender-nonbinary"
+      class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="radio"
+      name="gender"
+      value="{{ .GenderNonBinary }}"
+      checked
+      autofocus
+    />
+    {{ else -}}
+    <input
+      x-model="gender"
+      id="character-application-flow-gender-nonbinary"
+      class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="radio"
+      name="gender"
+      value="{{ .GenderNonBinary }}"
+    />
+    {{ end -}}
+    <label
+      class="cursor-pointer text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="character-application-flow-gender-nonbinary"
+    >
+      Non-binary
+      <span class="text-xs font-medium text-muted-foreground">(They/Them)</span>
+    </label>
+  </section>
+  <section
+    @click="gender = '{{ .GenderFemale }}'"
+    class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+    :class="{
+            'cursor-pointer': gender !== '{{ .GenderFemale }}',
+            'border-black': gender == '{{ .GenderFemale }}',
+          }"
+  >
+    {{ if .GenderIsFemale }}
+    <input
+      x-model="gender"
+      id="character-application-flow-gender-female"
+      class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="radio"
+      name="gender"
+      value="{{ .GenderFemale }}"
+      checked
+      autofocus
+    />
+    {{ else -}}
+    <input
+      x-model="gender"
+      id="character-application-flow-gender-female"
+      class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="radio"
+      name="gender"
+      value="{{ .GenderFemale }}"
+    />
+    {{ end -}}
+    <label
+      class="cursor-pointer text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="character-application-flow-gender-female"
+    >
+      Female
+      <span class="text-xs font-medium text-muted-foreground">(She/Her)</span>
+    </label>
+  </section>
+  <section
+    @click="gender = '{{ .GenderMale }}'"
+    class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+    :class="{
+      'cursor-pointer': gender !== '{{ .GenderMale }}',
+      'border-black': gender == '{{ .GenderMale }}',
+    }"
+  >
+    {{ if .GenderIsMale }}
+    <input
+      x-model="gender"
+      id="character-application-flow-gender-male"
+      type="radio"
+      name="gender"
+      value="{{ .GenderMale }}"
+      checked
+      autofocus
+    />
+    {{ else -}}
+    <input
+      x-model="gender"
+      id="character-application-flow-gender-male"
+      type="radio"
+      name="gender"
+      value="{{ .GenderMale }}"
+    />
+    {{ end -}}
+    <label
+      class="cursor-pointer text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="character-application-flow-gender-male"
+    >
+      Male
+      <span class="text-xs font-medium text-muted-foreground">(He/Him)</span>
+    </label>
+  </section>
+</form>
+
+{{ end }}

@@ -1,0 +1,45 @@
+<!-- TODO: Move these min and max numbers to injected variables? -->
+<!-- TODO: Move this alpine evaluation to htmx -->
+<section>
+  <div
+    class="flex items-center gap-1 text-xs leading-none text-muted-foreground"
+    x-cloak
+    x-show="!isCharacterDescriptionValid(description) && !eval.desc.len"
+  >
+    <!-- TODO: Move this string to a passed variable? -->
+    <p>
+      Your character's description should be between 32 and 2000 characters
+      long.
+    </p>
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs leading-none text-rose-800"
+    x-cloak
+    x-show="!isCharacterDescriptionValid(description) && eval.desc.len && description.length < 32"
+  >
+    <p>
+      Your character's description should be between 32 and 2000 characters
+      long.
+    </p>
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs leading-none text-emerald-800"
+    x-cloak
+    x-show="!isCharacterDescriptionValid(description) && eval.desc.len && description.length >= 32 && description.length <= 2000"
+  >
+    <p>
+      Your character's description should be between 32 and 2000 characters
+      long.
+    </p>
+  </div>
+  <div
+    class="flex items-center gap-1 text-xs leading-none text-rose-800"
+    x-cloak
+    x-show="!isCharacterDescriptionValid(description) && eval.desc.len && description.length > 2000"
+  >
+    <p>
+      Your character's description should be between 32 and 2000 characters
+      long.
+    </p>
+  </div>
+</section>

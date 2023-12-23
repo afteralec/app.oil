@@ -19,6 +19,8 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 		lpid := c.Locals("pid")
 		if lpid == nil {
 			c.Status(fiber.StatusUnauthorized)
+			b := c.Locals(constants.BindName)
+			log.Println(b)
 			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 		pid, ok := lpid.(int64)
@@ -91,7 +93,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		b := fiber.Map{}
+		b := c.Locals(constants.BindName).(fiber.Map)
 		if req.Type == request.TypeCharacterApplication {
 			app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
 			if err != nil {
