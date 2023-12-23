@@ -9,6 +9,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/require"
+
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/request"
@@ -29,7 +30,7 @@ func TestUpdateRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldStatus))
+	url := MakeTestURL(routes.RequestPath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -37,6 +38,7 @@ func TestUpdateRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 
 	res, err := a.Test(req)
 	if err != nil {
@@ -61,7 +63,7 @@ func TestUpdateRequestNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestFieldPath(rid+1, request.FieldStatus))
+	url := MakeTestURL(routes.RequestPath(rid + 1))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -69,6 +71,7 @@ func TestUpdateRequestNotFound(t *testing.T) {
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)
@@ -93,7 +96,7 @@ func TestUpdateRequestFatal(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldStatus))
+	url := MakeTestURL(routes.RequestPath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -103,6 +106,7 @@ func TestUpdateRequestFatal(t *testing.T) {
 	i.Close()
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)
@@ -132,7 +136,7 @@ func TestUpdateRequestBadRequestMissingBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldStatus))
+	url := MakeTestURL(routes.RequestPath(rid))
 
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
@@ -160,7 +164,7 @@ func TestUpdateRequestBadRequestMalformedBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldStatus))
+	url := MakeTestURL(routes.RequestPath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)

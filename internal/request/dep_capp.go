@@ -1,11 +1,10 @@
-package character
+package request
 
 import (
 	"fmt"
 	"strconv"
 
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
 )
 
@@ -15,7 +14,7 @@ type ReviewDialogData struct {
 }
 
 type ApplicationSummary struct {
-	StatusIcon       request.StatusIcon
+	StatusIcon       StatusIcon
 	ReviewDialog     ReviewDialogData
 	Status           string
 	StatusColor      string
@@ -55,23 +54,23 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 			Variable: fmt.Sprintf("showReviewDialogFor%s%s", app.Name, p.Username),
 		},
 		Status:           req.Status,
-		StatusColor:      request.StatusColors[req.Status],
-		StatusText:       request.StatusTexts[req.Status],
-		StatusIncomplete: req.Status == request.StatusIncomplete,
-		StatusReady:      req.Status == request.StatusReady,
-		StatusSubmitted:  req.Status == request.StatusSubmitted,
-		StatusInReview:   req.Status == request.StatusInReview,
-		StatusApproved:   req.Status == request.StatusApproved,
-		StatusReviewed:   req.Status == request.StatusReviewed,
-		StatusRejected:   req.Status == request.StatusRejected,
-		StatusArchived:   req.Status == request.StatusArchived,
-		StatusCanceled:   req.Status == request.StatusCanceled,
+		StatusColor:      StatusColors[req.Status],
+		StatusText:       StatusTexts[req.Status],
+		StatusIncomplete: req.Status == StatusIncomplete,
+		StatusReady:      req.Status == StatusReady,
+		StatusSubmitted:  req.Status == StatusSubmitted,
+		StatusInReview:   req.Status == StatusInReview,
+		StatusApproved:   req.Status == StatusApproved,
+		StatusReviewed:   req.Status == StatusReviewed,
+		StatusRejected:   req.Status == StatusRejected,
+		StatusArchived:   req.Status == StatusArchived,
+		StatusCanceled:   req.Status == StatusCanceled,
 		Link:             GetApplicationLink(p.ID, req, app),
 		ID:               req.ID,
 		Name:             name,
 		Author:           p.Username,
 		Reviewer:         reviewer,
-		StatusIcon:       request.MakeStatusIcon(req.Status, 48),
+		StatusIcon:       MakeStatusIcon(req.Status, 48),
 	}
 }
 

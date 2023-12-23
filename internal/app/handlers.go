@@ -12,7 +12,7 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Get(routes.Home, handlers.HomePage())
 
 	app.Get(routes.RequestFieldPathParam, handlers.RequestFieldPage(i))
-	app.Patch(routes.RequestFieldPathParam, handlers.UpdateRequestField(i))
+	app.Patch(routes.RequestPathParam, handlers.UpdateRequestField(i))
 
 	app.Post(routes.CreateRequestCommentPath(routes.ID, routes.Field), handlers.CreateRequestComment(i))
 

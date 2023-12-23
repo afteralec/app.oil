@@ -10,6 +10,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/require"
+
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/request"
@@ -40,7 +41,7 @@ func TestUpdateRequestFieldForbiddenUnowned(t *testing.T) {
 	writer.WriteField(request.FieldName, "test")
 	writer.Close()
 
-	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldName))
+	url := MakeTestURL(routes.RequestPath(rid))
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -79,7 +80,7 @@ func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
 	writer.WriteField(request.FieldName, "test")
 	writer.Close()
 
-	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldName))
+	url := MakeTestURL(routes.RequestPath(rid))
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())

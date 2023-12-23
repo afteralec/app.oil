@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -155,10 +156,14 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 }
 
 func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
-	type statusInput struct {
-		Status string `form:"status"`
-	}
 	return func(c *fiber.Ctx) error {
+		in := new(request.UpdateInput)
+		if err := c.BodyParser(in); err != nil {
+			log.Println(err)
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
 		lpid := c.Locals("pid")
 		if lpid == nil {
 			c.Status(fiber.StatusUnauthorized)
@@ -181,8 +186,8 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		field := c.Params("field")
-		if len(field) == 0 {
+		field, err := in.GetField()
+		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -207,13 +212,7 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 
 		// Handle a status update
 		if field == request.FieldStatus {
-			r := new(statusInput)
-			if err = c.BodyParser(r); err != nil {
-				c.Status(fiber.StatusBadRequest)
-				return nil
-			}
-
-			if !request.IsStatusValid(r.Status) {
+			if !request.IsStatusValid(in.Status) {
 				c.Status(fiber.StatusBadRequest)
 				return nil
 			}
@@ -226,10 +225,10 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 			perms, ok := lperms.(permissions.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
+				return nil
 			}
 
-			ok = request.IsStatusUpdateOK(&req, perms, pid, r.Status)
+			ok = request.IsStatusUpdateOK(&req, perms, pid, in.Status)
 			if !ok {
 				c.Status(fiber.StatusForbidden)
 				return nil
@@ -237,7 +236,7 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 
 			if err = qtx.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
 				ID:     rid,
-				Status: r.Status,
+				Status: in.Status,
 			}); err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return nil
@@ -256,14 +255,21 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-
 		if !request.IsFieldValid(req.Type, field) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
-
 		if !request.IsEditable(&req) {
 			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if err = in.UpdateField(qtx, &req, field); err != nil {
+			if err == request.ErrInvalidInput {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
@@ -272,7 +278,6 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		c.Status(fiber.StatusBadRequest)
 		return nil
 	}
 }

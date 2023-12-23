@@ -6,8 +6,8 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/bind"
-	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/permissions"
+	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -50,7 +50,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("views/500", c.Locals(bind.Name))
 		}
 
-		summaries := []character.ApplicationSummary{}
+		summaries := []request.ApplicationSummary{}
 		for _, app := range apps {
 			reviewer := ""
 			if app.Request.RPID > 0 {
@@ -65,7 +65,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 				}
 				reviewer = p.Username
 			}
-			summaries = append(summaries, character.NewSummaryFromApplication(&app.Player, reviewer, &app.Request, &app.CharacterApplicationContent))
+			summaries = append(summaries, request.NewSummaryFromApplication(&app.Player, reviewer, &app.Request, &app.CharacterApplicationContent))
 		}
 
 		if err = tx.Commit(); err != nil {

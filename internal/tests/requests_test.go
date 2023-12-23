@@ -7,6 +7,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/require"
+
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/request"

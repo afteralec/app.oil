@@ -9,6 +9,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/require"
+
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/request"
@@ -31,7 +32,7 @@ func TestUpdateRequestStatusIncompleteForbidden(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldStatus))
+	url := MakeTestURL(routes.RequestPath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)

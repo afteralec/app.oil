@@ -26,8 +26,11 @@ func TestCharacterApplicationNamePageUnauthorized(t *testing.T) {
 	rid, _ := CreateTestPlayerAndCharacterApplication(t, &i, a)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 	defer DeleteTestPlayer(t, &i, TestUsername)
+
 	url := MakeTestURL(routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10)))
+
 	req := httptest.NewRequest(http.MethodGet, url, nil)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
