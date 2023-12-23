@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 	"strconv"
 
@@ -12,7 +11,6 @@ import (
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/request"
-	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -107,15 +105,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 
-			// TODO: Move all of this to a single function call
-			titleName := "Unnamed"
-			if len(app.Name) > 0 {
-				titleName = app.Name
-			}
-			b["Title"] = fmt.Sprintf("Character Application (%s)", titleName)
-			b = bind.CharacterApplicationContent(b, &app)
-			b = bind.CharacterApplicationNav(b, &app, field)
-			b["NextLink"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(rid, 10))
+			b = request.BindCharacterApplicationFieldPage(b, &app, field)
 		} else {
 			// TODO: This means that there's a request in the database with an invalid type
 			c.Status(fiber.StatusInternalServerError)
@@ -126,17 +116,6 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-
-		// TODO: Move all of this to a single function call
-		b = bind.RequestStatus(b, &req)
-		b = bind.RequestViewedBy(b, &req, pid)
-		b = bind.RequestCommentPaths(b, &req, field)
-		b = bind.CharacterApplicationPaths(b, &req)
-		b = bind.CharacterApplicationHeaderStatusIcon(b, &req)
-		b = bind.RequestComments(b, pid, req.VID, comments)
-
-		b["Header"] = "Name"
-		b["SubHeader"] = "Your character's name"
 
 		viewsByField, ok := request.ViewsByFieldAndType[req.Type]
 		if !ok {
@@ -150,6 +129,13 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
+
+		b = request.BindRequestFieldPage(b, request.BindRequestFieldPageParams{
+			PID:      pid,
+			Field:    field,
+			Request:  &req,
+			Comments: comments,
+		})
 
 		return c.Render(view, b, "views/layouts/requests")
 	}

@@ -8,6 +8,8 @@ import (
 	"petrichormud.com/app/internal/routes"
 )
 
+// TODO: This is a pure dump from the character module; this badly needs cleaning up
+
 type ReviewDialogData struct {
 	Path     string
 	Variable string
@@ -75,25 +77,26 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 }
 
 func GetApplicationLink(pid int64, req *queries.Request, app *queries.CharacterApplicationContent) string {
+	// TODO: Update this to include reviewer's progress through the application
 	if pid != req.PID {
-		return routes.CharacterApplicationPath(strconv.FormatInt(req.ID, 10))
+		return routes.RequestFieldPath(req.ID, FieldName)
 	}
 
 	if !IsNameValid(app.Name) {
-		return routes.CharacterApplicationNamePath(strconv.FormatInt(req.ID, 10))
+		return routes.RequestFieldPath(req.ID, FieldName)
 	}
 	if !IsGenderValid(app.Gender) {
-		return routes.CharacterApplicationGenderPath(strconv.FormatInt(req.ID, 10))
+		return routes.RequestFieldPath(req.ID, FieldGender)
 	}
 	if !IsShortDescriptionValid(app.ShortDescription) {
-		return routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(req.ID, 10))
+		return routes.RequestFieldPath(req.ID, FieldShortDescription)
 	}
 	if !IsDescriptionValid(app.Description) {
-		return routes.CharacterApplicationDescriptionPath(strconv.FormatInt(req.ID, 10))
+		return routes.RequestFieldPath(req.ID, FieldDescription)
 	}
 	if !IsBackstoryValid(app.Backstory) {
-		return routes.CharacterApplicationBackstoryPath(strconv.FormatInt(req.ID, 10))
+		return routes.RequestFieldPath(req.ID, FieldBackstory)
 	}
 
-	return routes.CharacterApplicationPath(strconv.FormatInt(req.ID, 10))
+	return routes.RequestFieldPath(req.ID, FieldBackstory)
 }

@@ -20,19 +20,8 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 
 	app.Get(routes.CharacterApplicationsQueuePath(), handlers.CharacterApplicationsQueuePage(i))
 
+	// TODO: New Request handler instead
 	app.Post(routes.NewCharacterApplicationPath(), handlers.NewCharacterApplication(i))
-	app.Get(routes.CharacterApplicationPath(routes.ID), handlers.CharacterApplicationPage(i))
-	app.Get(routes.CharacterApplicationNamePath(routes.ID), handlers.CharacterApplicationNamePage(i))
-	app.Get(routes.CharacterApplicationGenderPath(routes.ID), handlers.CharacterApplicationGenderPage(i))
-	app.Get(routes.CharacterApplicationShortDescriptionPath(routes.ID), handlers.CharacterApplicationShortDescriptionPage(i))
-	app.Get(routes.CharacterApplicationDescriptionPath(routes.ID), handlers.CharacterApplicationDescriptionPage(i))
-	app.Get(routes.CharacterApplicationBackstoryPath(routes.ID), handlers.CharacterApplicationBackstoryPage(i))
-
-	app.Patch(routes.CharacterApplicationNamePath(routes.ID), handlers.UpdateCharacterApplicationName(i))
-	app.Patch(routes.CharacterApplicationGenderPath(routes.ID), handlers.UpdateCharacterApplicationGender(i))
-	app.Patch(routes.CharacterApplicationShortDescriptionPath(routes.ID), handlers.UpdateCharacterApplicationShortDescription(i))
-	app.Patch(routes.CharacterApplicationDescriptionPath(routes.ID), handlers.UpdateCharacterApplicationDescription(i))
-	app.Patch(routes.CharacterApplicationBackstoryPath(routes.ID), handlers.UpdateCharacterApplicationBackstory(i))
 
 	app.Post(routes.SubmitCharacterApplicationPath(routes.ID), handlers.SubmitCharacterApplication(i))
 	app.Post(routes.PutCharacterApplicationInReviewPath(routes.ID), handlers.PutCharacterApplicationInReview(i))
