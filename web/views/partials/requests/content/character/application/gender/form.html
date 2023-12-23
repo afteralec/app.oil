@@ -19,6 +19,7 @@
     <input
       x-model="gender"
       id="character-application-flow-gender-nonbinary"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderNonBinary }}'}"
       class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="radio"
       name="{{ .FieldGender }}"
@@ -29,6 +30,7 @@
     <input
       x-model="gender"
       id="character-application-flow-gender-nonbinary"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderNonBinary }}'}"
       class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="radio"
       name="{{ .FieldGender }}"
@@ -36,11 +38,14 @@
     />
     {{ end -}}
     <label
-      class="flex cursor-pointer items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderNonBinary }}'}"
+      class="flex items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       for="character-application-flow-gender-nonbinary"
     >
       Non-binary
-      <span class="text-xs font-medium text-muted-foreground">(They/Them)</span>
+      <span class="pl-1 text-xs font-medium text-muted-foreground"
+        >(They/Them)</span
+      >
     </label>
   </section>
   <section
@@ -55,6 +60,7 @@
     <input
       x-model="gender"
       id="character-application-flow-gender-female"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderFemale }}'}"
       class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="radio"
       name="{{ .FieldGender }}"
@@ -65,6 +71,7 @@
     <input
       x-model="gender"
       id="character-application-flow-gender-female"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderFemale }}'}"
       class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="radio"
       name="{{ .FieldGender }}"
@@ -72,11 +79,14 @@
     />
     {{ end -}}
     <label
-      class="flex cursor-pointer items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderFemale }}'}"
+      class="flex items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       for="character-application-flow-gender-female"
     >
       Female
-      <span class="text-xs font-medium text-muted-foreground">(She/Her)</span>
+      <span class="pl-1 text-xs font-medium text-muted-foreground"
+        >(She/Her)</span
+      >
     </label>
   </section>
   <section
@@ -91,6 +101,8 @@
     <input
       x-model="gender"
       id="character-application-flow-gender-male"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderMale }}'}"
+      class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="radio"
       name="{{ .FieldGender }}"
       value="{{ .GenderMale }}"
@@ -100,17 +112,22 @@
     <input
       x-model="gender"
       id="character-application-flow-gender-male"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderMale }}'}"
+      class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="radio"
       name="gender"
       value="{{ .GenderMale }}"
     />
     {{ end -}}
     <label
-      class="flex cursor-pointer items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderMale }}'}"
+      class="flex items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       for="character-application-flow-gender-male"
     >
       Male
-      <span class="text-xs font-medium text-muted-foreground">(He/Him)</span>
+      <span class="pl-1 text-xs font-medium text-muted-foreground"
+        >(He/Him)</span
+      >
     </label>
   </section>
 </form>
