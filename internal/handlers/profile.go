@@ -5,7 +5,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/bind"
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/shared"
 )
@@ -18,16 +18,16 @@ func ProfilePage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		emails, err := i.Queries.ListEmails(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
+			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
-		b := c.Locals(bind.Name).(fiber.Map)
+		b := c.Locals(constants.BindName).(fiber.Map)
 		b["Emails"] = emails
 		b["VerifiedEmails"] = email.Verified(emails)
 		b["GravatarEmail"] = "othertest@quack.ninja"

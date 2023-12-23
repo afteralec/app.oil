@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
-	"petrichormud.com/app/internal/bind"
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/request"
@@ -19,12 +19,12 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 		lpid := c.Locals("pid")
 		if lpid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 		pid, ok := lpid.(int64)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
+			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -71,7 +71,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			iperms, ok := lperms.(permissions.PlayerGranted)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
+				return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
 			}
 			if !iperms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
@@ -153,12 +153,12 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 		lpid := c.Locals("pid")
 		if lpid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 		pid, ok := lpid.(int64)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(bind.Name), "views/layouts/standalone")
+			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")

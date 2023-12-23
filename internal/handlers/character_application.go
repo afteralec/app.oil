@@ -7,8 +7,8 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/character"
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
@@ -83,7 +83,7 @@ func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -201,7 +201,7 @@ func UpdateCharacterApplicationGender(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -317,7 +317,7 @@ func UpdateCharacterApplicationShortDescription(i *shared.Interfaces) fiber.Hand
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -433,7 +433,7 @@ func UpdateCharacterApplicationDescription(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")
@@ -550,7 +550,7 @@ func UpdateCharacterApplicationBackstory(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		prid := c.Params("id")

@@ -5,7 +5,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/bind"
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
@@ -18,7 +18,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(bind.Name), "views/layouts/standalone")
+			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		tx, err := i.Database.Begin()
@@ -32,7 +32,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 		apps, err := qtx.ListCharacterApplicationsForPlayer(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(bind.Name))
+			return c.Render("views/500", c.Locals(constants.BindName))
 		}
 
 		summaries := []request.ApplicationSummary{}
@@ -46,7 +46,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 					// TODO: Log this error here, this means we need to reset the reviewer and status on the request
 					// }
 					c.Status(fiber.StatusInternalServerError)
-					return c.Render("views/500", c.Locals(bind.Name))
+					return c.Render("views/500", c.Locals(constants.BindName))
 				}
 				reviewer = p.Username
 			}
@@ -58,7 +58,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		b := c.Locals(bind.Name).(fiber.Map)
+		b := c.Locals(constants.BindName).(fiber.Map)
 		b["NewCharacterApplicationPath"] = routes.NewCharacterApplicationPath()
 		b["CharacterApplicationSummaries"] = summaries
 		b["HasCharacterApplications"] = len(apps) > 0

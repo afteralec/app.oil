@@ -5,8 +5,9 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/bind"
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/permissions"
+	"petrichormud.com/app/internal/routes"
 )
 
 func New() fiber.Handler {
@@ -19,9 +20,12 @@ func New() fiber.Handler {
 			"Title":           "Petrichor",
 			"MetaContent":     "Petrichor MUD - a modern take on a classic MUD style of game.",
 			"ShouldShowMenus": determineShouldShowMenus(c),
+			"HomeView":        c.Path() == routes.Home,
+			"ProfileView":     c.Path() == routes.Profile || c.Path() == routes.Me,
+			"CharactersView":  c.Path() == routes.Characters,
+			"PermissionsView": c.Path() == routes.PlayerPermissions,
 		}
-		b = bind.CurrentView(b, c)
-		c.Locals(bind.Name, b)
+		c.Locals(constants.BindName, b)
 
 		return c.Next()
 	}
