@@ -17,6 +17,9 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+// TODO: Success tests for statuses
+// TODO: Various invalid status combinations
+
 func TestUpdateRequestStatusIncompleteForbidden(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()

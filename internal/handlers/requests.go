@@ -11,6 +11,7 @@ import (
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/request"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -264,6 +265,20 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
+		}
+
+		// TODO: Make this declarative based on the type and field
+		switch field {
+		case request.FieldName:
+			c.Append("HX-Redirect", routes.RequestFieldPath(rid, request.FieldGender))
+		case request.FieldGender:
+			c.Append("HX-Redirect", routes.RequestFieldPath(rid, request.FieldShortDescription))
+		case request.FieldShortDescription:
+			c.Append("HX-Redirect", routes.RequestFieldPath(rid, request.FieldDescription))
+		case request.FieldDescription:
+			c.Append("HX-Redirect", routes.RequestFieldPath(rid, request.FieldBackstory))
+		case request.FieldBackstory:
+			c.Append("HX-Refresh", "true")
 		}
 
 		return nil

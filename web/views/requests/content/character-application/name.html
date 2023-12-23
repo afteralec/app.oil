@@ -4,9 +4,9 @@
 {{ template "views/partials/requests/content/character/application/name/help" . }}
 {{ template "views/partials/requests/divider" . }}
 {{ if and .ViewedByPlayer (or .StatusReady .StatusIncomplete) }}
-  {{ template "requests-character-application-name-form" }}
+  {{ template "requests-character-application-name-form" . }}
 {{ else }}
-  {{ template "requests-character-application-name-data" }}
+  {{ template "requests-character-application-name-data" . }}
 {{ end }}
 
 {{ end }}

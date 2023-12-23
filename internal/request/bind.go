@@ -67,9 +67,11 @@ func BindRequestFieldPage(b fiber.Map, p BindRequestFieldPageParams) fiber.Map {
 		b["Header"] = "Description"
 		b["SubHeader"] = "This is how your character will appear when examined."
 	case FieldBackstory:
-		b["Header"] = "Description"
-		b["SubHeader"] = "  This is your character's private backstory."
+		b["Header"] = "Backstory"
+		b["SubHeader"] = "This is your character's private backstory."
 	}
+
+	b["RequestPath"] = routes.RequestPath(p.Request.ID)
 
 	return b
 }
@@ -91,6 +93,7 @@ func BindCharacterApplicationFieldPage(b fiber.Map, app *queries.CharacterApplic
 	b["Backstory"] = app.Backstory
 	b["CharacterApplicationNav"] = MakeCharacterApplicationNav(field, app)
 
+	// TODO: Declarative this up
 	switch field {
 	case FieldName:
 		b["NextLink"] = routes.RequestFieldPath(app.RID, FieldGender)
@@ -107,14 +110,21 @@ func BindCharacterApplicationFieldPage(b fiber.Map, app *queries.CharacterApplic
 		b["BackLink"] = routes.RequestFieldPath(app.RID, FieldDescription)
 	}
 
-	// TODO: Let's clean up these links
-	b["CharacterApplicationPath"] = routes.CharacterApplicationPath(strconv.FormatInt(app.RID, 10))
-	b["CharacterApplicationNamePath"] = routes.CharacterApplicationNamePath(strconv.FormatInt(app.RID, 10))
-	b["CharacterApplicationGenderPath"] = routes.CharacterApplicationGenderPath(strconv.FormatInt(app.RID, 10))
-	b["CharacterApplicationShortDescriptionPath"] = routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(app.RID, 10))
-	b["CharacterApplicationDescriptionPath"] = routes.CharacterApplicationDescriptionPath(strconv.FormatInt(app.RID, 10))
-	b["CharacterApplicationBackstoryPath"] = routes.CharacterApplicationBackstoryPath(strconv.FormatInt(app.RID, 10))
-	b["SubmitCharacterApplicationPath"] = routes.SubmitCharacterApplicationPath(strconv.FormatInt(app.RID, 10))
+	// TODO: Move this field to constants?
+	b["GenderNonBinary"] = character.GenderNonBinary
+	b["GenderFemale"] = character.GenderFemale
+	b["GenderMale"] = character.GenderMale
+
+	b["GenderIsNonBinary"] = app.Gender == character.GenderNonBinary
+	b["GenderIsFemale"] = app.Gender == character.GenderFemale
+	b["GenderIsMale"] = app.Gender == character.GenderMale
+
+	// TODO: Get this in a declarative state too
+	b["FieldName"] = FieldName
+	b["FieldGender"] = FieldGender
+	b["FieldShortDescription"] = FieldShortDescription
+	b["FieldDescription"] = FieldDescription
+	b["FieldBackstory"] = FieldBackstory
 
 	return b
 }

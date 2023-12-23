@@ -4,9 +4,9 @@
 {{ template "views/partials/requests/content/character/application/gender/help" . }}
 {{ template "views/partials/requests/divider" . }}
 {{ if and .ViewedByPlayer (or .StatusReady .StatusIncomplete) }}
-  {{ template "requests-character-application-gender-form" }}
+  {{ template "requests-character-application-gender-form" . }}
 {{ else }}
-  {{ template "requests-character-application-gender-data" }}
+  {{ template "requests-character-application-gender-data" . }}
 {{ end }}
 
 {{ end }}

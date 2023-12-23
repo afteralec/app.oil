@@ -3,7 +3,7 @@
 <form
   class="space-y-4 px-4 pt-4"
   @submit.prevent=""
-  hx-patch="{{ .CharacterApplicationDescriptionPath }}"
+  hx-patch="{{ .RequestPath }}"
   hx-swap="none"
   x-data="getCharacterApplicationDescriptionData('{{ .Description }}')"
 >
@@ -12,12 +12,12 @@
       id="character-application-flow-description"
       x-model="description"
       @input="
-            eval.desc.len = true;
-            backstory = sanitizeCharacterDescription(event.target.value);
-          "
+        eval.desc.len = true;
+        backstory = sanitizeCharacterDescription(event.target.value);
+      "
       class="flex min-h-[10rem] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
       placeholder=""
-      name="description"
+      name="{{ .FieldDescription }}"
       autofocus
     ></textarea>
     <div>
@@ -25,9 +25,6 @@
       {{ template "views/partials/character/application/content/description/requirements" }}
     </div>
   </div>
-
-  <!-- prettier-ignore -->
-  {{ template "views/partials/character/application/footer" . }}
 </form>
 
 {{ end }}

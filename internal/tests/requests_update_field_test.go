@@ -18,6 +18,9 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
+// TODO: Success tests for fields
+// TODO: Invalid input tests for fields
+
 func TestUpdateRequestFieldForbiddenUnowned(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
