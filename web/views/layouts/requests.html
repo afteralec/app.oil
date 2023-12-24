@@ -10,7 +10,7 @@
       {{ template "views/partials/requests/header" . }}
 
       {{ template "views/partials/requests/nav/list" .CharacterApplicationNav }}
-      <div class="w-full max-w-lg rounded-md border">
+      <section class="w-full max-w-lg rounded-md border">
         {{ template "views/partials/requests/actions" . }}
 
         <div class="w-full px-6 pb-6">
@@ -21,22 +21,22 @@
 
           {{ template "views/partials/requests/footer" . }}
 
-          {{ if and .StatusInReview .ViewedByReviewer -}}
+          {{ if and .StatusIsInReview .ViewedByReviewer -}}
             {{ template "views/partials/requests/comments/form" . }}
           {{ end -}}
         </div>
-      </div>
+      </section>
 
       <!-- prettier-ignore -->
-      {{ if and .StatusInReview .ViewedByReviewer -}}
+      {{ if and .StatusIsInReview .ViewedByReviewer -}}
         {{ template "views/partials/requests/comments/list" . }}
       {{ end -}}
 
-      {{ if and .StatusReady .ViewedByPlayer -}}
+      {{ if and .StatusIsReady .ViewedByPlayer -}}
         {{ template "views/partials/requests/dialogs/submit" .SubmitCharacterApplicationPath }}
       {{ end -}}
 
-      {{ if and .StatusSubmitted .ViewedByReviewer -}}
+      {{ if and .StatusIsSubmitted .ViewedByReviewer -}}
         {{ template "views/partials/requests/dialogs/review" .ReviewDialog }}
       {{ end -}}
 

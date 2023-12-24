@@ -73,6 +73,8 @@ func BindRequestFieldPage(b fiber.Map, p BindRequestFieldPageParams) fiber.Map {
 
 	b["RequestPath"] = routes.RequestPath(p.Request.ID)
 
+	b["RequestFormID"] = "request-form"
+
 	return b
 }
 

@@ -2,8 +2,9 @@
 {{ define "requests-character-application-name-form" }}
 
 <form
-  x-data="getCharacterApplicationNameData(`{{ .Name }}`)"
+  id="{{ .RequestFormID }}"
   class="space-y-2 px-4 pt-4"
+  x-data="getCharacterApplicationNameData(`{{ .Name }}`)"
   @submit.prevent=""
   hx-patch="{{ .RequestPath }}"
   hx-swap="none"

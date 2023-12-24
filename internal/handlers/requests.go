@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"log"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -20,8 +19,6 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 		lpid := c.Locals("pid")
 		if lpid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			b := c.Locals(constants.BindName)
-			log.Println(b)
 			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 		pid, ok := lpid.(int64)
@@ -148,7 +145,6 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		in := new(request.UpdateInput)
 		if err := c.BodyParser(in); err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}

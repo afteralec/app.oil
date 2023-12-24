@@ -1,8 +1,9 @@
 {{ define "requests-character-application-gender-form" }}
 
 <form
-  x-data="getCharacterApplicationGenderData(`{{ .Gender }}`)"
+  id="{{ .RequestFormID }}"
   class="space-y-2 px-4 pt-4"
+  x-data="getCharacterApplicationGenderData(`{{ .Gender }}`)"
   @submit.prevent=""
   hx-patch="{{ .RequestPath }}"
   hx-swap="none"
@@ -19,7 +20,7 @@
     <input
       x-model="gender"
       id="character-application-flow-gender-nonbinary"
-      :class="{ 'cursor-pointer': gender !== '{{ .GenderNonBinary }}'}"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderNonBinary }}' }"
       class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="radio"
       name="{{ .FieldGender }}"
@@ -30,7 +31,7 @@
     <input
       x-model="gender"
       id="character-application-flow-gender-nonbinary"
-      :class="{ 'cursor-pointer': gender !== '{{ .GenderNonBinary }}'}"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderNonBinary }}' }"
       class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="radio"
       name="{{ .FieldGender }}"
@@ -38,7 +39,7 @@
     />
     {{ end -}}
     <label
-      :class="{ 'cursor-pointer': gender !== '{{ .GenderNonBinary }}'}"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderNonBinary }}' }"
       class="flex items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       for="character-application-flow-gender-nonbinary"
     >
@@ -60,7 +61,7 @@
     <input
       x-model="gender"
       id="character-application-flow-gender-female"
-      :class="{ 'cursor-pointer': gender !== '{{ .GenderFemale }}'}"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderFemale }}' }"
       class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="radio"
       name="{{ .FieldGender }}"
@@ -71,7 +72,7 @@
     <input
       x-model="gender"
       id="character-application-flow-gender-female"
-      :class="{ 'cursor-pointer': gender !== '{{ .GenderFemale }}'}"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderFemale }}' }"
       class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="radio"
       name="{{ .FieldGender }}"
@@ -79,7 +80,7 @@
     />
     {{ end -}}
     <label
-      :class="{ 'cursor-pointer': gender !== '{{ .GenderFemale }}'}"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderFemale }}' }"
       class="flex items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       for="character-application-flow-gender-female"
     >
@@ -101,7 +102,7 @@
     <input
       x-model="gender"
       id="character-application-flow-gender-male"
-      :class="{ 'cursor-pointer': gender !== '{{ .GenderMale }}'}"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderMale }}' }"
       class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="radio"
       name="{{ .FieldGender }}"
@@ -112,7 +113,7 @@
     <input
       x-model="gender"
       id="character-application-flow-gender-male"
-      :class="{ 'cursor-pointer': gender !== '{{ .GenderMale }}'}"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderMale }}' }"
       class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="radio"
       name="gender"
@@ -120,7 +121,7 @@
     />
     {{ end -}}
     <label
-      :class="{ 'cursor-pointer': gender !== '{{ .GenderMale }}'}"
+      :class="{ 'cursor-pointer': gender !== '{{ .GenderMale }}' }"
       class="flex items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       for="character-application-flow-gender-male"
     >

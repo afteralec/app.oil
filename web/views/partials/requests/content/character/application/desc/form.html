@@ -1,6 +1,7 @@
 {{ define "requests-character-application-desc-form" }}
 
 <form
+  id="{{ .RequestFormID }}"
   class="space-y-4 px-4 pt-4"
   @submit.prevent=""
   hx-patch="{{ .RequestPath }}"

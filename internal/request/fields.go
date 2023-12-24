@@ -3,6 +3,7 @@ package request
 import (
 	"context"
 	"errors"
+	"log"
 
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/views"
@@ -18,7 +19,7 @@ const (
 	FieldName             string = "name"
 	FieldGender           string = "gender"
 	FieldShortDescription string = "sdesc"
-	FieldDescription      string = "description"
+	FieldDescription      string = "desc"
 	FieldBackstory        string = "backstory"
 )
 
@@ -101,7 +102,7 @@ var (
 func (in *UpdateInput) UpdateField(q *queries.Queries, req *queries.Request, field string) error {
 	switch field {
 	case FieldName:
-		if !IsNameValid(field) {
+		if !IsNameValid(in.Name) {
 			return ErrInvalidInput
 		}
 
@@ -112,7 +113,7 @@ func (in *UpdateInput) UpdateField(q *queries.Queries, req *queries.Request, fie
 			return err
 		}
 	case FieldGender:
-		if !IsGenderValid(field) {
+		if !IsGenderValid(in.Gender) {
 			return ErrInvalidInput
 		}
 
@@ -123,7 +124,7 @@ func (in *UpdateInput) UpdateField(q *queries.Queries, req *queries.Request, fie
 			return err
 		}
 	case FieldShortDescription:
-		if !IsShortDescriptionValid(field) {
+		if !IsShortDescriptionValid(in.ShortDescription) {
 			return ErrInvalidInput
 		}
 
@@ -134,7 +135,8 @@ func (in *UpdateInput) UpdateField(q *queries.Queries, req *queries.Request, fie
 			return err
 		}
 	case FieldDescription:
-		if !IsDescriptionValid(field) {
+		if !IsDescriptionValid(in.Description) {
+			log.Println("Failed field validation")
 			return ErrInvalidInput
 		}
 
@@ -145,7 +147,7 @@ func (in *UpdateInput) UpdateField(q *queries.Queries, req *queries.Request, fie
 			return err
 		}
 	case FieldBackstory:
-		if !IsBackstoryValid(field) {
+		if !IsBackstoryValid(in.Backstory) {
 			return ErrInvalidInput
 		}
 
