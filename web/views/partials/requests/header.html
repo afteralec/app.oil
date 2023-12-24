@@ -5,23 +5,23 @@
   <section class="flex h-full items-center justify-center gap-2">
     <!-- TODO: See if we can pass this in as a variable? -->
     <!-- prettier-ignore -->
-    {{ if .StatusIncomplete }}
+    {{ if .StatusIsIncomplete }}
       {{ template "views/partials/request/status/icon/incomplete" .HeaderStatusIcon }}
-    {{ else if .StatusReady }}
+    {{ else if .StatusIsReady }}
       {{ template "views/partials/request/status/icon/ready" .HeaderStatusIcon }}
-    {{ else if .StatusSubmitted }}
+    {{ else if .StatusIsSubmitted }}
       {{ template "views/partials/request/status/icon/submitted" .HeaderStatusIcon }}
-    {{ else if .StatusInReview }}
+    {{ else if .StatusIsInReview }}
       {{ template "views/partials/request/status/icon/in-review" .HeaderStatusIcon }}
-    {{ else if .StatusApproved }}
+    {{ else if .StatusIsApproved }}
       {{ template "views/partials/request/status/icon/approved" .HeaderStatusIcon }}
-    {{ else if .StatusReviewed }}
+    {{ else if .StatusIsReviewed }}
       {{ template "views/partials/request/status/icon/reviewed" .HeaderStatusIcon }}
-    {{ else if .StatusRejected }}
+    {{ else if .StatusIsRejected }}
       {{ template "views/partials/request/status/icon/rejected" .HeaderStatusIcon }}
-    {{ else if .StatusArchived }}
+    {{ else if .StatusIsArchived }}
       {{ template "views/partials/request/status/icon/archived" .HeaderStatusIcon }}
-    {{ else if .StatusCanceled }}
+    {{ else if .StatusIsCanceled }}
       {{ template "views/partials/request/status/icon/canceled" .HeaderStatusIcon }}
     {{ end -}}
     <div

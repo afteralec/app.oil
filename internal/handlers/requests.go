@@ -249,7 +249,7 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if err = in.UpdateField(qtx, &req, field); err != nil {
+		if err = in.UpdateField(pid, qtx, &req, field); err != nil {
 			if err == request.ErrInvalidInput {
 				c.Status(fiber.StatusBadRequest)
 				return nil

@@ -2,8 +2,33 @@ package request
 
 import (
 	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/shared"
 )
+
+func IsCharacterApplicationValid(app *queries.CharacterApplicationContent) bool {
+	if !IsNameValid(app.Name) {
+		return false
+	}
+
+	if !IsGenderValid(app.Gender) {
+		return false
+	}
+
+	if !IsShortDescriptionValid(app.ShortDescription) {
+		return false
+	}
+
+	if !IsDescriptionValid(app.Description) {
+		return false
+	}
+
+	if !IsBackstoryValid(app.Backstory) {
+		return false
+	}
+
+	return true
+}
 
 func IsNameValid(n string) bool {
 	if len(n) < shared.MinCharacterNameLength {

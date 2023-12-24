@@ -99,7 +99,7 @@ var (
 
 // TODO: Turn this into a map of updaters by field - can create an interface for the Updater
 // TODO: Get Validators in front of everything here
-func (in *UpdateInput) UpdateField(q *queries.Queries, req *queries.Request, field string) error {
+func (in *UpdateInput) UpdateField(pid int64, q *queries.Queries, req *queries.Request, field string) error {
 	switch field {
 	case FieldName:
 		if !IsNameValid(in.Name) {
@@ -112,6 +112,7 @@ func (in *UpdateInput) UpdateField(q *queries.Queries, req *queries.Request, fie
 		}); err != nil {
 			return err
 		}
+
 	case FieldGender:
 		if !IsGenderValid(in.Gender) {
 			return ErrInvalidInput
@@ -159,6 +160,45 @@ func (in *UpdateInput) UpdateField(q *queries.Queries, req *queries.Request, fie
 		}
 	default:
 		return ErrMalformedUpdateInput
+	}
+
+	if req.Type == TypeCharacterApplication {
+		app, err := q.GetCharacterApplicationContentForRequest(context.Background(), req.ID)
+		if err != nil {
+			return err
+		}
+
+		ready := IsCharacterApplicationValid(&app)
+
+		if ready && req.Status == StatusIncomplete {
+			if err := q.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
+				RID: req.ID,
+				PID: pid,
+			}); err != nil {
+				return err
+			}
+
+			if err := q.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
+				ID:     req.ID,
+				Status: StatusReady,
+			}); err != nil {
+				return err
+			}
+		} else if !ready && req.Status == StatusReady {
+			if err := q.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
+				RID: req.ID,
+				PID: pid,
+			}); err != nil {
+				return err
+			}
+
+			if err := q.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
+				ID:     req.ID,
+				Status: StatusIncomplete,
+			}); err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil
