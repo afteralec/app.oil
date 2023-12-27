@@ -4,13 +4,7 @@
 
   <body>
     <main class="flex flex-col items-center" x-data="getRequestData()">
-      <!-- prettier-ignore -->
-      {{ template "views/partials/requests/header" . }}
-
-      {{ template "views/partials/requests/nav/list" .CharacterApplicationNav }}
       <section class="w-full max-w-lg rounded-md border">
-        {{ template "views/partials/requests/actions" . }}
-
         <div class="w-full px-6 pb-6">
           {{ template "views/partials/requests/content/header" . }}
 

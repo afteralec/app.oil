@@ -19,16 +19,8 @@
   </a>
   {{ end -}}
   <!-- prettier-ignore -->
-  {{ if .NextLink -}}
-  <!-- TODO: This should submit the current form if there is one -->
-  <!-- It should also disable if the field is incomplete -->
-  <a
-    href="{{ .NextLink }}"
-    class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-  >
-    Skip
-  </a>
-  {{ if and .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
+  <!-- TODO: This should disable if the field is incomplete -->
+  {{ if and .NextLink .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
   <button
     type="submit"
     form="{{ .RequestFormID }}"
@@ -38,8 +30,7 @@
   </button>
   {{ end -}}
   <!-- prettier-ignore -->
-  {{ else }}
-  {{ if and .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
+  {{ if and (not .NextLink) .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
   <button
     type="submit"
     form="{{ .RequestFormID }}"
@@ -47,7 +38,5 @@
   >
     Finish
   </button>
-  {{ end -}}
-  <!-- prettier-ignore -->
   {{ end -}}
 </footer>

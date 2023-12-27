@@ -23,6 +23,9 @@ const (
 	FieldBackstory        string = "backstory"
 )
 
+// Errors
+var ErrNoIncompleteFields error = errors.New("no incomplete fields")
+
 var FieldsByType map[string]map[string]bool = map[string]map[string]bool{
 	TypeCharacterApplication: {
 		FieldName:             true,
