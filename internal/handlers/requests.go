@@ -197,6 +197,13 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		viewsByField, ok := request.ViewsByFieldAndType[req.Type]
+		if !ok {
+			// TODO: Again, noteworthy because either a bad type or a missing register
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
 		if req.Type == request.TypeCharacterApplication {
 			app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
 			if err != nil {
@@ -227,20 +234,20 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 					Comments: []queries.ListCommentsForRequestWithAuthorRow{},
 				})
 
-				viewsByField, ok := request.ViewsByFieldAndType[req.Type]
-				if !ok {
-					// TODO: Again, noteworthy because either a bad type or a missing register
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
 				view, ok := viewsByField[field]
 				if !ok {
 					// TODO: Noteworthy to handle and track
+					// This means that the field doesn't have a view
 					c.Status(fiber.StatusInternalServerError)
 					return nil
 				}
 
-				c.Render(view, b, "views/layouts/request-flow")
+				if err = tx.Commit(); err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return nil
+				}
+
+				return c.Render(view, b, "views/layouts/request-flow")
 			} else {
 				// TODO: Other views
 				c.Status(fiber.StatusInternalServerError)
@@ -252,13 +259,6 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-
-		if err = tx.Commit(); err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		return nil
 	}
 }
 

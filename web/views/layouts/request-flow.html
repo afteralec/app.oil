@@ -14,10 +14,6 @@
         {{ embed }}
 
         {{ template "views/partials/requests/footer" . }}
-
-        {{ if and .StatusIsInReview .ViewedByReviewer -}}
-          {{ template "views/partials/requests/comments/form" . }}
-        {{ end -}}
       </section>
     </main>
   </body>
