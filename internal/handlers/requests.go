@@ -217,7 +217,8 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 
-			if req.Status == request.StatusIncomplete {
+			switch req.Status {
+			case request.StatusIncomplete:
 				field, err := request.CharacterApplicationGetNextIncompleteField(&app)
 				if err != nil {
 					// TODO: This means that all fields are filled out but the application is still Ready
@@ -225,6 +226,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 					return nil
 				}
 
+				// TODO: Clean this up and lift request-general details to the top
 				b := c.Locals(constants.BindName).(fiber.Map)
 				b = request.BindCharacterApplicationFieldPage(b, &app, field)
 				b = request.BindRequestFieldPage(b, request.BindRequestFieldPageParams{
@@ -248,12 +250,20 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				}
 
 				return c.Render(view, b, "views/layouts/request-flow")
-			} else {
+			case request.StatusReady:
+				b := c.Locals(constants.BindName).(fiber.Map)
+				b = request.BindRequestPage(b, request.BindRequestPageParams{
+					PID:     pid,
+					Request: &req,
+				})
+				b = request.BindCharacterApplicationPage(b, &app)
+
+				return c.Render("views/partials/requests/content/character/application/summary", b, "views/layouts/request-summary")
+			default:
 				// TODO: Other views
 				c.Status(fiber.StatusInternalServerError)
 				return nil
 			}
-
 		} else {
 			// TODO: This means that there's a request in the database with an invalid type
 			c.Status(fiber.StatusInternalServerError)

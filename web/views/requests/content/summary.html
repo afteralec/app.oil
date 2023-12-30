@@ -1,0 +1,8 @@
+{{ define "requests-summary" }}
+
+<!-- prettier-ignore -->
+{{ range .SummaryFields }}
+  {{ template "requests-summary-field" . }}
+{{ end }}
+
+{{ end }}

@@ -11,6 +11,45 @@ import (
 	"petrichormud.com/app/internal/routes"
 )
 
+type BindRequestPageParams struct {
+	Request *queries.Request
+	PID     int64
+}
+
+func BindRequestPage(b fiber.Map, p BindRequestPageParams) fiber.Map {
+	b["StatusIncomplete"] = StatusIncomplete
+	b["StatusReady"] = StatusReady
+	b["StatusSubmitted"] = StatusSubmitted
+	b["StatusInReview"] = StatusInReview
+	b["StatusApproved"] = StatusApproved
+	b["StatusReviewed"] = StatusReviewed
+	b["StatusRejected"] = StatusRejected
+	b["StatusArchived"] = StatusArchived
+	b["StatusCanceled"] = StatusCanceled
+
+	b["StatusIsIncomplete"] = p.Request.Status == StatusIncomplete
+	b["StatusIsReady"] = p.Request.Status == StatusReady
+	b["StatusIsSubmitted"] = p.Request.Status == StatusSubmitted
+	b["StatusIsInReview"] = p.Request.Status == StatusInReview
+	b["StatusIsApproved"] = p.Request.Status == StatusApproved
+	b["StatusIsReviewed"] = p.Request.Status == StatusReviewed
+	b["StatusIsRejected"] = p.Request.Status == StatusRejected
+	b["StatusIsArchived"] = p.Request.Status == StatusArchived
+	b["StatusIsCanceled"] = p.Request.Status == StatusCanceled
+
+	// TODO: This is fallible, make this function fallible - or ensure it validates before
+	b["StatusText"] = StatusTexts[p.Request.Status]
+
+	b["StatusColor"] = StatusColors[p.Request.Status]
+
+	b["ViewedByPlayer"] = p.Request.PID == p.PID
+	b["ViewedByReviewer"] = p.Request.RPID == p.PID
+
+	b["HeaderStatusIcon"] = MakeStatusIcon(p.Request.Status, 36)
+
+	return b
+}
+
 type BindRequestFieldPageParams struct {
 	Field    string
 	Request  *queries.Request
@@ -74,6 +113,19 @@ func BindRequestFieldPage(b fiber.Map, p BindRequestFieldPageParams) fiber.Map {
 	b["RequestPath"] = routes.RequestPath(p.Request.ID)
 
 	b["RequestFormID"] = "request-form"
+
+	return b
+}
+
+func BindCharacterApplicationPage(b fiber.Map, app *queries.CharacterApplicationContent) fiber.Map {
+	// TODO: Get this "Unnamed" into a constant
+	var sb strings.Builder
+	titleName := "Unnamed"
+	if len(app.Name) > 0 {
+		titleName = app.Name
+	}
+	fmt.Fprintf(&sb, "Character Application (%s)", titleName)
+	b["RequestTitle"] = sb.String()
 
 	return b
 }
