@@ -258,7 +258,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				})
 				b = request.BindCharacterApplicationPage(b, &app)
 
-				return c.Render("views/partials/requests/content/character/application/summary", b, "views/layouts/request-summary")
+				return c.Render("views/requests/content/summary", b, "views/layouts/requests/summary")
 			default:
 				// TODO: Other views
 				c.Status(fiber.StatusInternalServerError)

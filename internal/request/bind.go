@@ -11,6 +11,11 @@ import (
 	"petrichormud.com/app/internal/routes"
 )
 
+type SummaryField struct {
+	Label   string
+	Content string
+}
+
 type BindRequestPageParams struct {
 	Request *queries.Request
 	PID     int64
@@ -126,6 +131,14 @@ func BindCharacterApplicationPage(b fiber.Map, app *queries.CharacterApplication
 	}
 	fmt.Fprintf(&sb, "Character Application (%s)", titleName)
 	b["RequestTitle"] = sb.String()
+
+	b["SummaryFields"] = []SummaryField{
+		{Label: "Name", Content: app.Name},
+		{Label: "Gender", Content: app.Gender},
+		{Label: "Short Description", Content: app.ShortDescription},
+		{Label: "Description", Content: app.Description},
+		{Label: "Backstory", Content: app.Backstory},
+	}
 
 	return b
 }

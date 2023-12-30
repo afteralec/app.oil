@@ -1,8 +1,9 @@
-{{ define "requests-summary" }}
+<section class="summary-fields flex flex-col justify-center">
+  <!-- prettier-ignore -->
+  {{ range .SummaryFields }}
+    {{ template "requests-summary-field" . }}
+  {{ end }}
+</section>
 
 <!-- prettier-ignore -->
-{{ range .SummaryFields }}
-  {{ template "requests-summary-field" . }}
-{{ end }}
-
-{{ end }}
+{{ template "requests-summary-footer" . }}

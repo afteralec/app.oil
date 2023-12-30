@@ -1,0 +1,14 @@
+{{ define "requests-summary-header" }}
+
+<header
+  class="mb-4 flex w-full max-w-lg items-center justify-between border-b pr-4"
+>
+  <h2 class="text-lg font-extrabold leading-none tracking-tight">
+    {{ .RequestTitle }}
+  </h2>
+  <section class="flex h-full justify-center">
+    {{ template "requests-header-status-icon" . }}
+  </section>
+</header>
+
+{{ end }}

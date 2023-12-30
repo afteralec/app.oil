@@ -1,0 +1,31 @@
+{{ define "requests-summary-footer" }}
+
+<footer x-show="!commentOpen" class="flex justify-end gap-2 pt-4">
+  {{ if and .ViewedByReviewer .StatusInReview -}}
+  <button
+    @click.prevent="commentOpen = true;"
+    class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+    type="button"
+  >
+    Comment
+  </button>
+  {{ end -}}
+
+  <!-- prettier-ignore -->
+  {{ if and .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
+  <button
+    type="button"
+    class="inline-flex h-10 items-center justify-center rounded-md border border-rose-800 px-4 py-2 text-sm font-medium text-rose-800 ring-offset-background transition-colors hover:border-rose-600 hover:bg-rose-100 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+  >
+    Cancel
+  </button>
+  <button
+    type="button"
+    class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+  >
+    Submit
+  </button>
+  {{ end -}}
+</footer>
+
+{{ end }}

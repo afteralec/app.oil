@@ -130,3 +130,12 @@ body {
 .dropdown:hover .dropdown-content {
   display: block;
 }
+
+.summary-fields:hover > .summary-field:not(:hover) {
+  transition: opacity 250ms;
+  opacity: 0.5;
+}
+
+.summary-fields > * + * {
+  padding-top: 1.5rem;
+}

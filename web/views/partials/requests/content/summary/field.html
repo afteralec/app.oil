@@ -1,0 +1,12 @@
+{{ define "requests-summary-field" }}
+
+<article class="summary-field flex flex-col gap-2 border-b pb-3">
+  <h3
+    class="text-sm font-semibold leading-none tracking-tight text-muted-foreground"
+  >
+    {{ .Label }}
+  </h3>
+  <p class="text-wrap text-base leading-none">{{ .Content }}</p>
+</article>
+
+{{ end }}
