@@ -67,36 +67,11 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 		StatusRejected:   req.Status == StatusRejected,
 		StatusArchived:   req.Status == StatusArchived,
 		StatusCanceled:   req.Status == StatusCanceled,
-		Link:             GetApplicationLink(p.ID, req, app),
+		Link:             routes.RequestPath(req.ID),
 		ID:               req.ID,
 		Name:             name,
 		Author:           p.Username,
 		Reviewer:         reviewer,
 		StatusIcon:       MakeStatusIcon(req.Status, 48),
 	}
-}
-
-func GetApplicationLink(pid int64, req *queries.Request, app *queries.CharacterApplicationContent) string {
-	// TODO: Update this to include reviewer's progress through the application
-	if pid != req.PID {
-		return routes.RequestFieldPath(req.ID, FieldName)
-	}
-
-	if !IsNameValid(app.Name) {
-		return routes.RequestFieldPath(req.ID, FieldName)
-	}
-	if !IsGenderValid(app.Gender) {
-		return routes.RequestFieldPath(req.ID, FieldGender)
-	}
-	if !IsShortDescriptionValid(app.ShortDescription) {
-		return routes.RequestFieldPath(req.ID, FieldShortDescription)
-	}
-	if !IsDescriptionValid(app.Description) {
-		return routes.RequestFieldPath(req.ID, FieldDescription)
-	}
-	if !IsBackstoryValid(app.Backstory) {
-		return routes.RequestFieldPath(req.ID, FieldBackstory)
-	}
-
-	return routes.RequestFieldPath(req.ID, FieldBackstory)
 }

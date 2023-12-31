@@ -35,6 +35,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render("views/500", c.Locals(constants.BindName))
 		}
 
+		// TODO: Get this into a standard API on the request package
 		summaries := []request.ApplicationSummary{}
 		for _, app := range apps {
 			reviewer := ""
