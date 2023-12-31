@@ -1,5 +1,7 @@
 package constants
 
+const DefaultName = "Unnamed"
+
 const (
 	GenderMale      = "Male"
 	GenderFemale    = "Female"

@@ -26,19 +26,17 @@
       </section>
 
       <!-- prettier-ignore -->
-      {{ if and .StatusIsInReview .ViewedByReviewer -}}
-        {{ template "views/partials/requests/comments/list" . }}
-      {{ end -}}
+      {{ if .ViewedByPlayer }}
+        {{ if .StatusIsReady }}
+          {{ template "views/partials/requests/dialogs/submit" .SubmitCharacterApplicationPath }}
+        {{ end }}
 
-      {{ if and .StatusIsReady .ViewedByPlayer -}}
-        {{ template "views/partials/requests/dialogs/submit" .SubmitCharacterApplicationPath }}
-      {{ end -}}
+        {{ template "views/partials/requests/dialogs/cancel" .CharacterApplicationPath }}
+      {{ end }}
 
       {{ if and .StatusIsSubmitted .ViewedByReviewer -}}
         {{ template "views/partials/requests/dialogs/review" .ReviewDialog }}
       {{ end -}}
-
-      {{ template "views/partials/requests/dialogs/cancel" .CharacterApplicationPath }}
     </main>
 
     {{ template "footer" . }}

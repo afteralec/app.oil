@@ -10,16 +10,22 @@
     {{ .Label }}
   </h3>
 
-  <p class="text-wrap text-base leading-none">{{ .Content }}</p>
+  <p
+    :class="{ 'opacity-50' : helpOpen }"
+    class="text-wrap text-base leading-none"
+  >
+    {{ .Content }}
+  </p>
 
-  <div x-cloak x-show="helpOpen" class="border-b pt-2">
+  <div x-cloak x-show="helpOpen" class="pt-2">
     {{ template "views/partials/requests/content/summary/help" .Label }}
   </div>
 
   <!-- prettier-ignore -->
   {{ if .ViewedByPlayer }}
   <footer
-    class="request-summary-field-actions flex items-center justify-end gap-2 pr-3 opacity-0 transition-opacity group-hover:opacity-100"
+    :class="helpOpen ? 'opacity-100' : 'opacity-0'"
+    class="request-summary-field-actions flex items-center justify-end gap-2 pr-3 transition-opacity group-hover:opacity-100"
   >
     <div
       @click.prevent="helpOpen = !helpOpen;"

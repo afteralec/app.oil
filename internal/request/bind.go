@@ -7,6 +7,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 	"petrichormud.com/app/internal/character"
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 )
@@ -43,7 +44,6 @@ func BindRequestPage(b fiber.Map, p BindRequestPageParams) fiber.Map {
 	b["StatusIsArchived"] = p.Request.Status == StatusArchived
 	b["StatusIsCanceled"] = p.Request.Status == StatusCanceled
 
-	// TODO: This is fallible, make this function fallible - or ensure it validates before
 	b["StatusText"] = StatusTexts[p.Request.Status]
 
 	b["StatusColor"] = StatusColors[p.Request.Status]
@@ -129,9 +129,8 @@ type BindCharacterApplicationPageParams struct {
 }
 
 func BindCharacterApplicationPage(b fiber.Map, p BindCharacterApplicationPageParams) fiber.Map {
-	// TODO: Get this "Unnamed" into a constant
 	var sb strings.Builder
-	titleName := "Unnamed"
+	titleName := constants.DefaultName
 	if len(p.Application.Name) > 0 {
 		titleName = p.Application.Name
 	}

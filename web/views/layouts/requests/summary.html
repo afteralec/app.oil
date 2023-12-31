@@ -15,6 +15,19 @@
         <!-- prettier-ignore -->
         {{ embed }}
       </section>
+
+      <!-- prettier-ignore -->
+      {{ if .ViewedByPlayer }}
+        {{ if .StatusIsReady }}
+          {{ template "views/partials/requests/dialogs/submit" .SubmitCharacterApplicationPath }}
+        {{ end }}
+
+        {{ template "views/partials/requests/dialogs/cancel" .CharacterApplicationPath }}
+      {{ end }}
+
+      {{ if and .StatusIsSubmitted .ViewedByReviewer -}}
+        {{ template "views/partials/requests/dialogs/review" .ReviewDialog }}
+      {{ end -}}
     </main>
   </body>
 </html>
