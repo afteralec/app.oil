@@ -83,6 +83,10 @@ body {
   scrollbar-gutter: stable;
 }
 
+.flow > * + * {
+  padding-top: 1.5rem;
+}
+
 #username-reserved:not(.htmx-request) > #username-reserved-indicator {
   display: none;
 }
@@ -134,8 +138,4 @@ body {
 .request-summary-fields:hover > .request-summary-field:not(:hover) {
   transition: opacity 250ms;
   opacity: 0.5;
-}
-
-.request-summary-fields > * + * {
-  padding-top: 1.5rem;
 }

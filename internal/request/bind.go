@@ -15,6 +15,7 @@ import (
 type SummaryField struct {
 	Label          string
 	Content        string
+	Path           string
 	ViewedByPlayer bool
 }
 
@@ -137,31 +138,56 @@ func BindCharacterApplicationPage(b fiber.Map, p BindCharacterApplicationPagePar
 	fmt.Fprintf(&sb, "Character Application (%s)", titleName)
 	b["RequestTitle"] = sb.String()
 
+	// TODO: Get this into a utility
+	var basePathSB strings.Builder
+	fmt.Fprintf(&basePathSB, "/requests/%d", p.Application.RID)
+	basePath := basePathSB.String()
+
+	var namePathSB strings.Builder
+	fmt.Fprintf(&namePathSB, "%s/%s", basePath, FieldName)
+
+	var genderPathSB strings.Builder
+	fmt.Fprintf(&genderPathSB, "%s/%s", basePath, FieldGender)
+
+	var shortDescriptionPathSB strings.Builder
+	fmt.Fprintf(&shortDescriptionPathSB, "%s/%s", basePath, FieldShortDescription)
+
+	var descriptionPathSB strings.Builder
+	fmt.Fprintf(&descriptionPathSB, "%s/%s", basePath, FieldDescription)
+
+	var backstoryPathSB strings.Builder
+	fmt.Fprintf(&backstoryPathSB, "%s/%s", basePath, FieldBackstory)
+
 	b["SummaryFields"] = []SummaryField{
 		{
 			Label:          "Name",
 			Content:        p.Application.Name,
 			ViewedByPlayer: p.ViewedByPlayer,
+			Path:           namePathSB.String(),
 		},
 		{
 			Label:          "Gender",
 			Content:        p.Application.Gender,
 			ViewedByPlayer: p.ViewedByPlayer,
+			Path:           genderPathSB.String(),
 		},
 		{
 			Label:          "Short Description",
 			Content:        p.Application.ShortDescription,
 			ViewedByPlayer: p.ViewedByPlayer,
+			Path:           shortDescriptionPathSB.String(),
 		},
 		{
 			Label:          "Description",
 			Content:        p.Application.Description,
 			ViewedByPlayer: p.ViewedByPlayer,
+			Path:           descriptionPathSB.String(),
 		},
 		{
 			Label:          "Backstory",
 			Content:        p.Application.Backstory,
 			ViewedByPlayer: p.ViewedByPlayer,
+			Path:           backstoryPathSB.String(),
 		},
 	}
 
