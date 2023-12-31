@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"log"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -13,6 +14,73 @@ import (
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
+
+func NewRequest(i *shared.Interfaces) fiber.Handler {
+	type input struct {
+		Type string `form:"type"`
+	}
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
+			log.Println(err)
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !request.IsTypeValid(in.Type) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		pid := c.Locals("pid")
+
+		if pid == nil {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		// TODO: Limit new requests by type
+
+		result, err := qtx.CreateRequest(context.Background(), queries.CreateRequestParams{
+			PID:  pid.(int64),
+			Type: request.TypeCharacterApplication,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		rid, err := result.LastInsertId()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		// TODO: Rework this so there can't be a missing case
+		if in.Type == request.TypeCharacterApplication {
+			if err = qtx.CreateCharacterApplicationContent(context.Background(), rid); err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		c.Status(fiber.StatusCreated)
+		c.Append("HX-Redirect", routes.RequestPath(rid))
+		return nil
+	}
+}
 
 func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {

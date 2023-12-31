@@ -22,7 +22,6 @@
   </div>
 </div>
 <form id="requests-status-submitted" class="hidden">
-  <!-- TODO: Move this to a passed-in value -->
-  <input name="status" value="submitted" />
-  <input name="path" value="status" />
+  <!-- TODO: Move this name to a passed-in value -->
+  <input name="status" value="{{ .StatusSubmitted }}" />
 </form>
