@@ -85,10 +85,14 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		comments, err := qtx.ListCommentsForRequestWithAuthor(context.Background(), rid)
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
+		comments := []queries.ListCommentsForRequestWithAuthorRow{}
+
+		if req.PID != pid {
+			comments, err = qtx.ListCommentsForRequestWithAuthor(context.Background(), rid)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
 		}
 
 		b := c.Locals(constants.BindName).(fiber.Map)
@@ -137,7 +141,11 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			Comments: comments,
 		})
 
-		return c.Render(view, b, "views/layouts/requests")
+		if req.Status == request.StatusIncomplete {
+			return c.Redirect(routes.RequestPath(req.ID))
+		}
+
+		return c.Render(view, b, "layout-request-field")
 	}
 }
 
@@ -249,7 +257,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 					return nil
 				}
 
-				return c.Render(view, b, "views/layouts/request-flow")
+				return c.Render(view, b, "layout-request-field-standalone")
 			case request.StatusReady:
 				b := c.Locals(constants.BindName).(fiber.Map)
 				b = request.BindRequestPage(b, request.BindRequestPageParams{
@@ -261,7 +269,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 					ViewedByPlayer: req.PID == pid,
 				})
 
-				return c.Render("views/requests/content/summary", b, "views/layouts/requests/summary")
+				return c.Render("views/requests/content/summary", b, "layout-request-summary")
 			default:
 				// TODO: Other views
 				c.Status(fiber.StatusInternalServerError)

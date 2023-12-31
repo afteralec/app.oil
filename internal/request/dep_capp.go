@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 )
@@ -39,12 +40,10 @@ type ApplicationSummary struct {
 	Reviewed         bool
 }
 
-const DefaultApplicationSummaryName = "Unnamed"
-
 func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.Request, app *queries.CharacterApplicationContent) ApplicationSummary {
 	name := app.Name
 	if len(app.Name) == 0 {
-		name = DefaultApplicationSummaryName
+		name = constants.DefaultName
 	}
 
 	reviewed := len(reviewer) > 0

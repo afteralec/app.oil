@@ -1,11 +1,18 @@
+{{ define "layout-request-field" }}
+
 <!doctype html>
 <html lang="en">
   {{ template "head" . }}
 
   <body>
+    <!-- prettier-ignore -->
+    {{ if not .StatusIsIncomplete -}}
+      {{ template "header" . }}
+    {{ end }}
+
     <main
-      class="flex h-screen w-full flex-col items-center justify-center"
       x-data="getRequestData()"
+      class="flex h-screen w-full flex-col items-center pt-10"
     >
       <section class="w-full max-w-lg rounded-md border p-6">
         {{ template "views/partials/requests/content/header" . }}
@@ -18,3 +25,5 @@
     </main>
   </body>
 </html>
+
+{{ end }}
