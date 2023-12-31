@@ -1,9 +1,9 @@
 package views
 
 const (
-	CharacterApplicationName             string = "requests-character-application-name"
-	CharacterApplicationGender           string = "requests-character-application-gender"
-	CharacterApplicationShortDescription string = "requests-character-application-sdesc"
-	CharacterApplicationDescription      string = "requests-character-application-desc"
-	CharacterApplicationBackstory        string = "requests-character-application-backstory"
+	CharacterApplicationName             string = "request-character-application-name"
+	CharacterApplicationGender           string = "request-character-application-gender"
+	CharacterApplicationShortDescription string = "request-character-application-sdesc"
+	CharacterApplicationDescription      string = "request-character-application-desc"
+	CharacterApplicationBackstory        string = "request-character-application-backstory"
 )

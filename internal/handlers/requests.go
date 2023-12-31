@@ -405,18 +405,11 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		// TODO: Make this declarative based on the type and field
-		switch field {
-		case request.FieldName:
-			c.Append("HX-Redirect", routes.RequestFieldPath(rid, request.FieldGender))
-		case request.FieldGender:
-			c.Append("HX-Redirect", routes.RequestFieldPath(rid, request.FieldShortDescription))
-		case request.FieldShortDescription:
-			c.Append("HX-Redirect", routes.RequestFieldPath(rid, request.FieldDescription))
-		case request.FieldDescription:
-			c.Append("HX-Redirect", routes.RequestFieldPath(rid, request.FieldBackstory))
-		case request.FieldBackstory:
+		if req.Status == request.StatusIncomplete {
+			// TODO: Boost this using the same handler logic for the request page?
 			c.Append("HX-Refresh", "true")
+		} else {
+			c.Append("HX-Redirect", routes.RequestPath(rid))
 		}
 
 		return nil

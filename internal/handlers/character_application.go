@@ -68,8 +68,7 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusCreated)
-		path := routes.CharacterApplicationNamePath(strconv.FormatInt(rid, 10))
-		c.Append("HX-Redirect", path)
+		c.Append("HX-Redirect", routes.RequestPath(rid))
 		return nil
 	}
 }

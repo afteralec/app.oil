@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -81,6 +82,11 @@ func TestRequestFieldPageSuccess(t *testing.T) {
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	// TODO: Hack
+	if err := i.Queries.MarkRequestReady(context.Background(), rid); err != nil {
+		t.Fatal(err)
+	}
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
