@@ -1,0 +1,12 @@
+<!-- prettier-ignore -->
+{{ if eq . "Name" }}
+  {{ template "views/partials/requests/content/character/application/name/help" }}
+{{ else if eq . "Gender" }}
+  {{ template "views/partials/requests/content/character/application/gender/help" }}
+{{ else if eq . "Short Description" }}
+  {{ template "views/partials/requests/content/character/application/sdesc/help" }}
+{{ else if eq . "Description" }}
+  {{ template "views/partials/requests/content/character/application/desc/help" }}
+{{ else if eq . "Backstory" }}
+  {{ template "views/partials/requests/content/character/application/backstory/help" }}
+{{ end }}

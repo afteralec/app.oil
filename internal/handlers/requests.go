@@ -256,7 +256,10 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 					PID:     pid,
 					Request: &req,
 				})
-				b = request.BindCharacterApplicationPage(b, &app)
+				b = request.BindCharacterApplicationPage(b, request.BindCharacterApplicationPageParams{
+					Application:    &app,
+					ViewedByPlayer: req.PID == pid,
+				})
 
 				return c.Render("views/requests/content/summary", b, "views/layouts/requests/summary")
 			default:

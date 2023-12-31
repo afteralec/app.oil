@@ -12,8 +12,9 @@ import (
 )
 
 type SummaryField struct {
-	Label   string
-	Content string
+	Label          string
+	Content        string
+	ViewedByPlayer bool
 }
 
 type BindRequestPageParams struct {
@@ -122,22 +123,47 @@ func BindRequestFieldPage(b fiber.Map, p BindRequestFieldPageParams) fiber.Map {
 	return b
 }
 
-func BindCharacterApplicationPage(b fiber.Map, app *queries.CharacterApplicationContent) fiber.Map {
+type BindCharacterApplicationPageParams struct {
+	Application    *queries.CharacterApplicationContent
+	ViewedByPlayer bool
+}
+
+func BindCharacterApplicationPage(b fiber.Map, p BindCharacterApplicationPageParams) fiber.Map {
 	// TODO: Get this "Unnamed" into a constant
 	var sb strings.Builder
 	titleName := "Unnamed"
-	if len(app.Name) > 0 {
-		titleName = app.Name
+	if len(p.Application.Name) > 0 {
+		titleName = p.Application.Name
 	}
 	fmt.Fprintf(&sb, "Character Application (%s)", titleName)
 	b["RequestTitle"] = sb.String()
 
 	b["SummaryFields"] = []SummaryField{
-		{Label: "Name", Content: app.Name},
-		{Label: "Gender", Content: app.Gender},
-		{Label: "Short Description", Content: app.ShortDescription},
-		{Label: "Description", Content: app.Description},
-		{Label: "Backstory", Content: app.Backstory},
+		{
+			Label:          "Name",
+			Content:        p.Application.Name,
+			ViewedByPlayer: p.ViewedByPlayer,
+		},
+		{
+			Label:          "Gender",
+			Content:        p.Application.Gender,
+			ViewedByPlayer: p.ViewedByPlayer,
+		},
+		{
+			Label:          "Short Description",
+			Content:        p.Application.ShortDescription,
+			ViewedByPlayer: p.ViewedByPlayer,
+		},
+		{
+			Label:          "Description",
+			Content:        p.Application.Description,
+			ViewedByPlayer: p.ViewedByPlayer,
+		},
+		{
+			Label:          "Backstory",
+			Content:        p.Application.Backstory,
+			ViewedByPlayer: p.ViewedByPlayer,
+		},
 	}
 
 	return b

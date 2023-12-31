@@ -1,12 +1,47 @@
 {{ define "requests-summary-field" }}
 
-<article class="summary-field flex flex-col gap-2 border-b pb-3">
+<article
+  x-data="{ helpOpen: false }"
+  class="request-summary-field group flex flex-col gap-2 border-b pb-3"
+>
   <h3
     class="text-sm font-semibold leading-none tracking-tight text-muted-foreground"
   >
     {{ .Label }}
   </h3>
+
   <p class="text-wrap text-base leading-none">{{ .Content }}</p>
+
+  <div x-cloak x-show="helpOpen" class="border-b pt-2">
+    {{ template "views/partials/requests/content/summary/help" .Label }}
+  </div>
+
+  <!-- prettier-ignore -->
+  {{ if .ViewedByPlayer }}
+  <footer
+    class="request-summary-field-actions flex items-center justify-end gap-2 pr-3 opacity-0 transition-opacity group-hover:opacity-100"
+  >
+    <div
+      @click.prevent="helpOpen = !helpOpen;"
+      class="flex cursor-pointer items-center text-xs leading-none text-muted-foreground hover:text-primary hover:underline"
+    >
+      <iconify-icon
+        icon="fa6-solid:question"
+        height="10"
+        width="10"
+      ></iconify-icon>
+
+      Help
+    </div>
+    <div
+      class="flex cursor-pointer items-end text-xs leading-none text-muted-foreground hover:text-primary hover:underline"
+    >
+      <iconify-icon icon="fe:pencil" height="12" width="12"></iconify-icon>
+
+      Edit
+    </div>
+  </footer>
+  {{ end }}
 </article>
 
 {{ end }}
