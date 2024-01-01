@@ -225,7 +225,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 
-			b = request.BindCharacterApplicationDialogs(b, request.BindCharacterApplicationDialogsParams{
+			b = request.BindDialogs(b, request.BindDialogsParams{
 				Request: &req,
 			})
 
@@ -365,7 +365,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 					Request:     &req,
 					Field:       field,
 				})
-				b = request.BindCharacterApplicationDialogs(b, request.BindCharacterApplicationDialogsParams{
+				b = request.BindDialogs(b, request.BindDialogsParams{
 					Request: &req,
 				})
 				b = request.BindRequestFieldPage(b, request.BindRequestFieldPageParams{
@@ -399,7 +399,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 					Application:    &app,
 					ViewedByPlayer: req.PID == pid,
 				})
-				b = request.BindCharacterApplicationDialogs(b, request.BindCharacterApplicationDialogsParams{
+				b = request.BindDialogs(b, request.BindDialogsParams{
 					Request: &req,
 				})
 

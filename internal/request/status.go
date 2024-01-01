@@ -3,6 +3,7 @@ package request
 import (
 	"strconv"
 
+	fiber "github.com/gofiber/fiber/v2"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 )
@@ -151,4 +152,32 @@ func IsStatusUpdateOK(req *queries.Request, perms permissions.PlayerGranted, pid
 	}
 
 	return false
+}
+
+func BindStatuses(b fiber.Map, req *queries.Request) fiber.Map {
+	b["StatusIncomplete"] = StatusIncomplete
+	b["StatusReady"] = StatusReady
+	b["StatusSubmitted"] = StatusSubmitted
+	b["StatusInReview"] = StatusInReview
+	b["StatusApproved"] = StatusApproved
+	b["StatusReviewed"] = StatusReviewed
+	b["StatusRejected"] = StatusRejected
+	b["StatusArchived"] = StatusArchived
+	b["StatusCanceled"] = StatusCanceled
+
+	b["StatusIsIncomplete"] = req.Status == StatusIncomplete
+	b["StatusIsReady"] = req.Status == StatusReady
+	b["StatusIsSubmitted"] = req.Status == StatusSubmitted
+	b["StatusIsInReview"] = req.Status == StatusInReview
+	b["StatusIsApproved"] = req.Status == StatusApproved
+	b["StatusIsReviewed"] = req.Status == StatusReviewed
+	b["StatusIsRejected"] = req.Status == StatusRejected
+	b["StatusIsArchived"] = req.Status == StatusArchived
+	b["StatusIsCanceled"] = req.Status == StatusCanceled
+
+	b["StatusText"] = StatusTexts[req.Status]
+
+	b["StatusColor"] = StatusColors[req.Status]
+
+	return b
 }
