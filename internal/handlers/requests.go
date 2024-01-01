@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"log"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -22,7 +21,6 @@ func NewRequest(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		in := new(input)
 		if err := c.BodyParser(in); err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -32,6 +30,59 @@ func NewRequest(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		pid := c.Locals("pid")
+
+		if pid == nil {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		// TODO: Limit new requests by type
+
+		result, err := qtx.CreateRequest(context.Background(), queries.CreateRequestParams{
+			PID:  pid.(int64),
+			Type: in.Type,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		rid, err := result.LastInsertId()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		// TODO: Rework this so there can't be a missing case
+		if in.Type == request.TypeCharacterApplication {
+			if err = qtx.CreateCharacterApplicationContent(context.Background(), rid); err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		c.Status(fiber.StatusCreated)
+		c.Append("HX-Redirect", routes.RequestPath(rid))
+		return nil
+	}
+}
+
+// TODO: Combine this functionality with the above so it's consistent
+func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
 		if pid == nil {
@@ -63,12 +114,9 @@ func NewRequest(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		// TODO: Rework this so there can't be a missing case
-		if in.Type == request.TypeCharacterApplication {
-			if err = qtx.CreateCharacterApplicationContent(context.Background(), rid); err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
+		if err = qtx.CreateCharacterApplicationContent(context.Background(), rid); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
 		}
 
 		if err = tx.Commit(); err != nil {

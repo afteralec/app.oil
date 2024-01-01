@@ -158,6 +158,82 @@ func TestCreateRequestSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusCreated, res.StatusCode)
 }
 
+func TestCreateCharacterApplicationUnauthorizedNotLoggedIn(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("type", request.TypeCharacterApplication)
+	writer.Close()
+
+	url := MakeTestURL(routes.Characters)
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestCreateCharacterApplicationFatal(t *testing.T) {
+	i := shared.SetupInterfaces()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	i.Close()
+
+	url := MakeTestURL(routes.Characters)
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	i = shared.SetupInterfaces()
+	defer i.Close()
+	defer DeleteTestPlayer(t, &i, TestUsername)
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
+func TestCreateCharacterApplicationSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.Characters)
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusCreated, res.StatusCode)
+}
+
 func TestRequestFieldPageUnauthorizedNotLoggedIn(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()

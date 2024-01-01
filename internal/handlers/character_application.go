@@ -15,64 +15,6 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		pid := c.Locals("pid")
-
-		if pid == nil {
-			c.Status(fiber.StatusUnauthorized)
-			return nil
-		}
-
-		tx, err := i.Database.Begin()
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-		defer tx.Rollback()
-		qtx := i.Queries.WithTx(tx)
-
-		count, err := qtx.CountOpenCharacterApplicationsForPlayer(context.Background(), pid.(int64))
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if count >= shared.MaxOpenCharacterApplications {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-
-		result, err := qtx.CreateRequest(context.Background(), queries.CreateRequestParams{
-			PID:  pid.(int64),
-			Type: request.TypeCharacterApplication,
-		})
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-		rid, err := result.LastInsertId()
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if err = qtx.CreateCharacterApplicationContent(context.Background(), rid); err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if err = tx.Commit(); err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		c.Status(fiber.StatusCreated)
-		c.Append("HX-Redirect", routes.RequestPath(rid))
-		return nil
-	}
-}
-
 func UpdateCharacterApplicationName(i *shared.Interfaces) fiber.Handler {
 	type input struct {
 		Name string `form:"name"`

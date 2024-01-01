@@ -60,7 +60,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		b := c.Locals(constants.BindName).(fiber.Map)
-		b["NewCharacterApplicationPath"] = routes.NewCharacterApplicationPath()
+		b["RequestsPath"] = routes.Requests
 		b["CharacterApplicationSummaries"] = summaries
 		b["HasCharacterApplications"] = len(apps) > 0
 		return c.Render("views/characters", b)

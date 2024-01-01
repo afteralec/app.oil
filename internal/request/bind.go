@@ -216,16 +216,11 @@ func BindCharacterApplicationFieldPage(b fiber.Map, app *queries.CharacterApplic
 	case FieldName:
 		b["NextLink"] = routes.RequestFieldPath(app.RID, FieldGender)
 	case FieldGender:
-		b["BackLink"] = routes.RequestFieldPath(app.RID, FieldName)
 		b["NextLink"] = routes.RequestFieldPath(app.RID, FieldShortDescription)
 	case FieldShortDescription:
-		b["BackLink"] = routes.RequestFieldPath(app.RID, FieldGender)
 		b["NextLink"] = routes.RequestFieldPath(app.RID, FieldDescription)
 	case FieldDescription:
-		b["BackLink"] = routes.RequestFieldPath(app.RID, FieldShortDescription)
 		b["NextLink"] = routes.RequestFieldPath(app.RID, FieldBackstory)
-	case FieldBackstory:
-		b["BackLink"] = routes.RequestFieldPath(app.RID, FieldDescription)
 	}
 
 	// TODO: Move this field to constants?
