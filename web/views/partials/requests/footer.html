@@ -20,23 +20,13 @@
   {{ end -}}
   <!-- prettier-ignore -->
   <!-- TODO: This should disable if the field is incomplete -->
-  {{ if and .NextLink .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
+  {{ if and .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
   <button
     type="submit"
     form="{{ .RequestFormID }}"
     class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
   >
-    Next
-  </button>
-  {{ end -}}
-  <!-- prettier-ignore -->
-  {{ if and (not .NextLink) .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
-  <button
-    type="submit"
-    form="{{ .RequestFormID }}"
-    class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-  >
-    Finish
+    {{ .UpdateButtonText }}
   </button>
   {{ end -}}
 </footer>

@@ -194,33 +194,33 @@ func BindCharacterApplicationPage(b fiber.Map, p BindCharacterApplicationPagePar
 	return b
 }
 
-func BindCharacterApplicationFieldPage(b fiber.Map, app *queries.CharacterApplicationContent, field string) fiber.Map {
-	// TODO: Get this "Unnamed" into a constant
+type BindCharacterApplicationFieldPageParams struct {
+	Application *queries.CharacterApplicationContent
+	Request     *queries.Request
+	Field       string
+}
+
+func BindCharacterApplicationFieldPage(b fiber.Map, p BindCharacterApplicationFieldPageParams) fiber.Map {
 	var sb strings.Builder
-	titleName := "Unnamed"
-	if len(app.Name) > 0 {
-		titleName = app.Name
+	titleName := constants.DefaultName
+	if len(p.Application.Name) > 0 {
+		titleName = p.Application.Name
 	}
 	fmt.Fprintf(&sb, "Character Application (%s)", titleName)
 	b["RequestTitle"] = sb.String()
 
-	b["Name"] = app.Name
-	b["Gender"] = character.SanitizeGender(app.Gender)
-	b["ShortDescription"] = app.ShortDescription
-	b["Description"] = app.Description
-	b["Backstory"] = app.Backstory
-	b["CharacterApplicationNav"] = MakeCharacterApplicationNav(field, app)
+	b["Name"] = p.Application.Name
+	b["Gender"] = character.SanitizeGender(p.Application.Gender)
+	b["ShortDescription"] = p.Application.ShortDescription
+	b["Description"] = p.Application.Description
+	b["Backstory"] = p.Application.Backstory
+	b["CharacterApplicationNav"] = MakeCharacterApplicationNav(p.Field, p.Application)
 
-	// TODO: Declarative this up
-	switch field {
-	case FieldName:
-		b["NextLink"] = routes.RequestFieldPath(app.RID, FieldGender)
-	case FieldGender:
-		b["NextLink"] = routes.RequestFieldPath(app.RID, FieldShortDescription)
-	case FieldShortDescription:
-		b["NextLink"] = routes.RequestFieldPath(app.RID, FieldDescription)
-	case FieldDescription:
-		b["NextLink"] = routes.RequestFieldPath(app.RID, FieldBackstory)
+	if p.Field == FieldBackstory {
+		// TODO: Constant; maybe a "Lastfield" declaration
+		b["UpdateButtonText"] = "Finish"
+	} else {
+		b["UpdateButtonText"] = "Next"
 	}
 
 	// TODO: Move this field to constants?
@@ -228,9 +228,9 @@ func BindCharacterApplicationFieldPage(b fiber.Map, app *queries.CharacterApplic
 	b["GenderFemale"] = character.GenderFemale
 	b["GenderMale"] = character.GenderMale
 
-	b["GenderIsNonBinary"] = app.Gender == character.GenderNonBinary
-	b["GenderIsFemale"] = app.Gender == character.GenderFemale
-	b["GenderIsMale"] = app.Gender == character.GenderMale
+	b["GenderIsNonBinary"] = p.Application.Gender == character.GenderNonBinary
+	b["GenderIsFemale"] = p.Application.Gender == character.GenderFemale
+	b["GenderIsMale"] = p.Application.Gender == character.GenderMale
 
 	// TODO: Get this in a declarative state too
 	b["FieldName"] = FieldName

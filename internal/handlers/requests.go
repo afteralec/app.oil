@@ -225,7 +225,11 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 
-			b = request.BindCharacterApplicationFieldPage(b, &app, field)
+			b = request.BindCharacterApplicationFieldPage(b, request.BindCharacterApplicationFieldPageParams{
+				Application: &app,
+				Request:     &req,
+				Field:       field,
+			})
 		} else {
 			// TODO: This means that there's a request in the database with an invalid type
 			c.Status(fiber.StatusInternalServerError)
@@ -352,7 +356,11 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 
 				// TODO: Clean this up and lift request-general details to the top
 				b := c.Locals(constants.BindName).(fiber.Map)
-				b = request.BindCharacterApplicationFieldPage(b, &app, field)
+				b = request.BindCharacterApplicationFieldPage(b, request.BindCharacterApplicationFieldPageParams{
+					Application: &app,
+					Request:     &req,
+					Field:       field,
+				})
 				b = request.BindRequestFieldPage(b, request.BindRequestFieldPageParams{
 					PID:      pid,
 					Field:    field,
