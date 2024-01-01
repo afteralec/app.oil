@@ -1,0 +1,26 @@
+{{ define "layout-request-summary" }}
+
+<!doctype html>
+<html lang="en">
+  {{ template "head" . }}
+
+  <body>
+    {{ template "header" . }}
+
+    <main
+      class="flex h-screen w-full flex-col items-center"
+      x-data="getRequestData()"
+    >
+      <section class="w-full max-w-lg">
+        {{ template "requests-summary-header" . }}
+
+        <!-- prettier-ignore -->
+        {{ embed }}
+      </section>
+
+      {{ template "request-dialogs" . }}
+    </main>
+  </body>
+</html>
+
+{{ end }}

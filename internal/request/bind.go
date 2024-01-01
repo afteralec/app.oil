@@ -2,6 +2,7 @@ package request
 
 import (
 	"fmt"
+	"html/template"
 	"strconv"
 	"strings"
 
@@ -189,6 +190,47 @@ func BindCharacterApplicationPage(b fiber.Map, p BindCharacterApplicationPagePar
 			ViewedByPlayer: p.ViewedByPlayer,
 			Path:           backstoryPathSB.String(),
 		},
+	}
+
+	return b
+}
+
+type BindDialog struct {
+	Header     string
+	Text       template.HTML
+	ButtonText string
+	Path       string
+	Variable   string
+}
+
+type BindCharacterApplicationDialogsParams struct {
+	Request *queries.Request
+}
+
+// TODO: Build a map that does this by request type
+func BindCharacterApplicationDialogs(b fiber.Map, p BindCharacterApplicationDialogsParams) fiber.Map {
+	b["CancelDialog"] = BindDialog{
+		Header:     "Cancel This Application?",
+		Text:       "Once you've canceled this application, it cannot be undone. If you want to apply with this character again in the future, you'll need to create a new application.",
+		ButtonText: "Cancel This Application",
+		Path:       routes.RequestPath(p.Request.ID),
+		Variable:   "showCancelDialog",
+	}
+
+	b["SubmitDialog"] = BindDialog{
+		Header:     "Submit This Application?",
+		Text:       "Once your character application is put in review, this cannot be undone.",
+		ButtonText: "Submit This Application",
+		Path:       routes.RequestPath(p.Request.ID),
+		Variable:   "showSubmitDialog",
+	}
+
+	b["PutInReviewDialog"] = BindDialog{
+		Header:     "Put This Application In Review?",
+		Text:       template.HTML("Once you put this application in review, <span class=\"font-semibold\">you must review it within 24 hours</span>. After picking up this application, you'll be the only reviewer able to review it."),
+		ButtonText: "I'm Ready to Review This Application",
+		Path:       routes.RequestPath(p.Request.ID),
+		Variable:   "showPutInReviewDialog",
 	}
 
 	return b

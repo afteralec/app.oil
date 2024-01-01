@@ -225,6 +225,10 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 
+			b = request.BindCharacterApplicationDialogs(b, request.BindCharacterApplicationDialogsParams{
+				Request: &req,
+			})
+
 			b = request.BindCharacterApplicationFieldPage(b, request.BindCharacterApplicationFieldPageParams{
 				Application: &app,
 				Request:     &req,
@@ -361,6 +365,9 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 					Request:     &req,
 					Field:       field,
 				})
+				b = request.BindCharacterApplicationDialogs(b, request.BindCharacterApplicationDialogsParams{
+					Request: &req,
+				})
 				b = request.BindRequestFieldPage(b, request.BindRequestFieldPageParams{
 					PID:      pid,
 					Field:    field,
@@ -391,6 +398,9 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				b = request.BindCharacterApplicationPage(b, request.BindCharacterApplicationPageParams{
 					Application:    &app,
 					ViewedByPlayer: req.PID == pid,
+				})
+				b = request.BindCharacterApplicationDialogs(b, request.BindCharacterApplicationDialogsParams{
+					Request: &req,
 				})
 
 				return c.Render("views/requests/content/summary", b, "layout-request-summary")

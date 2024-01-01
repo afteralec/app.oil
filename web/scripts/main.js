@@ -364,6 +364,7 @@ export function getRequestData() {
     isRequestCommentValid,
     showSubmitDialog: false,
     showCancelDialog: false,
+    showPutInReviewDialog: false,
     partsOpen: false,
     actionsOpen: false,
     commentOpen: false,

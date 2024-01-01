@@ -1,0 +1,14 @@
+<!-- prettier-ignore -->
+{{ define "request-dialogs" }}
+{{ if .ViewedByPlayer }}
+  {{ if .StatusIsReady }}
+    {{ template "request-submit-dialog" .SubmitDialog }}
+  {{ end }}
+
+  {{ template "request-cancel-dialog" .CancelDialog }}
+{{ end }}
+
+{{ if and .StatusIsSubmitted .ViewedByReviewer -}}
+  {{ template "request-put-in-review-dialog" .PutInReviewDialog }}
+{{ end -}}
+{{ end -}}
