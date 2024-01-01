@@ -26,10 +26,6 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	// TODO: New Request handler instead
 	app.Post(routes.NewCharacterApplicationPath(), handlers.NewCharacterApplication(i))
 
-	app.Post(routes.SubmitCharacterApplicationPath(routes.ID), handlers.SubmitCharacterApplication(i))
-	app.Post(routes.PutCharacterApplicationInReviewPath(routes.ID), handlers.PutCharacterApplicationInReview(i))
-	app.Delete(routes.CharacterApplicationPath(routes.ID), handlers.CancelCharacterApplication(i))
-
 	app.Post(routes.Login, handlers.Login(i))
 	app.Get(routes.Login, handlers.LoginPage())
 	app.Post(routes.Logout, handlers.Logout(i))
