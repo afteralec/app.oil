@@ -10,15 +10,15 @@ import (
 )
 
 type CharacterApplicationContent struct {
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	Backstory        string
-	Description      string
-	ShortDescription string
-	Name             string
-	Gender           string
-	RID              int64
-	ID               int64
+	CreatedAt        time.Time `json:"-"`
+	UpdatedAt        time.Time `json:"-"`
+	Backstory        string    `json:"backstory"`
+	Description      string    `json:"desc"`
+	ShortDescription string    `json:"sdesc"`
+	Name             string    `json:"name"`
+	Gender           string    `json:"gender"`
+	RID              int64     `json:"-"`
+	ID               int64     `json:"-"`
 }
 
 type CharacterApplicationContentHistory struct {

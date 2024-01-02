@@ -17,3 +17,22 @@ sql:
           cid: "CID"
           ipid: "IPID"
           rpid: "RPID"
+        overrides:
+          - column: character_application_content.created_at
+            go_struct_tag: json:"-"
+          - column: character_application_content.updated_at
+            go_struct_tag: json:"-"
+          - column: character_application_content.rid
+            go_struct_tag: json:"-"
+          - column: character_application_content.id
+            go_struct_tag: json:"-"
+          - column: character_application_content.name
+            go_struct_tag: json:"name"
+          - column: character_application_content.gender
+            go_struct_tag: json:"gender"
+          - column: character_application_content.short_description
+            go_struct_tag: json:"sdesc"
+          - column: character_application_content.description
+            go_struct_tag: json:"desc"
+          - column: character_application_content.backstory
+            go_struct_tag: json:"backstory"

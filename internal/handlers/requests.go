@@ -304,6 +304,13 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		// TODO: Reviewer path
+		// If it's a non-owner viewing, just show a summary
+		if req.PID != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
 		// TODO: Plan for the requests/:id handler (PLAYER)
 		// 1. If the request is Incomplete, drop them into the flow -
 		//    * Pull the first incomplete field and render that page
@@ -312,11 +319,30 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 		// 4. If the request is Reviewed, show an intro page to the review, then all the changes required in one view
 		// 5. Player Accepts the Review > back to #3, show the fields with unresolved comments
 
-		// TODO: Reviewer path
-		if req.PID != pid {
-			c.Status(fiber.StatusForbidden)
+		// TODO: Finish new bind pattern
+		b := c.Locals(constants.BindName).(fiber.Map)
+		b = request.BindStatus(b, &req)
+		b = request.BindViewedBy(b, request.BindViewedByParams{
+			Request: &req,
+			PID:     pid,
+		})
+		_ = request.BindDialogs(b, request.BindDialogsParams{
+			Request: &req,
+		})
+
+		_, err = request.GetContent(qtx, &req)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
+
+		// TODO: Bind and return a view by the status of the application
+		// 1. API should be like: b, view, layout, err := ResolveView(pid, req)
+
+		// TODO:
+		// 1. From here, if the status is incomplete:
+		//    a. Bind the header and subheader for the field
+		//    b. Bind the current content of the field, if any
 
 		// TODO: To get a page for an incomplete request:
 		// 1. Get the content
@@ -327,6 +353,13 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 		// For that field, we just need the current value and view
 
 		// TODO: To get a page for a ready request, bind the summary values and return the summary
+
+		// TODO:
+		// 1. Get content as map via type
+		// 2. Generic "Get Next Incomplete Field" function
+		// 3. Update the Update handler to use /:field
+		// 4. General bind for Field Pages
+		// 5. Type-specific binds for Field Pages
 
 		if req.Type == request.TypeCharacterApplication {
 			app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)

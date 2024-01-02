@@ -154,7 +154,22 @@ func IsStatusUpdateOK(req *queries.Request, perms permissions.PlayerGranted, pid
 	return false
 }
 
+func BindStatus(b fiber.Map, req *queries.Request) fiber.Map {
+	b["StatusIsIncomplete"] = req.Status == StatusIncomplete
+	b["StatusIsReady"] = req.Status == StatusReady
+	b["StatusIsSubmitted"] = req.Status == StatusSubmitted
+	b["StatusIsInReview"] = req.Status == StatusInReview
+	b["StatusIsApproved"] = req.Status == StatusApproved
+	b["StatusIsReviewed"] = req.Status == StatusReviewed
+	b["StatusIsRejected"] = req.Status == StatusRejected
+	b["StatusIsArchived"] = req.Status == StatusArchived
+	b["StatusIsCanceled"] = req.Status == StatusCanceled
+
+	return b
+}
+
 func BindStatuses(b fiber.Map, req *queries.Request) fiber.Map {
+	// TODO: Can likely split this up to yield just the current status of the request
 	b["StatusIncomplete"] = StatusIncomplete
 	b["StatusReady"] = StatusReady
 	b["StatusSubmitted"] = StatusSubmitted

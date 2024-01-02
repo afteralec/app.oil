@@ -35,6 +35,19 @@ func BindRequestPage(b fiber.Map, p BindRequestPageParams) fiber.Map {
 	return b
 }
 
+type BindViewedByParams struct {
+	Request *queries.Request
+	PID     int64
+}
+
+// TODO: Add ViewedByAdmin and maybe have ViewedByPlayer be ViewedByOwner
+func BindViewedBy(b fiber.Map, p BindViewedByParams) fiber.Map {
+	b["ViewedByPlayer"] = p.Request.PID == p.PID
+	b["ViewedByReviewer"] = p.Request.RPID == p.PID
+
+	return b
+}
+
 type BindRequestFieldPageParams struct {
 	Field    string
 	Request  *queries.Request

@@ -3,6 +3,8 @@ package request
 import (
 	"html/template"
 	"regexp"
+
+	"petrichormud.com/app/internal/queries"
 )
 
 type Definition struct {
@@ -12,6 +14,14 @@ type Definition struct {
 	Fields       []Field
 	FieldNameMap map[string]bool
 	FieldNames   []string
+}
+
+// TODO: Add API to a Fields struct that can take in a field and value and return if it's valid
+// Have the Fields struct be in charge of the list of fields and the map of fields by name
+
+type DefinitionUtilities interface {
+	LoadContent(qtx *queries.Queries) error
+	GetNextIncompleteField() string
 }
 
 type DefinitionDialog struct {
@@ -50,13 +60,37 @@ func NewDefinition(p NewDefinitionParams) Definition {
 	return d
 }
 
+// TODO: Change Name to Tag
+// TODO: Add Layout
+// TODO: Change Min and Max to MinLen and MaxLen
 type Field struct {
-	Name    string
-	View    string
-	Layout  string
-	Regexes []*regexp.Regexp
-	Min     int
-	Max     int
+	Name        string
+	Label       string
+	Description string
+	View        string
+	Layout      string
+	Regexes     []*regexp.Regexp
+	Min         int
+	Max         int
+}
+
+// TODO: Test this
+func (f *Field) IsValueValid(v string) bool {
+	if len(v) < f.Min {
+		return false
+	}
+
+	if len(v) > f.Max {
+		return false
+	}
+
+	for _, regex := range f.Regexes {
+		if regex.MatchString(v) {
+			return false
+		}
+	}
+
+	return true
 }
 
 func MakeDefinitionFieldMap(fields []Field) map[string]Field {
@@ -129,6 +163,16 @@ func MakeFieldsByType(definitions []Definition) map[string][]Field {
 	return fieldsByType
 }
 
+func MakeFieldNamesByType(definitions []Definition) map[string][]string {
+	fieldNamesByType := make(map[string][]string, len(definitions))
+
+	for _, d := range definitions {
+		fieldNamesByType[d.Type] = d.FieldNames
+	}
+
+	return fieldNamesByType
+}
+
 func MakeFieldMapsByType(definitions []Definition) map[string]map[string]Field {
 	fieldMapsByType := make(map[string]map[string]Field, len(definitions))
 
@@ -152,8 +196,9 @@ var (
 )
 
 var (
-	FieldsByType    map[string][]Field          = MakeFieldsByType(Definitions)
-	FieldMapsByType map[string]map[string]Field = MakeFieldMapsByType(Definitions)
+	FieldsByType     map[string][]Field          = MakeFieldsByType(Definitions)
+	FieldNamesByType map[string][]string         = MakeFieldNamesByType(Definitions)
+	FieldMapsByType  map[string]map[string]Field = MakeFieldMapsByType(Definitions)
 )
 
 func GetView(t, f string) string {

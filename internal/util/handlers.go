@@ -15,7 +15,7 @@ var (
 func GetPID(c *fiber.Ctx) (int64, error) {
 	lpid := c.Locals("pid")
 	if lpid == nil {
-		return 0, nil
+		return 0, ErrNoPID
 	}
 	pid, ok := lpid.(int64)
 	if !ok {

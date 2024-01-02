@@ -348,8 +348,8 @@ UPDATE character_application_content SET backstory = ? WHERE rid = ?
 `
 
 type UpdateCharacterApplicationContentBackstoryParams struct {
-	Backstory string
-	RID       int64
+	Backstory string `json:"backstory"`
+	RID       int64  `json:"-"`
 }
 
 func (q *Queries) UpdateCharacterApplicationContentBackstory(ctx context.Context, arg UpdateCharacterApplicationContentBackstoryParams) error {
@@ -362,8 +362,8 @@ UPDATE character_application_content SET description = ? WHERE rid = ?
 `
 
 type UpdateCharacterApplicationContentDescriptionParams struct {
-	Description string
-	RID         int64
+	Description string `json:"desc"`
+	RID         int64  `json:"-"`
 }
 
 func (q *Queries) UpdateCharacterApplicationContentDescription(ctx context.Context, arg UpdateCharacterApplicationContentDescriptionParams) error {
@@ -376,8 +376,8 @@ UPDATE character_application_content SET gender = ? WHERE rid = ?
 `
 
 type UpdateCharacterApplicationContentGenderParams struct {
-	Gender string
-	RID    int64
+	Gender string `json:"gender"`
+	RID    int64  `json:"-"`
 }
 
 func (q *Queries) UpdateCharacterApplicationContentGender(ctx context.Context, arg UpdateCharacterApplicationContentGenderParams) error {
@@ -390,8 +390,8 @@ UPDATE character_application_content SET name = ? WHERE rid = ?
 `
 
 type UpdateCharacterApplicationContentNameParams struct {
-	Name string
-	RID  int64
+	Name string `json:"name"`
+	RID  int64  `json:"-"`
 }
 
 func (q *Queries) UpdateCharacterApplicationContentName(ctx context.Context, arg UpdateCharacterApplicationContentNameParams) error {
@@ -404,8 +404,8 @@ UPDATE character_application_content SET short_description = ? WHERE rid = ?
 `
 
 type UpdateCharacterApplicationContentShortDescriptionParams struct {
-	ShortDescription string
-	RID              int64
+	ShortDescription string `json:"sdesc"`
+	RID              int64  `json:"-"`
 }
 
 func (q *Queries) UpdateCharacterApplicationContentShortDescription(ctx context.Context, arg UpdateCharacterApplicationContentShortDescriptionParams) error {
