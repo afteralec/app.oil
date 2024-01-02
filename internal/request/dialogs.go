@@ -20,7 +20,7 @@ const (
 	VariablePutInReviewDialog = "showPutInReviewDialog"
 )
 
-type BindDialog struct {
+type Dialog struct {
 	Header     string
 	Text       template.HTML
 	ButtonText string
@@ -28,25 +28,25 @@ type BindDialog struct {
 	Variable   string
 }
 
-type BindDialogsByKind struct {
-	Submit      BindDialog
-	Cancel      BindDialog
-	PutInReview BindDialog
+type Dialogs struct {
+	Submit      Dialog
+	Cancel      Dialog
+	PutInReview Dialog
 }
 
-var BindDialogsByType map[string]BindDialogsByKind = map[string]BindDialogsByKind{
+var BindDialogsByType map[string]Dialogs = map[string]Dialogs{
 	TypeCharacterApplication: {
-		Submit: BindDialog{
+		Submit: Dialog{
 			Header:     "Submit This Application?",
 			Text:       "Once your character application is put in review, this cannot be undone.",
 			ButtonText: "Submit This Application",
 		},
-		Cancel: BindDialog{
+		Cancel: Dialog{
 			Header:     "Cancel This Application?",
 			Text:       "Once you've canceled this application, it cannot be undone. If you want to apply with this character again in the future, you'll need to create a new application.",
 			ButtonText: "Cancel This Application",
 		},
-		PutInReview: BindDialog{
+		PutInReview: Dialog{
 			Header:     "Put This Application In Review?",
 			Text:       template.HTML("Once you put this application in review, <span class=\"font-semibold\">you must review it within 24 hours</span>. After picking up this application, you'll be the only reviewer able to review it."),
 			ButtonText: "I'm Ready to Review This Application",
@@ -64,7 +64,7 @@ func BindDialogs(b fiber.Map, p BindDialogsParams) fiber.Map {
 		return b
 	}
 
-	b[BindCancelDialog] = BindDialog{
+	b[BindCancelDialog] = Dialog{
 		Header:     bindDialogs.Cancel.Header,
 		Text:       bindDialogs.Cancel.Text,
 		ButtonText: bindDialogs.Cancel.ButtonText,
@@ -72,7 +72,7 @@ func BindDialogs(b fiber.Map, p BindDialogsParams) fiber.Map {
 		Variable:   VariableCancelDialog,
 	}
 
-	b[BindSubmitDialog] = BindDialog{
+	b[BindSubmitDialog] = Dialog{
 		Header:     bindDialogs.Submit.Header,
 		Text:       bindDialogs.Submit.Text,
 		ButtonText: bindDialogs.Submit.ButtonText,
@@ -80,7 +80,7 @@ func BindDialogs(b fiber.Map, p BindDialogsParams) fiber.Map {
 		Variable:   VariableSubmitDialog,
 	}
 
-	b[BindPutInReviewDialog] = BindDialog{
+	b[BindPutInReviewDialog] = Dialog{
 		Header:     bindDialogs.PutInReview.Header,
 		Text:       bindDialogs.PutInReview.Text,
 		ButtonText: bindDialogs.PutInReview.ButtonText,

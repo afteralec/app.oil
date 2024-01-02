@@ -26,16 +26,6 @@ const (
 // Errors
 var ErrNoIncompleteFields error = errors.New("no incomplete fields")
 
-var FieldsByType map[string]map[string]bool = map[string]map[string]bool{
-	TypeCharacterApplication: {
-		FieldName:             true,
-		FieldGender:           true,
-		FieldShortDescription: true,
-		FieldDescription:      true,
-		FieldBackstory:        true,
-	},
-}
-
 var ViewsByFieldAndType map[string]map[string]string = map[string]map[string]string{
 	TypeCharacterApplication: {
 		FieldName:             views.CharacterApplicationName,
@@ -47,7 +37,7 @@ var ViewsByFieldAndType map[string]map[string]string = map[string]map[string]str
 }
 
 func IsFieldValid(t, field string) bool {
-	fieldsByType, ok := FieldsByType[t]
+	fieldsByType, ok := FieldMapsByType[t]
 	if !ok {
 		return false
 	}

@@ -245,18 +245,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		viewsByField, ok := request.ViewsByFieldAndType[req.Type]
-		if !ok {
-			// TODO: Again, noteworthy because either a bad type or a missing register
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-		view, ok := viewsByField[field]
-		if !ok {
-			// TODO: Noteworthy to handle and track
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
+		view := request.GetView(req.Type, field)
 
 		b = request.BindRequestFieldPage(b, request.BindRequestFieldPageParams{
 			PID:      pid,
@@ -329,13 +318,6 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		viewsByField, ok := request.ViewsByFieldAndType[req.Type]
-		if !ok {
-			// TODO: Again, noteworthy because either a bad type or a missing register
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
 		if req.Type == request.TypeCharacterApplication {
 			app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
 			if err != nil {
@@ -375,13 +357,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 					Comments: []queries.ListCommentsForRequestWithAuthorRow{},
 				})
 
-				view, ok := viewsByField[field]
-				if !ok {
-					// TODO: Noteworthy to handle and track
-					// This means that the field doesn't have a view
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
+				view := request.GetView(req.Type, field)
 
 				if err = tx.Commit(); err != nil {
 					c.Status(fiber.StatusInternalServerError)

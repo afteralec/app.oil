@@ -87,12 +87,12 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		fieldsByType, ok := request.FieldsByType[req.Type]
+		fieldMapByType, ok := request.FieldMapsByType[req.Type]
 		if !ok {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
-		_, ok = fieldsByType[field]
+		_, ok = fieldMapByType[field]
 		if !ok {
 			c.Status(fiber.StatusBadRequest)
 			return nil
