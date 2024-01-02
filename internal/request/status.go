@@ -1,6 +1,8 @@
 package request
 
 import (
+	"context"
+	"errors"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -195,4 +197,35 @@ func BindStatuses(b fiber.Map, req *queries.Request) fiber.Map {
 	b["StatusColor"] = StatusColors[req.Status]
 
 	return b
+}
+
+type UpdateStatusParams struct {
+	Status string
+	PID    int64
+	RID    int64
+}
+
+// TODO: Get this in a central location
+var ErrInvalidStatus error = errors.New("invalid status")
+
+func UpdateStatus(q *queries.Queries, p UpdateStatusParams) error {
+	if !IsStatusValid(p.Status) {
+		return ErrInvalidStatus
+	}
+
+	if err := q.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
+		ID:     p.RID,
+		Status: p.Status,
+	}); err != nil {
+		return err
+	}
+
+	if err := q.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
+		RID: p.RID,
+		PID: p.PID,
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -813,22 +813,10 @@ func UpdateRequestStatus(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if !request.IsStatusValid(status) {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if err = qtx.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
-			ID:     rid,
+		if err = request.UpdateStatus(qtx, request.UpdateStatusParams{
+			RID:    rid,
+			PID:    pid,
 			Status: status,
-		}); err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if err = qtx.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
-			RID: rid,
-			PID: pid,
 		}); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -902,23 +890,10 @@ func DeleteRequest(i *shared.Interfaces) fiber.Handler {
 			status = request.StatusCanceled
 		}
 
-		// TODO: Put this whole update call into a request function
-		if !request.IsStatusValid(status) {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if err = qtx.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
-			ID:     rid,
+		if err = request.UpdateStatus(qtx, request.UpdateStatusParams{
+			RID:    rid,
+			PID:    pid,
 			Status: status,
-		}); err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if err = qtx.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
-			RID: rid,
-			PID: pid,
 		}); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
