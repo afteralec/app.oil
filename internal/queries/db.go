@@ -33,6 +33,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.countOpenRequestsStmt, err = db.PrepareContext(ctx, countOpenRequests); err != nil {
 		return nil, fmt.Errorf("error preparing query CountOpenRequests: %w", err)
 	}
+	if q.countUnresolvedCommentsStmt, err = db.PrepareContext(ctx, countUnresolvedComments); err != nil {
+		return nil, fmt.Errorf("error preparing query CountUnresolvedComments: %w", err)
+	}
 	if q.createCharacterApplicationContentStmt, err = db.PrepareContext(ctx, createCharacterApplicationContent); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateCharacterApplicationContent: %w", err)
 	}
@@ -192,6 +195,11 @@ func (q *Queries) Close() error {
 	if q.countOpenRequestsStmt != nil {
 		if cerr := q.countOpenRequestsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing countOpenRequestsStmt: %w", cerr)
+		}
+	}
+	if q.countUnresolvedCommentsStmt != nil {
+		if cerr := q.countUnresolvedCommentsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countUnresolvedCommentsStmt: %w", cerr)
 		}
 	}
 	if q.createCharacterApplicationContentStmt != nil {
@@ -471,6 +479,7 @@ type Queries struct {
 	countEmailsStmt                                       *sql.Stmt
 	countOpenCharacterApplicationsForPlayerStmt           *sql.Stmt
 	countOpenRequestsStmt                                 *sql.Stmt
+	countUnresolvedCommentsStmt                           *sql.Stmt
 	createCharacterApplicationContentStmt                 *sql.Stmt
 	createEmailStmt                                       *sql.Stmt
 	createHistoryForCharacterApplicationStmt              *sql.Stmt
@@ -527,6 +536,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		countEmailsStmt: q.countEmailsStmt,
 		countOpenCharacterApplicationsForPlayerStmt:           q.countOpenCharacterApplicationsForPlayerStmt,
 		countOpenRequestsStmt:                                 q.countOpenRequestsStmt,
+		countUnresolvedCommentsStmt:                           q.countUnresolvedCommentsStmt,
 		createCharacterApplicationContentStmt:                 q.createCharacterApplicationContentStmt,
 		createEmailStmt:                                       q.createEmailStmt,
 		createHistoryForCharacterApplicationStmt:              q.createHistoryForCharacterApplicationStmt,

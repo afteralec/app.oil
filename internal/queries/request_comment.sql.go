@@ -10,6 +10,17 @@ import (
 	"database/sql"
 )
 
+const countUnresolvedComments = `-- name: CountUnresolvedComments :one
+SELECT COUNT(*) FROM request_comments WHERE rid = ? AND resolved = false
+`
+
+func (q *Queries) CountUnresolvedComments(ctx context.Context, rid int64) (int64, error) {
+	row := q.queryRow(ctx, q.countUnresolvedCommentsStmt, countUnresolvedComments, rid)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createRequestComment = `-- name: CreateRequestComment :execresult
 INSERT INTO
   request_comments (text, field, pid, rid, vid) 
@@ -35,7 +46,7 @@ func (q *Queries) CreateRequestComment(ctx context.Context, arg CreateRequestCom
 
 const getCommentWithAuthor = `-- name: GetCommentWithAuthor :one
 SELECT 
-  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted
+  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted, request_comments.resolved
 FROM 
   request_comments 
 JOIN
@@ -71,12 +82,13 @@ func (q *Queries) GetCommentWithAuthor(ctx context.Context, id int64) (GetCommen
 		&i.RequestComment.ID,
 		&i.RequestComment.VID,
 		&i.RequestComment.Deleted,
+		&i.RequestComment.Resolved,
 	)
 	return i, err
 }
 
 const listCommentsForRequest = `-- name: ListCommentsForRequest :many
-SELECT created_at, updated_at, deleted_at, text, field, rid, pid, cid, id, vid, deleted FROM request_comments WHERE rid = ?
+SELECT created_at, updated_at, deleted_at, text, field, rid, pid, cid, id, vid, deleted, resolved FROM request_comments WHERE rid = ?
 `
 
 func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]RequestComment, error) {
@@ -100,6 +112,7 @@ func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]Requ
 			&i.ID,
 			&i.VID,
 			&i.Deleted,
+			&i.Resolved,
 		); err != nil {
 			return nil, err
 		}
@@ -116,7 +129,7 @@ func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]Requ
 
 const listCommentsForRequestWithAuthor = `-- name: ListCommentsForRequestWithAuthor :many
 SELECT
-  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted
+  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted, request_comments.resolved
 FROM
   request_comments
 JOIN
@@ -158,6 +171,7 @@ func (q *Queries) ListCommentsForRequestWithAuthor(ctx context.Context, rid int6
 			&i.RequestComment.ID,
 			&i.RequestComment.VID,
 			&i.RequestComment.Deleted,
+			&i.RequestComment.Resolved,
 		); err != nil {
 			return nil, err
 		}

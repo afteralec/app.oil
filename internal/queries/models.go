@@ -5,7 +5,6 @@
 package queries
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -82,7 +81,7 @@ type Request struct {
 type RequestComment struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt sql.NullTime
+	DeletedAt time.Time
 	Text      string
 	Field     string
 	RID       int64
@@ -90,7 +89,8 @@ type RequestComment struct {
 	CID       int64
 	ID        int64
 	VID       int32
-	Deleted   sql.NullBool
+	Deleted   bool
+	Resolved  bool
 }
 
 type RequestCommentHistory struct {

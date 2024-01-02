@@ -347,8 +347,8 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			b["SubHeader"] = description
 
 			// TODO: Move to this
-			b["Label"] = label
-			b["Description"] = description
+			b["FieldLabel"] = label
+			b["FieldDescription"] = description
 
 			b["RequestFormID"] = request.FormID
 
@@ -359,7 +359,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			}
 
 			b["RequestPath"] = routes.RequestPath(req.ID)
-			b["FieldName"] = field
+			b["Field"] = field
 
 			// TODO: Get bind exceptions into their own extractor
 			if field == request.FieldGender && req.Type == request.TypeCharacterApplication {
@@ -603,6 +603,330 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Refresh", "true")
 		} else {
 			c.Append("HX-Redirect", routes.RequestPath(rid))
+		}
+
+		return nil
+	}
+}
+
+func UpdateRequestFieldNew(i *shared.Interfaces) fiber.Handler {
+	type input struct {
+		Value string
+	}
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		pid, err := util.GetPID(c)
+		if err != nil {
+			if err == util.ErrNoPID {
+				c.Status(fiber.StatusUnauthorized)
+				return nil
+			}
+
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		rid, err := util.GetID(c)
+		if err != nil {
+			if err == util.ErrNoID {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		field := c.Params("field")
+		if len(field) == 0 {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		req, err := qtx.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if !request.IsFieldValid(req.Type, field) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if req.PID != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+		if !request.IsFieldValid(req.Type, field) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+		if !request.IsEditable(&req) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if err = request.UpdateField(qtx, request.UpdateFieldParams{
+			PID:     pid,
+			Request: &req,
+			Field:   field,
+			Value:   in.Value,
+		}); err != nil {
+			if err == request.ErrInvalidInput {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if req.Status == request.StatusIncomplete {
+			// TODO: Boost this using the same handler logic for the request page?
+			c.Append("HX-Refresh", "true")
+		} else {
+			c.Append("HX-Redirect", routes.RequestPath(rid))
+		}
+
+		return nil
+	}
+}
+
+func UpdateRequestStatus(i *shared.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		pid, err := util.GetPID(c)
+		if err != nil {
+			if err == util.ErrNoPID {
+				c.Status(fiber.StatusUnauthorized)
+				return nil
+			}
+
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		rid, err := util.GetID(c)
+		if err != nil {
+			if err == util.ErrNoID {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		req, err := qtx.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		var status string
+		switch req.Status {
+		case request.StatusReady:
+			if req.PID != pid {
+				c.Status(fiber.StatusForbidden)
+				return nil
+			}
+
+			status = request.StatusSubmitted
+		case request.StatusSubmitted:
+			if req.PID == pid {
+				c.Status(fiber.StatusForbidden)
+				return nil
+			}
+
+			status = request.StatusInReview
+		case request.StatusInReview:
+			if req.PID == pid {
+				c.Status(fiber.StatusForbidden)
+				return nil
+			}
+
+			count, err := qtx.CountUnresolvedComments(context.Background(), rid)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+
+			if count > 0 {
+				status = request.StatusReviewed
+			} else {
+				status = request.StatusApproved
+			}
+		case request.StatusReviewed:
+			if req.PID != pid {
+				c.Status(fiber.StatusForbidden)
+				return nil
+			}
+
+			status = request.StatusReady
+		case request.StatusApproved:
+			if req.PID != pid {
+				c.Status(fiber.StatusForbidden)
+				return nil
+			}
+
+			// TODO: Figure out resolving an approved request
+		case request.StatusRejected:
+			if req.PID != pid {
+				c.Status(fiber.StatusForbidden)
+				return nil
+			}
+
+			status = request.StatusArchived
+		default:
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if !request.IsStatusValid(status) {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = qtx.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
+			ID:     rid,
+			Status: status,
+		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = qtx.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
+			RID: rid,
+			PID: pid,
+		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		return nil
+	}
+}
+
+func DeleteRequest(i *shared.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		pid, err := util.GetPID(c)
+		if err != nil {
+			if err == util.ErrNoPID {
+				c.Status(fiber.StatusUnauthorized)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		rid, err := util.GetID(c)
+		if err != nil {
+			if err == util.ErrNoID {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		req, err := qtx.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		var status string
+
+		if req.PID != pid {
+			if req.Status != request.StatusSubmitted {
+				c.Status(fiber.StatusForbidden)
+				return nil
+			}
+
+			status = request.StatusRejected
+		} else {
+			if req.Status == request.StatusArchived || req.Status == request.StatusCanceled {
+				// TODO: Figure out deleting an archived or canceled request
+				c.Status(fiber.StatusForbidden)
+				return nil
+			}
+
+			status = request.StatusCanceled
+		}
+
+		// TODO: Put this whole update call into a request function
+		if !request.IsStatusValid(status) {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = qtx.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
+			ID:     rid,
+			Status: status,
+		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = qtx.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
+			RID: rid,
+			PID: pid,
+		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
 		}
 
 		return nil

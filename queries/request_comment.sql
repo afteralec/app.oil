@@ -30,3 +30,6 @@ ON
   request_comments.pid = players.id
 WHERE
   rid = ?;
+
+-- name: CountUnresolvedComments :one
+SELECT COUNT(*) FROM request_comments WHERE rid = ? AND resolved = false;
