@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
+	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
@@ -326,14 +327,53 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			Request: &req,
 			PID:     pid,
 		})
-		_ = request.BindDialogs(b, request.BindDialogsParams{
+		b = request.BindDialogs(b, request.BindDialogsParams{
 			Request: &req,
 		})
 
-		_, err = request.GetContent(qtx, &req)
+		content, err := request.GetContent(qtx, &req)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
+		}
+
+		switch req.Status {
+		case request.StatusIncomplete:
+			field, last := request.GetNextIncompleteField(req.Type, content)
+			view := request.GetView(req.Type, field)
+
+			label, description := request.GetFieldLabelAndDescription(req.Type, field)
+			b["Header"] = label
+			b["SubHeader"] = description
+
+			// TODO: Move to this
+			b["Label"] = label
+			b["Description"] = description
+
+			b["RequestFormID"] = request.FormID
+
+			if last {
+				b["UpdateButtonText"] = "Finish"
+			} else {
+				b["UpdateButtonText"] = "Next"
+			}
+
+			b["RequestPath"] = routes.RequestPath(req.ID)
+			b["FieldName"] = field
+
+			// TODO: Get bind exceptions into their own extractor
+			if field == request.FieldGender && req.Type == request.TypeCharacterApplication {
+				b["GenderNonBinary"] = character.GenderNonBinary
+				b["GenderFemale"] = character.GenderFemale
+				b["GenderMale"] = character.GenderMale
+
+				b["GenderIsNonBinary"] = content["Gender"] == character.GenderNonBinary
+				b["GenderIsFemale"] = content["Gender"] == character.GenderFemale
+				b["GenderIsMale"] = content["Gender"] == character.GenderMale
+			}
+
+			return c.Render(view, b, "layout-request-field-standalone")
+		default:
 		}
 
 		// TODO: Bind and return a view by the status of the application

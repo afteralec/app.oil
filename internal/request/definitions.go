@@ -206,3 +206,9 @@ func GetView(t, f string) string {
 	field := fields[f]
 	return field.View
 }
+
+func GetFieldLabelAndDescription(t, f string) (string, string) {
+	fields := FieldMapsByType[t]
+	field := fields[f]
+	return field.Label, field.Description
+}

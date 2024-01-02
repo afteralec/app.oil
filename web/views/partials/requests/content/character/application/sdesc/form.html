@@ -20,8 +20,10 @@
     value=""
     autofocus
   />
-  <!-- prettier-ignore -->
-  {{ template "views/partials/requests/content/character/application/sdesc/requirements" }}
+  <section>
+    <!-- prettier-ignore -->
+    {{ template "views/partials/requests/content/character/application/sdesc/requirements" }}
+  </section>
   <section
     x-show="isCharacterShortDescriptionValid(sdesc)"
     class="text-sm leading-none"

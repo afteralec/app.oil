@@ -27,7 +27,7 @@ var FieldCharacterApplicationName Field = Field{
 var FieldCharacterApplicationGender Field = Field{
 	Name:        "gender",
 	Label:       "Gender",
-	Description: "Your gender determines the pronouns used by third-person descriptions in the game",
+	Description: "Your character's gender determines the pronouns used by third-person descriptions in the game",
 	Min:         util.MinLengthOfStrings([]string{constants.GenderNonBinary, constants.GenderFemale, constants.GenderMale}),
 	Max:         util.MaxLengthOfStrings([]string{constants.GenderNonBinary, constants.GenderFemale, constants.GenderMale}),
 	Regexes: []*regexp.Regexp{
