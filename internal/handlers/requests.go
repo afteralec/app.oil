@@ -12,6 +12,7 @@ import (
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/util"
 )
 
 func NewRequest(i *shared.Interfaces) fiber.Handler {
@@ -264,26 +265,25 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 
 func RequestPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		lpid := c.Locals("pid")
-		if lpid == nil {
-			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
-		}
-		pid, ok := lpid.(int64)
-		if !ok {
+		pid, err := util.GetPID(c)
+		if err != nil {
+			if err == util.ErrNoPID {
+				c.Status(fiber.StatusUnauthorized)
+				return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
+			}
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
-		prid := c.Params("id")
-		if len(prid) == 0 {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-		rid, err := strconv.ParseInt(prid, 10, 64)
+		rid, err := util.GetID(c)
 		if err != nil {
-			c.Status(fiber.StatusBadRequest)
-			return nil
+			if err == util.ErrNoID {
+				c.Status(fiber.StatusBadRequest)
+				// TODO: 400 view
+				return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		tx, err := i.Database.Begin()
@@ -317,6 +317,16 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
+
+		// TODO: To get a page for an incomplete request:
+		// 1. Get the content
+		// 2. Check the next incomplete field
+		// 3. For that request, content, and field:
+		//    a. Bind the appropriate values
+		//    b. Return the appropriate view
+		// For that field, we just need the current value and view
+
+		// TODO: To get a page for a ready request, bind the summary values and return the summary
 
 		if req.Type == request.TypeCharacterApplication {
 			app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
