@@ -4,7 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"strings"
 
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/queries"
 )
 
@@ -160,4 +163,86 @@ func UpdateField(qtx *queries.Queries, p UpdateFieldParams) error {
 	}
 
 	return nil
+}
+
+// TODO: Get this built into the Definition
+func GetSummaryTitle(t string, content map[string]string) string {
+	if t == TypeCharacterApplication {
+		var sb strings.Builder
+		titleName := constants.DefaultName
+		if len(content[FieldName]) > 0 {
+			titleName = content[FieldName]
+		}
+		fmt.Fprintf(&sb, "Character Application (%s)", titleName)
+		return sb.String()
+	}
+
+	return "Request"
+}
+
+type GetSummaryFieldsParams struct {
+	Request *queries.Request
+	Content map[string]string
+	PID     int64
+}
+
+// TODO: Get this built into the Definition
+func GetSummaryFields(p GetSummaryFieldsParams) []SummaryField {
+	if p.Request.Type == TypeCharacterApplication {
+		var basePathSB strings.Builder
+		fmt.Fprintf(&basePathSB, "/requests/%d", p.Request.ID)
+		basePath := basePathSB.String()
+
+		var namePathSB strings.Builder
+		fmt.Fprintf(&namePathSB, "%s/%s", basePath, FieldName)
+
+		var genderPathSB strings.Builder
+		fmt.Fprintf(&genderPathSB, "%s/%s", basePath, FieldGender)
+
+		var shortDescriptionPathSB strings.Builder
+		fmt.Fprintf(&shortDescriptionPathSB, "%s/%s", basePath, FieldShortDescription)
+
+		var descriptionPathSB strings.Builder
+		fmt.Fprintf(&descriptionPathSB, "%s/%s", basePath, FieldDescription)
+
+		var backstoryPathSB strings.Builder
+		fmt.Fprintf(&backstoryPathSB, "%s/%s", basePath, FieldBackstory)
+
+		viewedByPlayer := p.Request.PID == p.PID
+
+		return []SummaryField{
+			{
+				Label:          "Name",
+				Content:        p.Content[FieldName],
+				ViewedByPlayer: viewedByPlayer,
+				Path:           namePathSB.String(),
+			},
+			{
+				Label:          "Gender",
+				Content:        p.Content[FieldGender],
+				ViewedByPlayer: viewedByPlayer,
+				Path:           genderPathSB.String(),
+			},
+			{
+				Label:          "Short Description",
+				Content:        p.Content[FieldShortDescription],
+				ViewedByPlayer: viewedByPlayer,
+				Path:           shortDescriptionPathSB.String(),
+			},
+			{
+				Label:          "Description",
+				Content:        p.Content[FieldDescription],
+				ViewedByPlayer: viewedByPlayer,
+				Path:           descriptionPathSB.String(),
+			},
+			{
+				Label:          "Backstory",
+				Content:        p.Content[FieldBackstory],
+				ViewedByPlayer: viewedByPlayer,
+				Path:           backstoryPathSB.String(),
+			},
+		}
+	}
+
+	return []SummaryField{}
 }

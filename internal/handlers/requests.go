@@ -278,12 +278,8 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 
 		rid, err := util.GetID(c)
 		if err != nil {
-			if err == util.ErrNoID {
-				c.Status(fiber.StatusBadRequest)
-				// TODO: 400 view
-				return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
-			}
-			c.Status(fiber.StatusInternalServerError)
+			c.Status(fiber.StatusBadRequest)
+			// TODO: 400 view
 			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
@@ -373,106 +369,21 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			}
 
 			return c.Render(view, b, "layout-request-field-standalone")
-		default:
+		case request.StatusReady:
+			b["HeaderStatusIcon"] = request.MakeStatusIcon(req.Status, 36)
+			b["RequestTitle"] = request.GetSummaryTitle(req.Type, content)
+			b["SummaryFields"] = request.GetSummaryFields(request.GetSummaryFieldsParams{
+				PID:     pid,
+				Request: &req,
+				Content: content,
+			})
+
+			return c.Render("views/requests/content/summary", b, "layout-request-summary")
 		}
 
-		// TODO: Bind and return a view by the status of the application
-		// 1. API should be like: b, view, layout, err := ResolveView(pid, req)
-
-		// TODO:
-		// 1. From here, if the status is incomplete:
-		//    a. Bind the header and subheader for the field
-		//    b. Bind the current content of the field, if any
-
-		// TODO: To get a page for an incomplete request:
-		// 1. Get the content
-		// 2. Check the next incomplete field
-		// 3. For that request, content, and field:
-		//    a. Bind the appropriate values
-		//    b. Return the appropriate view
-		// For that field, we just need the current value and view
-
-		// TODO: To get a page for a ready request, bind the summary values and return the summary
-
-		// TODO:
-		// 1. Get content as map via type
-		// 2. Generic "Get Next Incomplete Field" function
-		// 3. Update the Update handler to use /:field
-		// 4. General bind for Field Pages
-		// 5. Type-specific binds for Field Pages
-
-		if req.Type == request.TypeCharacterApplication {
-			app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
-			if err != nil {
-				// TODO: This means that a Request was created without content - this is an error
-				// We should instead insert a blank content row here, but deal with this later
-				if err == sql.ErrNoRows {
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
-
-			switch req.Status {
-			case request.StatusIncomplete:
-				field, err := request.CharacterApplicationGetNextIncompleteField(&app)
-				if err != nil {
-					// TODO: This means that all fields are filled out but the application is still Ready
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-
-				// TODO: Clean this up and lift request-general details to the top
-				b := c.Locals(constants.BindName).(fiber.Map)
-				b = request.BindCharacterApplicationFieldPage(b, request.BindCharacterApplicationFieldPageParams{
-					Application: &app,
-					Request:     &req,
-					Field:       field,
-				})
-				b = request.BindDialogs(b, request.BindDialogsParams{
-					Request: &req,
-				})
-				b = request.BindRequestFieldPage(b, request.BindRequestFieldPageParams{
-					PID:      pid,
-					Field:    field,
-					Request:  &req,
-					Comments: []queries.ListCommentsForRequestWithAuthorRow{},
-				})
-
-				view := request.GetView(req.Type, field)
-
-				if err = tx.Commit(); err != nil {
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-
-				return c.Render(view, b, "layout-request-field-standalone")
-			case request.StatusReady:
-				b := c.Locals(constants.BindName).(fiber.Map)
-				b = request.BindRequestPage(b, request.BindRequestPageParams{
-					PID:     pid,
-					Request: &req,
-				})
-				b = request.BindCharacterApplicationPage(b, request.BindCharacterApplicationPageParams{
-					Application:    &app,
-					ViewedByPlayer: req.PID == pid,
-				})
-				b = request.BindDialogs(b, request.BindDialogsParams{
-					Request: &req,
-				})
-
-				return c.Render("views/requests/content/summary", b, "layout-request-summary")
-			default:
-				// TODO: Other views
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
-		} else {
-			// TODO: This means that there's a request in the database with an invalid type
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
+		// TODO: This means that this request has an invalid status
+		c.Status(fiber.StatusInternalServerError)
+		return c.Render("views/500", c.Locals(constants.BindName), "standalone")
 	}
 }
 
