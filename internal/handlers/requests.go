@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	fiber "github.com/gofiber/fiber/v2"
+
 	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/permissions"
@@ -32,9 +33,8 @@ func NewRequest(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		pid := c.Locals("pid")
-
-		if pid == nil {
+		pid, err := util.GetPID(c)
+		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			return nil
 		}
@@ -50,7 +50,7 @@ func NewRequest(i *shared.Interfaces) fiber.Handler {
 		// TODO: Limit new requests by type
 
 		result, err := qtx.CreateRequest(context.Background(), queries.CreateRequestParams{
-			PID:  pid.(int64),
+			PID:  pid,
 			Type: in.Type,
 		})
 		if err != nil {
@@ -88,9 +88,8 @@ func NewRequest(i *shared.Interfaces) fiber.Handler {
 // TODO: Combine this functionality with the above so it's consistent
 func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		pid := c.Locals("pid")
-
-		if pid == nil {
+		pid, err := util.GetPID(c)
+		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			return nil
 		}
@@ -106,7 +105,7 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 		// TODO: Limit new requests by type
 
 		result, err := qtx.CreateRequest(context.Background(), queries.CreateRequestParams{
-			PID:  pid.(int64),
+			PID:  pid,
 			Type: request.TypeCharacterApplication,
 		})
 		if err != nil {
@@ -356,7 +355,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				b["GenderIsMale"] = content["Gender"] == character.GenderMale
 			}
 
-			return c.Render(view, b, "layout-request-field-standalone")
+			return c.Render(view, b, views.LayoutRequestFieldStandalone)
 		case request.StatusReady:
 			b["HeaderStatusIcon"] = request.MakeStatusIcon(req.Status, 36)
 			b["RequestTitle"] = request.GetSummaryTitle(req.Type, content)
@@ -366,12 +365,12 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				Content: content,
 			})
 
-			return c.Render("views/requests/content/summary", b, "layout-request-summary")
+			return c.Render("views/requests/content/summary", b, views.LayoutRequestSummary)
 		}
 
 		// TODO: This means that this request has an invalid status
 		c.Status(fiber.StatusInternalServerError)
-		return c.Render(views.InternalServerError, c.Locals(constants.BindName), "standalone")
+		return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
 	}
 }
 

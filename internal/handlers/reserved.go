@@ -7,6 +7,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/views"
 )
 
 func Reserved(i *shared.Interfaces) fiber.Handler {
@@ -26,14 +27,14 @@ func Reserved(i *shared.Interfaces) fiber.Handler {
 				c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 				return c.Render("views/partials/register/player-free", fiber.Map{
 					"CSRF": c.Locals("csrf"),
-				}, "views/layouts/csrf")
+				}, views.LayoutCSRF)
 			}
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/partials/register/player-reserved-err", fiber.Map{
 				"CSRF": c.Locals("csrf"),
-			}, "views/layouts/csrf")
+			}, views.LayoutCSRF)
 		}
 
 		if r.Username == p.Username {
@@ -42,12 +43,12 @@ func Reserved(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusConflict)
 			return c.Render("views/partials/register/player-reserved", fiber.Map{
 				"CSRF": c.Locals("csrf"),
-			}, "views/layouts/csrf")
+			}, views.LayoutCSRF)
 		} else {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 			return c.Render("views/partials/register/player-free", fiber.Map{
 				"CSRF": c.Locals("csrf"),
-			}, "views/layouts/csrf")
+			}, views.LayoutCSRF)
 		}
 	}
 }
