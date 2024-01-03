@@ -34,6 +34,6 @@ func ProfilePage(i *shared.Interfaces) fiber.Handler {
 		b["GravatarEmail"] = "othertest@quack.ninja"
 		b["GravatarHash"] = email.GravatarHash("after.alec@gmail.com")
 
-		return c.Render("views/profile", b)
+		return c.Render(views.Profile, b)
 	}
 }

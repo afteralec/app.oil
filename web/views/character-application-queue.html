@@ -1,0 +1,26 @@
+<main class="flex flex-col items-center justify-center">
+  <div class="w-full text-foreground md:w-[750px] md:px-4 lg:w-[1000px]">
+    <header class="px-6 pt-2">
+      <h2
+        class="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl"
+      >
+        Character Applications Queue
+      </h2>
+      <p class="leading-7 text-muted-foreground">
+        All open Character Applications
+      </p>
+    </header>
+    <section id="character-applications" class="border-t">
+      <!-- prettier-ignore -->
+      {{ if .ThereAreCharacterApplications -}}
+        {{ range .CharacterApplicationSummaries -}}
+          {{ template "character-application-queue-row" . }}
+        {{ end -}}
+      {{ else -}}
+      <span class="leading-none text-muted-foreground"
+        >There are no open Character Applications.</span
+      >
+      {{ end -}}
+    </section>
+  </div>
+</main>

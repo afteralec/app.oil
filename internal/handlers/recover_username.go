@@ -17,7 +17,7 @@ import (
 
 func RecoverUsernamePage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("views/recover/username", c.Locals(constants.BindName), views.LayoutStandalone)
+		return c.Render(views.RecoverUsername, c.Locals(constants.BindName), views.LayoutStandalone)
 	}
 }
 
@@ -37,7 +37,7 @@ func RecoverUsernameSuccessPage(i *shared.Interfaces) fiber.Handler {
 		b := c.Locals(constants.BindName).(fiber.Map)
 		b["EmailAddress"] = address
 
-		return c.Render("views/recover/username/success", b, views.LayoutStandalone)
+		return c.Render(views.RecoverUsernameSuccess, b, views.LayoutStandalone)
 	}
 }
 

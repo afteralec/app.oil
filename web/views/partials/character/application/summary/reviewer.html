@@ -1,3 +1,4 @@
+{{ define "character-application-queue-row" }}
 <div
   class="flex items-center gap-6 border-b px-4 py-3"
   x-data="{ {{ .ReviewDialog.Variable }}: false }"
@@ -72,3 +73,4 @@
   <!-- prettier-ignore -->
   {{ template "views/partials/character/application/dialogs/review" .ReviewDialog }}
 </div>
+{{ end }}

@@ -139,7 +139,7 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 		b := c.Locals(constants.BindName).(fiber.Map)
 		b["Username"] = u
 		b["Permissions"] = allPerms
-		return c.Render("views/player_permissions_detail", b)
+		return c.Render(views.PlayerPermissionsDetail, b)
 	}
 }
 

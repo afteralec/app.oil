@@ -77,6 +77,6 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 		b := c.Locals(constants.BindName).(fiber.Map)
 		b["ThereAreCharacterApplications"] = len(summaries) > 0
 		b["CharacterApplicationSummaries"] = summaries
-		return c.Render("views/character/application/queue", b)
+		return c.Render(views.CharacterApplicationQueue, b)
 	}
 }

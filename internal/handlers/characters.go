@@ -64,6 +64,6 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 		b["RequestsPath"] = routes.Requests
 		b["CharacterApplicationSummaries"] = summaries
 		b["HasCharacterApplications"] = len(apps) > 0
-		return c.Render("views/characters", b)
+		return c.Render(views.Characters, b)
 	}
 }

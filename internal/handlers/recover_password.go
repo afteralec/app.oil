@@ -18,13 +18,13 @@ import (
 
 func RecoverPasswordPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("views/recover/password", c.Locals(constants.BindName), views.LayoutStandalone)
+		return c.Render(views.RecoverPassword, c.Locals(constants.BindName), views.LayoutStandalone)
 	}
 }
 
 func RecoverPasswordSuccessPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("views/recover/password/success", c.Locals(constants.BindName), views.LayoutStandalone)
+		return c.Render(views.RecoverPasswordSuccess, c.Locals(constants.BindName), views.LayoutStandalone)
 	}
 }
 
