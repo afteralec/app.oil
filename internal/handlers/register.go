@@ -12,6 +12,7 @@ import (
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
+	"petrichormud.com/app/internal/views"
 )
 
 func Register(i *shared.Interfaces) fiber.Handler {
@@ -92,20 +93,20 @@ func Register(i *shared.Interfaces) fiber.Handler {
 				c.Append("HX-Reswap", "outerHTML")
 				c.Append(shared.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render("views/partials/register/err-internal", c.Locals(constants.BindName), "")
+				return c.Render(views.PartialRegisterErrInternal, c.Locals(constants.BindName), "")
 			}
 			if me.Number == mysqlerr.ER_DUP_ENTRY {
 				c.Append("HX-Retarget", "#register-error")
 				c.Append("HX-Reswap", "outerHTML")
 				c.Append(shared.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusConflict)
-				return c.Render("views/partials/register/err-conflict", c.Locals(constants.BindName), "")
+				return c.Render(views.PartialRegisterErrConflict, c.Locals(constants.BindName), "")
 			}
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(constants.BindName), "")
+			return c.Render(views.PartialRegisterErrInternal, c.Locals(constants.BindName), "")
 		}
 
 		pid, err := result.LastInsertId()
@@ -114,7 +115,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(constants.BindName), "")
+			return c.Render(views.PartialRegisterErrInternal, c.Locals(constants.BindName), "")
 		}
 
 		err = tx.Commit()
@@ -123,7 +124,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(constants.BindName), "")
+			return c.Render(views.PartialRegisterErrInternal, c.Locals(constants.BindName), "")
 		}
 
 		username.Cache(i.Redis, pid, p.Username)
@@ -134,7 +135,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(constants.BindName), "")
+			return c.Render(views.PartialRegisterErrInternal, c.Locals(constants.BindName), "")
 		}
 
 		sess.Set("pid", pid)
@@ -143,7 +144,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/err-internal", c.Locals(constants.BindName), "")
+			return c.Render(views.PartialRegisterErrInternal, c.Locals(constants.BindName), "")
 		}
 
 		c.Append("HX-Trigger-After-Swap", "ptrcr:register-success")

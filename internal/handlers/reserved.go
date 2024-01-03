@@ -25,14 +25,14 @@ func Reserved(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
-				return c.Render("views/partials/register/player-free", fiber.Map{
+				return c.Render(views.PartialPlayerFree, fiber.Map{
 					"CSRF": c.Locals("csrf"),
 				}, views.LayoutCSRF)
 			}
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/register/player-reserved-err", fiber.Map{
+			return c.Render(views.PartialPlayerReservedErr, fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, views.LayoutCSRF)
 		}
@@ -41,12 +41,12 @@ func Reserved(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusConflict)
-			return c.Render("views/partials/register/player-reserved", fiber.Map{
+			return c.Render(views.PartialPlayerReserved, fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, views.LayoutCSRF)
 		} else {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
-			return c.Render("views/partials/register/player-free", fiber.Map{
+			return c.Render(views.PartialPlayerFree, fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, views.LayoutCSRF)
 		}

@@ -1,5 +1,8 @@
-{{ range .Players -}}
+<!-- prettier-ignore -->
+{{ define "partial-player-permissions-search-results" }}
+{{ range .Players }}
 <!-- TODO: Get this in a passed var -->
 <a href="/player/permissions/{{ .Username }}">{{ .Username }}</a>
 <!-- prettier-ignore -->
-{{ end -}}
+{{ end }}
+{{ end }}

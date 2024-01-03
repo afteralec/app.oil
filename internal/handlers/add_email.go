@@ -12,6 +12,7 @@ import (
 	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/views"
 )
 
 func AddEmail(i *shared.Interfaces) fiber.Handler {
@@ -26,7 +27,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/partials/profile/email/err-internal", &fiber.Map{}, "")
+			return c.Render(views.PartialProfileEmailErrInternal, &fiber.Map{}, "")
 		}
 
 		tx, err := i.Database.Begin()
@@ -35,7 +36,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/profile/email/err-internal", &fiber.Map{}, "")
+			return c.Render(views.PartialProfileEmailErrInternal, &fiber.Map{}, "")
 		}
 		defer tx.Rollback()
 
@@ -47,7 +48,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/profile/email/err-internal", &fiber.Map{}, "")
+			return c.Render(views.PartialProfileEmailErrInternal, &fiber.Map{}, "")
 		}
 
 		if ec >= shared.MaxEmailCount {
@@ -55,7 +56,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
-			return c.Render("views/partials/profile/email/err-too-many-emails", &fiber.Map{}, "")
+			return c.Render(views.PartialProfileEmailErrTooMany, &fiber.Map{}, "")
 		}
 
 		r := new(request)
@@ -64,7 +65,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return c.Render("views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
+			return c.Render(views.PartialProfileEmailErrInvalid, &fiber.Map{}, "")
 		}
 
 		e, err := mail.ParseAddress(r.Email)
@@ -73,7 +74,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return c.Render("views/partials/profile/email/err-invalid-email", &fiber.Map{}, "")
+			return c.Render(views.PartialProfileEmailErrInvalid, &fiber.Map{}, "")
 		}
 
 		ve, err := qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
@@ -82,14 +83,14 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/profile/email/err-internal", &fiber.Map{}, "")
+			return c.Render(views.PartialProfileEmailErrInternal, &fiber.Map{}, "")
 		}
 		if err == nil && ve.Verified {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusConflict)
-			return c.Render("views/partials/profile/email/err-conflict", &fiber.Map{
+			return c.Render(views.PartialProfileEmailErrConflict, &fiber.Map{
 				"Address": e.Address,
 			}, "")
 		}
@@ -105,7 +106,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 					c.Append("HX-Reswap", "innerHTML")
 					c.Append(shared.HeaderHXAcceptable, "true")
 					c.Status(fiber.StatusConflict)
-					return c.Render("views/partials/profile/email/err-conflict", &fiber.Map{
+					return c.Render(views.PartialProfileEmailErrConflict, &fiber.Map{
 						"Address": e.Address,
 					}, "")
 				}
@@ -114,7 +115,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/profile/email/err-internal", &fiber.Map{}, "")
+			return c.Render(views.PartialProfileEmailErrInternal, &fiber.Map{}, "")
 		}
 
 		id, err := result.LastInsertId()
@@ -123,7 +124,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/profile/email/err-internal", &fiber.Map{}, "")
+			return c.Render(views.PartialProfileEmailErrInternal, &fiber.Map{}, "")
 		}
 
 		if err = tx.Commit(); err != nil {
@@ -131,7 +132,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/profile/email/err-internal", &fiber.Map{}, "")
+			return c.Render(views.PartialProfileEmailErrInternal, &fiber.Map{}, "")
 		}
 
 		if err = email.SendVerificationEmail(i, id, e.Address); err != nil {
@@ -139,11 +140,11 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "innerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/partials/profile/email/err-internal", &fiber.Map{}, "")
+			return c.Render(views.PartialProfileEmailErrInternal, &fiber.Map{}, "")
 		}
 
 		c.Status(fiber.StatusCreated)
-		return c.Render("views/partials/profile/email/unverified/new", &fiber.Map{
+		return c.Render(views.PartialProfileEmailNewUnverified, &fiber.Map{
 			"ID":      id,
 			"Address": e.Address,
 			"Created": true,

@@ -41,6 +41,7 @@ func RecoverUsernameSuccessPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
+// TODO: Should this be a single error message?
 func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Email string `form:"email"`
@@ -51,14 +52,14 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 		if err := c.BodyParser(r); err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
-			return c.Render("views/partials/recover/username/err-invalid", c.Locals(constants.BindName), "")
+			return c.Render(views.PartialRecoverUsernameErrInvalid, c.Locals(constants.BindName), "")
 		}
 
 		e, err := mail.ParseAddress(r.Email)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
-			return c.Render("views/partials/recover/username/err-invalid", c.Locals(constants.BindName), "")
+			return c.Render(views.PartialRecoverUsernameErrInvalid, c.Locals(constants.BindName), "")
 		}
 
 		ve, err := i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
@@ -68,7 +69,7 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 				if err != nil {
 					c.Status(fiber.StatusUnauthorized)
 					c.Append(shared.HeaderHXAcceptable, "true")
-					return c.Render("views/partials/recover/username/err-internal", c.Locals(constants.BindName), "")
+					return c.Render(views.PartialRecoverUsernameErrInternal, c.Locals(constants.BindName), "")
 				}
 
 				path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)
@@ -77,14 +78,14 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 			}
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
-			return c.Render("views/partials/recover/username/err", c.Locals(constants.BindName), "")
+			return c.Render(views.PartialRecoverUsernameErrInternal, c.Locals(constants.BindName), "")
 		}
 
 		rusid, err := username.Recover(i, ve)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
-			return c.Render("views/partials/recover/username/err-internal", c.Locals(constants.BindName), "")
+			return c.Render(views.PartialRecoverUsernameErrInternal, c.Locals(constants.BindName), "")
 		}
 
 		path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)
