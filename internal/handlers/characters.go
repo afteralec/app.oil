@@ -9,6 +9,7 @@ import (
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/views"
 )
 
 // TODO: Change this over to a Requests page
@@ -18,7 +19,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		tx, err := i.Database.Begin()
@@ -32,7 +33,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 		apps, err := qtx.ListCharacterApplicationsForPlayer(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(constants.BindName))
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName))
 		}
 
 		// TODO: Get this into a standard API on the request package
@@ -47,7 +48,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 					// TODO: Log this error here, this means we need to reset the reviewer and status on the request
 					// }
 					c.Status(fiber.StatusInternalServerError)
-					return c.Render("views/500", c.Locals(constants.BindName))
+					return c.Render(views.InternalServerError, c.Locals(constants.BindName))
 				}
 				reviewer = p.Username
 			}

@@ -9,6 +9,7 @@ import (
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/views"
 )
 
 func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
@@ -17,7 +18,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		lperms := c.Locals("perms")
@@ -28,7 +29,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 		perms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 		_, ok = perms.Permissions[permissions.PlayerReviewCharacterApplicationsName]
 		if !ok {
@@ -47,7 +48,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 		apps, err := qtx.ListOpenCharacterApplications(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(constants.BindName))
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName))
 		}
 
 		summaries := []request.ApplicationSummary{}
@@ -61,7 +62,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 					// TODO: Log this error here, this means we need to reset the reviewer and status on the request
 					// }
 					c.Status(fiber.StatusInternalServerError)
-					return c.Render("views/500", c.Locals(constants.BindName))
+					return c.Render(views.InternalServerError, c.Locals(constants.BindName))
 				}
 				reviewer = p.Username
 			}

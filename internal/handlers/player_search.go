@@ -8,6 +8,7 @@ import (
 
 	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/views"
 )
 
 func SearchPlayer(i *shared.Interfaces) fiber.Handler {
@@ -18,7 +19,7 @@ func SearchPlayer(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		r := new(input)

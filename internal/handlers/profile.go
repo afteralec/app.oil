@@ -8,6 +8,7 @@ import (
 	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/views"
 )
 
 // TODO: Add the Avatar section back into the profile with just Gravatar
@@ -18,13 +19,13 @@ func ProfilePage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		emails, err := i.Queries.ListEmails(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		b := c.Locals(constants.BindName).(fiber.Map)

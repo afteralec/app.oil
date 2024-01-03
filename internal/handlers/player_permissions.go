@@ -12,6 +12,7 @@ import (
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/views"
 )
 
 func PlayerPermissionsPage(i *shared.Interfaces) fiber.Handler {
@@ -20,7 +21,7 @@ func PlayerPermissionsPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		lperms := c.Locals("perms")
@@ -32,7 +33,7 @@ func PlayerPermissionsPage(i *shared.Interfaces) fiber.Handler {
 		perms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		if !perms.HasPermissionInSet(permissions.ShowPermissionViewPermissions) {
@@ -58,7 +59,7 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		lperms := c.Locals("perms")
@@ -70,7 +71,7 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 		iperms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		if !iperms.HasPermissionInSet(permissions.ShowPermissionViewPermissions) {
@@ -150,7 +151,7 @@ func TogglePlayerPermission(i *shared.Interfaces) fiber.Handler {
 		ipid := c.Locals("pid")
 		if ipid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		lperms := c.Locals("perms")
@@ -161,7 +162,7 @@ func TogglePlayerPermission(i *shared.Interfaces) fiber.Handler {
 		iperms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 		if !iperms.Permissions[permissions.PlayerGrantAllPermissionsName] {
 			c.Status(fiber.StatusForbidden)

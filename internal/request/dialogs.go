@@ -76,7 +76,7 @@ func BindDialogs(b fiber.Map, p BindDialogsParams) fiber.Map {
 		Header:     bindDialogs.Submit.Header,
 		Text:       bindDialogs.Submit.Text,
 		ButtonText: bindDialogs.Submit.ButtonText,
-		Path:       routes.RequestPath(p.Request.ID),
+		Path:       routes.RequestStatusPath(p.Request.ID),
 		Variable:   VariableSubmitDialog,
 	}
 
@@ -84,8 +84,9 @@ func BindDialogs(b fiber.Map, p BindDialogsParams) fiber.Map {
 		Header:     bindDialogs.PutInReview.Header,
 		Text:       bindDialogs.PutInReview.Text,
 		ButtonText: bindDialogs.PutInReview.ButtonText,
-		Path:       routes.RequestPath(p.Request.ID),
+		Path:       routes.RequestStatusPath(p.Request.ID),
 		Variable:   VariablePutInReviewDialog,
 	}
+
 	return b
 }

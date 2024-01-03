@@ -10,6 +10,7 @@ import (
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
+	"petrichormud.com/app/internal/views"
 )
 
 func Login(i *shared.Interfaces) fiber.Handler {
@@ -93,6 +94,6 @@ func LoginPage() fiber.Handler {
 			return c.Redirect(routes.Home)
 		}
 
-		return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
+		return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
 	}
 }
