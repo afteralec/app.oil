@@ -21,7 +21,7 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.Login, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 
 		token := c.Query("t")
@@ -30,7 +30,7 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 		exists, err := i.Redis.Exists(context.Background(), key).Result()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 		if exists != 1 {
 			c.Status(fiber.StatusNotFound)
@@ -38,22 +38,22 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 			b["NotFoundMessage"] = "Sorry, it looks like this link has expired."
 			b["NotFoundButtonLink"] = routes.Profile
 			b["NotFoundButtonText"] = "Return to Profile"
-			return c.Render(views.NotFound, b, "views/layouts/standalone")
+			return c.Render(views.NotFound, b, views.LayoutStandalone)
 		}
 
 		eid, err := i.Redis.Get(context.Background(), key).Result()
 		if err != nil {
 			if err == redis.Nil {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, c.Locals(constants.BindName), "views/layouts/standalone")
+				return c.Render(views.NotFound, c.Locals(constants.BindName), views.LayoutStandalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 		id, err := strconv.ParseInt(eid, 10, 64)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 
 		tx, err := i.Database.Begin()
@@ -68,10 +68,10 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, c.Locals(constants.BindName), "views/layouts/standalone")
+				return c.Render(views.NotFound, c.Locals(constants.BindName), views.LayoutStandalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 
 		if e.PID != pid {
@@ -82,11 +82,13 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 		ve, err := qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
 		if err != nil && err != sql.ErrNoRows {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 		if err == nil && ve.Verified {
 			c.Status(fiber.StatusConflict)
-			return c.Render("views/verify-email-409", c.Locals(constants.BindName), "views/layouts/standalone")
+			b := c.Locals(constants.BindName).(fiber.Map)
+			b["ErrMessageConflict"] = "That email has already been verified."
+			return c.Render("views/409", b, views.LayoutStandalone)
 		}
 
 		if err = tx.Commit(); err != nil {
@@ -97,14 +99,14 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 		un, err := username.Get(i, pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 
 		b := c.Locals(constants.BindName).(fiber.Map)
 		b["VerifyToken"] = c.Query("t")
 		b["Address"] = e.Address
 		b["Username"] = un
-		return c.Render("views/verify-email", b, "views/layouts/standalone")
+		return c.Render("views/verify-email", b, views.LayoutStandalone)
 	}
 }
 

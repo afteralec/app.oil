@@ -12,11 +12,12 @@ import (
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
+	"petrichormud.com/app/internal/views"
 )
 
 func RecoverUsernamePage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("views/recover/username", c.Locals(constants.BindName), "views/layouts/standalone")
+		return c.Render("views/recover/username", c.Locals(constants.BindName), views.LayoutStandalone)
 	}
 }
 
@@ -36,7 +37,7 @@ func RecoverUsernameSuccessPage(i *shared.Interfaces) fiber.Handler {
 		b := c.Locals(constants.BindName).(fiber.Map)
 		b["EmailAddress"] = address
 
-		return c.Render("views/recover/username/success", b, "views/layouts/standalone")
+		return c.Render("views/recover/username/success", b, views.LayoutStandalone)
 	}
 }
 

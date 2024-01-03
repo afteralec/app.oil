@@ -19,13 +19,13 @@ func ProfilePage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.Login, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 
 		emails, err := i.Queries.ListEmails(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 
 		b := c.Locals(constants.BindName).(fiber.Map)

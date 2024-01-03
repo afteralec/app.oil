@@ -19,7 +19,7 @@ func SearchPlayer(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.Login, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 
 		r := new(input)

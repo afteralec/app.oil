@@ -18,7 +18,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.Login, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 
 		lperms := c.Locals("perms")
@@ -29,7 +29,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 		perms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), "views/layouts/standalone")
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 		_, ok = perms.Permissions[permissions.PlayerReviewCharacterApplicationsName]
 		if !ok {

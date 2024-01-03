@@ -13,6 +13,7 @@ import (
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
+	"petrichormud.com/app/internal/views"
 )
 
 func ResetPasswordPage() fiber.Handler {
@@ -25,13 +26,13 @@ func ResetPasswordPage() fiber.Handler {
 		b := c.Locals(constants.BindName).(fiber.Map)
 		b["ResetPasswordToken"] = tid
 
-		return c.Render("views/reset/password", b, "views/layouts/standalone")
+		return c.Render("views/reset/password", b, views.LayoutStandalone)
 	}
 }
 
 func ResetPasswordSuccessPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("views/reset/password/success", c.Locals(constants.BindName), "views/layouts/standalone")
+		return c.Render("views/reset/password/success", c.Locals(constants.BindName), views.LayoutStandalone)
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/views"
 )
 
 func Logout(i *shared.Interfaces) fiber.Handler {
@@ -22,6 +23,6 @@ func Logout(i *shared.Interfaces) fiber.Handler {
 
 func LogoutPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("views/logout", c.Locals("b"), "views/layouts/standalone")
+		return c.Render("views/logout", c.Locals("b"), views.LayoutStandalone)
 	}
 }

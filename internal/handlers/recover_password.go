@@ -13,17 +13,18 @@ import (
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
+	"petrichormud.com/app/internal/views"
 )
 
 func RecoverPasswordPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("views/recover/password", c.Locals(constants.BindName), "views/layouts/standalone")
+		return c.Render("views/recover/password", c.Locals(constants.BindName), views.LayoutStandalone)
 	}
 }
 
 func RecoverPasswordSuccessPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("views/recover/password/success", c.Locals(constants.BindName), "views/layouts/standalone")
+		return c.Render("views/recover/password/success", c.Locals(constants.BindName), views.LayoutStandalone)
 	}
 }
 

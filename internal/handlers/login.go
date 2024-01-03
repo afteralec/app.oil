@@ -94,6 +94,6 @@ func LoginPage() fiber.Handler {
 			return c.Redirect(routes.Home)
 		}
 
-		return c.Render(views.Login, c.Locals(constants.BindName), "views/layouts/standalone")
+		return c.Render(views.Login, c.Locals(constants.BindName), views.LayoutStandalone)
 	}
 }
