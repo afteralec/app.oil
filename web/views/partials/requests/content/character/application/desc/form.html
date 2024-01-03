@@ -4,9 +4,9 @@
   id="{{ .RequestFormID }}"
   class="space-y-4 px-4 pt-4"
   @submit.prevent=""
-  hx-patch="{{ .RequestPath }}"
+  hx-patch="{{ .RequestFormPath }}"
   hx-swap="none"
-  x-data="getCharacterApplicationDescriptionData('{{ .Description }}')"
+  x-data="getCharacterApplicationDescriptionData('{{ .FieldValue }}')"
 >
   <div class="space-y-2">
     <textarea

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
+	"petrichormud.com/app/internal/permissions"
 )
 
 var (
@@ -13,6 +14,7 @@ var (
 )
 
 func GetPID(c *fiber.Ctx) (int64, error) {
+	// TODO: Get this locals key into a constant
 	lpid := c.Locals("pid")
 	if lpid == nil {
 		return 0, ErrNoPID
@@ -28,6 +30,7 @@ func GetPID(c *fiber.Ctx) (int64, error) {
 var ErrNoID error = errors.New("no ID value found")
 
 func GetID(c *fiber.Ctx) (int64, error) {
+	// TODO: Get this locals key into a constant
 	param := c.Params("id")
 	if len(param) == 0 {
 		return 0, ErrNoID
@@ -38,4 +41,19 @@ func GetID(c *fiber.Ctx) (int64, error) {
 	}
 
 	return id, nil
+}
+
+var ErrNoPermissions error = errors.New("no permissions found")
+
+func GetPermissions(c *fiber.Ctx) (permissions.PlayerGranted, error) {
+	// TODO: Get this locals key into a constant
+	lperms := c.Locals("perms")
+	if lperms == nil {
+		return permissions.PlayerGranted{}, nil
+	}
+	perms, ok := lperms.(permissions.PlayerGranted)
+	if !ok {
+		return permissions.PlayerGranted{}, nil
+	}
+	return perms, nil
 }

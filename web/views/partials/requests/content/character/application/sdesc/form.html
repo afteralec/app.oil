@@ -3,9 +3,9 @@
 <form
   id="{{ .RequestFormID }}"
   class="space-y-2 px-4 pt-4"
-  hx-patch="{{ .RequestPath }}"
+  hx-patch="{{ .RequestFormPath }}"
   hx-swap="none"
-  x-data="getCharacterApplicationShortDescriptionData('{{ .ShortDescription }}')"
+  x-data="getCharacterApplicationShortDescriptionData('{{ .FieldValue }}')"
 >
   <input
     id="character-application-flow-sdesc"
@@ -17,7 +17,7 @@
     class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
     placeholder=""
     name="{{ .Field }}"
-    value=""
+    value="{{ .FieldValue }}"
     autofocus
   />
   <section>

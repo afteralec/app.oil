@@ -3,9 +3,9 @@
 <form
   id="{{ .RequestFormID }}"
   class="space-y-2 px-4 pt-4"
-  hx-patch="{{ .RequestPath }}"
+  hx-patch="{{ .RequestFormPath }}"
   hx-swap="none"
-  x-data="getCharacterApplicationBackstoryData(`{{ .Backstory }}`)"
+  x-data="getCharacterApplicationBackstoryData(`{{ .FieldValue }}`)"
 >
   <textarea
     id="character-application-flow-backstory"

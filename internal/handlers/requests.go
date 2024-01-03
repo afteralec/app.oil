@@ -134,32 +134,28 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 
 func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		lpid := c.Locals("pid")
-		if lpid == nil {
-			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
-		}
-		pid, ok := lpid.(int64)
-		if !ok {
+		pid, err := util.GetPID(c)
+		if err != nil {
+			if err == util.ErrNoPID {
+				c.Status(fiber.StatusUnauthorized)
+				return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
+			}
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
-		prid := c.Params("id")
-		if len(prid) == 0 {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-		rid, err := strconv.ParseInt(prid, 10, 64)
+		rid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			// TODO: 400 view
+			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		field := c.Params("field")
 		if len(field) == 0 {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			// TODO: 400 view
+			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
 		tx, err := i.Database.Begin()
@@ -180,87 +176,77 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		if !request.IsTypeValid(req.Type) {
+			// TODO: This means that there's a request with an invalid type in the system
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
+		}
+
+		// TODO: Reviewer path
 		if req.PID != pid {
-			lperms := c.Locals("perms")
-			if lperms == nil {
+			perms, err := util.GetPermissions(c)
+			if err != nil {
+				c.Status(fiber.StatusForbidden)
+				return c.Render("views/403", c.Locals(constants.BindName), "views/layouts/standalone")
+			}
+
+			if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
-			iperms, ok := lperms.(permissions.PlayerGranted)
-			if !ok {
-				c.Status(fiber.StatusInternalServerError)
-				return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
-			}
-			if !iperms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
-				c.Status(fiber.StatusForbidden)
-				return nil
-			}
+
+			c.Status(fiber.StatusForbidden)
+			return c.Render("views/403", c.Locals(constants.BindName), "views/layouts/standalone")
 		}
 
-		_, ok = request.FieldsByType[req.Type]
-		if !ok {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-
-		comments := []queries.ListCommentsForRequestWithAuthorRow{}
-
-		if req.PID != pid {
-			comments, err = qtx.ListCommentsForRequestWithAuthor(context.Background(), rid)
-			if err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
-		}
-
-		b := c.Locals(constants.BindName).(fiber.Map)
-		if req.Type == request.TypeCharacterApplication {
-			app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), rid)
-			if err != nil {
-				// TODO: This means that a Request was created without content - this is an error
-				// We should instead insert a blank content row here, but deal with this later
-				if err == sql.ErrNoRows {
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
-
-			b = request.BindDialogs(b, request.BindDialogsParams{
-				Request: &req,
-			})
-
-			b = request.BindCharacterApplicationFieldPage(b, request.BindCharacterApplicationFieldPageParams{
-				Application: &app,
-				Request:     &req,
-				Field:       field,
-			})
-		} else {
-			// TODO: This means that there's a request in the database with an invalid type
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if err = tx.Commit(); err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
+		if req.Status == request.StatusIncomplete {
+			return c.Redirect(routes.RequestPath(rid))
 		}
 
 		view := request.GetView(req.Type, field)
 
-		b = request.BindRequestFieldPage(b, request.BindRequestFieldPageParams{
-			PID:      pid,
-			Field:    field,
-			Request:  &req,
-			Comments: comments,
+		b := c.Locals(constants.BindName).(fiber.Map)
+		b = request.BindStatus(b, &req)
+		b = request.BindViewedBy(b, request.BindViewedByParams{
+			Request: &req,
+			PID:     pid,
+		})
+		b = request.BindDialogs(b, request.BindDialogsParams{
+			Request: &req,
 		})
 
-		if req.Status == request.StatusIncomplete {
-			return c.Redirect(routes.RequestPath(req.ID))
+		content, err := request.GetContent(qtx, &req)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
 		}
 
-		return c.Render(view, b, "layout-request-field")
+		label, description := request.GetFieldLabelAndDescription(req.Type, field)
+		b["FieldLabel"] = label
+		b["FieldDescription"] = description
+
+		b["RequestFormID"] = request.FormID
+
+		b["UpdateButtonText"] = "Update"
+
+		b["RequestFormPath"] = routes.RequestFieldPath(req.ID, field)
+		b["Field"] = field
+
+		// TODO: Validate this? i.e., make sure that the content map actually has this in there
+		b["FieldValue"] = content[field]
+
+		// TODO: Get bind exceptions into their own extractor
+		if field == request.FieldGender && req.Type == request.TypeCharacterApplication {
+			b["GenderNonBinary"] = character.GenderNonBinary
+			b["GenderFemale"] = character.GenderFemale
+			b["GenderMale"] = character.GenderMale
+
+			b["GenderIsNonBinary"] = content["Gender"] == character.GenderNonBinary
+			b["GenderIsFemale"] = content["Gender"] == character.GenderFemale
+			b["GenderIsMale"] = content["Gender"] == character.GenderMale
+		}
+
+		return c.Render(view, b, "layout-request-field-standalone")
 	}
 }
 
@@ -339,10 +325,6 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			view := request.GetView(req.Type, field)
 
 			label, description := request.GetFieldLabelAndDescription(req.Type, field)
-			b["Header"] = label
-			b["SubHeader"] = description
-
-			// TODO: Move to this
 			b["FieldLabel"] = label
 			b["FieldDescription"] = description
 
@@ -354,8 +336,9 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				b["UpdateButtonText"] = "Next"
 			}
 
-			b["RequestPath"] = routes.RequestPath(req.ID)
+			b["RequestFormPath"] = routes.RequestFieldPath(req.ID, field)
 			b["Field"] = field
+			b["FieldValue"] = ""
 
 			// TODO: Get bind exceptions into their own extractor
 			if field == request.FieldGender && req.Type == request.TypeCharacterApplication {

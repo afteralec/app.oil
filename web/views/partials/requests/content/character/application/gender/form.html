@@ -3,9 +3,9 @@
 <form
   id="{{ .RequestFormID }}"
   class="space-y-2 px-4 pt-4"
-  x-data="getCharacterApplicationGenderData(`{{ .Gender }}`)"
+  x-data="getCharacterApplicationGenderData(`{{ .FieldValue }}`)"
   @submit.prevent=""
-  hx-patch="{{ .RequestPath }}"
+  hx-patch="{{ .RequestFormPath }}"
   hx-swap="none"
 >
   <section
