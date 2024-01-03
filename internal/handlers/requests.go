@@ -189,7 +189,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			perms, err := util.GetPermissions(c)
 			if err != nil {
 				c.Status(fiber.StatusForbidden)
-				return c.Render("403", c.Locals(constants.BindName), views.LayoutStandalone)
+				return c.Render(views.Forbidden, c.Locals(constants.BindName), views.LayoutStandalone)
 			}
 
 			if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
@@ -198,7 +198,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			}
 
 			c.Status(fiber.StatusForbidden)
-			return c.Render("403", c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.Forbidden, c.Locals(constants.BindName), views.LayoutStandalone)
 		}
 
 		if req.Status == request.StatusIncomplete {
