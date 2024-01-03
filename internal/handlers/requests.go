@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
 	"petrichormud.com/app/internal/character"
@@ -69,6 +68,9 @@ func NewRequest(i *shared.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusInternalServerError)
 				return nil
 			}
+		} else {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
 		}
 
 		if err = tx.Commit(); err != nil {
@@ -378,25 +380,24 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		lpid := c.Locals("pid")
-		if lpid == nil {
-			c.Status(fiber.StatusUnauthorized)
-			return c.Render("views/login", c.Locals(constants.BindName), "views/layouts/standalone")
-		}
-		pid, ok := lpid.(int64)
-		if !ok {
-			c.Status(fiber.StatusInternalServerError)
-			return c.Render("views/500", c.Locals(constants.BindName), "views/layouts/standalone")
-		}
+		pid, err := util.GetPID(c)
+		if err != nil {
+			if err == util.ErrNoPID {
+				c.Status(fiber.StatusUnauthorized)
+				return nil
+			}
 
-		prid := c.Params("id")
-		if len(prid) == 0 {
-			c.Status(fiber.StatusBadRequest)
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-		rid, err := strconv.ParseInt(prid, 10, 64)
+
+		rid, err := util.GetID(c)
 		if err != nil {
-			c.Status(fiber.StatusBadRequest)
+			if err == util.ErrNoID {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
@@ -421,47 +422,6 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 				return nil
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		// Handle a status update
-		if field == request.FieldStatus {
-			if !request.IsStatusValid(in.Status) {
-				c.Status(fiber.StatusBadRequest)
-				return nil
-			}
-
-			lperms := c.Locals("perms")
-			if lperms == nil {
-				c.Status(fiber.StatusForbidden)
-				return nil
-			}
-			perms, ok := lperms.(permissions.PlayerGranted)
-			if !ok {
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
-
-			ok = request.IsStatusUpdateOK(&req, perms, pid, in.Status)
-			if !ok {
-				c.Status(fiber.StatusForbidden)
-				return nil
-			}
-
-			if err = qtx.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
-				ID:     rid,
-				Status: in.Status,
-			}); err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
-
-			if err = tx.Commit(); err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
-
-			c.Append("HX-Refresh", "true")
 			return nil
 		}
 

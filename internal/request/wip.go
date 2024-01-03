@@ -180,6 +180,13 @@ func GetSummaryTitle(t string, content map[string]string) string {
 	return "Request"
 }
 
+type SummaryField struct {
+	Label     string
+	Content   string
+	Path      string
+	AllowEdit bool
+}
+
 type GetSummaryFieldsParams struct {
 	Request *queries.Request
 	Content map[string]string
@@ -208,38 +215,38 @@ func GetSummaryFields(p GetSummaryFieldsParams) []SummaryField {
 		var backstoryPathSB strings.Builder
 		fmt.Fprintf(&backstoryPathSB, "%s/%s", basePath, FieldBackstory)
 
-		viewedByPlayer := p.Request.PID == p.PID
+		allowEdit := p.Request.PID == p.PID
 
 		return []SummaryField{
 			{
-				Label:          "Name",
-				Content:        p.Content[FieldName],
-				ViewedByPlayer: viewedByPlayer,
-				Path:           namePathSB.String(),
+				Label:     "Name",
+				Content:   p.Content[FieldName],
+				AllowEdit: allowEdit,
+				Path:      namePathSB.String(),
 			},
 			{
-				Label:          "Gender",
-				Content:        p.Content[FieldGender],
-				ViewedByPlayer: viewedByPlayer,
-				Path:           genderPathSB.String(),
+				Label:     "Gender",
+				Content:   p.Content[FieldGender],
+				AllowEdit: allowEdit,
+				Path:      genderPathSB.String(),
 			},
 			{
-				Label:          "Short Description",
-				Content:        p.Content[FieldShortDescription],
-				ViewedByPlayer: viewedByPlayer,
-				Path:           shortDescriptionPathSB.String(),
+				Label:     "Short Description",
+				Content:   p.Content[FieldShortDescription],
+				AllowEdit: allowEdit,
+				Path:      shortDescriptionPathSB.String(),
 			},
 			{
-				Label:          "Description",
-				Content:        p.Content[FieldDescription],
-				ViewedByPlayer: viewedByPlayer,
-				Path:           descriptionPathSB.String(),
+				Label:     "Description",
+				Content:   p.Content[FieldDescription],
+				AllowEdit: allowEdit,
+				Path:      descriptionPathSB.String(),
 			},
 			{
-				Label:          "Backstory",
-				Content:        p.Content[FieldBackstory],
-				ViewedByPlayer: viewedByPlayer,
-				Path:           backstoryPathSB.String(),
+				Label:     "Backstory",
+				Content:   p.Content[FieldBackstory],
+				AllowEdit: allowEdit,
+				Path:      backstoryPathSB.String(),
 			},
 		}
 	}

@@ -21,8 +21,6 @@
     {{ template "views/partials/requests/content/summary/help" .Label }}
   </div>
 
-  <!-- prettier-ignore -->
-  {{ if .ViewedByPlayer }}
   <footer class="flex items-center justify-end gap-2 pr-3">
     <div
       @click.prevent="helpOpen = !helpOpen;"
@@ -34,8 +32,9 @@
         width="10"
       ></iconify-icon>
 
-      Help
+      <span x-text="helpOpen ? 'Close Help' : 'Help'">Help</span>
     </div>
+    {{ if .AllowEdit }}
     <a
       href="{{ .Path }}"
       class="flex cursor-pointer items-end text-xs leading-none text-muted-foreground hover:text-primary hover:underline"
@@ -44,8 +43,8 @@
 
       Edit
     </a>
+    {{ end }}
   </footer>
-  {{ end }}
 </article>
 
 {{ end }}
