@@ -8,6 +8,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
@@ -26,13 +27,13 @@ func ResetPasswordPage() fiber.Handler {
 		b := c.Locals(constants.BindName).(fiber.Map)
 		b["ResetPasswordToken"] = tid
 
-		return c.Render(views.ResetPassword, b, views.LayoutStandalone)
+		return c.Render(views.ResetPassword, b, layouts.Standalone)
 	}
 }
 
 func ResetPasswordSuccessPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.ResetPasswordSuccess, c.Locals(constants.BindName), views.LayoutStandalone)
+		return c.Render(views.ResetPasswordSuccess, c.Locals(constants.BindName), layouts.Standalone)
 	}
 }
 

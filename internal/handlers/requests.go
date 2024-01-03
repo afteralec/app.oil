@@ -8,6 +8,7 @@ import (
 
 	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/request"
@@ -140,24 +141,24 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			if err == util.ErrNoPID {
 				c.Status(fiber.StatusUnauthorized)
-				return c.Render(views.Login, c.Locals(constants.BindName), views.LayoutStandalone)
+				return c.Render(views.Login, c.Locals(constants.BindName), layouts.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		rid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			// TODO: 400 view
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		field := c.Params("field")
 		if len(field) == 0 {
 			c.Status(fiber.StatusBadRequest)
 			// TODO: 400 view
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		tx, err := i.Database.Begin()
@@ -181,7 +182,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 		if !request.IsTypeValid(req.Type) {
 			// TODO: This means that there's a request with an invalid type in the system
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		// TODO: Reviewer path
@@ -189,7 +190,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			perms, err := util.GetPermissions(c)
 			if err != nil {
 				c.Status(fiber.StatusForbidden)
-				return c.Render(views.Forbidden, c.Locals(constants.BindName), views.LayoutStandalone)
+				return c.Render(views.Forbidden, c.Locals(constants.BindName), layouts.Standalone)
 			}
 
 			if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
@@ -198,7 +199,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			}
 
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.Forbidden, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		if req.Status == request.StatusIncomplete {
@@ -249,7 +250,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			b["GenderIsMale"] = content["Gender"] == character.GenderMale
 		}
 
-		return c.Render(view, b, views.LayoutRequestFieldStandalone)
+		return c.Render(view, b, layouts.RequestFieldStandalone)
 	}
 }
 
@@ -259,23 +260,23 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			if err == util.ErrNoPID {
 				c.Status(fiber.StatusUnauthorized)
-				return c.Render(views.Login, c.Locals(constants.BindName), views.LayoutStandalone)
+				return c.Render(views.Login, c.Locals(constants.BindName), layouts.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		rid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			// TODO: 400 view
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -284,10 +285,10 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, c.Locals(constants.BindName), views.LayoutStandalone)
+				return c.Render(views.NotFound, c.Locals(constants.BindName), layouts.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		// TODO: Reviewer path
@@ -295,7 +296,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 		if req.PID != pid {
 			c.Status(fiber.StatusForbidden)
 			// TODO: 403 view
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		// TODO: Plan for the requests/:id handler (PLAYER)
@@ -365,12 +366,12 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				Content: content,
 			})
 
-			return c.Render(views.RequestSummaryFields, b, views.LayoutRequestSummary)
+			return c.Render(views.RequestSummaryFields, b, layouts.RequestSummary)
 		}
 
 		// TODO: This means that this request has an invalid status
 		c.Status(fiber.StatusInternalServerError)
-		return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
+		return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/shared"
@@ -18,7 +19,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.Login, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		lperms := c.Locals("perms")
@@ -29,7 +30,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 		perms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
 		}
 		_, ok = perms.Permissions[permissions.PlayerReviewCharacterApplicationsName]
 		if !ok {

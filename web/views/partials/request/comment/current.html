@@ -1,3 +1,4 @@
+{{ define "partial-request-comment-current" }}
 <article
   id="request-comment-{{ .ID }}"
   x-data="getRequestCommentData(`{{ .Text }}`)"
@@ -90,3 +91,4 @@
   </div>
 </article>
 <!-- TODO: Add Replies here -->
+{{ end }}

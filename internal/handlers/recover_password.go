@@ -9,6 +9,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
@@ -18,13 +19,13 @@ import (
 
 func RecoverPasswordPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.RecoverPassword, c.Locals(constants.BindName), views.LayoutStandalone)
+		return c.Render(views.RecoverPassword, c.Locals(constants.BindName), layouts.Standalone)
 	}
 }
 
 func RecoverPasswordSuccessPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.RecoverPasswordSuccess, c.Locals(constants.BindName), views.LayoutStandalone)
+		return c.Render(views.RecoverPasswordSuccess, c.Locals(constants.BindName), layouts.Standalone)
 	}
 }
 

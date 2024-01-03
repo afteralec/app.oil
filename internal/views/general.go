@@ -1,3 +1,8 @@
 package views
 
-const Login string = "login"
+const Home string = "home"
+
+const (
+	Login  string = "login"
+	Logout string = "logout"
+)

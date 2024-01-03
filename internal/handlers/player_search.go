@@ -7,6 +7,8 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/views"
 )
@@ -19,7 +21,7 @@ func SearchPlayer(i *shared.Interfaces) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.Login, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		r := new(input)
@@ -47,7 +49,7 @@ func SearchPlayer(i *shared.Interfaces) fiber.Handler {
 			b["Players"] = players
 
 			c.Status(fiber.StatusOK)
-			return c.Render(views.PartialPlayerPermissionsSearchResults, b, "")
+			return c.Render(partials.PlayerPermissionsSearchResults, b, "")
 		}
 
 		c.Status(fiber.StatusBadRequest)

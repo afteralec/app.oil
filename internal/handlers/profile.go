@@ -7,6 +7,7 @@ import (
 
 	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/email"
+	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/views"
 )
@@ -19,13 +20,13 @@ func ProfilePage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.Login, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		emails, err := i.Queries.ListEmails(context.Background(), pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		b := c.Locals(constants.BindName).(fiber.Map)

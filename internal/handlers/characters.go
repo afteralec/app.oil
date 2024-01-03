@@ -6,6 +6,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
@@ -19,7 +20,7 @@ func CharactersPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, c.Locals(constants.BindName), views.LayoutStandalone)
+			return c.Render(views.Login, c.Locals(constants.BindName), layouts.Standalone)
 		}
 
 		tx, err := i.Database.Begin()
