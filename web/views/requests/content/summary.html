@@ -1,3 +1,5 @@
+{{ define "request-summary-fields" }}
+
 <section class="request-summary-fields flow flex flex-col justify-center">
   <!-- prettier-ignore -->
   {{ range .SummaryFields }}
@@ -5,5 +7,4 @@
   {{ end }}
 </section>
 
-<!-- prettier-ignore -->
-{{ template "requests-summary-footer" . }}
+{{ end }}

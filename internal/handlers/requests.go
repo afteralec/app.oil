@@ -249,7 +249,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			b["GenderIsMale"] = content["Gender"] == character.GenderMale
 		}
 
-		return c.Render(view, b, "layout-request-field-standalone")
+		return c.Render(view, b, views.LayoutRequestFieldStandalone)
 	}
 }
 
@@ -365,7 +365,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				Content: content,
 			})
 
-			return c.Render("views/requests/content/summary", b, views.LayoutRequestSummary)
+			return c.Render(views.RequestSummaryFields, b, views.LayoutRequestSummary)
 		}
 
 		// TODO: This means that this request has an invalid status

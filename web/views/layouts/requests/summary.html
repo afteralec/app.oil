@@ -12,10 +12,10 @@
       x-data="getRequestData()"
     >
       <section class="w-full max-w-lg">
-        {{ template "requests-summary-header" . }}
-
         <!-- prettier-ignore -->
+        {{ template "requests-summary-header" . }}
         {{ embed }}
+        {{ template "requests-summary-footer" . }}
       </section>
 
       {{ template "request-dialogs" . }}
