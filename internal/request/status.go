@@ -3,6 +3,7 @@ package request
 import (
 	"context"
 	"errors"
+	"html/template"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -60,6 +61,7 @@ var StatusColors map[string]string = map[string]string{
 
 // TODO: This can be shared across multiple packages
 type StatusIcon struct {
+	Icon  template.URL
 	Size  string
 	Color string
 }
@@ -70,17 +72,29 @@ func IsStatusValid(status string) bool {
 }
 
 func MakeStatusIcon(status string, size int64) StatusIcon {
+	formattedSize := strconv.FormatInt(size, 10)
+
+	// TODO: De-pessimize this
+	defaultIcon := StatusIcon{
+		Icon:  template.URL(StatusIcons[StatusIncomplete]),
+		Color: StatusColors[StatusIncomplete],
+		Size:  formattedSize,
+	}
+
+	icon, ok := StatusIcons[status]
+	if !ok {
+		return defaultIcon
+	}
+
 	color, ok := StatusColors[status]
 	if !ok {
-		return StatusIcon{
-			Size:  strconv.FormatInt(size, 10),
-			Color: StatusColors[StatusIncomplete],
-		}
+		return defaultIcon
 	}
 
 	return StatusIcon{
-		Size:  strconv.FormatInt(size, 10),
+		Icon:  template.URL(icon),
 		Color: color,
+		Size:  formattedSize,
 	}
 }
 

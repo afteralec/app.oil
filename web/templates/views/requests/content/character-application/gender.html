@@ -1,6 +1,6 @@
 <!-- prettier-ignore -->
 {{ define "request-character-application-gender" }}
-{{ template "partial-character-application-gender-help" . }}
+{{ template "partial-request-character-application-gender-help" . }}
 {{ template "partial-request-divider" . }}
 {{ if and .ViewedByPlayer (or .StatusIsReady .StatusIsIncomplete) }}
   {{ template "requests-character-application-gender-form" . }}
