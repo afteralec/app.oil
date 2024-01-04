@@ -25,7 +25,7 @@
     {{ template "partial-request-comment-edit" . }}
 
     <footer x-show="!editOpen" class="flex items-end justify-end pt-2">
-      {{ if .ViewedByAuthor }}
+      {{ if .ViewedByAuthor -}}
       <div class="mr-auto flex items-end justify-end gap-2">
         <button
           type="button"
@@ -66,7 +66,7 @@
           Delete Permanently
         </button>
       </div>
-      {{ else }}
+      {{ else -}}
       <div class="mr-auto flex items-end justify-end gap-2">
         <button
           type="button"
@@ -81,7 +81,7 @@
           Reply
         </button>
       </div>
-      {{ end }}
+      {{ end -}}
 
       <p
         x-text="parseTimeStamp({{ .CreatedAt }})"

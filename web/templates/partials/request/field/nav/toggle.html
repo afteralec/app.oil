@@ -1,3 +1,4 @@
+{{ define "partial-request-field-nav-toggle" }}
 <div
   @click.prevent="partsOpen = !partsOpen;"
   :class="{ 'open': partsOpen }"
@@ -11,3 +12,4 @@
     width="24"
   ></iconify-icon>
 </div>
+{{ end }}

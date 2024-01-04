@@ -16,6 +16,20 @@ type Definition struct {
 	FieldNames   []string
 }
 
+type DefinitionInterface interface {
+	Type() string
+	Dialogs() DefinitionDialogs
+	Fields() []Field
+	Content(rid int64) map[string]string
+	UpdateField(q *queries.Queries, rid int64, field, value string) error
+	SummaryTitle(content map[string]string) string
+}
+
+type FieldsInterface interface {
+	IsFieldValid(f string) bool
+	IsValueValid(f, v string) bool
+}
+
 // TODO: Add API to a Fields struct that can take in a field and value and return if it's valid
 // Have the Fields struct be in charge of the list of fields and the map of fields by name
 
@@ -61,7 +75,6 @@ func NewDefinition(p NewDefinitionParams) Definition {
 }
 
 // TODO: Change Name to Tag
-// TODO: Add Layout
 // TODO: Change Min and Max to MinLen and MaxLen
 type Field struct {
 	Name        string

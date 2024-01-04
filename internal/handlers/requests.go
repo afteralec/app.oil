@@ -472,7 +472,7 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 
 func UpdateRequestFieldNew(i *shared.Interfaces) fiber.Handler {
 	type input struct {
-		Value string
+		Value string `form:"value"`
 	}
 	return func(c *fiber.Ctx) error {
 		in := new(input)

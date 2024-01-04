@@ -1,4 +1,3 @@
-<!-- prettier-ignore -->
 {{ define "requests-character-application-name-form" }}
 <form
   id="{{ .RequestFormID }}"
@@ -17,11 +16,10 @@
     "
     class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
     placeholder=""
-    name="{{ .Field }}"
+    name="value"
     autofocus
   />
   <section>
-    <!-- prettier-ignore -->
     {{ template "partial-request-character-application-name-requirements" }}
   </section>
 </form>

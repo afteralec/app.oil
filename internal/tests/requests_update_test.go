@@ -2,6 +2,7 @@ package tests
 
 import (
 	"bytes"
+	"context"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -17,7 +18,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func TestUpdateRequestUnauthorizedNotLoggedIn(t *testing.T) {
+func TestUpdateRequestFieldUnauthorizedNotLoggedIn(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -30,11 +31,11 @@ func TestUpdateRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	url := MakeTestURL(routes.RequestPath(rid))
+	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField(request.FieldStatus, request.StatusReady)
+	writer.WriteField("value", "Test")
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
@@ -48,7 +49,7 @@ func TestUpdateRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestUpdateRequestNotFound(t *testing.T) {
+func TestUpdateRequestFieldBadRequestNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -63,11 +64,11 @@ func TestUpdateRequestNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestPath(rid + 1))
+	url := MakeTestURL(routes.RequestFieldPath(rid+1, request.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField(request.FieldStatus, request.StatusSubmitted)
+	writer.WriteField("value", "Test")
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
@@ -82,7 +83,7 @@ func TestUpdateRequestNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
-func TestUpdateRequestFatal(t *testing.T) {
+func TestUpdateRequestFieldFatal(t *testing.T) {
 	i := shared.SetupInterfaces()
 
 	a := fiber.New(configs.Fiber())
@@ -96,11 +97,11 @@ func TestUpdateRequestFatal(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestPath(rid))
+	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField(request.FieldStatus, request.StatusSubmitted)
+	writer.WriteField("value", "Test")
 	writer.Close()
 
 	i.Close()
@@ -121,7 +122,83 @@ func TestUpdateRequestFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
-func TestUpdateRequestBadRequestMissingBody(t *testing.T) {
+func TestUpdateRequestFieldForbiddenUnowned(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField(request.FieldName, "Test")
+	writer.Close()
+
+	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldName))
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	// TODO: Update this to use a helper that calls the app's API instead of hacking it
+	if err := i.Queries.MarkRequestSubmitted(context.Background(), rid); err != nil {
+		t.Fatal(err)
+	}
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField(request.FieldName, "Test")
+	writer.Close()
+
+	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldName))
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestUpdateRequestFieldBadRequestMissingBody(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -136,7 +213,7 @@ func TestUpdateRequestBadRequestMissingBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestPath(rid))
+	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldName))
 
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
@@ -149,7 +226,7 @@ func TestUpdateRequestBadRequestMissingBody(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestUpdateRequestBadRequestMalformedBody(t *testing.T) {
+func TestUpdateRequestBadRequestFieldMalformedBody(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -164,11 +241,11 @@ func TestUpdateRequestBadRequestMalformedBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestPath(rid))
+	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("not-a-field", "whatever")
+	writer.WriteField("notavalue", "Test")
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
