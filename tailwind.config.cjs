@@ -1,16 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./web/views/*.html",
-    "./web/views/**/*.html",
-    "./web/views/**/**/*.html",
-    "./web/views/**/**/**/*.html",
-    "./web/views/partials/*.html",
-    "./web/views/partials/**/*.html",
-    "./web/views/partials/**/**/*.html",
-    "./web/views/partials/**/**/**/*.html",
-    "./web/views/layouts/*.html",
-  ],
+  content: ["./web/templates/*.html", "./web/templates/**/*.html"],
   // TODO: Add all of the status colors to this list
   safelist: ["text-amber-700", "text-sky-700"],
   theme: {
