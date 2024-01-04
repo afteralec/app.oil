@@ -5,4 +5,10 @@
   height="{{ .Size }}"
   width="{{ .Size }}"
 ></iconify-icon>
+{{ if .Text }}
+<div class="flex items-center">
+  <p class="text-lg leading-none tracking-tight {{ .Color }}">{{ .Text}}</p>
+</div>
+<!-- prettier-ignore -->
+{{ end }}
 {{ end }}

@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"html/template"
-	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
+
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 )
@@ -59,11 +59,11 @@ var StatusColors map[string]string = map[string]string{
 	StatusCanceled:   "text-gray-700",
 }
 
-// TODO: This can be shared across multiple packages
 type StatusIcon struct {
 	Icon  template.URL
 	Size  string
 	Color string
+	Text  string
 }
 
 func IsStatusValid(status string) bool {
@@ -71,31 +71,53 @@ func IsStatusValid(status string) bool {
 	return ok
 }
 
-func MakeStatusIcon(status string, size int64) StatusIcon {
-	formattedSize := strconv.FormatInt(size, 10)
+type MakeStatusIconParams struct {
+	Status      string
+	Size        string
+	IncludeText bool
+}
 
-	// TODO: De-pessimize this
-	defaultIcon := StatusIcon{
-		Icon:  template.URL(StatusIcons[StatusIncomplete]),
-		Color: StatusColors[StatusIncomplete],
-		Size:  formattedSize,
-	}
-
-	icon, ok := StatusIcons[status]
+func MakeStatusIcon(p MakeStatusIconParams) StatusIcon {
+	icon, ok := StatusIcons[p.Status]
 	if !ok {
-		return defaultIcon
+		return MakeDefaultStatusIcon(p.Size, p.IncludeText)
 	}
 
-	color, ok := StatusColors[status]
+	color, ok := StatusColors[p.Status]
 	if !ok {
-		return defaultIcon
+		return MakeDefaultStatusIcon(p.Size, p.IncludeText)
 	}
 
-	return StatusIcon{
+	result := StatusIcon{
 		Icon:  template.URL(icon),
 		Color: color,
-		Size:  formattedSize,
+		Size:  p.Size,
 	}
+
+	if p.IncludeText {
+		text, ok := StatusTexts[p.Status]
+		if !ok {
+			return MakeDefaultStatusIcon(p.Size, p.IncludeText)
+		}
+
+		result.Text = text
+	}
+
+	return result
+}
+
+func MakeDefaultStatusIcon(size string, includeText bool) StatusIcon {
+	result := StatusIcon{
+		Icon:  template.URL(StatusIcons[StatusIncomplete]),
+		Color: StatusColors[StatusIncomplete],
+		Size:  size,
+	}
+
+	if includeText {
+		result.Text = StatusTexts[StatusIncomplete]
+	}
+
+	return result
 }
 
 func IsEditable(req *queries.Request) bool {

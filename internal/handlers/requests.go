@@ -358,7 +358,11 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 
 			return c.Render(view, b, layouts.RequestFieldStandalone)
 		case request.StatusReady:
-			b["HeaderStatusIcon"] = request.MakeStatusIcon(req.Status, 36)
+			b["HeaderStatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
+				Status:      req.Status,
+				Size:        "36",
+				IncludeText: true,
+			})
 			b["RequestTitle"] = request.GetSummaryTitle(req.Type, content)
 			b["SummaryFields"] = request.GetSummaryFields(request.GetSummaryFieldsParams{
 				PID:     pid,

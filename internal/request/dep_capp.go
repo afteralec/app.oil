@@ -71,6 +71,6 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 		Name:             name,
 		Author:           p.Username,
 		Reviewer:         reviewer,
-		StatusIcon:       MakeStatusIcon(req.Status, 48),
+		StatusIcon:       MakeStatusIcon(MakeStatusIconParams{Status: req.Status, Size: "48", IncludeText: false}),
 	}
 }
