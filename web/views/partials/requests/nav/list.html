@@ -1,8 +1,10 @@
+{{ define "partial-request-nav-list" }}
 <div x-cloak x-show="partsOpen" class="w-full max-w-lg pb-4">
   <div class="divide-y divide-muted rounded-md border">
     <!-- prettier-ignore -->
     {{ range . }}
-      {{ template "views/partials/requests/nav/item" . }}
+      {{ template "partial-request-nav-item" . }}
     {{ end -}}
   </div>
 </div>
+{{ end }}

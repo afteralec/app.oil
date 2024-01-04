@@ -1,28 +1,11 @@
+{{ define "partial-character-application-summary-player" }}
+<!-- TODO: Find something to call this besides "summary" -->
 <a href="{{ .Link }}">
   <div
     class="flex w-full cursor-pointer rounded-md border py-6 transition duration-300 hover:-translate-x-1 hover:-translate-y-2 hover:shadow-md md:w-[450px]"
   >
     <div class="flex flex-col items-center justify-center px-6">
-      <!-- prettier-ignore -->
-      {{ if .StatusIncomplete }}
-        {{ template "views/partials/request/status/icon/incomplete" .StatusIcon }}
-      {{ else if .StatusReady }}
-        {{ template "views/partials/request/status/icon/ready" .StatusIcon }}
-      {{ else if .StatusSubmitted }}
-        {{ template "views/partials/request/status/icon/submitted" .StatusIcon }}
-      {{ else if .StatusInReview }}
-        {{ template "views/partials/request/status/icon/in-review" .StatusIcon }}
-      {{ else if .StatusApproved }}
-        {{ template "views/partials/request/status/icon/approved" .StatusIcon }}
-      {{ else if .StatusReviewed }}
-        {{ template "views/partials/request/status/icon/reviewed" .StatusIcon }}
-      {{ else if .StatusRejected }}
-        {{ template "views/partials/request/status/icon/rejected" .StatusIcon }}
-      {{ else if .StatusArchived }}
-        {{ template "views/partials/request/status/icon/archived" .StatusIcon }}
-      {{ else if .StatusCanceled }}
-        {{ template "views/partials/request/status/icon/canceled" .StatusIcon }}
-      {{ end -}}
+      {{ template "partial-request-status-icon" .StatusIcon }}
     </div>
     <div class="flex flex-col">
       <h2 class="text-lg font-semibold leading-none tracking-tight">
@@ -35,3 +18,4 @@
     </div>
   </div>
 </a>
+{{ end }}

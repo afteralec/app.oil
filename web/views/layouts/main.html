@@ -1,13 +1,15 @@
+{{ define "layout-main" }}
 <!doctype html>
 <html lang="en">
-  {{ template "head" . }}
+  {{ template "partial-head" . }}
 
   <body>
     <!-- prettier-ignore -->
-    {{ template "header" . }}
+    {{ template "partial-header" . }}
 
     {{ embed }}
 
-    {{ template "footer" . }}
+    {{ template "partial-footer" . }}
   </body>
 </html>
+{{ end }}

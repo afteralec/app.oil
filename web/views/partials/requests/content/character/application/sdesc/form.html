@@ -1,5 +1,4 @@
 {{ define "requests-character-application-sdesc-form" }}
-
 <form
   id="{{ .RequestFormID }}"
   class="space-y-2 px-4 pt-4"
@@ -22,7 +21,7 @@
   />
   <section>
     <!-- prettier-ignore -->
-    {{ template "views/partials/requests/content/character/application/sdesc/requirements" }}
+    {{ template "partial-request-character-application-sdesc-requirements" }}
   </section>
   <section
     x-show="isCharacterShortDescriptionValid(sdesc)"
@@ -33,5 +32,4 @@
     The <span x-text="sdesc"></span>
   </section>
 </form>
-
 {{ end }}

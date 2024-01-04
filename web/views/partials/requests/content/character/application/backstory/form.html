@@ -1,5 +1,4 @@
 {{ define "requests-character-application-backstory-form" }}
-
 <form
   id="{{ .RequestFormID }}"
   class="space-y-2 px-4 pt-4"
@@ -21,8 +20,7 @@
   ></textarea>
   <section>
     <!-- prettier-ignore -->
-    {{ template "views/partials/requests/content/character/application/backstory/requirements" }}
+    {{ template "partial-request-character-application-backstory-requirements" }}
   </section>
 </form>
-
 {{ end }}

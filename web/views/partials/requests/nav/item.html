@@ -1,27 +1,29 @@
+<!--prettier-ignore -->
+{{ define "partial-request-nav-item" }} 
 {{ if .Current -}}
 <div class="group block bg-muted px-4 py-2 text-sm leading-none">
   <div class="flex items-center justify-between gap-2">
     {{ .Label }}
 
     <!-- prettier-ignore -->
-    {{ if .Ready -}}
+    {{ if .Ready }}
     <iconify-icon
       class="text-emerald-800"
       icon="ic:check"
       width="20"
       height="20"
     ></iconify-icon>
-    {{ else -}}
+    {{ else }}
     <iconify-icon
       class="text-muted-foreground"
       icon="ph:dots-three-outline-fill"
       width="20"
       height="20"
     ></iconify-icon>
-    {{ end -}}
+    {{ end }}
   </div>
 </div>
-{{ else -}}
+{{ else }}
 <a
   href="{{ .Link }}"
   class="group block bg-background px-4 py-2 text-sm leading-none hover:bg-muted"
@@ -30,21 +32,23 @@
     {{ .Label }}
 
     <!-- prettier-ignore -->
-    {{ if .Ready -}}
+    {{ if .Ready }}
     <iconify-icon
       class="text-emerald-800"
       icon="ic:check"
       width="20"
       height="20"
     ></iconify-icon>
-    {{ else -}}
+    {{ else }}
     <iconify-icon
       class="text-muted-foreground"
       icon="ph:dots-three-outline-fill"
       width="20"
       height="20"
     ></iconify-icon>
-    {{ end -}}
+    {{ end }}
   </div>
 </a>
-{{ end -}}
+<!-- prettier-ignore -->
+{{ end }}
+{{ end }}

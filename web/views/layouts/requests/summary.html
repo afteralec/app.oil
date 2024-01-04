@@ -1,26 +1,22 @@
 {{ define "layout-request-summary" }}
-
 <!doctype html>
 <html lang="en">
-  {{ template "head" . }}
-
+  {{ template "partial-head" . }}
   <body>
-    {{ template "header" . }}
-
+    {{ template "partial-header" . }}
     <main
       class="flex h-screen w-full flex-col items-center"
       x-data="getRequestData()"
     >
       <section class="w-full max-w-lg">
         <!-- prettier-ignore -->
-        {{ template "requests-summary-header" . }}
+        {{ template "partial-request-summary-header" . }}
         {{ embed }}
-        {{ template "requests-summary-footer" . }}
+        {{ template "partial-request-summary-footer" . }}
       </section>
 
-      {{ template "request-dialogs" . }}
+      {{ template "partial-request-dialogs" . }}
     </main>
   </body>
 </html>
-
 {{ end }}

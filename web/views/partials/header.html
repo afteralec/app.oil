@@ -1,4 +1,4 @@
-{{ define "header" }}
+{{ define "partial-header" }}
 <header class="flex items-center justify-center">
   <nav
     class="relative flex w-full max-w-10xl items-center justify-start px-6 py-2"
@@ -15,19 +15,19 @@
       class="group ml-auto flex list-none items-center justify-center space-x-[1.5]"
     >
       <!-- prettier-ignore -->
-      {{ if .ShouldShowMenus.Review -}}
-        {{ template "views/partials/header/nav/review" . }}
+      {{ if .ShouldShowMenus.Review }}
+        {{ template "partial-header-nav-review" . }}
       {{ end -}}
 
-      {{ if .ShouldShowMenus.Permissions -}}
-        {{ template "views/partials/header/nav/permissions" . }}
+      {{ if .ShouldShowMenus.Permissions }}
+        {{ template "partial-header-nav-permissions" . }}
       {{ end -}}
 
       {{ if .PID -}}
-        {{ template "views/partials/header/nav/account" . }}
+        {{ template "partial-header-nav-account" . }}
       {{ else -}}
-        {{ template "views/partials/header/nav/login" }}
-        {{ template "views/partials/header/nav/register" }}
+        {{ template "partial-header-nav-login" }}
+        {{ template "partial-header-nav-register" }}
       {{ end -}}
     </ul>
   </nav>

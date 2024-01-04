@@ -1,3 +1,4 @@
+{{ define "partial-header-nav-register" }}
 <li x-data="getRegisterData()">
   <button
     class="cursor:pointer group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50"
@@ -12,14 +13,14 @@
   >
     Create Account
   </button>
-  {{ template "views/partials/modal/overlay" "showModal" }}
+  {{ template "partial-modal-overlay" "showModal" }}
   <div
     class="z-3 fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-background p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%]"
     @click.away="showModal = false"
     x-cloak
     x-show="showModal"
   >
-    {{ template "views/partials/modal/close" "showModal" }}
+    {{ template "partial-modal-close" "showModal" }}
     <div id="register-error"></div>
     <p class="pt-4">Create an account:</p>
     <form
@@ -65,8 +66,8 @@
         />
         <div>
           <!-- prettier-ignore -->
-          {{ template "views/partials/username/requirements" }} 
-          {{ template "views/partials/header/nav/register/username-reserved" }}
+          {{ template "partial-username-requirements" }} 
+          {{ template "partial-username-reserved" }}
         </div>
       </div>
       <div class="space-y-2">
@@ -91,7 +92,7 @@
           name="password"
           value=""
         />
-        {{ template "views/partials/password/strengths" }}
+        {{ template "partial-password-strengths" }}
       </div>
       <div class="space-y-2">
         <label
@@ -117,7 +118,7 @@
           name="confirmPassword"
           value=""
         />
-        {{ template "views/partials/password/confirm" }}
+        {{ template "partial-confirm-password" }}
       </div>
       <div class="flex justify-end">
         <button
@@ -132,3 +133,4 @@
     </form>
   </div>
 </li>
+{{ end }}

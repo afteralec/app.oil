@@ -1,3 +1,4 @@
+{{ define "partial-username-reserved" }}
 <div id="username-reserved" x-cloak x-show="isUsernameValid(username)">
   <p id="username-reserved-status" class="text-xs leading-none">
     Nice! This username is available.
@@ -6,3 +7,4 @@
     Checking...
   </p>
 </div>
+{{ end }}

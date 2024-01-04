@@ -1,24 +1,19 @@
 {{ define "layout-request-field-standalone" }}
-
 <!doctype html>
 <html lang="en">
-  {{ template "head" . }}
-
+  {{ template "partial-head" . }}
   <body>
     <main
       x-data="getRequestData()"
       class="flex h-screen w-full flex-col items-center justify-center"
     >
       <section class="w-full max-w-lg rounded-md border p-6">
-        {{ template "views/partials/requests/content/header" . }}
-
         <!-- prettier-ignore -->
+        {{ template "partial-request-field-header" . }}
         {{ embed }}
-
-        {{ template "views/partials/requests/footer" . }}
+        {{ template "partial-request-field-footer" . }}
       </section>
     </main>
   </body>
 </html>
-
 {{ end }}

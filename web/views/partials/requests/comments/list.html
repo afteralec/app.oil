@@ -1,8 +1,10 @@
-{{ if .ViewedByReviewer -}}
+<!-- prettier-ignore -->
+{{ define "partial-request-comment-list" }}
+{{ if .ViewedByReviewer }}
 <section id="request-comments" class="flex w-full max-w-lg flex-col gap-3 pt-4">
   <!-- prettier-ignore -->
-  {{ range .CurrentComments -}}
-    {{ template "views/partials/requests/comments/current" . }}
-  {{ end -}}
+  {{ range .CurrentComments }}
+    {{ template "partial-request-comment-current" . }}
+  {{ end }}
 </section>
-{{ end -}}
+{{ end }} {{ end }}

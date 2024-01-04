@@ -1,9 +1,7 @@
-{{ define "requests-header-status-text" }}
-
+{{ define "partial-request-header-status-text" }}
 <div class="flex items-center">
   <p class="text-lg leading-none tracking-tight {{ .StatusColor }}">
     {{ .StatusText }}
   </p>
 </div>
-
 {{ end }}

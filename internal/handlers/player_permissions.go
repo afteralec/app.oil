@@ -43,7 +43,7 @@ func PlayerPermissionsPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		b := c.Locals(constants.BindName).(fiber.Map)
-		return c.Render(views.PlayerPermissions, b)
+		return c.Render(views.PlayerPermissions, b, layouts.Main)
 	}
 }
 

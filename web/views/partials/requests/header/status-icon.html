@@ -1,33 +1,32 @@
-{{ define "requests-header-status-icon" }}
-
+<!-- TODO: Combine this with the other status icon partials -->
+{{ define "partial-request-header-status-icon" }}
 <!-- prettier-ignore -->
 {{ if .StatusIsIncomplete }}
-  {{ template "views/partials/request/status/icon/incomplete" .HeaderStatusIcon }}
-  {{ template "requests-header-status-text" . }}
+  {{ template "partial-request-status-icon-incomplete" .HeaderStatusIcon }}
+  {{ template "partial-request-header-status-text" . }}
 {{ else if .StatusIsReady }}
-  {{ template "views/partials/request/status/icon/ready" .HeaderStatusIcon }}
-  {{ template "requests-header-status-text" . }}
+  {{ template "partial-request-status-icon-ready" .HeaderStatusIcon }}
+  {{ template "partial-request-header-status-text" . }}
 {{ else if .StatusIsSubmitted }}
-  {{ template "views/partials/request/status/icon/submitted" .HeaderStatusIcon }}
-  {{ template "requests-header-status-text" . }}
+  {{ template "partial-request-status-icon-submitted" .HeaderStatusIcon }}
+  {{ template "partial-request-header-status-text" . }}
 {{ else if .StatusIsInReview }}
-  {{ template "views/partials/request/status/icon/in-review" .HeaderStatusIcon }}
-  {{ template "requests-header-status-text" . }}
+  {{ template "partial-request-status-icon-in-review" .HeaderStatusIcon }}
+  {{ template "partial-request-header-status-text" . }}
 {{ else if .StatusIsApproved }}
-  {{ template "views/partials/request/status/icon/approved" .HeaderStatusIcon }}
-  {{ template "requests-header-status-text" . }}
+  {{ template "partial-request-status-icon-approved" .HeaderStatusIcon }}
+  {{ template "partial-request-header-status-text" . }}
 {{ else if .StatusIsReviewed }}
-  {{ template "views/partials/request/status/icon/reviewed" .HeaderStatusIcon }}
-  {{ template "requests-header-status-text" . }}
+  {{ template "partial-request-status-icon-reviewed" .HeaderStatusIcon }}
+  {{ template "partial-request-header-status-text" . }}
 {{ else if .StatusIsRejected }}
-  {{ template "views/partials/request/status/icon/rejected" .HeaderStatusIcon }}
-  {{ template "requests-header-status-text" . }}
+  {{ template "partial-request-status-icon-rejected" .HeaderStatusIcon }}
+  {{ template "partial-request-header-status-text" . }}
 {{ else if .StatusIsArchived }}
-  {{ template "views/partials/request/status/icon/archived" .HeaderStatusIcon }}
-  {{ template "requests-header-status-text" . }}
+  {{ template "partial-request-status-icon-archived" .HeaderStatusIcon }}
+  {{ template "partial-request-header-status-text" . }}
 {{ else if .StatusIsCanceled }}
-  {{ template "views/partials/request/status/icon/canceled" .HeaderStatusIcon }}
-  {{ template "requests-header-status-text" . }}
-{{ end -}}
-
+  {{ template "partial-request-status-icon-canceled" .HeaderStatusIcon }}
+  {{ template "partial-request-header-status-text" . }}
+{{ end }}
 {{ end }}

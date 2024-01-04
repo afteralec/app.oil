@@ -1,13 +1,13 @@
 <!-- prettier-ignore -->
-{{ define "request-cancel-dialog" }}
-{{ template "views/partials/modal/overlay" .Variable }}
+{{ define "partial-request-cancel-dialog" }}
+{{ template "partial-modal-overlay" .Variable }}
 <div
   class="z-3 fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-background p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%]"
   @click.away="{{ .Variable }} = false"
   x-cloak
   x-show="{{ .Variable }}"
 >
-  {{ template "views/partials/modal/close" .Variable }}
+  {{ template "partial-modal-close" .Variable }}
   <h3 class="pt-4 text-lg font-semibold leading-none tracking-tight">
     {{ .Header }}
   </h3>

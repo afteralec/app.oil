@@ -1,12 +1,10 @@
 <!-- prettier-ignore -->
 {{ define "request-character-application-gender" }}
-
-{{ template "views/partials/requests/content/character/application/gender/help" . }}
-{{ template "views/partials/requests/divider" . }}
+{{ template "partial-character-application-gender-help" . }}
+{{ template "partial-request-divider" . }}
 {{ if and .ViewedByPlayer (or .StatusIsReady .StatusIsIncomplete) }}
   {{ template "requests-character-application-gender-form" . }}
 {{ else }}
   {{ template "requests-character-application-gender-data" . }}
 {{ end }}
-
 {{ end }}

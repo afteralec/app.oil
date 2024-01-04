@@ -1,12 +1,9 @@
 {{ define "layout-standalone" }}
-
 <!doctype html>
 <html lang="en">
-  {{ template "head" . }}
-
+  {{ template "partial-head" . }}
   <body>
     {{embed}}
   </body>
 </html>
-
 {{ end }}

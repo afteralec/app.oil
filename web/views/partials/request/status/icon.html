@@ -1,20 +1,22 @@
+{{ define "partial-request-status-icon" }}
 <!-- prettier-ignore -->
 {{ if .StatusIncomplete }}
-  {{ template "views/partials/request/status/icon/incomplete" . }}
+  {{ template "partial-request-status-icon-incomplete" . }}
 {{ else if .StatusReady }}
-  {{ template "views/partials/request/status/icon/ready" . }}
+  {{ template "partial-request-status-icon-ready" . }}
 {{ else if .StatusSubmitted }}
-  {{ template "views/partials/request/status/icon/submitted" . }}
+  {{ template "partial-request-status-icon-submitted" . }}
 {{ else if .StatusInReview }}
-  {{ template "views/partials/request/status/icon/in-review" . }}
+  {{ template "partial-request-status-icon-in-review" . }}
 {{ else if .StatusApproved }}
-  {{ template "views/partials/request/status/icon/approved" . }}
+  {{ template "partial-request-status-icon-approved" . }}
 {{ else if .StatusReviewed }}
-  {{ template "views/partials/request/status/icon/reviewed" . }}
+  {{ template "partial-request-status-icon-reviewed" . }}
 {{ else if .StatusRejected }}
-  {{ template "views/partials/request/status/icon/rejected" . }}
+  {{ template "partial-request-status-icon-rejected" . }}
 {{ else if .StatusArchived }}
-  {{ template "views/partials/request/status/icon/archived" . }}
+  {{ template "partial-request-status-icon-archived" . }}
 {{ else if .StatusCanceled }}
-  {{ template "views/partials/request/status/icon/canceled" . }}
-{{ end -}}
+  {{ template "partial-request-status-icon-canceled" . }}
+{{ end }}
+{{ end }}

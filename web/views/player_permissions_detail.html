@@ -14,7 +14,7 @@
     <section class="border-t" id="permissions">
       <!-- prettier-ignore -->
       {{ range .Permissions -}}
-      {{ template "views/partials/player_permissions/detail" . }}
+      {{ template "partial-player-permissions-detail" . }}
       {{ end -}}
     </section>
   </div>

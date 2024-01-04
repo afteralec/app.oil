@@ -356,7 +356,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				b["GenderIsMale"] = content["Gender"] == character.GenderMale
 			}
 
-			return c.Render(view, b, views.LayoutRequestFieldStandalone)
+			return c.Render(view, b, layouts.RequestFieldStandalone)
 		case request.StatusReady:
 			b["HeaderStatusIcon"] = request.MakeStatusIcon(req.Status, 36)
 			b["RequestTitle"] = request.GetSummaryTitle(req.Type, content)

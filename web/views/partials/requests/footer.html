@@ -1,3 +1,4 @@
+{{ define "partial-request-field-footer" }}
 <footer x-show="!commentOpen" class="flex justify-end gap-2 pt-4">
   {{ if and .ViewedByReviewer .StatusIsInReview -}}
   <button
@@ -30,3 +31,4 @@
   </button>
   {{ end -}}
 </footer>
+{{ end }}

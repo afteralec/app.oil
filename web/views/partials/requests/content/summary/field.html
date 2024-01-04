@@ -1,5 +1,4 @@
 {{ define "requests-summary-field" }}
-
 <article
   x-data="{ helpOpen: false }"
   class="request-summary-field flex flex-col gap-2 border-b pb-3"
@@ -18,7 +17,8 @@
   </p>
 
   <div x-cloak x-show="helpOpen" class="pt-2">
-    {{ template "views/partials/requests/content/summary/help" .Label }}
+    <!-- TODO: This needs to be general, include the help from insert -->
+    {{ template "partial-character-application-summary-field-help" .Label }}
   </div>
 
   <footer class="flex items-center justify-end gap-2 pr-3">
@@ -46,5 +46,4 @@
     {{ end }}
   </footer>
 </article>
-
 {{ end }}

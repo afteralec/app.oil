@@ -1,12 +1,14 @@
+{{ define "partial-character-application-summary-field-help" }}
 <!-- prettier-ignore -->
 {{ if eq . "Name" }}
-  {{ template "views/partials/requests/content/character/application/name/help" }}
+  {{ template "partial-character-application-name-help" }}
 {{ else if eq . "Gender" }}
-  {{ template "views/partials/requests/content/character/application/gender/help" }}
+  {{ template "partial-character-application-gender-help" }}
 {{ else if eq . "Short Description" }}
-  {{ template "views/partials/requests/content/character/application/sdesc/help" }}
+  {{ template "partial-character-application-sdesc-help" }}
 {{ else if eq . "Description" }}
-  {{ template "views/partials/requests/content/character/application/desc/help" }}
+  {{ template "partial-character-application-desc-help" }}
 {{ else if eq . "Backstory" }}
-  {{ template "views/partials/requests/content/character/application/backstory/help" }}
+  {{ template "partial-character-application-backstory-help" }}
+{{ end }}
 {{ end }}

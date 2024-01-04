@@ -1,6 +1,5 @@
 <!-- prettier-ignore -->
 {{ define "requests-character-application-name-form" }}
-
 <form
   id="{{ .RequestFormID }}"
   class="space-y-2 px-4 pt-4"
@@ -23,8 +22,7 @@
   />
   <section>
     <!-- prettier-ignore -->
-    {{ template "views/partials/requests/content/character/application/name/requirements" }}
+    {{ template "partial-request-character-application-name-requirements" }}
   </section>
 </form>
-
 {{ end }}

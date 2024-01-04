@@ -1,3 +1,4 @@
+{{ define "partial-profile-avatar-gravatar-emails" }}
 <label class="text-base font-semibold" x-show="avatarSource === 'gravatar'"
   >Gravatar Email</label
 >
@@ -49,8 +50,9 @@
       <div class="pb-1"></div>
       <!-- prettier-ignore -->
       {{ range .VerifiedEmails }}
-        {{ template "views/partials/profile/avatar/gv-email" . }}
-      {{- end }}
+        {{ template "partial-profile-avatar-gravatar-email" . }}
+      {{ end }}
     </div>
   </div>
 </div>
+{{ end }}

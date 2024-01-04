@@ -1,3 +1,4 @@
+{{ define "partial-profile-email-resend-verification-indicator" }}
 <div
   id="email-verified-status-loading-{{ .ID }}"
   class="htmx-trade-indicator-in flex items-center rounded-md bg-gray-100 px-4 py-3 text-sm text-primary"
@@ -9,3 +10,4 @@
     <span class="font-semibold">{{ .Address }}</span>.
   </div>
 </div>
+{{ end }}

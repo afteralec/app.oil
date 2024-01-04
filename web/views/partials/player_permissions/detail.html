@@ -1,11 +1,12 @@
+{{ define "partial-player-permissions-detail" }}
 <div class="flex items-center justify-between gap-2 border-b px-4 py-3">
   <div>
     <h2 class="text-base font-semibold leading-none">{{ .Title }}</h2>
     <p class="text-sm leading-none text-muted-foreground">{{ .About }}</p>
   </div>
   <!-- prettier-ignore -->
-  {{ if .Disabled -}}
-  {{ if .Granted -}}
+  {{ if .Disabled }}
+  {{ if .Granted }}
   <!-- prettier-ignore -->
   <label class="relative inline-flex items-center">
     <input
@@ -16,9 +17,9 @@
       disabled
       checked
     />
-    {{ template "views/partials/switch" }}
+    {{ template "partial-switch" }}
   </label>
-  {{ else -}}
+  {{ else }}
   <label class="relative inline-flex items-center">
     <input
       name="issued"
@@ -27,11 +28,11 @@
       class="peer sr-only"
       disabled
     />
-    {{ template "views/partials/switch" }}
+    {{ template "partial-switch" }}
   </label>
-  {{ end -}}
+  {{ end }}
   <!-- prettier-ignore -->
-  {{ else if .Granted -}}
+  {{ else if .Granted }}
   <label class="relative inline-flex cursor-pointer items-center">
     <input
       hx-post="{{ .Link }}"
@@ -43,7 +44,7 @@
       class="peer sr-only"
       checked
     />
-    {{ template "views/partials/switch" }}
+    {{ template "partial-switch" }}
   </label>
   {{ else -}}
   <label class="relative inline-flex cursor-pointer items-center">
@@ -56,7 +57,8 @@
       value="true"
       class="peer sr-only"
     />
-    {{ template "views/partials/switch" }}
+    {{ template "partial-switch" }}
   </label>
-  {{ end -}}
+  {{ end }}
 </div>
+{{ end }}

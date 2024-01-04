@@ -1,6 +1,9 @@
+{{ define "partial-request-field-header" }}
 <h3 class="text-base font-semibold tracking-tight">{{ .FieldLabel }}</h3>
-{{ if .FieldDescription -}}
+{{ if .FieldDescription }}
 <div class="pb-2 text-xs leading-none text-muted-foreground">
   {{ .FieldDescription }}
 </div>
-{{ end -}}
+<!-- prettier-ignore -->
+{{ end }}
+{{ end }}

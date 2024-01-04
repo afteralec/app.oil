@@ -1,12 +1,10 @@
 <!-- prettier-ignore -->
 {{ define "request-character-application-desc" }}
-
-{{ template "views/partials/requests/content/character/application/desc/help" . }}
-{{ template "views/partials/requests/divider" . }}
+{{ template "partial-request-character-application-desc-help" . }}
+{{ template "partial-request-divider" . }}
 {{ if and .ViewedByPlayer (or .StatusIsReady .StatusIsIncomplete) }}
   {{ template "requests-character-application-desc-form" . }}
 {{ else }}
   {{ template "requests-character-application-desc-data" . }}
 {{ end }}
-
 {{ end }}

@@ -26,7 +26,7 @@
       <!-- prettier-ignore -->
       {{ if .HasCharacterApplications -}}
         {{ range .CharacterApplicationSummaries -}}
-          {{ template "views/partials/character/application/summary/player" . }}
+          {{ template "partial-character-application-summary-player" . }}
         {{ end -}}
       {{ else -}}
       <span class="leading-none text-muted-foreground"

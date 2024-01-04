@@ -1,7 +1,6 @@
-{{ define "requests-summary-footer" }}
-
+{{ define "partial-request-summary-footer" }}
 <footer x-show="!commentOpen" class="flex justify-end gap-2 pt-4">
-  {{ if and .ViewedByReviewer .StatusInReview -}}
+  {{ if and .ViewedByReviewer .StatusInReview }}
   <button
     @click.prevent="commentOpen = true;"
     class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-background transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
@@ -9,7 +8,7 @@
   >
     Comment
   </button>
-  {{ end -}}
+  {{ end }}
 
   <!-- prettier-ignore -->
   {{ if and .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
@@ -27,7 +26,6 @@
   >
     Submit
   </button>
-  {{ end -}}
+  {{ end }}
 </footer>
-
 {{ end }}

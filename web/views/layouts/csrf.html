@@ -1,8 +1,5 @@
-{{ define "layout-csrf" }}
-
 <!-- prettier-ignore -->
+{{ define "layout-csrf" }}
 {{ embed }}
-
-{{ template "views/partials/csrf" . }}
-
+{{ template "partial-csrf" . }}
 {{ end }}

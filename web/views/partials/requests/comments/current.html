@@ -1,3 +1,4 @@
+{{ define "partial-request-comment-current" }}
 <article
   id="request-comment-{{ .ID }}"
   x-data="getRequestCommentData(`{{ .Text }}`)"
@@ -21,7 +22,7 @@
     </header>
 
     <p x-show="!editOpen" class="py-3 text-sm leading-none">{{ .Text }}</p>
-    {{ template "views/partials/request/comment/edit" . }}
+    {{ template "partial-request-comment-edit" . }}
 
     <footer x-show="!editOpen" class="flex items-end justify-end pt-2">
       {{ if .ViewedByAuthor -}}
@@ -90,3 +91,4 @@
   </div>
 </article>
 <!-- TODO: Add Replies here -->
+{{ end }}
