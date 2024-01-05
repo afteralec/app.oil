@@ -1,23 +1,15 @@
 {{ define "partial-resend-verification-email-err-not-found" }}
 <div
   id="email-404-notification-{{ .ID }}"
-  class="htmx-trade-indicator-out flex items-center rounded-md bg-rose-100 px-4 py-3 text-sm text-rose-800"
+  class="htmx-trade-indicator-out notice notice-error"
 >
-  <div class="pr-2">
-    <div class="flex items-center justify-center rounded-[50%]">
-      <iconify-icon
-        icon="ant-design:exclamation-circle-outlined"
-        height="32"
-        width="32"
-      ></iconify-icon>
-    </div>
-  </div>
+  {{ template "partial-notice-icon" .IconWarn }}
   <div>
     This email doesn't exist anymore.
     <br />
     <button
       type="button"
-      class="cursor-pointer border-none bg-none font-semibold underline hover:text-rose-900"
+      class="notice-link notice-link-error"
       @click="
         addEmailMode = true;
         $nextTick(() => {

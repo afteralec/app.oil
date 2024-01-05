@@ -1,7 +1,5 @@
 {{ define "partial-resend-verification-email-err-conflict-unowned" }}
-<div
-  class="flex items-center rounded-md bg-sky-100 px-4 py-3 text-sm text-sky-800"
->
+<div class="notice notice-info">
   <div class="pr-2">
     <div class="flex items-center justify-center rounded-[50%]">
       <iconify-icon icon="gg:check-o" height="32" width="32"></iconify-icon>
@@ -12,10 +10,10 @@
     <br />
     <button
       type="button"
-      class="cursor-pointer border-none bg-none font-semibold underline hover:text-sky-900"
+      class="notice-link notice-link-info"
       @click.prevent="window.location.reload()"
     >
-      Click here to refresh the page.
+      Click here to refresh the page
     </button>
   </div>
 </div>

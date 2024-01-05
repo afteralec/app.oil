@@ -32,6 +32,7 @@
       {{ template "partial-profile-email-resend-verification-indicator" . }}
     </div>
   </div>
+  <!-- TODO: Get these colors into a theme variable -->
   <div
     class="flex h-12 items-center rounded-md bg-rose-100 px-3"
     x-cloak
@@ -53,7 +54,7 @@
       </button>
       <button
         type="button"
-        class="border-none bg-none text-xs text-muted-foreground text-rose-800 hover:text-rose-900 hover:underline"
+        class="border-none bg-none text-xs text-rose-800 hover:text-rose-600 hover:underline"
         hx-delete="/player/email/{{ .ID }}"
         hx-target="#email-{{ .ID }}"
       >
