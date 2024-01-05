@@ -1,0 +1,17 @@
+{{ define "partial-notice" }}
+<div class="notice notice-{{ .NoticeLevel }}">
+  <!-- TODO: Make this a range over multiple texts? -->
+  {{ .Text }}
+
+  <!-- prettier-ignore -->
+  {{ if .RefreshButton }}
+  <button
+    type="button"
+    class="notice-link notice-link-{{ .NoticeLevel }}"
+    @click="window.location.reload()"
+  >
+    Click here to refresh the page
+  </button>
+  {{ end }}
+</div>
+{{ end }}
