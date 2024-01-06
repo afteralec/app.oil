@@ -148,7 +148,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
 		}
 
-		c.Append("HX-Trigger-After-Swap", "ptrcr:register-success")
+		c.Append("HX-Refresh", "true")
 		c.Status(fiber.StatusCreated)
 		return nil
 	}

@@ -23,15 +23,7 @@
     {{ template "partial-modal-close" "showModal" }}
     <div id="register-error"></div>
     <p class="pt-4">Create an account:</p>
-    <form
-      class="space-y-4 px-4 pt-4"
-      @submit.prevent="
-        document.addEventListener('ptrcr:register-success', () => {
-          window.location.reload();
-        });
-      "
-      hx-post="/player/new"
-    >
+    <form class="space-y-4 px-4 pt-4" hx-post="/player/new">
       <div class="space-y-2">
         <label
           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
