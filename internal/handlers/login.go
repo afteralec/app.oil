@@ -28,7 +28,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("partial-notice-section-error", partials.BindLoginErr, layouts.None)
+			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
 
 		p, err := i.Queries.GetPlayerByUsername(context.Background(), r.Username)
@@ -37,7 +37,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("partial-notice-section-error", partials.BindLoginErr, layouts.None)
+			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
 
 		v, err := password.Verify(r.Password, p.PwHash)
@@ -46,14 +46,14 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("partial-notice-section-error", partials.BindLoginErr, layouts.None)
+			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
 		if !v {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("partial-notice-section-error", partials.BindLoginErr, layouts.None)
+			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
 
 		pid := p.ID
@@ -63,7 +63,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("partial-notice-section-error", partials.BindLoginErr, layouts.None)
+			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
 
 		sess, err := i.Sessions.Get(c)
@@ -72,7 +72,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("partial-notice-section-error", partials.BindLoginErr, layouts.None)
+			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
 
 		sess.Set("pid", pid)
@@ -81,7 +81,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render("partial-notice-section-error", partials.BindLoginErr, layouts.None)
+			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
 
 		c.Append("HX-Refresh", "true")

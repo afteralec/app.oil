@@ -1,8 +1,9 @@
 package shared
 
 const (
-	MaxEmailCount                      = 3
-	HeaderHXAcceptable                 = "X-HX-Acceptable"
+	MaxEmailCount      = 3
+	HeaderHXAcceptable = "X-HX-Acceptable"
+	// TODO: Clean up these token keys
 	VerifyEmailTokenKey                = "ve"
 	UsernameTokenKey                   = "un"
 	UsernameRecoverySuccessTokenKey    = "rus"

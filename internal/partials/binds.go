@@ -49,3 +49,11 @@ var BindRecoverPasswordErrInternal = fiber.Map{
 	},
 	"RefreshButton": true,
 }
+
+var BindResetPasswordErr = fiber.Map{
+	"NoticeSectionID": "login-err",
+	"NoticeText": []string{
+		"The username and password you entered couldn't be verified.",
+		"Please try again.",
+	},
+}
