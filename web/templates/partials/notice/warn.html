@@ -1,0 +1,10 @@
+{{ define "partial-notice-warn" }}
+<div class="notice notice-warn">
+  {{ if .NoticeIcon }} {{ template "partial-notice-icon-warn" }} {{ end }}
+  <div>
+    {{ range .NoticeText }}
+    <p>{{ . }}</p>
+    {{ end }}
+  </div>
+</div>
+{{ end }}

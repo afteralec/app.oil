@@ -4,9 +4,9 @@
     class="flex flex-col items-center justify-center gap-3 rounded-md border px-12 py-8"
   >
     <h1 class="font-semibold leading-none">Success!</h1>
-    <p class="leading-none">
-      Assuming it's verified, an email has been sent to
-      <span class="font-semibold">{{ .EmailAddress }}</span> with your username.
+    <p class="max-w-md text-center leading-none">
+      If <span class="font-semibold">{{ .EmailAddress }}</span> is associated
+      with your account and verified, an email has been sent with your username.
     </p>
     <a
       href="/"

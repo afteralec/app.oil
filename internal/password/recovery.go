@@ -33,8 +33,8 @@ func SetupRecovery(i *shared.Interfaces, pid int64, email string) error {
 	return nil
 }
 
-func RecoveryKey(id string) string {
-	return fmt.Sprintf("%s:%s", shared.RecoverPasswordTokenKey, id)
+func RecoveryKey(key string) string {
+	return fmt.Sprintf("%s:%s", shared.RecoverPasswordTokenKey, key)
 }
 
 func SendRecoveryEmail(i *shared.Interfaces, key string, email string) (resend.SendEmailResponse, error) {
@@ -54,4 +54,24 @@ func SendRecoveryEmail(i *shared.Interfaces, key string, email string) (resend.S
 
 func Cache(r *redis.Client, key string, pid int64) error {
 	return r.Set(context.Background(), key, pid, ThirtyMinutesInNanoseconds).Err()
+}
+
+func SetupRecoverySuccess(i *shared.Interfaces, email string) (string, error) {
+	id := uuid.NewString()
+	key := RecoverySuccessKey(id)
+
+	err := CacheEmail(i.Redis, key, email)
+	if err != nil {
+		return "", err
+	}
+
+	return id, nil
+}
+
+func CacheEmail(r *redis.Client, key, email string) error {
+	return r.Set(context.Background(), key, email, ThirtyMinutesInNanoseconds).Err()
+}
+
+func RecoverySuccessKey(key string) string {
+	return fmt.Sprintf("%s:%s", shared.RecoverPasswordSuccessTokenKey, key)
 }

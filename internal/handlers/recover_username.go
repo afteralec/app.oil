@@ -54,14 +54,14 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 		if err := c.BodyParser(r); err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
-			return c.Render(partials.RecoverUsernameErrInvalid, c.Locals(constants.BindName), "")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInvalid, layouts.None)
 		}
 
 		e, err := mail.ParseAddress(r.Email)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
-			return c.Render(partials.RecoverUsernameErrInvalid, c.Locals(constants.BindName), "")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInvalid, layouts.None)
 		}
 
 		ve, err := i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
@@ -71,7 +71,7 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 				if err != nil {
 					c.Status(fiber.StatusUnauthorized)
 					c.Append(shared.HeaderHXAcceptable, "true")
-					return c.Render(partials.RecoverUsernameErrInternal, c.Locals(constants.BindName), "")
+					return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInternal, layouts.None)
 				}
 
 				path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)
@@ -80,14 +80,14 @@ func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 			}
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
-			return c.Render(partials.RecoverUsernameErrInternal, c.Locals(constants.BindName), "")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInternal, layouts.None)
 		}
 
 		rusid, err := username.Recover(i, ve)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
-			return c.Render(partials.RecoverUsernameErrInternal, c.Locals(constants.BindName), "")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInternal, layouts.None)
 		}
 
 		path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)

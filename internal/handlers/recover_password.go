@@ -3,13 +3,17 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"net/mail"
 	"slices"
+	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
+	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
@@ -23,9 +27,23 @@ func RecoverPasswordPage() fiber.Handler {
 	}
 }
 
-func RecoverPasswordSuccessPage() fiber.Handler {
+func RecoverPasswordSuccessPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.RecoverPasswordSuccess, c.Locals(constants.BindName), layouts.Standalone)
+		tid := c.Query("t")
+		key := password.RecoverySuccessKey(tid)
+		email, err := i.Redis.Get(context.Background(), key).Result()
+		if err != nil {
+			if err == redis.Nil {
+				c.Status(fiber.StatusNotFound)
+				return c.Render(views.NotFound, c.Locals(constants.BindName), layouts.Standalone)
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
+		}
+
+		b := c.Locals(constants.BindName).(fiber.Map)
+		b["EmailAddress"] = email
+		return c.Render(views.RecoverPasswordSuccess, b, layouts.Standalone)
 	}
 }
 
@@ -38,25 +56,29 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 		r := new(request)
 		if err := c.BodyParser(r); err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverPasswordErrInternal, layouts.None)
 		}
 
 		v := username.IsValid(r.Username)
 		if !v {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverPasswordErrInvalidUsername, layouts.None)
 		}
 
 		_, err := mail.ParseAddress(r.Email)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverPasswordErrInvalidEmail, layouts.None)
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverPasswordErrInternal, layouts.None)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -64,26 +86,47 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 		p, err := qtx.GetPlayerByUsername(context.Background(), r.Username)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				c.Status(fiber.StatusNotFound)
+				id, err := password.SetupRecoverySuccess(i, r.Email)
+				if err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					c.Append(shared.HeaderHXAcceptable, "true")
+					return c.Render(partials.NoticeSectionError, partials.BindRecoverPasswordErrInternal, layouts.None)
+				}
+				var sb strings.Builder
+				fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, id)
+				path := sb.String()
+				c.Append("HX-Redirect", path)
 				return nil
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverPasswordErrInternal, layouts.None)
 		}
 
 		emails, err := qtx.ListVerifiedEmails(context.Background(), p.ID)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverPasswordErrInternal, layouts.None)
 		}
 		if len(emails) == 0 {
-			c.Status(fiber.StatusForbidden)
+			id, err := password.SetupRecoverySuccess(i, r.Email)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				c.Append(shared.HeaderHXAcceptable, "true")
+				return c.Render(partials.NoticeSectionError, partials.BindRecoverPasswordErrInternal, layouts.None)
+			}
+			var sb strings.Builder
+			fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, id)
+			path := sb.String()
+			c.Append("HX-Redirect", path)
 			return nil
 		}
 
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverPasswordErrInternal, layouts.None)
 		}
 
 		emailAddresses := []string{}
@@ -93,17 +136,36 @@ func RecoverPassword(i *shared.Interfaces) fiber.Handler {
 		}
 
 		if !slices.Contains(emailAddresses, r.Email) {
-			c.Status(fiber.StatusForbidden)
+			id, err := password.SetupRecoverySuccess(i, r.Email)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				c.Append(shared.HeaderHXAcceptable, "true")
+				return c.Render(partials.NoticeSectionError, partials.BindRecoverPasswordErrInternal, layouts.None)
+			}
+			var sb strings.Builder
+			fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, id)
+			path := sb.String()
+			c.Append("HX-Redirect", path)
 			return nil
 		}
 
 		err = password.SetupRecovery(i, p.ID, r.Email)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverPasswordErrInternal, layouts.None)
 		}
 
-		c.Append("HX-Redirect", routes.RecoverPasswordSuccess)
+		id, err := password.SetupRecoverySuccess(i, r.Email)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindRecoverPasswordErrInternal, layouts.None)
+		}
+		var sb strings.Builder
+		fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, id)
+		path := sb.String()
+		c.Append("HX-Redirect", path)
 		return nil
 	}
 }

@@ -1,0 +1,20 @@
+{{ define "partial-notice-error" }}
+<div class="notice notice-error">
+  {{ if .NoticeIcon }} {{ template "partial-notice-icon-error" }} {{ end }}
+  <div>
+    {{ range .NoticeText }}
+    <p>{{ . }}</p>
+    {{ end }}
+    <!-- prettier-ignore -->
+    {{ if .RefreshButton }}
+    <button
+      type="button"
+      class="notice-link notice-link-error"
+      @click="window.location.reload()"
+    >
+      Click here to refresh the page
+    </button>
+    {{ end }}
+  </div>
+</div>
+{{ end }}

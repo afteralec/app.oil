@@ -54,7 +54,7 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 
 	app.Get(routes.RecoverPassword, handlers.RecoverPasswordPage())
 	app.Post(routes.RecoverPassword, handlers.RecoverPassword(i))
-	app.Get(routes.RecoverPasswordSuccess, handlers.RecoverPasswordSuccessPage())
+	app.Get(routes.RecoverPasswordSuccess, handlers.RecoverPasswordSuccessPage(i))
 
 	app.Get(routes.ResetPassword, handlers.ResetPasswordPage())
 	app.Post(routes.ResetPassword, handlers.ResetPassword(i))

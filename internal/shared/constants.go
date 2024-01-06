@@ -7,6 +7,7 @@ const (
 	UsernameTokenKey                   = "un"
 	UsernameRecoverySuccessTokenKey    = "rus"
 	RecoverPasswordTokenKey            = "rp"
+	RecoverPasswordSuccessTokenKey     = "rps"
 	MaxOpenCharacterApplications       = 20
 	MinCharacterNameLength             = 4
 	MaxCharacterNameLength             = 16
