@@ -1,16 +1,13 @@
 {{ define "partial-profile-email" }}
-<article
-  class="flex flex-col gap-2 border-b py-6"
-  x-data="getProfileEmailData()"
->
+<article class="flex flex-col pt-4" x-data="getProfileEmailData()">
   <header class="pl-3 md:pl-0">
     <h1 class="text-xl font-semibold leading-none">Email</h1>
   </header>
-  <div id="profile-email-error" class="w-[60%]"></div>
+  <section id="profile-email-error" class="w-[60%]"></section>
   <!-- prettier-ignore -->
   {{ template "partial-profile-email-none" . }}
   {{ template "partial-profile-email-add" . }}
-  <div id="emails" class="flex flex-col gap-2">
+  <div id="emails" class="flex flex-col gap-2 pt-2">
     <!-- prettier-ignore -->
     {{ range .Emails }}
       {{ if .Verified }}
