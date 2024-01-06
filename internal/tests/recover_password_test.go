@@ -3,9 +3,11 @@ package tests
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -13,6 +15,7 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
@@ -44,7 +47,14 @@ func TestRecoverPasswordSuccessPageSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.RecoverPasswordSuccess)
+	kid, err := password.SetupRecoverySuccess(&i, TestEmailAddress)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, kid)
+	url := MakeTestURL(sb.String())
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 
 	res, err := a.Test(req)
