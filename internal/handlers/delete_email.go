@@ -77,8 +77,7 @@ func DeleteEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render(partials.ProfileEmailDeleteErrInternal, &fiber.Map{}, "")
 		}
 
-		_, err = qtx.DeleteEmail(context.Background(), id)
-		if err != nil {
+		if err := qtx.DeleteEmail(context.Background(), id); err != nil {
 			if err == sql.ErrNoRows {
 				c.Append("HX-Retarget", "profile-email-error")
 				c.Append("HX-Reswap", "outerHTML")

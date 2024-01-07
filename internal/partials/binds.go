@@ -170,3 +170,58 @@ func BindProfileAddEmailErrConflict(email string) fiber.Map {
 		},
 	}
 }
+
+var BindProfileEditEmailErrUnauthorized = fiber.Map{
+	"NoticeSectionID": "profile-email-error",
+	"Class":           "pt-2 w-[60%]",
+	"NoticeText": []string{
+		"Your session has expired.",
+	},
+	"RefreshButton": true,
+}
+
+var BindProfileEditEmailErrInternal = fiber.Map{
+	"NoticeSectionID": "profile-email-error",
+	"Class":           "pt-2 w-[60%]",
+	"NoticeText": []string{
+		"Something's gone terribly wrong.",
+	},
+	"RefreshButton": true,
+}
+
+var BindProfileEditEmailErrInvalid = fiber.Map{
+	"NoticeSectionID": "profile-email-error",
+	"Class":           "pt-2 w-[60%]",
+	"NoticeText": []string{
+		"What you entered isn't a valid email address.",
+		"Please try again.",
+	},
+}
+
+func BindProfileEditEmailErrConflict(email string) fiber.Map {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "<span class=\"font-semibold\">%s</span> is already in use.", email)
+
+	return fiber.Map{
+		"NoticeSectionID": "profile-email-error",
+		"Class":           "pt-2 w-[60%]",
+		"NoticeText": []template.HTML{
+			template.HTML(sb.String()),
+			template.HTML("Please try a different address."),
+		},
+	}
+}
+
+func BindProfileEditEmailErrConflictSame(email string) fiber.Map {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "This email is already set to <span class=\"font-semibold\">%s</span>.", email)
+
+	return fiber.Map{
+		"NoticeSectionID": "profile-email-error",
+		"Class":           "pt-2 w-[60%]",
+		"NoticeText": []template.HTML{
+			template.HTML(sb.String()),
+			template.HTML("If you'd like to edit this email, choose a different address."),
+		},
+	}
+}

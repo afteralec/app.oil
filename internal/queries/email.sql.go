@@ -34,12 +34,13 @@ func (q *Queries) CreateEmail(ctx context.Context, arg CreateEmailParams) (sql.R
 	return q.exec(ctx, q.createEmailStmt, createEmail, arg.Address, arg.PID)
 }
 
-const deleteEmail = `-- name: DeleteEmail :execresult
+const deleteEmail = `-- name: DeleteEmail :exec
 DELETE FROM emails WHERE id = ?
 `
 
-func (q *Queries) DeleteEmail(ctx context.Context, id int64) (sql.Result, error) {
-	return q.exec(ctx, q.deleteEmailStmt, deleteEmail, id)
+func (q *Queries) DeleteEmail(ctx context.Context, id int64) error {
+	_, err := q.exec(ctx, q.deleteEmailStmt, deleteEmail, id)
+	return err
 }
 
 const getEmail = `-- name: GetEmail :one
@@ -169,10 +170,11 @@ func (q *Queries) ListVerifiedEmails(ctx context.Context, pid int64) ([]Email, e
 	return items, nil
 }
 
-const markEmailVerified = `-- name: MarkEmailVerified :execresult
+const markEmailVerified = `-- name: MarkEmailVerified :exec
 UPDATE emails SET verified = true WHERE id = ?
 `
 
-func (q *Queries) MarkEmailVerified(ctx context.Context, id int64) (sql.Result, error) {
-	return q.exec(ctx, q.markEmailVerifiedStmt, markEmailVerified, id)
+func (q *Queries) MarkEmailVerified(ctx context.Context, id int64) error {
+	_, err := q.exec(ctx, q.markEmailVerifiedStmt, markEmailVerified, id)
+	return err
 }

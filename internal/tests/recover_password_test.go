@@ -121,8 +121,7 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	_, err := i.Queries.MarkEmailVerified(context.Background(), eid)
-	if err != nil {
+	if err := i.Queries.MarkEmailVerified(context.Background(), eid); err != nil {
 		t.Fatal(err)
 	}
 

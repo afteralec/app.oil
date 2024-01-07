@@ -3,7 +3,6 @@ package tests
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -250,7 +249,7 @@ func TestEditEmailForbiddenUnverified(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestEditEmailConflictVerified(t *testing.T) {
+func TestEditEmailConflictAlreadyVerified(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -259,19 +258,22 @@ func TestEditEmailConflictVerified(t *testing.T) {
 	app.Handlers(a, &i)
 
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
+	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	_, err := i.Queries.MarkEmailVerified(context.Background(), eid)
-	if err != nil {
-		t.Fatal(err)
-	}
+	eidTwo := CreateTestEmail(t, &i, a, TestEmailAddressTwo, TestUsername, TestPassword)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ResendEmailVerificationPath(strconv.FormatInt(eid, 10)))
+	if err := i.Queries.MarkEmailVerified(context.Background(), eid); err != nil {
+		t.Fatal(err)
+	}
 
-	req := httptest.NewRequest(http.MethodPost, url, nil)
+	if err := i.Queries.MarkEmailVerified(context.Background(), eidTwo); err != nil {
+		t.Fatal(err)
+	}
+
+	req := EditEmailRequest(eid, TestEmailAddressTwo)
 	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)
@@ -296,12 +298,11 @@ func TestEditEmailSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	_, err := i.Queries.MarkEmailVerified(context.Background(), eid)
-	if err != nil {
+	if err := i.Queries.MarkEmailVerified(context.Background(), eid); err != nil {
 		t.Fatal(err)
 	}
 
-	req := EditEmailRequest(eid, TestEmailAddress)
+	req := EditEmailRequest(eid, TestEmailAddressTwo)
 	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)
@@ -310,17 +311,4 @@ func TestEditEmailSuccess(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func SetupTestEditEmail(t *testing.T, i *shared.Interfaces, u string, e string) {
-	query := fmt.Sprintf("DELETE FROM players WHERE username = '%s'", u)
-	_, err := i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
-	query = fmt.Sprintf("DELETE FROM emails WHERE address = '%s'", e)
-	_, err = i.Database.Exec(query)
-	if err != nil {
-		t.Fatal(err)
-	}
 }

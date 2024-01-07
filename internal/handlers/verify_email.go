@@ -166,8 +166,7 @@ func VerifyEmail(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		_, err = i.Queries.MarkEmailVerified(context.Background(), id)
-		if err != nil {
+		if err = i.Queries.MarkEmailVerified(context.Background(), id); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
