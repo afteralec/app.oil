@@ -1,7 +1,8 @@
 {{ define "partial-header-nav-account" }}
 <li class="dropdown relative">
   <button
-    class="cursor:pointer group inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50"
+    type="button"
+    class="group inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50"
     @click="menuOpen = !menuOpen"
   >
     Account
@@ -12,66 +13,41 @@
       width="16"
     ></iconify-icon>
   </button>
-  <div class="dropdown-content z-3 absolute right-0 w-56 origin-top-right pt-2">
-    <div
-      class="divide-y divide-gray-100 rounded-md bg-background shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none"
-      role="menu"
-      aria-orientation="vertical"
-      aria-labelledby="menu-button"
-      tabindex="-1"
-    >
-      <div role="none">
+  <div class="dropdown-content z-1 absolute right-0 w-56 origin-top-right pt-2">
+    <div class="divide-y bg-background">
+      <div class="rounded-md">
         {{ if .CharactersView -}}
         <p
-          class="block bg-muted px-4 py-2 text-sm"
-          role="menuitem"
-          tabindex="-1"
-          id="account-menu-0"
+          class="block rounded-t-md border-x border-t bg-muted px-4 py-2 text-sm"
         >
           Characters
         </p>
         {{ else -}}
         <a
           href="/characters"
-          class="block bg-background px-4 py-2 text-sm hover:bg-muted"
-          role="menuitem"
-          tabindex="-1"
-          id="account-menu-0"
+          class="block rounded-t-md border-x border-t bg-background px-4 py-2 text-sm hover:bg-muted"
         >
           Characters
         </a>
         {{ end -}}
       </div>
-      <div role="none">
+      <div>
         {{ if .ProfileView -}}
-        <p
-          class="block bg-muted px-4 py-2 text-sm"
-          role="menuitem"
-          tabindex="-1"
-          id="account-menu-profile"
-        >
-          Profile
-        </p>
+        <p class="block border-x bg-muted px-4 py-2 text-sm">Profile</p>
         {{ else -}}
         <a
           href="/profile"
-          class="block bg-background px-4 py-2 text-sm hover:bg-muted"
-          role="menuitem"
-          tabindex="-1"
-          id="account-menu-profile"
+          class="block border-x bg-background px-4 py-2 text-sm hover:bg-muted"
         >
           Profile
         </a>
         {{ end -}}
       </div>
-      <div role="none">
+      <div>
         <button
           type="button"
-          class="cursor-ponter block w-full bg-card px-4 py-2 text-left text-sm hover:bg-muted"
+          class="block w-full cursor-pointer rounded-b-md border-x border-b bg-card px-4 py-2 text-left text-sm hover:bg-muted"
           hx-post="/logout"
-          role="menuitem"
-          tabindex="-1"
-          id="account-menu-logout"
         >
           Logout
         </button>
