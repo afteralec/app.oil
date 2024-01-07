@@ -134,6 +134,7 @@ var BindProfileAddEmailErrInternal = fiber.Map{
 		"Something's gone horribly wrong.",
 	},
 	"RefreshButton": true,
+	"NoticeIcon":    true,
 }
 
 var BindProfileAddEmailErrInvalid = fiber.Map{
@@ -143,6 +144,7 @@ var BindProfileAddEmailErrInvalid = fiber.Map{
 		"What you entered isn't a valid email address.",
 		"Please try again.",
 	},
+	"NoticeIcon": true,
 }
 
 func BindProfileAddEmailErrTooMany() fiber.Map {
@@ -154,6 +156,7 @@ func BindProfileAddEmailErrTooMany() fiber.Map {
 		"NoticeText": []string{
 			sb.String(),
 		},
+		"NoticeIcon": true,
 	}
 }
 
@@ -168,6 +171,7 @@ func BindProfileAddEmailErrConflict(email string) fiber.Map {
 			template.HTML(sb.String()),
 			template.HTML("Please try a different address."),
 		},
+		"NoticeIcon": true,
 	}
 }
 
@@ -178,6 +182,7 @@ var BindProfileEditEmailErrUnauthorized = fiber.Map{
 		"Your session has expired.",
 	},
 	"RefreshButton": true,
+	"NoticeIcon":    true,
 }
 
 var BindProfileEditEmailErrInternal = fiber.Map{
@@ -187,6 +192,7 @@ var BindProfileEditEmailErrInternal = fiber.Map{
 		"Something's gone terribly wrong.",
 	},
 	"RefreshButton": true,
+	"NoticeIcon":    true,
 }
 
 var BindProfileEditEmailErrInvalid = fiber.Map{
@@ -196,6 +202,7 @@ var BindProfileEditEmailErrInvalid = fiber.Map{
 		"What you entered isn't a valid email address.",
 		"Please try again.",
 	},
+	"NoticeIcon": true,
 }
 
 func BindProfileEditEmailErrConflict(email string) fiber.Map {
@@ -209,6 +216,7 @@ func BindProfileEditEmailErrConflict(email string) fiber.Map {
 			template.HTML(sb.String()),
 			template.HTML("Please try a different address."),
 		},
+		"NoticeIcon": true,
 	}
 }
 
@@ -223,6 +231,7 @@ func BindProfileEditEmailErrConflictSame(email string) fiber.Map {
 			template.HTML(sb.String()),
 			template.HTML("If you'd like to edit this email, choose a different address."),
 		},
+		"NoticeIcon": true,
 	}
 }
 
@@ -233,6 +242,7 @@ var BindProfileDeleteEmailErrUnauthorized = fiber.Map{
 		"Your session has expired.",
 	},
 	"RefreshButton": true,
+	"NoticeIcon":    true,
 }
 
 var BindProfileDeleteEmailErrInternal = fiber.Map{
@@ -242,6 +252,7 @@ var BindProfileDeleteEmailErrInternal = fiber.Map{
 		"Something's gone terribly wrong.",
 	},
 	"RefreshButton": true,
+	"NoticeIcon":    true,
 }
 
 var BindProfileEmailResendVerificationErrNoID = fiber.Map{
@@ -251,6 +262,7 @@ var BindProfileEmailResendVerificationErrNoID = fiber.Map{
 		"Something's gone terribly wrong.",
 	},
 	"RefreshButton": true,
+	"NoticeIcon":    true,
 }
 
 func BindProfileEmailResendVerificationErrInternal(id int64) fiber.Map {
@@ -263,6 +275,7 @@ func BindProfileEmailResendVerificationErrInternal(id int64) fiber.Map {
 			"Something's gone terribly wrong.",
 		},
 		"RefreshButton": true,
+		"NoticeIcon":    true,
 	}
 }
 
@@ -276,6 +289,7 @@ func BindProfileEmailResendVerificationErrForbiddenAlreadyVerified(id int64) fib
 			"This email is already verified by another user.",
 		},
 		"RefreshButton": true,
+		"NoticeIcon":    true,
 	}
 }
 
@@ -289,5 +303,6 @@ func BindProfileEmailResendVerificationInfoConflict(id int64) fiber.Map {
 			"This email is already verified.",
 		},
 		"RefreshButton": true,
+		"NoticeIcon":    true,
 	}
 }

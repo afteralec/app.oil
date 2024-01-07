@@ -22,6 +22,7 @@ func NewRequest(i *shared.Interfaces) fiber.Handler {
 	type input struct {
 		Type string `form:"type"`
 	}
+
 	return func(c *fiber.Ctx) error {
 		in := new(input)
 		if err := c.BodyParser(in); err != nil {
