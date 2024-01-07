@@ -36,21 +36,25 @@ module.exports = {
         },
         err: {
           DEFAULT: "hsl(var(--err))",
+          bg: "hsl(var(--err-bg))",
           fg: "hsl(var(--err-fg))",
           hl: "hsl(var(--err-hl))",
         },
         warn: {
           DEFAULT: "hsl(var(--warn))",
+          bg: "hsl(var(--warn-bg))",
           fg: "hsl(var(--warn-fg))",
           hl: "hsl(var(--warn-hl))",
         },
         info: {
           DEFAULT: "hsl(var(--info))",
+          bg: "hsl(var(--info-bg))",
           fg: "hsl(var(--info-fg))",
           hl: "hsl(var(--info-hl))",
         },
         success: {
           DEFAULT: "hsl(var(--success))",
+          bg: "hsl(var(--info-bg))",
           fg: "hsl(var(--success-fg))",
           hl: "hsl(var(--success-hl))",
         },

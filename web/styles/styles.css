@@ -4,19 +4,23 @@
 
 @layer base {
   :root {
-    --err: 355.6, 100%, 94.7%;
+    --err: 345.3, 82.7%, 40.8%;
+    --err-bg: 355.6, 100%, 94.7%;
     --err-fg: 343.4, 79.7%, 34.7%;
     --err-hl: 346.8, 77.2%, 49.8%;
 
-    --warn: 48, 96.5%, 88.8%;
+    --warn: 26, 90.5%, 37.1%;
+    --warn-bg: 48, 96.5%, 88.8%;
     --warn-fg: 22.7, 82.5%, 31.4%;
     --warn-hl: 32.1, 94.6%, 43.7%;
 
-    --info: 204, 93.8%, 93.7%;
+    --info: 201.3, 96.3%, 32.2%;
+    --info-bg: 204, 93.8%, 93.7%;
     --info-fg: 201, 90%, 27.5%;
     --info-hl: 200.4, 98%, 39.4%;
 
-    --success: 149.3, 80.4%, 90%;
+    --success: 162.9, 93.5%, 24.3%;
+    --success-bg: 149.3, 80.4%, 90%;
     --success-fg: 163.1, 88.1%, 19.8%;
     --success-hl: 161.4, 93.5%, 30.4%;
 
@@ -152,19 +156,19 @@ body {
 }
 
 .notice-error {
-  @apply bg-err text-err-fg;
+  @apply bg-err-bg text-err-fg;
 }
 
 .notice-warn {
-  @apply bg-warn text-warn-fg;
+  @apply bg-warn-bg text-warn-fg;
 }
 
 .notice-info {
-  @apply bg-info text-info-fg;
+  @apply bg-info-bg text-info-fg;
 }
 
 .notice-success {
-  @apply bg-success text-success-fg;
+  @apply bg-success-bg text-success-fg;
 }
 
 .notice-link {
