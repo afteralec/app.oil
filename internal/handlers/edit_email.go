@@ -16,13 +16,13 @@ import (
 )
 
 func EditEmail(i *shared.Interfaces) fiber.Handler {
-	type request struct {
+	type input struct {
 		Email string `form:"email"`
 	}
 
 	return func(c *fiber.Ctx) error {
-		r := new(request)
-		if err := c.BodyParser(r); err != nil {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
 			c.Append("HX-Retarget", "#profile-email-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
@@ -30,7 +30,7 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindProfileEditEmailErrInvalid, layouts.None)
 		}
 
-		ne, err := mail.ParseAddress(r.Email)
+		ne, err := mail.ParseAddress(in.Email)
 		if err != nil {
 			c.Append("HX-Retarget", "#profile-email-error")
 			c.Append("HX-Reswap", "innerHTML")
@@ -181,7 +181,7 @@ func EditEmail(i *shared.Interfaces) fiber.Handler {
 
 		return c.Render(partials.ProfileEmailUnverified, &fiber.Map{
 			"ID":       id,
-			"Address":  r.Email,
+			"Address":  ne.Address,
 			"Verified": false,
 		}, "")
 	}
