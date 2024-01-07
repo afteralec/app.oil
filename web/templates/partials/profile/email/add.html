@@ -24,7 +24,7 @@
     <!-- TODO: See if this can be a button-primary -->
     <button
       type="button"
-      class="htmx-trade-indicator-in flex h-10 flex-col items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-fg ring-offset-bg transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      class="htmx-trade-indicator-in button-primary flex flex-col"
       :disabled="document.getElementById('emails').childElementCount >= 3"
     >
       <img class="mx-4 h-8 w-8" src="/loaders/three-dots.svg" alt="loading" />
@@ -60,10 +60,9 @@
       name="email"
     />
     <div class="htmx-trade-indicator flex flex-col items-start gap-1">
-      <!-- TODO: See if this can be a button-primary -->
       <button
         type="submit"
-        class="htmx-trade-indicator-out inline-flex h-8 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-fg ring-offset-bg transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        class="htmx-trade-indicator-out button-primary h-8"
         :disabled="document.getElementById('emails').childElementCount >= 3"
       >
         Add
