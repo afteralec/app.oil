@@ -202,3 +202,15 @@ body {
 .button-primary:disabled {
   @apply opacity-50 pointer-events-none;
 }
+
+.button-secondary {
+  @apply inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-bg transition-colors;
+}
+
+.button-secondary:hover {
+  @apply text-muted-fg border-muted-fg;
+}
+
+.button-secondary:disabled {
+  @apply pointer-events-none opacity-50;
+}

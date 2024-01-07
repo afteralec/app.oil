@@ -1,10 +1,10 @@
 {{ define "partial-request-field-footer" }}
-<footer x-show="!commentOpen" class="flex justify-end gap-2 pt-4">
+<footer class="flex justify-end gap-2 pt-4" x-show="!commentOpen">
   {{ if and .ViewedByReviewer .StatusIsInReview -}}
   <button
-    @click.prevent="commentOpen = true;"
-    class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-bg transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     type="button"
+    class="button-secondary"
+    @click.prevent="commentOpen = true;"
   >
     Comment
   </button>
@@ -12,12 +12,7 @@
 
   <!-- prettier-ignore -->
   {{ if .BackLink -}}
-  <a
-    href="{{ .BackLink }}"
-    class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-bg transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-  >
-    Back
-  </a>
+  <a href="{{ .BackLink }}" class="button-secondary">Back</a>
   {{ end -}}
   <!-- prettier-ignore -->
   <!-- TODO: This should disable if the field is incomplete -->
