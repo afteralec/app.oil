@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./web/templates/*.html", "./web/templates/**/*.html"],
-  safelist: ["text-amber-700", "text-sky-700"],
   theme: {
     extend: {
       colors: {
