@@ -5,6 +5,20 @@
     {{ range .NoticeText }}
     <p>{{ . }}</p>
     {{ end }}
+    <!-- prettier-ignore -->
+    {{ if .RefreshButton }}
+    <button
+      type="button"
+      class="notice-link notice-link-info"
+      @click="window.location.reload()"
+    >
+      Click here to refresh the page
+    </button>
+    {{ else if .ReturnLink }}
+    <a href="/" class="notice-link notice-link-info"
+      >Click here to return to the site</a
+    >
+    {{ end }}
   </div>
 </div>
 {{ end }}

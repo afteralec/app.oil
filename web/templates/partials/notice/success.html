@@ -1,6 +1,6 @@
-{{ define "partial-notice-warn" }}
-<div class="notice notice-warn">
-  {{ if .NoticeIcon }} {{ template "partial-notice-icon-warn" }} {{ end }}
+{{ define "partial-notice-success" }}
+<div class="notice notice-success">
+  {{ if .NoticeIcon }} {{ template "partial-notice-icon-success" }} {{ end }}
   <div>
     {{ range .NoticeText }}
     <p>{{ . }}</p>
@@ -9,13 +9,13 @@
     {{ if .RefreshButton }}
     <button
       type="button"
-      class="notice-link notice-link-warn"
+      class="notice-link notice-link-success"
       @click="window.location.reload()"
     >
       Click here to refresh the page
     </button>
     {{ else if .ReturnLink }}
-    <a href="/" class="notice-link notice-link-warn"
+    <a href="/" class="notice-link notice-link-success"
       >Click here to return to the site</a
     >
     {{ end }}

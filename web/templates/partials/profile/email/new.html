@@ -17,20 +17,46 @@
         <button
           type="button"
           class="border-none bg-none text-xs text-muted-foreground hover:text-rose-900 hover:underline"
-          @click="deleteMode = true"
+          @click="deleteMode = true;"
         >
           Delete
         </button>
       </div>
     </div>
-    <div
+    <section
       id="email-verified-status-container-{{ .ID }}"
       class="htmx-trade-indicator pb-3"
     >
-      <!-- prettier-ignore -->
-      {{ template "partial-email-resend-verification-success" . }}
-      {{ template "partial-profile-email-resend-verification-indicator" . }}
-    </div>
+      <section
+        id="email-verified-status-{{ .ID }}"
+        class="htmx-trade-indicator-out"
+      >
+        <div class="notice notice-success">
+          {{ template "partial-notice-icon-success" }}
+          <div>
+            Success!
+            <br />
+            A verification link has been sent to
+            <span class="font-semibold">{{ .Address }}</span>.
+          </div>
+        </div>
+      </section>
+      <section
+        id="email-verified-status-loading-{{ .ID }}"
+        class="htmx-trade-indicator-in notice bg-gray-100 text-primary"
+      >
+        <img
+          class="h-8 w-8 pr-2"
+          src="/loaders/puff-primary.svg"
+          alt="loading"
+        />
+        <div>
+          Please wait while we resend the verification link to
+          <br />
+          <span class="font-semibold">{{ .Address }}</span>.
+        </div>
+      </section>
+    </section>
   </div>
   <div
     class="flex h-12 items-center rounded-md bg-rose-100 px-3"

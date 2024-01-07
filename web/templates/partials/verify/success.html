@@ -1,12 +1,6 @@
 {{ define "partial-verify-email-success" }}
-<div
-  class="flex items-center rounded-md bg-emerald-100 px-6 py-3 text-sm text-emerald-800"
->
-  <div class="pr-2">
-    <div class="flex items-center justify-center rounded-[50%]">
-      <iconify-icon icon="gg:check-o" height="32" width="32"></iconify-icon>
-    </div>
-  </div>
+<div class="notice notice-success">
+  {{ template "partial-notice-icon-success" }}
   <div>
     Success! Your email has been verified.
     <br />

@@ -155,6 +155,10 @@ body {
   @apply bg-sky-100 text-sky-800;
 }
 
+.notice-success {
+  @apply bg-emerald-100 text-emerald-800;
+}
+
 .notice-link {
   @apply cursor-pointer border-none bg-none font-semibold;
 }
@@ -173,4 +177,8 @@ body {
 
 .notice-link-info:hover {
   @apply text-sky-600;
+}
+
+.notice-link-success:hover {
+  @apply text-emerald-600;
 }

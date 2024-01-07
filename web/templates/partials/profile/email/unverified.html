@@ -1,5 +1,5 @@
 {{ define "partial-profile-email-unverified" }}
-<div
+<article
   id="email-{{ .ID }}"
   class="w-full md:w-[60%]"
   x-data="getEmailData('{{ .Address }}')"
@@ -23,14 +23,47 @@
         </button>
       </div>
     </div>
-    <div
+    <section
       id="email-verified-status-container-{{ .ID }}"
       class="htmx-trade-indicator pb-3"
     >
-      <!-- prettier-ignore -->
-      {{ template "partial-profile-email-resend-verification-notice" . }}
-      {{ template "partial-profile-email-resend-verification-indicator" . }}
-    </div>
+      <section
+        id="email-verified-status-{{ .ID }}"
+        class="htmx-trade-indicator-out"
+      >
+        <div class="notice notice-warn">
+          {{ template "partial-notice-icon-warn" }}
+          <div>
+            <p>This email hasn't been verified.</p>
+            <button
+              type="button"
+              class="notice-link notice-link-warn"
+              hx-post="/player/email/{{ .ID }}/resend"
+              hx-swap="outerHTML"
+              hx-target="#email-verified-status-{{ .ID }}"
+              hx-indicator="#email-verified-status-container-{{ .ID }}"
+            >
+              Click here to resend verification link
+            </button>
+          </div>
+        </div>
+      </section>
+      <section
+        id="email-verified-status-loading-{{ .ID }}"
+        class="htmx-trade-indicator-in notice bg-gray-100 text-primary"
+      >
+        <img
+          class="h-8 w-8 pr-2"
+          src="/loaders/puff-primary.svg"
+          alt="loading"
+        />
+        <div>
+          Please wait while we resend the verification link to
+          <br />
+          <span class="font-semibold">{{ .Address }}</span>.
+        </div>
+      </section>
+    </section>
   </div>
   <!-- TODO: Get these colors into a theme variable -->
   <div
@@ -62,5 +95,5 @@
       </button>
     </div>
   </div>
-</div>
+</article>
 {{ end }}

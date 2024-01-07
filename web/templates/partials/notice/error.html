@@ -14,6 +14,10 @@
     >
       Click here to refresh the page
     </button>
+    {{ else if .ReturnLink }}
+    <a href="/" class="notice-link notice-link-error"
+      >Click here to return to the site</a
+    >
     {{ end }}
   </div>
 </div>

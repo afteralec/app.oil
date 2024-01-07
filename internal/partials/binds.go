@@ -306,3 +306,17 @@ func BindProfileEmailResendVerificationInfoConflict(id int64) fiber.Map {
 		"NoticeIcon":    true,
 	}
 }
+
+func BindProfileEmailResendVerificationSuccess(id int64) fiber.Map {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "email-verified-status-%d", id)
+	return fiber.Map{
+		"NoticeSectionID": sb.String(),
+		"SectionClass":    "htmx-trade-indicator-out",
+		"NoticeText": []string{
+			"Success!",
+			"Please check your inbox for the verification link.",
+		},
+		"NoticeIcon": true,
+	}
+}

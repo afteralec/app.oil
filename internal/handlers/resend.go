@@ -129,6 +129,10 @@ func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 			)
 		}
 
-		return c.Render(partials.ResendVerificationEmailSuccess, &fiber.Map{}, "")
+		return c.Render(
+			partials.NoticeSectionSuccess,
+			partials.BindProfileEmailResendVerificationSuccess(id),
+			layouts.None,
+		)
 	}
 }
