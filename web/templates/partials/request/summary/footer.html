@@ -13,16 +13,16 @@
   <!-- prettier-ignore -->
   {{ if and .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
   <button
-    @click.prevent="showCancelDialog = true;"
     type="button"
     class="inline-flex h-10 items-center justify-center rounded-md border border-err-fg px-4 py-2 text-sm font-medium text-err-fg ring-offset-bg transition-colors hover:border-err-hl hover:text-err-hl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+    @click.prevent="showCancelDialog = true;"
   >
     Cancel
   </button>
   <button
-    @click.prevent="showSubmitDialog = true;"
     type="button"
-    class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-fg ring-offset-bg transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+    class="button-primary"
+    @click.prevent="showSubmitDialog = true;"
   >
     Submit
   </button>

@@ -19,27 +19,27 @@
   </label>
   <textarea
     id="character-application-comment"
+    class="flex min-h-[3rem] w-full rounded-md border border-input bg-bg px-3 py-2 text-sm ring-offset-bg placeholder:text-muted-fg focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
     x-model="comment"
     @input="
       comment = sanitizeRequestComment(event.target.value);
     "
-    class="flex min-h-[3rem] w-full rounded-md border border-input bg-bg px-3 py-2 text-sm ring-offset-bg placeholder:text-muted-fg focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
     placeholder=""
     name="comment"
     autofocus
   ></textarea>
   <footer class="flex items-center justify-end gap-2">
     <button
-      @click.prevent="commentOpen = false;"
-      class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-bg transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       type="button"
+      class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-bg transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      @click.prevent="commentOpen = false;"
     >
       Close
     </button>
     <button
-      :disabled="!isRequestCommentValid(comment)"
-      class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-fg ring-offset-bg transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       type="submit"
+      class="button-primary"
+      :disabled="!isRequestCommentValid(comment)"
     >
       Submit
     </button>

@@ -7,8 +7,8 @@
     x-show="!addEmailMode"
   >
     <button
-      class="htmx-trade-indicator-out inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-fg ring-offset-bg transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       type="button"
+      class="htmx-trade-indicator-out button-primary"
       :disabled="document.getElementById('emails').childElementCount >= 3"
       @click="
         addEmailMode = true;
@@ -21,6 +21,7 @@
     >
       Add Email
     </button>
+    <!-- TODO: See if this can be a button-primary -->
     <button
       type="button"
       class="htmx-trade-indicator-in flex h-10 flex-col items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-fg ring-offset-bg transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
@@ -59,6 +60,7 @@
       name="email"
     />
     <div class="htmx-trade-indicator flex flex-col items-start gap-1">
+      <!-- TODO: See if this can be a button-primary -->
       <button
         type="submit"
         class="htmx-trade-indicator-out inline-flex h-8 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-fg ring-offset-bg transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
