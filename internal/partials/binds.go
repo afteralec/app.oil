@@ -225,3 +225,21 @@ func BindProfileEditEmailErrConflictSame(email string) fiber.Map {
 		},
 	}
 }
+
+var BindProfileDeleteEmailErrUnauthorized = fiber.Map{
+	"NoticeSectionID": "profile-email-error",
+	"Class":           "pt-2 w-[60%]",
+	"NoticeText": []string{
+		"Your session has expired.",
+	},
+	"RefreshButton": true,
+}
+
+var BindProfileDeleteEmailErrInternal = fiber.Map{
+	"NoticeSectionID": "profile-email-error",
+	"Class":           "pt-2 w-[60%]",
+	"NoticeText": []string{
+		"Something's gone terribly wrong.",
+	},
+	"RefreshButton": true,
+}
