@@ -1,35 +1,22 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./web/templates/*.html", "./web/templates/**/*.html"],
-  // TODO: Add all of the status colors to this list
   safelist: ["text-amber-700", "text-sky-700"],
   theme: {
     extend: {
       colors: {
+        bg: "hsl(var(--bg))",
+        fg: "hsl(var(--fg))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          fg: "hsl(var(--primary-fg))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          fg: "hsl(var(--muted-fg))",
         },
       },
       maxWidth: {

@@ -1,7 +1,7 @@
 {{ define "partial-header-nav-login" }}
 <li x-data="getLoginData()">
   <button
-    class="cursor:pointer group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50"
+    class="cursor:pointer group inline-flex h-10 w-max items-center justify-center rounded-md bg-bg px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-fg focus:bg-accent focus:text-accent-fg focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50"
     @click="
       showModal = true;
       $nextTick(() => {
@@ -15,7 +15,7 @@
   </button>
   {{ template "partial-modal-overlay" "showModal" }}
   <div
-    class="z-3 fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-background p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%]"
+    class="z-3 fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-bg p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%]"
     @click.away="showModal = false"
     x-cloak
     x-show="showModal"
@@ -42,7 +42,7 @@
           @input="
             username = sanitizeUsername(event.target.value);
           "
-          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          class="flex h-10 w-full rounded-md border border-input bg-bg px-3 py-2 text-sm ring-offset-bg file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-fg focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="username"
           value=""
@@ -62,7 +62,7 @@
           @input="
             password = event.target.value;
           "
-          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          class="flex h-10 w-full rounded-md border border-input bg-bg px-3 py-2 text-sm ring-offset-bg file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-fg focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder=""
           name="password"
           value=""
@@ -74,7 +74,7 @@
       <div class="flex justify-end">
         <button
           :disabled="!username.length || !password.length"
-          class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+          class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-fg ring-offset-bg transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
           type="submit"
         >
           Log In

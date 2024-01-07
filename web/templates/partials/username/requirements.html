@@ -1,12 +1,12 @@
 {{ define "partial-username-requirements" }}
 <div
   id="register-username-desc"
-  class="pb-1 text-xs leading-none text-muted-foreground"
+  class="pb-1 text-xs leading-none text-muted-fg"
 >
   Lower case letters, numbers, underscores and dashes only.
 </div>
 <div
-  class="flex items-center gap-1 text-xs leading-none text-muted-foreground"
+  class="flex items-center gap-1 text-xs leading-none text-muted-fg"
   x-cloak
   x-show="!isUsernameValid(username) && !eval.u.len"
 >

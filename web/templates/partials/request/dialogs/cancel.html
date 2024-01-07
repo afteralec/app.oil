@@ -2,7 +2,7 @@
 {{ define "partial-request-cancel-dialog" }}
 {{ template "partial-modal-overlay" .Variable }}
 <div
-  class="z-3 fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-background p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%]"
+  class="z-3 fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-bg p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%]"
   @click.away="{{ .Variable }} = false"
   x-cloak
   x-show="{{ .Variable }}"
@@ -15,7 +15,7 @@
   <div class="flex justify-end gap-2 pt-6">
     <button
       hx-delete="{{ .Path }}"
-      class="inline-flex h-10 items-center justify-center rounded-md bg-rose-800 px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      class="inline-flex h-10 items-center justify-center rounded-md bg-rose-800 px-4 py-2 text-sm font-medium text-primary-fg ring-offset-bg transition-colors hover:bg-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       type="button"
     >
       {{ .ButtonText }}

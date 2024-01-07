@@ -4,7 +4,7 @@
   class="request-summary-field flex flex-col gap-2 border-b pb-3"
 >
   <h3
-    class="text-sm font-semibold leading-none tracking-tight text-muted-foreground"
+    class="text-sm font-semibold leading-none tracking-tight text-muted-fg"
   >
     {{ .Label }}
   </h3>
@@ -24,7 +24,7 @@
   <footer class="flex items-center justify-end gap-2 pr-3">
     <div
       @click.prevent="helpOpen = !helpOpen;"
-      class="flex cursor-pointer items-center text-xs leading-none text-muted-foreground hover:text-primary hover:underline"
+      class="flex cursor-pointer items-center text-xs leading-none text-muted-fg hover:text-primary hover:underline"
     >
       <iconify-icon
         icon="fa6-solid:question"
@@ -37,7 +37,7 @@
     {{ if .AllowEdit }}
     <a
       href="{{ .Path }}"
-      class="flex cursor-pointer items-end text-xs leading-none text-muted-foreground hover:text-primary hover:underline"
+      class="flex cursor-pointer items-end text-xs leading-none text-muted-fg hover:text-primary hover:underline"
     >
       <iconify-icon icon="fe:pencil" height="12" width="12"></iconify-icon>
 

@@ -1,12 +1,12 @@
 <main class="flex flex-col items-center justify-center">
-  <div class="w-full text-foreground md:w-[750px] md:px-4 lg:w-[1000px]">
+  <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
     <header class="px-6 pt-2">
       <h2
         class="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl"
       >
         Character Applications Queue
       </h2>
-      <p class="leading-7 text-muted-foreground">
+      <p class="leading-7 text-muted-fg">
         All open Character Applications
       </p>
     </header>
@@ -17,7 +17,7 @@
           {{ template "partial-character-application-queue-row" . }}
         {{ end }}
       {{ else }}
-      <span class="leading-none text-muted-foreground"
+      <span class="leading-none text-muted-fg"
         >There are no open Character Applications.</span
       >
       {{ end }}

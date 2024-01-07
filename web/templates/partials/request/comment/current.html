@@ -15,7 +15,7 @@
   <div class="w-full">
     <header>
       <h2
-        class="flex w-full items-end justify-between border-b text-xs font-semibold leading-none tracking-tight text-muted-foreground"
+        class="flex w-full items-end justify-between border-b text-xs font-semibold leading-none tracking-tight text-muted-fg"
       >
         {{ .Author }}
       </h2>
@@ -30,7 +30,7 @@
         <button
           type="button"
           @click.prevent="editOpen = true;"
-          class="flex cursor-pointer items-end justify-end align-bottom text-xs leading-[0.9] text-muted-foreground hover:text-primary"
+          class="flex cursor-pointer items-end justify-end align-bottom text-xs leading-[0.9] text-muted-fg hover:text-primary"
         >
           <iconify-icon icon="fe:pencil" height="12" width="12"></iconify-icon>
 
@@ -40,7 +40,7 @@
           x-show="!showDeleteConfirm"
           @click.prevent="showDeleteConfirm = true;"
           type="button"
-          class="flex cursor-pointer items-end justify-end text-xs leading-[0.9] text-muted-foreground hover:text-primary"
+          class="flex cursor-pointer items-end justify-end text-xs leading-[0.9] text-muted-fg hover:text-primary"
         >
           <iconify-icon icon="fe:trash" height="12" width="12"></iconify-icon>
 
@@ -51,7 +51,7 @@
           x-show="showDeleteConfirm"
           @click.prevent="showDeleteConfirm = false;"
           type="button"
-          class="flex cursor-pointer items-end justify-end text-xs leading-[0.9] text-muted-foreground hover:text-primary"
+          class="flex cursor-pointer items-end justify-end text-xs leading-[0.9] text-muted-fg hover:text-primary"
         >
           Don't Delete
         </button>
@@ -70,7 +70,7 @@
       <div class="mr-auto flex items-end justify-end gap-2">
         <button
           type="button"
-          class="flex cursor-pointer items-end justify-end align-bottom text-xs leading-[0.9] text-muted-foreground hover:text-primary"
+          class="flex cursor-pointer items-end justify-end align-bottom text-xs leading-[0.9] text-muted-fg hover:text-primary"
         >
           <iconify-icon
             icon="ci:chat-conversation"
@@ -85,7 +85,7 @@
 
       <p
         x-text="parseTimeStamp({{ .CreatedAt }})"
-        class="text-xs leading-[0.9] text-muted-foreground"
+        class="text-xs leading-[0.9] text-muted-fg"
       ></p>
     </footer>
   </div>

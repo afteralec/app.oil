@@ -1,8 +1,8 @@
 {{ define "partial-confirm-password" }}
 <div x-cloak x-show="notifs.pw">
   <p
-    class="text-xs leading-none text-muted-foreground"
-    :class="eval.cpw.eq ? 'text-rose-800' : 'text-muted-foreground'"
+    class="text-xs leading-none text-muted-fg"
+    :class="eval.cpw.eq ? 'text-rose-800' : 'text-muted-fg'"
     x-cloak
     x-show="!eval.cpw.eq"
   >
