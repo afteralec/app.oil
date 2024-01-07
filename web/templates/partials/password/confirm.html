@@ -2,21 +2,21 @@
 <div x-cloak x-show="notifs.pw">
   <p
     class="text-xs leading-none text-muted-fg"
-    :class="eval.cpw.eq ? 'text-rose-800' : 'text-muted-fg'"
+    :class="eval.cpw.eq ? 'text-err-fg' : 'text-muted-fg'"
     x-cloak
     x-show="!eval.cpw.eq"
   >
     Passwords don't match.
   </p>
   <p
-    class="text-xs leading-none text-emerald-800"
+    class="text-xs leading-none text-success-fg"
     x-cloak
     x-show="eval.cpw.eq && password === confirmPassword"
   >
     Passwords match!
   </p>
   <p
-    class="text-xs leading-none text-rose-800"
+    class="text-xs leading-none text-err-fg"
     x-cloak
     x-show="eval.cpw.eq && password !== confirmPassword"
   >

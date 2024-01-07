@@ -16,21 +16,21 @@
   <p>Your character's name should be between 4 and 16 characters long.</p>
 </div>
 <div
-  class="flex items-center gap-1 text-xs leading-none text-rose-800"
+  class="flex items-center gap-1 text-xs leading-none text-err-fg"
   x-cloak
   x-show="!isCharacterNameValid(name) && eval.n.len && name.length < 4"
 >
   <p>Your character's name should be between 4 and 16 characters long.</p>
 </div>
 <div
-  class="flex items-center gap-1 text-xs leading-none text-emerald-800"
+  class="flex items-center gap-1 text-xs leading-none text-success-fg"
   x-cloak
   x-show="!isCharacterNameValid(name) && eval.n.len && name.length >= 4 && name.length <= 16"
 >
   <p>Your character's name should be between 4 and 16 characters long.</p>
 </div>
 <div
-  class="flex items-center gap-1 text-xs leading-none text-rose-800"
+  class="flex items-center gap-1 text-xs leading-none text-err-fg"
   x-cloak
   x-show="!isCharacterNameValid(name) && eval.n.len && name.length > 16"
 >

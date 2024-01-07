@@ -12,7 +12,7 @@
     </p>
   </div>
   <div
-    class="flex items-center gap-1 text-xs leading-none text-rose-800"
+    class="flex items-center gap-1 text-xs leading-none text-err-fg"
     x-cloak
     x-show="!isCharacterBackstoryValid(backstory) && eval.bs.len && backstory.length < 500"
   >
@@ -22,7 +22,7 @@
     </p>
   </div>
   <div
-    class="flex items-center gap-1 text-xs leading-none text-emerald-800"
+    class="flex items-center gap-1 text-xs leading-none text-success-fg"
     x-cloak
     x-show="!isCharacterBackstoryValid(backstory) && eval.bs.len && backstory.length >= 500 && backstory.length <= 10000"
   >
@@ -32,7 +32,7 @@
     </p>
   </div>
   <div
-    class="flex items-center gap-1 text-xs leading-none text-rose-800"
+    class="flex items-center gap-1 text-xs leading-none text-err-fg"
     x-cloak
     x-show="!isCharacterBackstoryValid(backstory) && eval.bs.len && backstory.length > 100000"
   >

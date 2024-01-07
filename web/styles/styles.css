@@ -4,6 +4,22 @@
 
 @layer base {
   :root {
+    --err: 355.6, 100%, 94.7%;
+    --err-fg: 343.4, 79.7%, 34.7%;
+    --err-hl: 346.8, 77.2%, 49.8%;
+
+    --warn: 48, 96.5%, 88.8%;
+    --warn-fg: 22.7, 82.5%, 31.4%;
+    --warn-hl: 32.1, 94.6%, 43.7%;
+
+    --info: 204, 93.8%, 93.7%;
+    --info-fg: 201, 90%, 27.5%;
+    --info-hl: 200.4, 98%, 39.4%;
+
+    --success: 149.3, 80.4%, 90%;
+    --success-fg: 163.1, 88.1%, 19.8%;
+    --success-hl: 161.4, 93.5%, 30.4%;
+
     --radius: 0.5rem;
   }
 
@@ -18,23 +34,23 @@
     --muted-fg: 215.4 16.3% 46.9%;
 
     --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --input: var(--border);
+    --ring: var(--fg);
   }
 
   .dark {
     --bg: 222.2 84% 4.9%;
     --fg: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: var(--fg);
     --primary-fg: 222.2 47.4% 11.2%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-fg: 215 20.2% 65.1%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 215 20.2% 65.1%;
+    --border: var(--muted);
+    --input: var(--muted);
+    --ring: var(--muted-fg);
   }
 
   .keep {
@@ -120,19 +136,19 @@ body {
 }
 
 .notice-error {
-  @apply bg-rose-100 text-rose-800;
+  @apply bg-err text-err-fg;
 }
 
 .notice-warn {
-  @apply bg-amber-100 text-amber-800;
+  @apply bg-warn text-warn-fg;
 }
 
 .notice-info {
-  @apply bg-sky-100 text-sky-800;
+  @apply bg-info text-info-fg;
 }
 
 .notice-success {
-  @apply bg-emerald-100 text-emerald-800;
+  @apply bg-success text-success-fg;
 }
 
 .notice-link {
@@ -144,17 +160,17 @@ body {
 }
 
 .notice-link-error:hover {
-  @apply text-rose-600;
+  @apply text-err-hl;
 }
 
 .notice-link-warn:hover {
-  @apply text-amber-600;
+  @apply text-warn-hl;
 }
 
 .notice-link-info:hover {
-  @apply text-sky-600;
+  @apply text-info-hl;
 }
 
 .notice-link-success:hover {
-  @apply text-emerald-600;
+  @apply text-success-hl;
 }

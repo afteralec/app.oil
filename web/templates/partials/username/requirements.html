@@ -13,21 +13,21 @@
   <p>Username should be between 4 and 8 characters long.</p>
 </div>
 <div
-  class="flex items-center gap-1 text-xs leading-none text-rose-800"
+  class="flex items-center gap-1 text-xs leading-none text-err-fg"
   x-cloak
   x-show="!isUsernameValid(username) && eval.u.len && username.length < 4"
 >
   <p>Username should be between 4 and 8 characters long.</p>
 </div>
 <div
-  class="flex items-center gap-1 text-xs leading-none text-emerald-800"
+  class="flex items-center gap-1 text-xs leading-none text-success-fg"
   x-cloak
   x-show="!isUsernameValid(username) && eval.u.len && username.length >= 4 && username.length <= 8"
 >
   <p>Username should be between 4 and 8 characters long.</p>
 </div>
 <div
-  class="flex items-center gap-1 text-xs leading-none text-rose-800"
+  class="flex items-center gap-1 text-xs leading-none text-err-fg"
   x-cloak
   x-show="!isUsernameValid(username) && eval.u.len && username.length > 8"
 >

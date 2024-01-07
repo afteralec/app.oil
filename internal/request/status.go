@@ -47,6 +47,7 @@ var StatusIcons map[string]string = map[string]string{
 	StatusCanceled:   "fe:outline-close",
 }
 
+// TODO: Theme these up
 var StatusColors map[string]string = map[string]string{
 	StatusIncomplete: "text-gray-700",
 	StatusReady:      "text-primary",

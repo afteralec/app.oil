@@ -18,6 +18,26 @@ module.exports = {
           DEFAULT: "hsl(var(--muted))",
           fg: "hsl(var(--muted-fg))",
         },
+        err: {
+          DEFAULT: "hsl(var(--err))",
+          fg: "hsl(var(--err-fg))",
+          hl: "hsl(var(--err-hl))",
+        },
+        warn: {
+          DEFAULT: "hsl(var(--warn))",
+          fg: "hsl(var(--warn-fg))",
+          hl: "hsl(var(--warn-hl))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          fg: "hsl(var(--info-fg))",
+          hl: "hsl(var(--info-hl))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          fg: "hsl(var(--success-fg))",
+          hl: "hsl(var(--success-hl))",
+        },
       },
       maxWidth: {
         "10xl": "100rem",
