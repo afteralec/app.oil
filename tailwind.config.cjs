@@ -18,6 +18,10 @@ module.exports = {
           DEFAULT: "hsl(var(--muted))",
           fg: "hsl(var(--muted-fg))",
         },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          fg: "hsl(var(--accent-fg))",
+        },
         err: {
           DEFAULT: "hsl(var(--err))",
           fg: "hsl(var(--err-fg))",
@@ -37,6 +41,17 @@ module.exports = {
           DEFAULT: "hsl(var(--success))",
           fg: "hsl(var(--success-fg))",
           hl: "hsl(var(--success-hl))",
+        },
+        status: {
+          incomplete: { DEFAULT: "hsl(var(--incomplete))" },
+          ready: { DEFAULT: "hsl(var(--ready))" },
+          submitted: { DEFAULT: "hsl(var(--submitted))" },
+          review: { DEFAULT: "hsl(var(--in-review))" },
+          reviewed: { DEFAULT: "hsl(var(--reviewed))" },
+          approved: { DEFAULT: "hsl(var(--approved))" },
+          rejected: { DEFAULT: "hsl(var(--rejected))" },
+          canceled: { DEFAULT: "hsl(var(--canceled))" },
+          archived: { DEFAULT: "hsl(var(--archived))" },
         },
       },
       maxWidth: {

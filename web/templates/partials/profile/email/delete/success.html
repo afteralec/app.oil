@@ -3,7 +3,7 @@
   <p><span class="font-semibold">{{ .Address }}</span> has been deleted.</p>
   <button
     type="button"
-    class="notice-link notice-link-success ml-auto"
+    class="notice-link notice-link-success ml-auto text-xs"
     @click="
       const el = document.getElementById('email-{{ .ID }}');
       el.remove();
