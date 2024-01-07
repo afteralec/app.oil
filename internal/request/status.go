@@ -38,7 +38,7 @@ var StatusTexts map[string]string = map[string]string{
 var StatusIcons map[string]string = map[string]string{
 	StatusIncomplete: "ph:dots-three-outline-fill",
 	StatusReady:      "fe:check",
-	StatusSubmitted:  "fe:check-circle-o",
+	StatusSubmitted:  "fe:check",
 	StatusInReview:   "fe:question",
 	StatusApproved:   "fe:check-circle",
 	StatusReviewed:   "fe:warning",
@@ -47,17 +47,16 @@ var StatusIcons map[string]string = map[string]string{
 	StatusCanceled:   "fe:outline-close",
 }
 
-// TODO: Theme these up
 var StatusColors map[string]string = map[string]string{
-	StatusIncomplete: "text-gray-700",
-	StatusReady:      "text-primary",
-	StatusSubmitted:  "text-sky-700",
-	StatusInReview:   "text-amber-700",
-	StatusApproved:   "text-emerald-700",
-	StatusReviewed:   "text-amber-700",
-	StatusRejected:   "text-rose-700",
-	StatusArchived:   "text-gray-700",
-	StatusCanceled:   "text-gray-700",
+	StatusIncomplete: "text-incomplete",
+	StatusReady:      "text-ready",
+	StatusSubmitted:  "text-submitted",
+	StatusInReview:   "text-review",
+	StatusApproved:   "text-approved",
+	StatusReviewed:   "text-reviewed",
+	StatusRejected:   "text-rejected",
+	StatusArchived:   "text-archived",
+	StatusCanceled:   "text-canceled",
 }
 
 type StatusIcon struct {

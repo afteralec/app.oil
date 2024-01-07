@@ -1,6 +1,19 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./web/templates/*.html", "./web/templates/**/*.html"],
+  safelist: [
+    "light",
+    "dark",
+    "text-incomplete",
+    "text-ready",
+    "text-submitted",
+    "text-review",
+    "text-approved",
+    "text-reviewed",
+    "text-rejected",
+    "text-archived",
+    "text-canceled",
+  ],
   theme: {
     extend: {
       colors: {
@@ -41,17 +54,15 @@ module.exports = {
           fg: "hsl(var(--success-fg))",
           hl: "hsl(var(--success-hl))",
         },
-        status: {
-          incomplete: { DEFAULT: "hsl(var(--incomplete))" },
-          ready: { DEFAULT: "hsl(var(--ready))" },
-          submitted: { DEFAULT: "hsl(var(--submitted))" },
-          review: { DEFAULT: "hsl(var(--in-review))" },
-          reviewed: { DEFAULT: "hsl(var(--reviewed))" },
-          approved: { DEFAULT: "hsl(var(--approved))" },
-          rejected: { DEFAULT: "hsl(var(--rejected))" },
-          canceled: { DEFAULT: "hsl(var(--canceled))" },
-          archived: { DEFAULT: "hsl(var(--archived))" },
-        },
+        incomplete: "hsl(var(--incomplete))",
+        ready: "hsl(var(--ready))",
+        submitted: "hsl(var(--submitted))",
+        review: "hsl(var(--in-review))",
+        reviewed: "hsl(var(--reviewed))",
+        approved: "hsl(var(--approved))",
+        rejected: "hsl(var(--rejected))",
+        canceled: "hsl(var(--canceled))",
+        archived: "hsl(var(--archived))",
       },
       maxWidth: {
         "10xl": "100rem",
