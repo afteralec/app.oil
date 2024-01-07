@@ -2,7 +2,7 @@
 <!doctype html>
 <html lang="en">
   {{ template "partial-head" . }}
-  <body>
+  <body class="dark">
     {{ template "partial-header" . }}
     <main
       class="flex h-screen w-full flex-col items-center"
@@ -14,7 +14,6 @@
         {{ embed }}
         {{ template "partial-request-summary-footer" . }}
       </section>
-
       {{ template "partial-request-dialogs" . }}
     </main>
   </body>
