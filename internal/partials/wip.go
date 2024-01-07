@@ -10,14 +10,7 @@ const (
 
 const ProfileEmailUnverified string = "partial-profile-email-unverified"
 
-const (
-	ProfileEmailNewUnverified string = "partial-profile-email-new-unverified"
-	ProfileEmailErrInternal   string = "partial-profile-email-err-internal"
-	// TODO: Change this to a forbidden error
-	ProfileEmailErrTooMany  string = "partial-profile-email-err-too-many"
-	ProfileEmailErrInvalid  string = "partial-profile-email-err-invalid"
-	ProfileEmailErrConflict string = "partial-profile-email-err-conflict"
-)
+const ProfileEmailNew string = "partial-profile-email-new"
 
 const (
 	ProfileEmailDeleteErrUnauthorized string = "partial-profile-email-delete-err-unauthorized"

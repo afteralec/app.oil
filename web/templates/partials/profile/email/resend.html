@@ -1,22 +1,20 @@
 {{ define "partial-profile-email-resend-verification-notice" }}
-<div
-  id="email-verified-status-{{ .ID }}"
-  class="htmx-trade-indicator-out notice notice-warn"
->
-  {{ template "partial-notice-icon" .IconWarn }}
-  <div>
-    This email hasn't been verified.
-    <br />
-    <button
-      type="button"
-      class="notice-link notice-link-warn"
-      hx-post="/player/email/{{ .ID }}/resend"
-      hx-swap="outerHTML"
-      hx-target="#email-verified-status-{{ .ID }}"
-      hx-indicator="#email-verified-status-container-{{ .ID }}"
-    >
-      Click here to resend verification link
-    </button>
+<section id="email-verified-status-{{ .ID }}" class="htmx-trade-indicator-out">
+  <div class="notice notice-warn">
+    {{ template "partial-notice-icon-warn" }}
+    <div>
+      <p>This email hasn't been verified.</p>
+      <button
+        type="button"
+        class="notice-link notice-link-warn"
+        hx-post="/player/email/{{ .ID }}/resend"
+        hx-swap="outerHTML"
+        hx-target="#email-verified-status-{{ .ID }}"
+        hx-indicator="#email-verified-status-container-{{ .ID }}"
+      >
+        Click here to resend verification link
+      </button>
+    </div>
   </div>
-</div>
+</section>
 {{ end }}

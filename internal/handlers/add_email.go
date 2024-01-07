@@ -141,7 +141,7 @@ func AddEmail(i *shared.Interfaces) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusCreated)
-		return c.Render(partials.ProfileEmailNewUnverified, &fiber.Map{
+		return c.Render(partials.ProfileEmailNew, &fiber.Map{
 			"ID":      id,
 			"Address": e.Address,
 			"Created": true,

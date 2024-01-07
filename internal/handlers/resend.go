@@ -3,44 +3,49 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/email"
+	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/util"
 )
 
-func Resend(i *shared.Interfaces) fiber.Handler {
+func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		pid := c.Locals("pid")
-		if pid == nil {
-			c.Append(shared.HeaderHXAcceptable, "true")
-			c.Append("HX-Refresh", "true")
-			c.Status(fiber.StatusUnauthorized)
-			return c.Render(partials.ResendVerificationEmailErrInternal, &fiber.Map{}, "")
-		}
-
-		eid := c.Params("id")
-		if len(eid) == 0 {
-			c.Append(shared.HeaderHXAcceptable, "true")
-			c.Status(fiber.StatusBadRequest)
-			return c.Render(partials.ResendVerificationEmailErrInternal, &fiber.Map{}, "")
-		}
-
-		id, err := strconv.ParseInt(eid, 10, 64)
+		id, err := util.GetID(c)
 		if err != nil {
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return c.Render(partials.ResendVerificationEmailErrInternal, &fiber.Map{}, "")
+			return c.Render(
+				partials.NoticeSectionError,
+				partials.BindProfileEmailResendVerificationErrNoID,
+				layouts.None,
+			)
+		}
+
+		pid, err := util.GetPID(c)
+		if err != nil {
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render(
+				partials.NoticeSectionError,
+				partials.BindProfileEmailResendVerificationErrInternal(id),
+				layouts.None,
+			)
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.ResendVerificationEmailErrInternal, &fiber.Map{}, "")
+			return c.Render(
+				partials.NoticeSectionError,
+				partials.BindProfileEmailResendVerificationErrInternal(id),
+				layouts.None,
+			)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -50,50 +55,78 @@ func Resend(i *shared.Interfaces) fiber.Handler {
 			if err == sql.ErrNoRows {
 				c.Append(shared.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusNotFound)
-				return c.Render(partials.ResendVerificationEmailErrNotFound, &fiber.Map{
-					"ID": id,
-				}, "")
+				return c.Render(
+					partials.NoticeSectionError,
+					partials.BindProfileEmailResendVerificationErrInternal(id),
+					layouts.None,
+				)
 			}
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.ResendVerificationEmailErrInternal, &fiber.Map{
-				"ID": id,
-			}, "")
+			return c.Render(
+				partials.NoticeSectionError,
+				partials.BindProfileEmailResendVerificationErrInternal(id),
+				layouts.None,
+			)
 		}
 
 		if e.Verified {
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusConflict)
-			return c.Render(partials.ResendVerificationEmailErrConflict, &fiber.Map{}, "")
+			return c.Render(
+				partials.NoticeSectionError,
+				partials.BindProfileEmailResendVerificationInfoConflict(id),
+				layouts.None,
+			)
 		}
-		if e.PID != pid.(int64) {
+		if e.PID != pid {
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
-			return c.Render(partials.ResendVerificationEmailErrInternal, &fiber.Map{}, "")
+			return c.Render(
+				partials.NoticeSectionError,
+				partials.BindProfileEmailResendVerificationErrInternal(id),
+				layouts.None,
+			)
 		}
 
 		ve, err := qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
 		if err != nil && err != sql.ErrNoRows {
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.ResendVerificationEmailErrInternal, &fiber.Map{}, "")
+			return c.Render(
+				partials.NoticeSectionError,
+				partials.BindProfileEmailResendVerificationErrInternal(id),
+				layouts.None,
+			)
 		}
 		if err == nil && ve.Verified {
 			c.Append(shared.HeaderHXAcceptable, "true")
-			c.Status(fiber.StatusConflict)
-			return c.Render(partials.ResendVerificationEmailErrConflictUnowned, &fiber.Map{}, "")
+			c.Status(fiber.StatusForbidden)
+			return c.Render(
+				partials.NoticeSectionError,
+				partials.BindProfileEmailResendVerificationErrForbiddenAlreadyVerified(id),
+				layouts.None,
+			)
 		}
 
 		if err = tx.Commit(); err != nil {
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.ResendVerificationEmailErrInternal, &fiber.Map{}, "")
+			return c.Render(
+				partials.NoticeSectionError,
+				partials.BindProfileEmailResendVerificationErrInternal(id),
+				layouts.None,
+			)
 		}
 
 		if err = email.SendVerificationEmail(i, id, e.Address); err != nil {
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.ResendVerificationEmailErrInternal, &fiber.Map{}, "")
+			return c.Render(
+				partials.NoticeSectionError,
+				partials.BindProfileEmailResendVerificationErrInternal(id),
+				layouts.None,
+			)
 		}
 
 		return c.Render(partials.ResendVerificationEmailSuccess, &fiber.Map{}, "")

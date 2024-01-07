@@ -38,7 +38,7 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Post(routes.NewEmailPath(), handlers.AddEmail(i))
 	app.Delete(routes.EmailPath(routes.ID), handlers.DeleteEmail(i))
 	app.Put(routes.EmailPath(routes.ID), handlers.EditEmail(i))
-	app.Post(routes.ResendEmailVerificationPath(routes.ID), handlers.Resend(i))
+	app.Post(routes.ResendEmailVerificationPath(routes.ID), handlers.ResendEmailVerification(i))
 
 	app.Get(routes.VerifyEmail, handlers.VerifyEmailPage(i))
 	app.Post(routes.VerifyEmail, handlers.VerifyEmail(i))

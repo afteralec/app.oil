@@ -12,7 +12,7 @@ import (
 
 var BindLoginErr = fiber.Map{
 	"NoticeSectionID": "register-err",
-	"Class":           "pt-4",
+	"SectionClass":    "pt-4",
 	"NoticeText": []string{
 		"The username and password you entered couldn't be verified.",
 		"Please try again.",
@@ -21,7 +21,7 @@ var BindLoginErr = fiber.Map{
 
 var BindRegisterErrInternal = fiber.Map{
 	"NoticeSectionID": "register-err",
-	"Class":           "pt-4",
+	"SectionClass":    "pt-4",
 	"NoticeText": []string{
 		"Something's gone terribly wrong.",
 	},
@@ -30,7 +30,7 @@ var BindRegisterErrInternal = fiber.Map{
 
 var BindRegisterErrInvalidUsername = fiber.Map{
 	"NoticeSectionID": "register-err",
-	"Class":           "pt-4",
+	"SectionClass":    "pt-4",
 	"NoticeText": []string{
 		"What you entered isn't a valid username.",
 		"Please follow the prompts and try again.",
@@ -39,7 +39,7 @@ var BindRegisterErrInvalidUsername = fiber.Map{
 
 var BindRegisterErrInvalidPassword = fiber.Map{
 	"NoticeSectionID": "register-err",
-	"Class":           "pt-4",
+	"SectionClass":    "pt-4",
 	"NoticeText": []string{
 		"What you entered isn't a valid password.",
 		"Please follow the prompts and try again.",
@@ -48,7 +48,7 @@ var BindRegisterErrInvalidPassword = fiber.Map{
 
 var BindRegisterErrInvalidConfirmPassword = fiber.Map{
 	"NoticeSectionID": "register-err",
-	"Class":           "pt-4",
+	"SectionClass":    "pt-4",
 	"NoticeText": []string{
 		"That password and password confirmation don't match.",
 		"Please re-enter your password confirmation.",
@@ -57,7 +57,7 @@ var BindRegisterErrInvalidConfirmPassword = fiber.Map{
 
 var BindRegisterErrConflict = fiber.Map{
 	"NoticeSectionID": "register-err",
-	"Class":           "pt-4",
+	"SectionClass":    "pt-4",
 	"NoticeText": []string{
 		"Sorry! That username is already taken.",
 		"Please try a different username.",
@@ -66,7 +66,7 @@ var BindRegisterErrConflict = fiber.Map{
 
 var BindRecoverUsernameErrInvalid = fiber.Map{
 	"NoticeSectionID": "recover-username-err",
-	"Class":           "pt-4",
+	"SectionClass":    "pt-4",
 	"NoticeText": []string{
 		"What you entered isn't a valid email address.",
 		"Please try again.",
@@ -75,7 +75,7 @@ var BindRecoverUsernameErrInvalid = fiber.Map{
 
 var BindRecoverUsernameErrInternal = fiber.Map{
 	"NoticeSectionID": "recover-username-err",
-	"Class":           "pt-4",
+	"SectionClass":    "pt-4",
 	"NoticeText": []string{
 		"Something's gone horribly wrong.",
 	},
@@ -84,7 +84,7 @@ var BindRecoverUsernameErrInternal = fiber.Map{
 
 var BindRecoverPasswordErrInvalidEmail = fiber.Map{
 	"NoticeSectionID": "recover-password-err",
-	"Class":           "pt-4",
+	"SectionClass":    "pt-4",
 	"NoticeText": []string{
 		"What you entered isn't a valid email address.",
 		"Please try again.",
@@ -93,7 +93,7 @@ var BindRecoverPasswordErrInvalidEmail = fiber.Map{
 
 var BindRecoverPasswordErrInvalidUsername = fiber.Map{
 	"NoticeSectionID": "recover-password-err",
-	"Class":           "pt-4",
+	"SectionClass":    "pt-4",
 	"NoticeText": []string{
 		"What you entered isn't a valid username.",
 		"Please try again.",
@@ -102,7 +102,7 @@ var BindRecoverPasswordErrInvalidUsername = fiber.Map{
 
 var BindRecoverPasswordErrInternal = fiber.Map{
 	"NoticeSectionID": "recover-password-err",
-	"Class":           "pt-4",
+	"SectionClass":    "pt-4",
 	"NoticeText": []string{
 		"Something's gone horribly wrong.",
 	},
@@ -111,7 +111,7 @@ var BindRecoverPasswordErrInternal = fiber.Map{
 
 var BindResetPasswordErr = fiber.Map{
 	"NoticeSectionID": "login-err",
-	"Class":           "pt-4",
+	"SectionClass":    "pt-4",
 	"NoticeText": []string{
 		"The username and password you entered couldn't be verified.",
 		"Please try again.",
@@ -120,7 +120,7 @@ var BindResetPasswordErr = fiber.Map{
 
 var BindProfileAddEmailErrUnauthorized = fiber.Map{
 	"NoticeSectionID": "add-email-error",
-	"Class":           "pt-2 w-[60%]",
+	"SectionClass":    "pt-2 w-[60%]",
 	"NoticeText": []string{
 		"Your session has expired.",
 	},
@@ -129,7 +129,7 @@ var BindProfileAddEmailErrUnauthorized = fiber.Map{
 
 var BindProfileAddEmailErrInternal = fiber.Map{
 	"NoticeSectionID": "add-email-error",
-	"Class":           "pt-2 w-[60%]",
+	"SectionClass":    "pt-2 w-[60%]",
 	"NoticeText": []string{
 		"Something's gone horribly wrong.",
 	},
@@ -138,7 +138,7 @@ var BindProfileAddEmailErrInternal = fiber.Map{
 
 var BindProfileAddEmailErrInvalid = fiber.Map{
 	"NoticeSectionID": "add-email-error",
-	"Class":           "pt-2 w-[60%]",
+	"SectionClass":    "pt-2 w-[60%]",
 	"NoticeText": []string{
 		"What you entered isn't a valid email address.",
 		"Please try again.",
@@ -150,7 +150,7 @@ func BindProfileAddEmailErrTooMany() fiber.Map {
 	fmt.Fprintf(&sb, "You've already added the maximum %d emails.", shared.MaxEmailCount)
 	return fiber.Map{
 		"NoticeSectionID": "add-email-error",
-		"Class":           "pt-2 w-[60%]",
+		"SectionClass":    "pt-2 w-[60%]",
 		"NoticeText": []string{
 			sb.String(),
 		},
@@ -163,7 +163,7 @@ func BindProfileAddEmailErrConflict(email string) fiber.Map {
 
 	return fiber.Map{
 		"NoticeSectionID": "add-email-error",
-		"Class":           "pt-2 w-[60%]",
+		"SectionClass":    "pt-2 w-[60%]",
 		"NoticeText": []template.HTML{
 			template.HTML(sb.String()),
 			template.HTML("Please try a different address."),
@@ -173,7 +173,7 @@ func BindProfileAddEmailErrConflict(email string) fiber.Map {
 
 var BindProfileEditEmailErrUnauthorized = fiber.Map{
 	"NoticeSectionID": "profile-email-error",
-	"Class":           "pt-2 w-[60%]",
+	"SectionClass":    "pt-2 w-[60%]",
 	"NoticeText": []string{
 		"Your session has expired.",
 	},
@@ -182,7 +182,7 @@ var BindProfileEditEmailErrUnauthorized = fiber.Map{
 
 var BindProfileEditEmailErrInternal = fiber.Map{
 	"NoticeSectionID": "profile-email-error",
-	"Class":           "pt-2 w-[60%]",
+	"SectionClass":    "pt-2 w-[60%]",
 	"NoticeText": []string{
 		"Something's gone terribly wrong.",
 	},
@@ -191,7 +191,7 @@ var BindProfileEditEmailErrInternal = fiber.Map{
 
 var BindProfileEditEmailErrInvalid = fiber.Map{
 	"NoticeSectionID": "profile-email-error",
-	"Class":           "pt-2 w-[60%]",
+	"SectionClass":    "pt-2 w-[60%]",
 	"NoticeText": []string{
 		"What you entered isn't a valid email address.",
 		"Please try again.",
@@ -204,7 +204,7 @@ func BindProfileEditEmailErrConflict(email string) fiber.Map {
 
 	return fiber.Map{
 		"NoticeSectionID": "profile-email-error",
-		"Class":           "pt-2 w-[60%]",
+		"SectionClass":    "pt-2 w-[60%]",
 		"NoticeText": []template.HTML{
 			template.HTML(sb.String()),
 			template.HTML("Please try a different address."),
@@ -218,7 +218,7 @@ func BindProfileEditEmailErrConflictSame(email string) fiber.Map {
 
 	return fiber.Map{
 		"NoticeSectionID": "profile-email-error",
-		"Class":           "pt-2 w-[60%]",
+		"SectionClass":    "pt-2 w-[60%]",
 		"NoticeText": []template.HTML{
 			template.HTML(sb.String()),
 			template.HTML("If you'd like to edit this email, choose a different address."),
@@ -228,7 +228,7 @@ func BindProfileEditEmailErrConflictSame(email string) fiber.Map {
 
 var BindProfileDeleteEmailErrUnauthorized = fiber.Map{
 	"NoticeSectionID": "profile-email-error",
-	"Class":           "pt-2 w-[60%]",
+	"SectionClass":    "pt-2 w-[60%]",
 	"NoticeText": []string{
 		"Your session has expired.",
 	},
@@ -237,9 +237,57 @@ var BindProfileDeleteEmailErrUnauthorized = fiber.Map{
 
 var BindProfileDeleteEmailErrInternal = fiber.Map{
 	"NoticeSectionID": "profile-email-error",
-	"Class":           "pt-2 w-[60%]",
+	"SectionClass":    "pt-2 w-[60%]",
 	"NoticeText": []string{
 		"Something's gone terribly wrong.",
 	},
 	"RefreshButton": true,
+}
+
+var BindProfileEmailResendVerificationErrNoID = fiber.Map{
+	"NoticeSectionID": "profile-email-error",
+	"SectionClass":    "htmx-trade-indicator-out",
+	"NoticeText": []string{
+		"Something's gone terribly wrong.",
+	},
+	"RefreshButton": true,
+}
+
+func BindProfileEmailResendVerificationErrInternal(id int64) fiber.Map {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "email-verified-status-%d", id)
+	return fiber.Map{
+		"NoticeSectionID": sb.String(),
+		"SectionClass":    "htmx-trade-indicator-out",
+		"NoticeText": []string{
+			"Something's gone terribly wrong.",
+		},
+		"RefreshButton": true,
+	}
+}
+
+func BindProfileEmailResendVerificationErrForbiddenAlreadyVerified(id int64) fiber.Map {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "email-verified-status-%d", id)
+	return fiber.Map{
+		"NoticeSectionID": sb.String(),
+		"SectionClass":    "htmx-trade-indicator-out",
+		"NoticeText": []string{
+			"This email is already verified by another user.",
+		},
+		"RefreshButton": true,
+	}
+}
+
+func BindProfileEmailResendVerificationInfoConflict(id int64) fiber.Map {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "email-verified-status-%d", id)
+	return fiber.Map{
+		"NoticeSectionID": sb.String(),
+		"SectionClass":    "htmx-trade-indicator-out",
+		"NoticeText": []string{
+			"This email is already verified.",
+		},
+		"RefreshButton": true,
+	}
 }
