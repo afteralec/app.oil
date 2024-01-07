@@ -214,3 +214,11 @@ body {
 .button-secondary:disabled {
   @apply pointer-events-none opacity-50;
 }
+
+.button-secondary-destructive {
+  @apply border-err text-err;
+}
+
+.button-secondary-destructive:hover {
+  @apply text-err-hl border-err-hl;
+}
