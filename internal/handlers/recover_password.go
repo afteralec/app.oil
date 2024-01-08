@@ -11,7 +11,6 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 	redis "github.com/redis/go-redis/v9"
 
-	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/password"
@@ -23,7 +22,7 @@ import (
 
 func RecoverPasswordPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.RecoverPassword, c.Locals(constants.BindName), layouts.Standalone)
+		return c.Render(views.RecoverPassword, views.Bind(c), layouts.Standalone)
 	}
 }
 
@@ -35,13 +34,13 @@ func RecoverPasswordSuccessPage(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			if err == redis.Nil {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, c.Locals(constants.BindName), layouts.Standalone)
+				return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		b := c.Locals(constants.BindName).(fiber.Map)
+		b := views.Bind(c)
 		b["EmailAddress"] = email
 		return c.Render(views.RecoverPasswordSuccess, b, layouts.Standalone)
 	}

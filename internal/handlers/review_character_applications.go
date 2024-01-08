@@ -5,7 +5,6 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/request"
@@ -19,7 +18,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, c.Locals(constants.BindName), layouts.Standalone)
+			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
 		}
 
 		lperms := c.Locals("perms")
@@ -30,7 +29,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 		perms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 		_, ok = perms.Permissions[permissions.PlayerReviewCharacterApplicationsName]
 		if !ok {
@@ -49,7 +48,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 		apps, err := qtx.ListOpenCharacterApplications(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName))
+			return c.Render(views.InternalServerError, views.Bind(c))
 		}
 
 		summaries := []request.ApplicationSummary{}
@@ -63,7 +62,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 					// TODO: Log this error here, this means we need to reset the reviewer and status on the request
 					// }
 					c.Status(fiber.StatusInternalServerError)
-					return c.Render(views.InternalServerError, c.Locals(constants.BindName))
+					return c.Render(views.InternalServerError, views.Bind(c))
 				}
 				reviewer = p.Username
 			}
@@ -75,7 +74,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		b := c.Locals(constants.BindName).(fiber.Map)
+		b := views.Bind(c)
 		b["ThereAreCharacterApplications"] = len(summaries) > 0
 		b["CharacterApplicationSummaries"] = summaries
 		return c.Render(views.CharacterApplicationQueue, b)

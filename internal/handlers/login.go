@@ -5,7 +5,6 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/password"
@@ -96,6 +95,6 @@ func LoginPage() fiber.Handler {
 			return c.Redirect(routes.Home)
 		}
 
-		return c.Render(views.Login, c.Locals(constants.BindName), layouts.Standalone)
+		return c.Render(views.Login, views.Bind(c), layouts.Standalone)
 	}
 }

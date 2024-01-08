@@ -8,7 +8,6 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/routes"
@@ -19,7 +18,7 @@ import (
 
 func RecoverUsernamePage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.RecoverUsername, c.Locals(constants.BindName), layouts.Standalone)
+		return c.Render(views.RecoverUsername, views.Bind(c), layouts.Standalone)
 	}
 }
 
@@ -36,14 +35,12 @@ func RecoverUsernameSuccessPage(i *shared.Interfaces) fiber.Handler {
 			c.Redirect(routes.Home)
 		}
 
-		b := c.Locals(constants.BindName).(fiber.Map)
+		b := views.Bind(c)
 		b["EmailAddress"] = address
-
 		return c.Render(views.RecoverUsernameSuccess, b, layouts.Standalone)
 	}
 }
 
-// TODO: Should this be a single error message?
 func RecoverUsername(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Email string `form:"email"`

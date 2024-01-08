@@ -3,7 +3,6 @@ package handlers
 import (
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/views"
 )
 
@@ -11,6 +10,6 @@ import (
 // TODO: i.e., if they have no email addresses set
 func HomePage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.Home, c.Locals(constants.BindName))
+		return c.Render(views.Home, views.Bind(c))
 	}
 }

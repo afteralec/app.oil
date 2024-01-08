@@ -19,12 +19,11 @@
         {{ template "partial-header-nav-menu-list" . }}
       {{ else if eq .Type "Theme" }}
         {{ template "partial-header-nav-theme" . }}
+      {{ else if eq .Type "Login" }}
+          {{ template "partial-header-nav-login" }}
+      {{ else if eq .Type "Register" }}
+          {{ template "partial-header-nav-register" }}
       {{ end }}
-    {{ end }}
-
-    {{ if not .PID }}
-      {{ template "partial-header-nav-login" }}
-      {{ template "partial-header-nav-register" }}
     {{ end }}
   </ul>
 </nav>

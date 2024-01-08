@@ -7,7 +7,6 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
@@ -22,7 +21,7 @@ func PlayerPermissionsPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, c.Locals(constants.BindName), layouts.Standalone)
+			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
 		}
 
 		lperms := c.Locals("perms")
@@ -34,7 +33,7 @@ func PlayerPermissionsPage(i *shared.Interfaces) fiber.Handler {
 		perms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
 		if !perms.HasPermissionInSet(permissions.ShowPermissionViewPermissions) {
@@ -42,8 +41,7 @@ func PlayerPermissionsPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		b := c.Locals(constants.BindName).(fiber.Map)
-		return c.Render(views.PlayerPermissions, b, layouts.Main)
+		return c.Render(views.PlayerPermissions, views.Bind(c), layouts.Main)
 	}
 }
 
@@ -60,7 +58,7 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, c.Locals(constants.BindName), layouts.Standalone)
+			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
 		}
 
 		lperms := c.Locals("perms")
@@ -72,7 +70,7 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 		iperms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
 		if !iperms.HasPermissionInSet(permissions.ShowPermissionViewPermissions) {
@@ -137,7 +135,7 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 			allPerms = append(allPerms, pm)
 		}
 
-		b := c.Locals(constants.BindName).(fiber.Map)
+		b := views.Bind(c)
 		b["Username"] = u
 		b["Permissions"] = allPerms
 		return c.Render(views.PlayerPermissionsDetail, b)
@@ -152,7 +150,7 @@ func TogglePlayerPermission(i *shared.Interfaces) fiber.Handler {
 		ipid := c.Locals("pid")
 		if ipid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, c.Locals(constants.BindName), layouts.Standalone)
+			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
 		}
 
 		lperms := c.Locals("perms")
@@ -163,7 +161,7 @@ func TogglePlayerPermission(i *shared.Interfaces) fiber.Handler {
 		iperms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, c.Locals(constants.BindName), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 		if !iperms.Permissions[permissions.PlayerGrantAllPermissionsName] {
 			c.Status(fiber.StatusForbidden)
