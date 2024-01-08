@@ -61,10 +61,10 @@
         x-model="password"
         @focus="notifs.pw = true"
         @input="
-            setStrengths(strengths, event.target.value);
-            setEvalStrengths(eval.pw.strengths, strengths);
-            password = event.target.value;
-          "
+          setStrengths(strengths, event.target.value);
+          setEvalStrengths(eval.pw.strengths, strengths);
+          password = event.target.value;
+        "
       />
       {{ template "partial-password-strengths" }}
     </div>

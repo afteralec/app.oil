@@ -237,6 +237,40 @@ export function getEmailData(email) {
   };
 }
 
+export function getProfileChangePasswordData() {
+  return {
+    current: "",
+    password: "",
+    confirmPassword: "",
+    notifs: {
+      pw: false,
+      cpw: false,
+    },
+    eval: {
+      pw: {
+        strengths: {
+          len: false,
+          mixedCase: false,
+          num: false,
+          specialChar: false,
+        },
+      },
+      cpw: {
+        eq: false,
+      },
+    },
+    strengths: {
+      len: false,
+      mixedCase: false,
+      num: false,
+      specialChar: false,
+    },
+    isPasswordValid,
+    setStrengths,
+    setEvalStrengths,
+  };
+}
+
 export function getGravatarEmailData(selectedEmail) {
   return {
     selectedEmail,
@@ -442,6 +476,7 @@ window.getResetPasswordData = getResetPasswordData;
 window.getLoginData = getLoginData;
 window.getProfileEmailData = getProfileEmailData;
 window.getEmailData = getEmailData;
+window.getProfileChangePasswordData = getProfileChangePasswordData;
 window.getGravatarEmailData = getGravatarEmailData;
 window.getProfileAvatarData = getProfileAvatarData;
 window.parseTimeStamp = parseTimeStamp;
