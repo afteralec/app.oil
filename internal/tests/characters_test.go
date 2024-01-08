@@ -155,7 +155,7 @@ func CreateTestPlayerAndCharacterApplication(t *testing.T, i *shared.Interfaces,
 }
 
 func NewCharacterApplicationRequest() *http.Request {
-	url := MakeTestURL(routes.NewCharacterApplicationPath())
+	url := MakeTestURL(routes.Characters)
 	return httptest.NewRequest(http.MethodPost, url, nil)
 }
 

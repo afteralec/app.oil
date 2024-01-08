@@ -151,6 +151,10 @@ body {
   opacity: 0.5;
 }
 
+.modal {
+  @apply fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-bg p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%];
+}
+
 .notice {
   @apply rounded-md text-sm leading-none px-6 py-4 flex items-center;
 }
@@ -265,8 +269,4 @@ body {
 
 .input:placeholder {
   @apply text-muted-fg;
-}
-
-.modal {
-  @apply fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-bg p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%];
 }

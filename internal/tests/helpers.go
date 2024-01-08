@@ -150,7 +150,7 @@ func DeleteTestPlayerPermission(t *testing.T, i *shared.Interfaces, id int64) {
 func CreateTestCharacterApplication(t *testing.T, i *shared.Interfaces, a *fiber.App, u, pw string) int64 {
 	sessionCookie := LoginTestPlayer(t, a, u, pw)
 
-	url := MakeTestURL(routes.NewCharacterApplicationPath())
+	url := MakeTestURL(routes.Characters)
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
