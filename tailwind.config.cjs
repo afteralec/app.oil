@@ -54,7 +54,7 @@ module.exports = {
         },
         success: {
           DEFAULT: "hsl(var(--success))",
-          bg: "hsl(var(--info-bg))",
+          bg: "hsl(var(--success-bg))",
           fg: "hsl(var(--success-fg))",
           hl: "hsl(var(--success-hl))",
         },

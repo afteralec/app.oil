@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -33,6 +34,7 @@ func ChangePassword(i *shared.Interfaces) fiber.Handler {
 
 		pid, err := util.GetPID(c)
 		if err != nil {
+			log.Println("auth")
 			c.Status(fiber.StatusUnauthorized)
 			return nil
 		}
@@ -61,6 +63,7 @@ func ChangePassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 		if !ok {
+			log.Println("verify")
 			c.Status(fiber.StatusUnauthorized)
 			return nil
 		}
@@ -77,6 +80,7 @@ func ChangePassword(i *shared.Interfaces) fiber.Handler {
 				"Success!",
 				"Your password has been changed.",
 			},
+			"NoticeIcon": true,
 		}
 
 		return c.Render(partials.NoticeSectionSuccess, b, layouts.None)
