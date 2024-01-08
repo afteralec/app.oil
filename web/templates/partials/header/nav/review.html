@@ -17,10 +17,11 @@
       aria-labelledby="menu-button"
       tabindex="-1"
     >
+      <!-- TODO: Get this path sorted out in the bind -->
       <div role="none">
         <!-- prettier-ignore -->
         {{ if .ShouldShowMenus.ReviewCharacterApplications }}
-        {{ if .ReviewCharacterApplicationsView }}
+        {{ if eq .Path .Paths.ReviewCharacterApplications }}
         <p
           class="block bg-muted px-4 py-2 text-sm"
           role="menuitem"

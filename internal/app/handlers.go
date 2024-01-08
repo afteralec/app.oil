@@ -43,7 +43,6 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Post(routes.VerifyEmail, handlers.VerifyEmail(i))
 
 	app.Get(routes.Profile, handlers.ProfilePage(i))
-	app.Get(routes.Me, handlers.ProfilePage(i))
 
 	app.Get(routes.Recover, handlers.RecoverPage())
 

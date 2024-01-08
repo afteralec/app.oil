@@ -12,13 +12,9 @@
   <div class="dropdown-content z-3 absolute right-0 w-56 origin-top-right pt-2">
     <div
       class="divide-y divide-gray-100 rounded-md bg-bg shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none"
-      role="menu"
-      aria-orientation="vertical"
-      aria-labelledby="menu-button"
-      tabindex="-1"
     >
-      <div role="none">
-        {{ if .PlayerPermissionsView -}}
+      <div>
+        {{ if eq .Path .Paths.PlayerPermissions }}
         <p
           class="block bg-muted px-4 py-2 text-sm"
           role="menuitem"
@@ -27,7 +23,7 @@
         >
           Player Permissions
         </p>
-        {{ else -}}
+        {{ else }}
         <!-- TODO: Move these paths to a bind variable -->
         <a
           href="/player/permissions"
@@ -38,7 +34,7 @@
         >
           Player Permissions
         </a>
-        {{ end -}}
+        {{ end }}
       </div>
     </div>
   </div>

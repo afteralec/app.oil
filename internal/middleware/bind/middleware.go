@@ -32,10 +32,13 @@ func New() fiber.Handler {
 			"Title":           "Petrichor",
 			"MetaContent":     "Petrichor MUD - a modern take on a classic",
 			"ShouldShowMenus": determineShouldShowMenus(c),
-			"HomeView":        c.Path() == routes.Home,
-			"ProfileView":     c.Path() == routes.Profile || c.Path() == routes.Me,
-			"CharactersView":  c.Path() == routes.Characters,
-			"PermissionsView": c.Path() == routes.PlayerPermissions,
+			"Path":            c.Path(),
+			"Paths": fiber.Map{
+				"Home":              routes.Home,
+				"Profile":           routes.Profile,
+				"Characters":        routes.Characters,
+				"PlayerPermissions": routes.PlayerPermissions,
+			},
 		}
 		c.Locals(constants.BindName, b)
 

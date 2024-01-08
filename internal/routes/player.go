@@ -8,7 +8,6 @@ const (
 	Register               = "/player/new"
 	Reserved               = "/player/reserved"
 	Profile                = "/profile"
-	Me                     = "/me"
 	Recover                = "/recover"
 	RecoverUsername        = "/recover/username"
 	RecoverUsernameSuccess = "/recover/username/success"

@@ -18,18 +18,18 @@
 
     {{ if .ShouldShowMenus.Review }}
       {{ template "partial-header-nav-review" . }}
-    {{ end -}}
+    {{ end }}
 
     {{ if .ShouldShowMenus.Permissions }}
       {{ template "partial-header-nav-permissions" . }}
-    {{ end -}}
+    {{ end }}
 
-    {{ if .PID -}}
+    {{ if .PID }}
       {{ template "partial-header-nav-account" . }}
-    {{ else -}}
+    {{ else }}
       {{ template "partial-header-nav-login" }}
       {{ template "partial-header-nav-register" }}
-    {{ end -}}
+    {{ end }}
   </ul>
 </nav>
 {{ end }}
