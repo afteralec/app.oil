@@ -25,6 +25,6 @@ func Logout(i *shared.Interfaces) fiber.Handler {
 
 func LogoutPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.Logout, c.Locals("b"), layouts.Standalone)
+		return c.Render(views.Logout, views.Bind(c), layouts.Standalone)
 	}
 }

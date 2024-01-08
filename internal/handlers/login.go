@@ -9,6 +9,7 @@ import (
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/password"
+	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
@@ -106,7 +107,21 @@ func Login(i *shared.Interfaces) fiber.Handler {
 		}
 
 		sess.Set("pid", pid)
-		sess.Set("theme", settings.Theme)
+		theme := sess.Get("theme")
+		if theme != nil {
+			if err := qtx.UpdatePlayerSettingsTheme(context.Background(), queries.UpdatePlayerSettingsThemeParams{
+				PID:   pid,
+				Theme: theme.(string),
+			}); err != nil {
+				c.Append("HX-Retarget", "#login-error")
+				c.Append("HX-Reswap", "outerHTML")
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Status(fiber.StatusUnauthorized)
+				return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
+			}
+		} else {
+			sess.Set("theme", settings.Theme)
+		}
 		if err = sess.Save(); err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
