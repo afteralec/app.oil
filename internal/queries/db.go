@@ -60,6 +60,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createPlayerPermissionRevokedChangeHistoryStmt, err = db.PrepareContext(ctx, createPlayerPermissionRevokedChangeHistory); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePlayerPermissionRevokedChangeHistory: %w", err)
 	}
+	if q.createPlayerSettingsStmt, err = db.PrepareContext(ctx, createPlayerSettings); err != nil {
+		return nil, fmt.Errorf("error preparing query CreatePlayerSettings: %w", err)
+	}
 	if q.createRequestStmt, err = db.PrepareContext(ctx, createRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateRequest: %w", err)
 	}
@@ -246,6 +249,11 @@ func (q *Queries) Close() error {
 	if q.createPlayerPermissionRevokedChangeHistoryStmt != nil {
 		if cerr := q.createPlayerPermissionRevokedChangeHistoryStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPlayerPermissionRevokedChangeHistoryStmt: %w", cerr)
+		}
+	}
+	if q.createPlayerSettingsStmt != nil {
+		if cerr := q.createPlayerSettingsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createPlayerSettingsStmt: %w", cerr)
 		}
 	}
 	if q.createRequestStmt != nil {
@@ -504,6 +512,7 @@ type Queries struct {
 	createPlayerPermissionStmt                            *sql.Stmt
 	createPlayerPermissionIssuedChangeHistoryStmt         *sql.Stmt
 	createPlayerPermissionRevokedChangeHistoryStmt        *sql.Stmt
+	createPlayerSettingsStmt                              *sql.Stmt
 	createRequestStmt                                     *sql.Stmt
 	createRequestCommentStmt                              *sql.Stmt
 	deleteEmailStmt                                       *sql.Stmt
@@ -563,6 +572,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createPlayerPermissionStmt:                            q.createPlayerPermissionStmt,
 		createPlayerPermissionIssuedChangeHistoryStmt:         q.createPlayerPermissionIssuedChangeHistoryStmt,
 		createPlayerPermissionRevokedChangeHistoryStmt:        q.createPlayerPermissionRevokedChangeHistoryStmt,
+		createPlayerSettingsStmt:                              q.createPlayerSettingsStmt,
 		createRequestStmt:                                     q.createRequestStmt,
 		createRequestCommentStmt:                              q.createRequestCommentStmt,
 		deleteEmailStmt:                                       q.deleteEmailStmt,

@@ -119,6 +119,14 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
 		}
 
+		if err := qtx.CreatePlayerSettings(context.Background(), pid); err != nil {
+			c.Append("HX-Retarget", "#register-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+		}
+
 		err = tx.Commit()
 		if err != nil {
 			c.Append("HX-Retarget", "#register-error")

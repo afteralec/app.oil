@@ -9,6 +9,15 @@ import (
 	"context"
 )
 
+const createPlayerSettings = `-- name: CreatePlayerSettings :exec
+INSERT INTO player_settings (pid) VALUES (?)
+`
+
+func (q *Queries) CreatePlayerSettings(ctx context.Context, pid int64) error {
+	_, err := q.exec(ctx, q.createPlayerSettingsStmt, createPlayerSettings, pid)
+	return err
+}
+
 const getPlayerSettings = `-- name: GetPlayerSettings :one
 SELECT created_at, updated_at, theme, pid, id FROM player_settings WHERE pid = ?
 `
