@@ -9,16 +9,16 @@
 >
   <div class="space-y-2">
     <textarea
+      placeholder=""
+      name="value"
+      autofocus
       id="character-application-flow-description"
+      class="input min-h-[10rem]"
       x-model="description"
       @input="
         eval.desc.len = true;
         backstory = sanitizeCharacterDescription(event.target.value);
       "
-      class="flex min-h-[10rem] w-full rounded-md border border-input bg-bg px-3 py-2 text-sm ring-offset-bg placeholder:text-muted-fg focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      placeholder=""
-      name="value"
-      autofocus
     ></textarea>
     <section>
       <!-- prettier-ignore -->

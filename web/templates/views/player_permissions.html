@@ -18,15 +18,15 @@
       <!-- TODO: Move this hx-post path to a passed var -->
       <input
         type="search"
+        name="search"
+        placeholder=""
+        value=""
+        autofocus
         id="player-permissions-username"
-        class="flex h-10 w-full rounded-md border border-input bg-bg px-3 py-2 text-sm ring-offset-bg placeholder:text-muted-fg focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        class="input"
         hx-post="/player/search/player-permissions"
         hx-trigger="input changed delay:500ms, search"
         hx-target="#player-permissions-search-results"
-        placeholder=""
-        name="search"
-        value=""
-        autofocus
       />
       <article id="player-permissions-search-results"></article>
     </section>

@@ -37,15 +37,15 @@
           Username
         </label>
         <input
+          name="username"
+          placeholder=""
+          value=""
           id="login-username"
+          class="input"
           x-model="username"
           @input="
             username = sanitizeUsername(event.target.value);
           "
-          class="flex h-10 w-full rounded-md border border-input bg-bg px-3 py-2 text-sm ring-offset-bg file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-fg focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          placeholder=""
-          name="username"
-          value=""
         />
       </div>
       <div class="space-y-2">
@@ -57,15 +57,15 @@
         </label>
         <input
           type="password"
+          name="password"
+          placeholder=""
+          value=""
           id="login-password"
+          class="input"
           x-model="password"
           @input="
             password = event.target.value;
           "
-          class="flex h-10 w-full rounded-md border border-input bg-bg px-3 py-2 text-sm ring-offset-bg file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-fg focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          placeholder=""
-          name="password"
-          value=""
         />
       </div>
       <a class="text-xs leading-none hover:underline" href="/recover"

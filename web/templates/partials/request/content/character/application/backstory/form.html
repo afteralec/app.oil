@@ -7,16 +7,16 @@
   x-data="getCharacterApplicationBackstoryData(`{{ .FieldValue }}`)"
 >
   <textarea
+    placeholder=""
+    name="value"
+    autofocus
     id="character-application-flow-backstory"
+    class="input min-h-[15rem]"
     x-model="backstory"
     @input="
       eval.bs.len = true;
       backstory = sanitizeCharacterBackstory(event.target.value);
     "
-    class="flex min-h-[8rem] w-full rounded-md border border-input bg-bg px-3 py-2 text-sm ring-offset-bg placeholder:text-muted-fg focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-    placeholder=""
-    name="value"
-    autofocus
   ></textarea>
   <section>
     <!-- prettier-ignore -->

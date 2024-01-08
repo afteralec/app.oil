@@ -21,16 +21,16 @@
           Username
         </label>
         <input
+          name="username"
+          placeholder=""
+          value=""
+          autofocus
           id="login-username"
+          class="input"
           x-model="username"
           @input="
             username = sanitizeUsername(event.target.value);
           "
-          class="input"
-          placeholder=""
-          name="username"
-          value=""
-          autofocus
         />
       </div>
       <div class="space-y-2">
@@ -42,15 +42,15 @@
         </label>
         <input
           type="password"
+          name="password"
+          placeholder=""
+          value=""
           id="login-password"
+          class="input"
           x-model="password"
           @input="
             password = event.target.value;
           "
-          class="input"
-          placeholder=""
-          name="password"
-          value=""
         />
       </div>
       <a class="text-xs leading-none hover:underline" href="/recover"
