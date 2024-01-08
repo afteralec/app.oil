@@ -44,6 +44,8 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 
 	app.Get(routes.Profile, handlers.ProfilePage(i))
 
+	app.Put(routes.PlayerPasswordParam, handlers.ChangePassword(i))
+
 	app.Get(routes.Recover, handlers.RecoverPage())
 
 	app.Get(routes.RecoverUsername, handlers.RecoverUsernamePage())

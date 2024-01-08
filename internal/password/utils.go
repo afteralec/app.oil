@@ -5,6 +5,8 @@ const (
 	MaxLength = 255
 )
 
+// TODO: Add a strength check
+
 func IsValid(pw string) bool {
 	if len(pw) < MinLength {
 		return false

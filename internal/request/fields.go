@@ -3,7 +3,6 @@ package request
 import (
 	"context"
 	"errors"
-	"log"
 
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/views"
@@ -130,7 +129,6 @@ func (in *UpdateInput) UpdateField(pid int64, q *queries.Queries, req *queries.R
 		}
 	case FieldDescription:
 		if !IsDescriptionValid(in.Description) {
-			log.Println("Failed field validation")
 			return ErrInvalidInput
 		}
 
