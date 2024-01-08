@@ -38,9 +38,9 @@ var StatusTexts map[string]string = map[string]string{
 var StatusIcons map[string]string = map[string]string{
 	StatusIncomplete: "ph:dots-three-outline-fill",
 	StatusReady:      "fe:check",
-	StatusSubmitted:  "fe:check",
+	StatusSubmitted:  "gg:check-o",
 	StatusInReview:   "fe:question",
-	StatusApproved:   "fe:check-circle",
+	StatusApproved:   "gg:check-o",
 	StatusReviewed:   "fe:warning",
 	StatusRejected:   "fe:warning",
 	StatusArchived:   "ic:round-lock",

@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -24,25 +23,60 @@ func ChangePassword(i *shared.Interfaces) fiber.Handler {
 		in := new(input)
 		if err := c.BodyParser(in); err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			b := fiber.Map{
+				"NoticeSectionID": "profile-password-notice",
+				"SectionClass":    "pt-4",
+				"NoticeText": []string{
+					"Something's gone terribly wrong.",
+				},
+				"NoticeIcon":    true,
+				"RefreshButton": true,
+			}
+			return c.Render(partials.NoticeSectionError, b, layouts.None)
 		}
 
 		if in.Password != in.ConfirmPassword {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			b := fiber.Map{
+				"NoticeSectionID": "profile-password-notice",
+				"SectionClass":    "pt-4",
+				"NoticeText": []string{
+					"The new password and password confirmation doesn't match.",
+					"Please try again.",
+				},
+				"NoticeIcon": true,
+			}
+			return c.Render(partials.NoticeSectionError, b, layouts.None)
 		}
 
 		pid, err := util.GetPID(c)
 		if err != nil {
-			log.Println("auth")
 			c.Status(fiber.StatusUnauthorized)
-			return nil
+			b := fiber.Map{
+				"NoticeSectionID": "profile-password-notice",
+				"SectionClass":    "pt-4",
+				"NoticeText": []string{
+					"Your session has expired.",
+				},
+				"NoticeIcon":    true,
+				"RefreshButton": true,
+			}
+			return c.Render(partials.NoticeSectionError, b, layouts.None)
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			b := fiber.Map{
+				"NoticeSectionID": "profile-password-notice",
+				"SectionClass":    "pt-4",
+				"NoticeText": []string{
+					"Something's gone terribly wrong.",
+				},
+				"NoticeIcon":    true,
+				"RefreshButton": true,
+			}
+			return c.Render(partials.NoticeSectionError, b, layouts.None)
 		}
 		qtx := i.Queries.WithTx(tx)
 
@@ -51,26 +85,69 @@ func ChangePassword(i *shared.Interfaces) fiber.Handler {
 			if err == sql.ErrNoRows {
 				// TODO: This is a catastrophic failure; a Player object doesn't exist for a logged-in player
 				c.Status(fiber.StatusInternalServerError)
-				return nil
+				b := fiber.Map{
+					"NoticeSectionID": "profile-password-notice",
+					"SectionClass":    "pt-4",
+					"NoticeText": []string{
+						"Something's gone terribly wrong.",
+					},
+					"NoticeIcon":    true,
+					"RefreshButton": true,
+				}
+				return c.Render(partials.NoticeSectionError, b, layouts.None)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			b := fiber.Map{
+				"NoticeSectionID": "profile-password-notice",
+				"SectionClass":    "pt-4",
+				"NoticeText": []string{
+					"Something's gone terribly wrong.",
+				},
+				"NoticeIcon":    true,
+				"RefreshButton": true,
+			}
+			return c.Render(partials.NoticeSectionError, b, layouts.None)
 		}
 
 		ok, err := password.Verify(in.Current, p.PwHash)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			b := fiber.Map{
+				"NoticeSectionID": "profile-password-notice",
+				"SectionClass":    "pt-4",
+				"NoticeText": []string{
+					"Something's gone terribly wrong.",
+				},
+				"NoticeIcon":    true,
+				"RefreshButton": true,
+			}
+			return c.Render(partials.NoticeSectionError, b, layouts.None)
 		}
 		if !ok {
-			log.Println("verify")
 			c.Status(fiber.StatusUnauthorized)
-			return nil
+			b := fiber.Map{
+				"NoticeSectionID": "profile-password-notice",
+				"SectionClass":    "pt-4",
+				"NoticeText": []string{
+					"The current password you entered isn't correct.",
+				},
+				"NoticeIcon": true,
+			}
+			return c.Render(partials.NoticeSectionError, b, layouts.None)
 		}
 
 		if !password.IsValid(in.Password) {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			b := fiber.Map{
+				"NoticeSectionID": "profile-password-notice",
+				"SectionClass":    "pt-4",
+				"NoticeText": []string{
+					"What you entered isn't a valid password.",
+					"Please follow the prompts and try again.",
+				},
+				"NoticeIcon": true,
+			}
+			return c.Render(partials.NoticeSectionError, b, layouts.None)
 		}
 
 		b := fiber.Map{
