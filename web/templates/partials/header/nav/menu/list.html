@@ -1,0 +1,13 @@
+{{ define "partial-header-nav-menu-list" }}
+<li class="dropdown relative">
+  {{ template "partial-header-nav-menu-list-button" .Button }}
+  <div class="dropdown-content absolute right-0 w-56 origin-top-right pt-2">
+    <div class="divide-y rounded-md border">
+      <!-- prettier-ignore -->
+      {{ range .Sections }}
+        {{ template "partial-header-nav-menu-list-section" . }}
+      {{ end }}
+    </div>
+  </div>
+</li>
+{{ end }}

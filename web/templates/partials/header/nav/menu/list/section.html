@@ -1,0 +1,9 @@
+<!-- prettier-ignore -->
+{{ define "partial-header-nav-menu-list-section" }}
+<section>
+  <!-- prettier-ignore -->
+  {{ range .Items }}
+    {{ template "partial-header-nav-menu-list-item" . }}
+  {{ end }}
+</section>
+{{ end }}

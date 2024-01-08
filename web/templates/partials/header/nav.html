@@ -25,7 +25,7 @@
     {{ end }}
 
     {{ if .PID }}
-      {{ template "partial-header-nav-account" . }}
+      {{ template "partial-header-nav-menu-list" .AccountMenu }}
     {{ else }}
       {{ template "partial-header-nav-login" }}
       {{ template "partial-header-nav-register" }}

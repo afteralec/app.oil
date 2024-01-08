@@ -1,0 +1,22 @@
+<!-- prettier-ignore -->
+{{ define "partial-header-nav-menu-list-item" }}
+{{ if .Action }}
+<button
+  type="button"
+  class="block w-full cursor-pointer px-4 py-2 text-left text-sm hover:bg-muted"
+  hx-post="{{ .Path }}"
+>
+  {{ .Label }}
+</button>
+{{ else }}
+<!-- prettier-ignore -->
+{{ if .Active }}
+<div class="bg-muted px-4 py-2 text-sm">{{ .Label }}</div>
+{{ else }}
+<a href="{{ .Path }}" class="block px-4 py-2 text-sm hover:bg-muted">
+  {{ .Label }}
+</a>
+<!-- prettier-ignore -->
+{{ end }}
+{{ end }}
+{{ end }}

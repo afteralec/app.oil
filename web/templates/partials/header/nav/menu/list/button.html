@@ -1,0 +1,11 @@
+{{ define "partial-header-nav-menu-list-button" }}
+<button type="button" class="nav-button group" @click="menuOpen = !menuOpen;">
+  {{ .Label }}
+  <iconify-icon
+    class="icon"
+    icon="tabler:chevron-down"
+    height="16"
+    width="16"
+  ></iconify-icon>
+</button>
+{{ end }}

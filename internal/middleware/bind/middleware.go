@@ -40,6 +40,38 @@ func New() fiber.Handler {
 				"PlayerPermissions": routes.PlayerPermissions,
 			},
 		}
+
+		b["AccountMenu"] = fiber.Map{
+			"Button": fiber.Map{
+				"Label": "Account",
+			},
+			"Sections": []fiber.Map{
+				{
+					"Items": []fiber.Map{
+						{
+							"Label":  "Characters",
+							"Path":   routes.Characters,
+							"Active": c.Path() == routes.Characters,
+						},
+						{
+							"Label":  "Profile",
+							"Path":   routes.Profile,
+							"Active": c.Path() == routes.Profile,
+						},
+					},
+				},
+				{
+					"Items": []fiber.Map{
+						{
+							"Label":  "Logout",
+							"Path":   routes.Logout,
+							"Action": true,
+						},
+					},
+				},
+			},
+		}
+
 		c.Locals(constants.BindName, b)
 
 		return c.Next()
