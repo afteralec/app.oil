@@ -41,6 +41,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
+		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
 		p, err := qtx.GetPlayerByUsername(context.Background(), r.Username)
@@ -89,6 +90,15 @@ func Login(i *shared.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusUnauthorized)
 				return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 			}
+			c.Status(fiber.StatusInternalServerError)
+			c.Append("HX-Retarget", "#login-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
+		}
+
+		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")

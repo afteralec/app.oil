@@ -127,7 +127,7 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
 		}
 
-		err = tx.Commit()
+		sess, err := i.Sessions.Get(c)
 		if err != nil {
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")
@@ -136,9 +136,21 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
 		}
 
-		username.Cache(i.Redis, pid, p.Username)
+		theme := sess.Get("theme")
+		if theme != nil {
+			if err := qtx.UpdatePlayerSettingsTheme(context.Background(), queries.UpdatePlayerSettingsThemeParams{
+				PID:   pid,
+				Theme: theme.(string),
+			}); err != nil {
+				c.Append("HX-Retarget", "#register-error")
+				c.Append("HX-Reswap", "outerHTML")
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+			}
+		}
 
-		sess, err := i.Sessions.Get(c)
+		err = tx.Commit()
 		if err != nil {
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")
@@ -155,6 +167,8 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
 		}
+
+		username.Cache(i.Redis, pid, p.Username)
 
 		c.Append("HX-Refresh", "true")
 		c.Status(fiber.StatusCreated)
