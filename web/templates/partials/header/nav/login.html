@@ -1,7 +1,8 @@
 {{ define "partial-header-nav-login" }}
 <li x-data="getLoginData()">
   <button
-    class="cursor:pointer group inline-flex h-10 w-max items-center justify-center rounded-md bg-bg px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-fg focus:bg-accent focus:text-accent-fg focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50"
+    type="button"
+    class="nav-button"
     @click="
       showModal = true;
       $nextTick(() => {

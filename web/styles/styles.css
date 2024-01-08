@@ -195,6 +195,22 @@ body {
   @apply text-success-hl;
 }
 
+.nav-button {
+  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-bg px-4 py-2 text-sm font-medium transition-colors;
+}
+
+.nav-button:hover {
+  @apply bg-accent text-accent-fg;
+}
+
+.nav-button:disabled {
+  @apply pointer-events-none opacity-50;
+}
+
+.nav-button:focus {
+  @apply bg-accent text-accent-fg outline-none;
+}
+
 .button-primary {
   @apply inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-fg ring-offset-bg transition-colors;
 }
