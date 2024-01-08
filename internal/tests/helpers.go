@@ -64,6 +64,11 @@ func DeleteTestPlayer(t *testing.T, i *shared.Interfaces, u string) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	_, err = i.Database.Exec("DELETE FROM player_settings WHERE pid = ?;", p.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func LoginTestPlayer(t *testing.T, a *fiber.App, u string, pw string) *http.Cookie {
