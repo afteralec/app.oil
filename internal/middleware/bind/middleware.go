@@ -13,10 +13,22 @@ import (
 
 func New() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		theme := c.Locals("theme")
+		toggleTheme := "dark"
+		if theme == "dark" {
+			toggleTheme = "light"
+		}
+		themeText := "Light"
+		if theme == constants.ThemeDark {
+			themeText = "Dark"
+		}
+
 		b := fiber.Map{
-			"CSRF": c.Locals("csrf"),
-			"PID":  c.Locals("pid"),
-			// TODO: Starting in 2024, have this be 2023 - current year
+			"Theme":           theme,
+			"ThemeText":       themeText,
+			"ToggleTheme":     toggleTheme,
+			"CSRF":            c.Locals("csrf"),
+			"PID":             c.Locals("pid"),
 			"CopyrightYear":   time.Now().Year(),
 			"Title":           "Petrichor",
 			"MetaContent":     "Petrichor MUD - a modern take on a classic MUD style of game.",

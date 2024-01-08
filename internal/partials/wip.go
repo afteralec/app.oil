@@ -1,5 +1,7 @@
 package partials
 
+const ThemeToggle string = "partial-header-nav-theme"
+
 const (
 	ResendVerificationEmailErrInternal        string = "partial-resend-verification-email-err-internal"
 	ResendVerificationEmailErrNotFound        string = "partial-resend-verification-email-err-not-found"

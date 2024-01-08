@@ -2,7 +2,7 @@
 <!doctype html>
 <html lang="en">
   {{ template "partial-head" . }}
-  <body class="dark">
+  <body class="{{ .Theme }}">
     <main
       x-data="getRequestData()"
       class="flex h-screen w-full flex-col items-center justify-center"

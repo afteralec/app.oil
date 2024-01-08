@@ -2,7 +2,7 @@
 <!doctype html>
 <html lang="en">
   {{ template "partial-head" . }}
-  <body class="dark">
+  <body class="{{ .Theme }}">
     <!-- prettier-ignore -->
     {{ if not .StatusIsIncomplete }}
       {{ template "partial-header" . }}

@@ -15,7 +15,7 @@
       class="group ml-auto flex list-none items-center justify-center space-x-[1.5]"
     >
       <!-- prettier-ignore -->
-      {{ template "partial-header-nav-theme" }}
+      {{ template "partial-header-nav-theme" . }}
 
       {{ if .ShouldShowMenus.Review }}
         {{ template "partial-header-nav-review" . }}

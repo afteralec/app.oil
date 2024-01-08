@@ -1,5 +1,24 @@
 {{ define "partial-header-nav-theme" }}
-<button type="button" class="nav-button" x-data @click.prevent="toggleTheme();">
-  Theme
+<button
+  type="button"
+  id="theme-toggle"
+  class="nav-button"
+  x-data
+  @click.prevent="toggleTheme();"
+  hx-post="/theme/{{ .ToggleTheme }}"
+  hx-swap="outerHTML"
+>
+  <!-- prettier-ignore -->
+  {{ .ThemeText }} 
+
+  {{ if eq .Theme "light" }}
+  <iconify-icon icon="fe:sunrise" height="24" weight="24"></iconify-icon>
+  {{ else }}
+  <iconify-icon
+    icon="mingcute:moon-line"
+    height="24"
+    weight="24"
+  ></iconify-icon>
+  {{ end }}
 </button>
 {{ end }}
