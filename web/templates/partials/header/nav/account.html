@@ -12,32 +12,34 @@
   <div class="dropdown-content z-1 absolute right-0 w-56 origin-top-right pt-2">
     <div class="divide-y">
       <div>
-        {{ if .CharactersView -}}
-        <p
-          class="block rounded-t-md border-x border-t bg-muted px-4 py-2 text-sm"
-        >
-          Characters
-        </p>
-        {{ else -}}
-        <a
-          href="/characters"
-          class="block rounded-t-md border-x border-t bg-bg px-4 py-2 text-sm hover:bg-muted"
-        >
-          Characters
-        </a>
-        {{ end -}}
-      </div>
-      <div>
-        {{ if .ProfileView -}}
-        <p class="block border-x bg-muted px-4 py-2 text-sm">Profile</p>
-        {{ else -}}
-        <a
-          href="/profile"
-          class="block border-x bg-bg px-4 py-2 text-sm hover:bg-muted"
-        >
-          Profile
-        </a>
-        {{ end -}}
+        <div>
+          {{ if .CharactersView -}}
+          <p
+            class="block rounded-t-md border-x border-t bg-muted px-4 py-2 text-sm"
+          >
+            Characters
+          </p>
+          {{ else -}}
+          <a
+            href="/characters"
+            class="block rounded-t-md border-x border-t bg-bg px-4 py-2 text-sm hover:bg-muted"
+          >
+            Characters
+          </a>
+          {{ end -}}
+        </div>
+        <div>
+          {{ if .ProfileView -}}
+          <p class="block border-x bg-muted px-4 py-2 text-sm">Profile</p>
+          {{ else -}}
+          <a
+            href="/profile"
+            class="block border-x bg-bg px-4 py-2 text-sm hover:bg-muted"
+          >
+            Profile
+          </a>
+          {{ end -}}
+        </div>
       </div>
       <div>
         <button
