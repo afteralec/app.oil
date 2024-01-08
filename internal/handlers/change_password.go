@@ -6,6 +6,8 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/util"
@@ -68,6 +70,15 @@ func ChangePassword(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		return nil
+		b := fiber.Map{
+			"NoticeSectionID": "profile-password-notice",
+			"SectionClass":    "pt-4",
+			"NoticeText": []string{
+				"Success!",
+				"Your password has been changed.",
+			},
+		}
+
+		return c.Render(partials.NoticeSectionSuccess, b, layouts.None)
 	}
 }
