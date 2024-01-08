@@ -1,7 +1,6 @@
 package bind
 
 import (
-	"html/template"
 	"time"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -31,13 +30,12 @@ func New() fiber.Handler {
 			"PID":             c.Locals("pid"),
 			"CopyrightYear":   time.Now().Year(),
 			"Title":           "Petrichor",
-			"MetaContent":     "Petrichor MUD - a modern take on a classic MUD style of game.",
+			"MetaContent":     "Petrichor MUD - a modern take on a classic",
 			"ShouldShowMenus": determineShouldShowMenus(c),
 			"HomeView":        c.Path() == routes.Home,
 			"ProfileView":     c.Path() == routes.Profile || c.Path() == routes.Me,
 			"CharactersView":  c.Path() == routes.Characters,
 			"PermissionsView": c.Path() == routes.PlayerPermissions,
-			"IconWarn":        template.URL("ant-design:exclamation-circle-outlined"),
 		}
 		c.Locals(constants.BindName, b)
 
