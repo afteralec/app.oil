@@ -67,6 +67,14 @@ type PlayerPermissionChangeHistory struct {
 	Revoked    bool
 }
 
+type PlayerSetting struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Theme     string
+	PID       int64
+	ID        int64
+}
+
 type Request struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time

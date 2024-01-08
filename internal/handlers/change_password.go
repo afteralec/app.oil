@@ -13,6 +13,8 @@ import (
 	"petrichormud.com/app/internal/util"
 )
 
+// TODO: This and the markup allow entering your current password
+// This should be a failure case
 func ChangePassword(i *shared.Interfaces) fiber.Handler {
 	type input struct {
 		Current         string `form:"current"`

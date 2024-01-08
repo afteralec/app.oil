@@ -96,6 +96,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getPlayerByUsernameStmt, err = db.PrepareContext(ctx, getPlayerByUsername); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayerByUsername: %w", err)
 	}
+	if q.getPlayerSettingsStmt, err = db.PrepareContext(ctx, getPlayerSettings); err != nil {
+		return nil, fmt.Errorf("error preparing query GetPlayerSettings: %w", err)
+	}
 	if q.getPlayerUsernameStmt, err = db.PrepareContext(ctx, getPlayerUsername); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayerUsername: %w", err)
 	}
@@ -173,6 +176,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.updatePlayerPasswordStmt, err = db.PrepareContext(ctx, updatePlayerPassword); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePlayerPassword: %w", err)
+	}
+	if q.updatePlayerSettingsThemeStmt, err = db.PrepareContext(ctx, updatePlayerSettingsTheme); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdatePlayerSettingsTheme: %w", err)
 	}
 	if q.updateRequestStatusStmt, err = db.PrepareContext(ctx, updateRequestStatus); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateRequestStatus: %w", err)
@@ -300,6 +306,11 @@ func (q *Queries) Close() error {
 	if q.getPlayerByUsernameStmt != nil {
 		if cerr := q.getPlayerByUsernameStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPlayerByUsernameStmt: %w", cerr)
+		}
+	}
+	if q.getPlayerSettingsStmt != nil {
+		if cerr := q.getPlayerSettingsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getPlayerSettingsStmt: %w", cerr)
 		}
 	}
 	if q.getPlayerUsernameStmt != nil {
@@ -432,6 +443,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updatePlayerPasswordStmt: %w", cerr)
 		}
 	}
+	if q.updatePlayerSettingsThemeStmt != nil {
+		if cerr := q.updatePlayerSettingsThemeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updatePlayerSettingsThemeStmt: %w", cerr)
+		}
+	}
 	if q.updateRequestStatusStmt != nil {
 		if cerr := q.updateRequestStatusStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateRequestStatusStmt: %w", cerr)
@@ -500,6 +516,7 @@ type Queries struct {
 	getEmailByAddressForPlayerStmt                        *sql.Stmt
 	getPlayerStmt                                         *sql.Stmt
 	getPlayerByUsernameStmt                               *sql.Stmt
+	getPlayerSettingsStmt                                 *sql.Stmt
 	getPlayerUsernameStmt                                 *sql.Stmt
 	getPlayerUsernameByIdStmt                             *sql.Stmt
 	getRequestStmt                                        *sql.Stmt
@@ -526,6 +543,7 @@ type Queries struct {
 	updateCharacterApplicationContentNameStmt             *sql.Stmt
 	updateCharacterApplicationContentShortDescriptionStmt *sql.Stmt
 	updatePlayerPasswordStmt                              *sql.Stmt
+	updatePlayerSettingsThemeStmt                         *sql.Stmt
 	updateRequestStatusStmt                               *sql.Stmt
 }
 
@@ -557,6 +575,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getEmailByAddressForPlayerStmt:                        q.getEmailByAddressForPlayerStmt,
 		getPlayerStmt:                                         q.getPlayerStmt,
 		getPlayerByUsernameStmt:                               q.getPlayerByUsernameStmt,
+		getPlayerSettingsStmt:                                 q.getPlayerSettingsStmt,
 		getPlayerUsernameStmt:                                 q.getPlayerUsernameStmt,
 		getPlayerUsernameByIdStmt:                             q.getPlayerUsernameByIdStmt,
 		getRequestStmt:                                        q.getRequestStmt,
@@ -583,6 +602,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updateCharacterApplicationContentNameStmt:             q.updateCharacterApplicationContentNameStmt,
 		updateCharacterApplicationContentShortDescriptionStmt: q.updateCharacterApplicationContentShortDescriptionStmt,
 		updatePlayerPasswordStmt:                              q.updatePlayerPasswordStmt,
+		updatePlayerSettingsThemeStmt:                         q.updatePlayerSettingsThemeStmt,
 		updateRequestStatusStmt:                               q.updateRequestStatusStmt,
 	}
 }
