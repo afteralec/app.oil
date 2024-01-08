@@ -1,21 +1,20 @@
 {{ define "partial-header-nav" }}
-<nav>
-  <section
-    class="relative flex w-full max-w-10xl items-center justify-start px-6 py-2"
+<nav
+  class="relative flex w-full max-w-10xl items-center justify-start px-6 py-2"
+>
+  <a href="/">
+    <iconify-icon
+      icon="wi:raindrop"
+      class="mr-auto hover:text-primary/90"
+      height="48"
+      width="48"
+    ></iconify-icon>
+  </a>
+  <ul
+    class="group ml-auto flex list-none items-center justify-center gap-1 space-x-[1.5]"
   >
-    <a href="/">
-      <iconify-icon
-        icon="wi:raindrop"
-        class="mr-auto hover:text-primary/90"
-        height="48"
-        width="48"
-      ></iconify-icon>
-    </a>
-    <ul
-      class="group ml-auto flex list-none items-center justify-center gap-1 space-x-[1.5]"
-    >
-      <!-- prettier-ignore -->
-      {{ range .Menus }}
+    <!-- prettier-ignore -->
+    {{ range .Menus }}
       {{ if eq .Type "List" }}
         {{ template "partial-header-nav-menu-list" . }}
       {{ else if eq .Type "Theme" }}
@@ -26,7 +25,6 @@
           {{ template "partial-header-nav-register" }}
       {{ end }}
     {{ end }}
-    </ul>
-  </section>
+  </ul>
 </nav>
 {{ end }}
