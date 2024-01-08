@@ -234,3 +234,19 @@ body {
 .button-secondary-destructive:hover {
   @apply text-err-hl border-err-hl;
 }
+
+.input {
+  @apply flex h-10 w-full rounded-md border border-input bg-bg px-3 py-2 text-sm ring-offset-bg;
+}
+
+.input:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+
+.input:focus-visible {
+  @apply border-primary outline-none ring-2 ring-ring ring-offset-2;
+}
+
+.input:placeholder {
+  @apply text-muted-fg;
+}
