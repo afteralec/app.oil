@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -14,6 +15,7 @@ import (
 	"petrichormud.com/app/internal/views"
 )
 
+// TODO: When you log in or create an account, take the theme from the current session and set it
 func Login(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Username string `form:"username"`
@@ -30,7 +32,17 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
 
-		p, err := i.Queries.GetPlayerByUsername(context.Background(), r.Username)
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Append("HX-Retarget", "#login-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
+		}
+		qtx := i.Queries.WithTx(tx)
+
+		p, err := qtx.GetPlayerByUsername(context.Background(), r.Username)
 		if err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
@@ -65,6 +77,25 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
 
+		settings, err := qtx.GetPlayerSettings(context.Background(), pid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO: This means a player got created without settings
+				c.Status(fiber.StatusInternalServerError)
+				c.Append("HX-Retarget", "#login-error")
+				c.Append("HX-Reswap", "outerHTML")
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Status(fiber.StatusUnauthorized)
+				return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
+			}
+			c.Status(fiber.StatusInternalServerError)
+			c.Append("HX-Retarget", "#login-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
+		}
+
 		sess, err := i.Sessions.Get(c)
 		if err != nil {
 			c.Append("HX-Retarget", "#login-error")
@@ -75,6 +106,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 		}
 
 		sess.Set("pid", pid)
+		sess.Set("theme", settings.Theme)
 		if err = sess.Save(); err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")

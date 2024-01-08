@@ -1,13 +1,17 @@
 package handlers
 
 import (
+	"context"
+
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
+	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/util"
 )
 
 func SetTheme(i *shared.Interfaces) fiber.Handler {
@@ -53,6 +57,18 @@ func SetTheme(i *shared.Interfaces) fiber.Handler {
 			"ThemeText":       themeText,
 			"ToggleThemePath": toggleThemePath,
 		}
+
+		pid, err := util.GetPID(c)
+		if err == nil {
+			if err := i.Queries.UpdatePlayerSettingsTheme(context.Background(), queries.UpdatePlayerSettingsThemeParams{
+				PID:   pid,
+				Theme: theme,
+			}); err != nil {
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Status(fiber.StatusInternalServerError)
+			}
+		}
+
 		return c.Render(partials.ThemeToggle, b, layouts.None)
 	}
 }
