@@ -16,16 +16,15 @@ import (
 	"petrichormud.com/app/internal/views"
 )
 
-// TODO: When you log in or create an account, take the theme from the current session and set it
 func Login(i *shared.Interfaces) fiber.Handler {
-	type request struct {
+	type input struct {
 		Username string `form:"username"`
 		Password string `form:"password"`
 	}
 
 	return func(c *fiber.Ctx) error {
-		r := new(request)
-		if err := c.BodyParser(r); err != nil {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
@@ -44,7 +43,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		p, err := qtx.GetPlayerByUsername(context.Background(), r.Username)
+		p, err := qtx.GetPlayerByUsername(context.Background(), in.Username)
 		if err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
@@ -53,7 +52,7 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
 
-		v, err := password.Verify(r.Password, p.PwHash)
+		v, err := password.Verify(in.Password, p.PwHash)
 		if err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
