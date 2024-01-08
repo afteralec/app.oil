@@ -5,7 +5,7 @@
   class="nav-button"
   x-data
   @click.prevent="toggleTheme();"
-  hx-post="/theme/{{ .ToggleTheme }}"
+  hx-post="{{ .ToggleThemePath }}"
   hx-swap="outerHTML"
 >
   <!-- prettier-ignore -->

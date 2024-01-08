@@ -6,6 +6,7 @@ import (
 	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -45,10 +46,12 @@ func SetTheme(i *shared.Interfaces) fiber.Handler {
 			themeText = "Dark"
 		}
 
+		toggleThemePath := routes.ThemePath(toggleTheme)
+
 		b := fiber.Map{
-			"Theme":       theme,
-			"ThemeText":   themeText,
-			"ToggleTheme": toggleTheme,
+			"Theme":           theme,
+			"ThemeText":       themeText,
+			"ToggleThemePath": toggleThemePath,
 		}
 		return c.Render(partials.ThemeToggle, b, layouts.None)
 	}

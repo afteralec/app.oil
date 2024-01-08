@@ -14,9 +14,9 @@ import (
 func New() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		theme := c.Locals("theme")
-		toggleTheme := "dark"
-		if theme == "dark" {
-			toggleTheme = "light"
+		toggleTheme := constants.ThemeDark
+		if theme == constants.ThemeDark {
+			toggleTheme = constants.ThemeLight
 		}
 		themeText := "Light"
 		if theme == constants.ThemeDark {
@@ -26,7 +26,7 @@ func New() fiber.Handler {
 		b := fiber.Map{
 			"Theme":           theme,
 			"ThemeText":       themeText,
-			"ToggleTheme":     toggleTheme,
+			"ToggleThemePath": routes.ThemePath(toggleTheme),
 			"CSRF":            c.Locals("csrf"),
 			"PID":             c.Locals("pid"),
 			"CopyrightYear":   time.Now().Year(),
