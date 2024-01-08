@@ -14,19 +14,15 @@
     class="group ml-auto flex list-none items-center justify-center gap-1 space-x-[1.5]"
   >
     <!-- prettier-ignore -->
-    {{ template "partial-header-nav-theme" . }}
-
-    {{ if .ShouldShowMenus.Review }}
-      {{ template "partial-header-nav-review" . }}
+    {{ range .Menus }}
+      {{ if eq .Type "List" }}
+        {{ template "partial-header-nav-menu-list" . }}
+      {{ else if eq .Type "Theme" }}
+        {{ template "partial-header-nav-theme" . }}
+      {{ end }}
     {{ end }}
 
-    {{ if .ShouldShowMenus.Permissions }}
-      {{ template "partial-header-nav-permissions" . }}
-    {{ end }}
-
-    {{ if .PID }}
-      {{ template "partial-header-nav-menu-list" .AccountMenu }}
-    {{ else }}
+    {{ if not .PID }}
       {{ template "partial-header-nav-login" }}
       {{ template "partial-header-nav-register" }}
     {{ end }}
