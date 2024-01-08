@@ -1,0 +1,35 @@
+{{ define "partial-header-nav" }}
+<nav
+  class="relative flex w-full max-w-10xl items-center justify-start px-6 py-2"
+>
+  <a href="/">
+    <iconify-icon
+      icon="wi:raindrop"
+      class="mr-auto hover:text-primary/90"
+      height="48"
+      width="48"
+    ></iconify-icon>
+  </a>
+  <ul
+    class="group ml-auto flex list-none items-center justify-center gap-1 space-x-[1.5]"
+  >
+    <!-- prettier-ignore -->
+    {{ template "partial-header-nav-theme" . }}
+
+    {{ if .ShouldShowMenus.Review }}
+      {{ template "partial-header-nav-review" . }}
+    {{ end -}}
+
+    {{ if .ShouldShowMenus.Permissions }}
+      {{ template "partial-header-nav-permissions" . }}
+    {{ end -}}
+
+    {{ if .PID -}}
+      {{ template "partial-header-nav-account" . }}
+    {{ else -}}
+      {{ template "partial-header-nav-login" }}
+      {{ template "partial-header-nav-register" }}
+    {{ end -}}
+  </ul>
+</nav>
+{{ end }}

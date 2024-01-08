@@ -1,0 +1,109 @@
+<!-- prettier-ignore -->
+{{ define "partial-register-modal" }}
+{{ template "partial-modal-overlay" "showModal" }}
+<div class="modal" @click.away="showModal = false;" x-cloak x-show="showModal">
+  {{ template "partial-modal-close" "showModal" }}
+  <section id="register-error"></section>
+  <p class="pt-4">Create an account:</p>
+  <form class="space-y-4 px-4 pt-4" hx-post="/player/new">
+    <div class="space-y-2">
+      <label
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        for="register-username"
+      >
+        Username
+      </label>
+      <input
+        name="username"
+        placeholder=""
+        value=""
+        id="register-username"
+        class="input"
+        x-model="username"
+        @focus="notifs.u = true;"
+        @input="
+            eval.u.len = true;
+            const reservedEl = document.getElementById('username-reserved');
+            reservedEl.classList.add('htmx-request');
+            usernameReserved = true;
+            document.body.addEventListener('ptrcr:username-reserved', () => {
+              const el = document.getElementById('player-reserved');
+              usernameReserved = Boolean(el);
+            }, { once: true });
+            username = sanitizeUsername(event.target.value);
+          "
+        hx-post="/player/reserved"
+        hx-params="username"
+        hx-trigger="keyup changed delay:500ms"
+        hx-target="#username-reserved"
+        hx-indicator="#username-reserved"
+      />
+      <div>
+        <!-- prettier-ignore -->
+        {{ template "partial-username-requirements" }} 
+        {{ template "partial-username-reserved" }}
+      </div>
+    </div>
+    <div class="space-y-2">
+      <label
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        for="register-password"
+      >
+        Password
+      </label>
+      <input
+        type="password"
+        name="password"
+        placeholder=""
+        value=""
+        id="register-password"
+        class="input"
+        x-model="password"
+        @focus="notifs.pw = true"
+        @input="
+            setStrengths(strengths, event.target.value);
+            setEvalStrengths(eval.pw.strengths, strengths);
+            password = event.target.value;
+          "
+      />
+      {{ template "partial-password-strengths" }}
+    </div>
+    <div class="space-y-2">
+      <label
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        for="login-password"
+      >
+        Confirm Password
+      </label>
+      <input
+        type="password"
+        name="confirmPassword"
+        placeholder=""
+        value=""
+        id="register-confirm-password"
+        class="input"
+        x-model="confirmPassword"
+        @focus="notifs.cpw = true"
+        @input="
+            confirmPassword = event.target.value;
+            if (confirmPassword.length === password.length) {
+              eval.cpw.eq = true;
+            }
+          "
+        :disabled="!isPasswordValid(password)"
+      />
+      {{ template "partial-confirm-password" }}
+    </div>
+    <footer class="flex justify-end">
+      <button
+        type="submit"
+        id="register-button"
+        class="button-primary"
+        :disabled="usernameReserved || !isUsernameValid(username) || !isPasswordValid(password) || password !== confirmPassword"
+      >
+        Create Account
+      </button>
+    </footer>
+  </form>
+</div>
+{{ end }}

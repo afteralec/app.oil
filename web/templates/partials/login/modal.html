@@ -1,0 +1,67 @@
+<!-- prettier-ignore -->
+{{ define "partial-login-modal" }}
+{{ template "partial-modal-overlay" "showModal" }}
+<div class="modal" @click.away="showModal = false;" x-cloak x-show="showModal">
+  <section id="login-error"></section>
+  {{ template "partial-modal-close" "showModal" }}
+  <p class="pt-4">Please log in:</p>
+  <form
+    class="space-y-4 px-4 pt-4"
+    @submit.prevent=""
+    hx-post="/login"
+    hx-swap="none"
+  >
+    <div class="space-y-2">
+      <label
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        for="login-username"
+      >
+        Username
+      </label>
+      <input
+        name="username"
+        placeholder=""
+        value=""
+        id="login-username"
+        class="input"
+        x-model="username"
+        @input="
+            username = sanitizeUsername(event.target.value);
+          "
+      />
+    </div>
+    <div class="space-y-2">
+      <label
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        for="login-password"
+      >
+        Password
+      </label>
+      <input
+        type="password"
+        name="password"
+        placeholder=""
+        value=""
+        id="login-password"
+        class="input"
+        x-model="password"
+        @input="
+            password = event.target.value;
+          "
+      />
+    </div>
+    <a class="text-xs leading-none hover:underline" href="/recover"
+      >Don't have your username or password? Click here.</a
+    >
+    <footer class="flex justify-end">
+      <button
+        type="submit"
+        class="button-primary"
+        :disabled="!username.length || !password.length"
+      >
+        Log In
+      </button>
+    </footer>
+  </form>
+</div>
+{{ end }}
