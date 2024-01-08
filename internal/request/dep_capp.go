@@ -2,7 +2,6 @@ package request
 
 import (
 	"fmt"
-	"strconv"
 
 	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/queries"
@@ -51,7 +50,7 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 	return ApplicationSummary{
 		Reviewed: reviewed,
 		ReviewDialog: ReviewDialogData{
-			Path:     routes.PutCharacterApplicationInReviewPath(strconv.FormatInt(req.ID, 10)),
+			Path:     routes.RequestStatusPath(req.ID),
 			Variable: fmt.Sprintf("showReviewDialogFor%s%s", app.Name, p.Username),
 		},
 		Status:           req.Status,

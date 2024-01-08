@@ -9,42 +9,26 @@
       width="16"
     ></iconify-icon>
   </button>
-  <div class="dropdown-content z-3 absolute right-0 w-56 origin-top-right pt-2">
-    <div
-      class="divide-y divide-gray-100 rounded-md bg-bg shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none"
-      role="menu"
-      aria-orientation="vertical"
-      aria-labelledby="menu-button"
-      tabindex="-1"
-    >
+  <div class="dropdown-content absolute right-0 w-56 origin-top-right pt-2">
+    <div class="divide-y rounded-md border">
       <!-- TODO: Get this path sorted out in the bind -->
-      <div role="none">
+      <section>
         <!-- prettier-ignore -->
         {{ if .ShouldShowMenus.ReviewCharacterApplications }}
         {{ if eq .Path .Paths.ReviewCharacterApplications }}
-        <p
-          class="block bg-muted px-4 py-2 text-sm"
-          role="menuitem"
-          tabindex="-1"
-          id="account-menu-0"
-        >
-          Character Applications
-        </p>
+        <div class="bg-muted px-4 py-2 text-sm">Character Applications</div>
         {{ else }}
         <!-- TODO: Move these paths to a bind variable -->
         <a
           href="/character/application/queue"
-          class="block bg-bg px-4 py-2 text-sm hover:bg-muted"
-          role="menuitem"
-          tabindex="-1"
-          id="account-menu-0"
+          class="block px-4 py-2 text-sm hover:bg-muted"
         >
           Character Applications
         </a>
-        {{ end }}
         <!-- prettier-ignore -->
         {{ end }}
-      </div>
+        {{ end }}
+      </section>
     </div>
   </div>
 </li>

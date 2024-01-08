@@ -9,48 +9,41 @@
       width="16"
     ></iconify-icon>
   </button>
-  <div
-    class="dropdown-content absolute right-0 w-56 origin-top-right divide-y pt-2"
-  >
-    <section>
-      <div>
+  <div class="dropdown-content absolute right-0 w-56 origin-top-right pt-2">
+    <div class="divide-y rounded-md border">
+      <section>
         {{ if eq .Path .Paths.Characters }}
-        <p
-          class="block rounded-t-md border-x border-t bg-muted px-4 py-2 text-sm"
-        >
-          Characters
-        </p>
+        <div class="bg-muted px-4 py-2 text-sm">Characters</div>
         {{ else }}
         <a
-          href="/characters"
-          class="block rounded-t-md border-x border-t bg-bg px-4 py-2 text-sm hover:bg-muted"
+          href="{{ .Paths.Characters }}"
+          class="block px-4 py-2 text-sm hover:bg-muted"
         >
           Characters
         </a>
         {{ end }}
-      </div>
-      <div>
+        <!--prettier-ignore -->
         {{ if eq .Path .Paths.Profile }}
-        <p class="block border-x bg-muted px-4 py-2 text-sm">Profile</p>
+        <div class="bg-muted px-4 py-2 text-sm">Profile</div>
         {{ else }}
         <a
-          href="/profile"
-          class="block border-x bg-bg px-4 py-2 text-sm hover:bg-muted"
+          href="{{ .Paths.Profile }}"
+          class="block px-4 py-2 text-sm hover:bg-muted"
         >
           Profile
         </a>
         {{ end }}
-      </div>
-    </section>
-    <section>
-      <button
-        type="button"
-        class="block w-full cursor-pointer rounded-b-md border-x border-b px-4 py-2 text-left text-sm hover:bg-muted"
-        hx-post="/logout"
-      >
-        Logout
-      </button>
-    </section>
+      </section>
+      <section>
+        <button
+          type="button"
+          class="px-4 py-2 text-sm hover:bg-muted"
+          hx-post="/logout"
+        >
+          Logout
+        </button>
+      </section>
+    </div>
   </div>
 </li>
 {{ end }}

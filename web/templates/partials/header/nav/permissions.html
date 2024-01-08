@@ -1,6 +1,6 @@
 {{ define "partial-header-nav-permissions" }}
 <li class="dropdown relative">
-  <button type="button" class="nav-button group" @click="menuOpen = !menuOpen">
+  <button type="button" class="nav-button group" @click="menuOpen = !menuOpen;">
     Permissions
     <iconify-icon
       class="icon"
@@ -9,33 +9,21 @@
       width="16"
     ></iconify-icon>
   </button>
-  <div class="dropdown-content z-3 absolute right-0 w-56 origin-top-right pt-2">
-    <div
-      class="divide-y divide-gray-100 rounded-md bg-bg shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none"
-    >
-      <div>
+  <div class="dropdown-content absolute right-0 w-56 origin-top-right pt-2">
+    <div class="divide-y rounded-md border">
+      <section>
+        <!-- prettier-ignore -->
         {{ if eq .Path .Paths.PlayerPermissions }}
-        <p
-          class="block bg-muted px-4 py-2 text-sm"
-          role="menuitem"
-          tabindex="-1"
-          id="account-menu-0"
-        >
-          Player Permissions
-        </p>
+        <div class="bg-muted px-4 py-2 text-sm">Player Permissions</div>
         {{ else }}
-        <!-- TODO: Move these paths to a bind variable -->
         <a
-          href="/player/permissions"
-          class="block bg-bg px-4 py-2 text-sm hover:bg-muted"
-          role="menuitem"
-          tabindex="-1"
-          id="account-menu-0"
+          href="{{ .Paths.PlayerPermissions }}"
+          class="block px-4 py-2 text-sm hover:bg-muted"
         >
           Player Permissions
         </a>
         {{ end }}
-      </div>
+      </section>
     </div>
   </div>
 </li>

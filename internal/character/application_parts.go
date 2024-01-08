@@ -1,9 +1,8 @@
 package character
 
 import (
-	"strconv"
-
 	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
 )
 
@@ -19,35 +18,35 @@ func MakeApplicationNav(current string, app *queries.CharacterApplicationContent
 
 	result = append(result, ApplicationNav{
 		Label:   "Name",
-		Link:    routes.CharacterApplicationNamePath(strconv.FormatInt(app.RID, 10)),
+		Link:    routes.RequestFieldPath(app.RID, request.FieldName),
 		Current: current == "name",
 		Ready:   IsNameValid(app.Name),
 	})
 
 	result = append(result, ApplicationNav{
 		Label:   "Gender",
-		Link:    routes.CharacterApplicationGenderPath(strconv.FormatInt(app.RID, 10)),
+		Link:    routes.RequestFieldPath(app.RID, request.FieldGender),
 		Current: current == "gender",
 		Ready:   IsGenderValid(app.Gender),
 	})
 
 	result = append(result, ApplicationNav{
 		Label:   "Short Description",
-		Link:    routes.CharacterApplicationShortDescriptionPath(strconv.FormatInt(app.RID, 10)),
+		Link:    routes.RequestFieldPath(app.RID, request.FieldShortDescription),
 		Current: current == "sdesc",
 		Ready:   IsShortDescriptionValid(app.ShortDescription),
 	})
 
 	result = append(result, ApplicationNav{
 		Label:   "Description",
-		Link:    routes.CharacterApplicationDescriptionPath(strconv.FormatInt(app.RID, 10)),
+		Link:    routes.RequestFieldPath(app.RID, request.FieldDescription),
 		Current: current == "description",
 		Ready:   IsDescriptionValid(app.Description),
 	})
 
 	result = append(result, ApplicationNav{
 		Label:   "Backstory",
-		Link:    routes.CharacterApplicationBackstoryPath(strconv.FormatInt(app.RID, 10)),
+		Link:    routes.RequestFieldPath(app.RID, request.FieldBackstory),
 		Current: current == "backstory",
 		Ready:   IsBackstoryValid(app.Backstory),
 	})
