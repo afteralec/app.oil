@@ -196,7 +196,7 @@ body {
 }
 
 .nav-button {
-  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-bg px-4 py-2 text-sm font-medium transition-colors;
+  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-bg leading-none px-4 py-2 text-sm font-medium transition-colors;
 }
 
 .nav-button:hover {
