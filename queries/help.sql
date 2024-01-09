@@ -11,7 +11,13 @@ SELECT * FROM help WHERE slug = ?;
 SELECT * FROM help_related WHERE slug = ?;
 
 -- name: SearchHelpByTitle :many
-SELECT slug, title, sub FROM help WHERE slug LIKE ? OR title LIKE ?;
+SELECT slug, title, sub, category FROM help WHERE slug LIKE ? OR title LIKE ?;
 
 -- name: SearchHelpByContent :many
-SELECT slug, title, sub FROM help WHERE raw LIKE ? OR sub LIKE ?;
+SELECT slug, title, sub, category FROM help WHERE raw LIKE ? OR sub LIKE ?;
+
+-- name: SearchHelpByCategory :many
+SELECT slug, title, sub, category FROM help WHERE category LIKE ?;
+
+-- name: SearchTags :many
+SELECT slug, tag FROM help_tags WHERE tag LIKE ?;

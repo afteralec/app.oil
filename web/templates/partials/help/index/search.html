@@ -23,10 +23,10 @@
         :value="tags ? 'true' : 'false'"
       />
       <input
-        name="categories"
-        id="categories"
+        name="category"
+        id="category"
         class="sr-only"
-        :value="categories ? 'true' : 'false'"
+        :value="category ? 'true' : 'false'"
       />
       <input
         name="title"
@@ -55,10 +55,10 @@
       <button
         type="button"
         class="cursor-pointer"
-        :class="categories ? 'toggle-button-active' : 'toggle-button'"
-        @click="categories = !categories;"
+        :class="category ? 'toggle-button-active' : 'toggle-button'"
+        @click="category = !category;"
       >
-        Categories
+        Category
       </button>
       <button
         type="button"

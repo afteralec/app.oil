@@ -171,6 +171,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.markRequestSubmittedStmt, err = db.PrepareContext(ctx, markRequestSubmitted); err != nil {
 		return nil, fmt.Errorf("error preparing query MarkRequestSubmitted: %w", err)
 	}
+	if q.searchHelpByCategoryStmt, err = db.PrepareContext(ctx, searchHelpByCategory); err != nil {
+		return nil, fmt.Errorf("error preparing query SearchHelpByCategory: %w", err)
+	}
 	if q.searchHelpByContentStmt, err = db.PrepareContext(ctx, searchHelpByContent); err != nil {
 		return nil, fmt.Errorf("error preparing query SearchHelpByContent: %w", err)
 	}
@@ -179,6 +182,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.searchPlayersByUsernameStmt, err = db.PrepareContext(ctx, searchPlayersByUsername); err != nil {
 		return nil, fmt.Errorf("error preparing query SearchPlayersByUsername: %w", err)
+	}
+	if q.searchTagsStmt, err = db.PrepareContext(ctx, searchTags); err != nil {
+		return nil, fmt.Errorf("error preparing query SearchTags: %w", err)
 	}
 	if q.updateCharacterApplicationContentBackstoryStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentBackstory); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentBackstory: %w", err)
@@ -454,6 +460,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing markRequestSubmittedStmt: %w", cerr)
 		}
 	}
+	if q.searchHelpByCategoryStmt != nil {
+		if cerr := q.searchHelpByCategoryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing searchHelpByCategoryStmt: %w", cerr)
+		}
+	}
 	if q.searchHelpByContentStmt != nil {
 		if cerr := q.searchHelpByContentStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing searchHelpByContentStmt: %w", cerr)
@@ -467,6 +478,11 @@ func (q *Queries) Close() error {
 	if q.searchPlayersByUsernameStmt != nil {
 		if cerr := q.searchPlayersByUsernameStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing searchPlayersByUsernameStmt: %w", cerr)
+		}
+	}
+	if q.searchTagsStmt != nil {
+		if cerr := q.searchTagsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing searchTagsStmt: %w", cerr)
 		}
 	}
 	if q.updateCharacterApplicationContentBackstoryStmt != nil {
@@ -597,9 +613,11 @@ type Queries struct {
 	markRequestInReviewStmt                               *sql.Stmt
 	markRequestReadyStmt                                  *sql.Stmt
 	markRequestSubmittedStmt                              *sql.Stmt
+	searchHelpByCategoryStmt                              *sql.Stmt
 	searchHelpByContentStmt                               *sql.Stmt
 	searchHelpByTitleStmt                                 *sql.Stmt
 	searchPlayersByUsernameStmt                           *sql.Stmt
+	searchTagsStmt                                        *sql.Stmt
 	updateCharacterApplicationContentBackstoryStmt        *sql.Stmt
 	updateCharacterApplicationContentDescriptionStmt      *sql.Stmt
 	updateCharacterApplicationContentGenderStmt           *sql.Stmt
@@ -663,9 +681,11 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		markRequestInReviewStmt:                               q.markRequestInReviewStmt,
 		markRequestReadyStmt:                                  q.markRequestReadyStmt,
 		markRequestSubmittedStmt:                              q.markRequestSubmittedStmt,
+		searchHelpByCategoryStmt:                              q.searchHelpByCategoryStmt,
 		searchHelpByContentStmt:                               q.searchHelpByContentStmt,
 		searchHelpByTitleStmt:                                 q.searchHelpByTitleStmt,
 		searchPlayersByUsernameStmt:                           q.searchPlayersByUsernameStmt,
+		searchTagsStmt:                                        q.searchTagsStmt,
 		updateCharacterApplicationContentBackstoryStmt:        q.updateCharacterApplicationContentBackstoryStmt,
 		updateCharacterApplicationContentDescriptionStmt:      q.updateCharacterApplicationContentDescriptionStmt,
 		updateCharacterApplicationContentGenderStmt:           q.updateCharacterApplicationContentGenderStmt,

@@ -128,8 +128,47 @@ func (q *Queries) ListHelpSlugs(ctx context.Context) ([]string, error) {
 	return items, nil
 }
 
+const searchHelpByCategory = `-- name: SearchHelpByCategory :many
+SELECT slug, title, sub, category FROM help WHERE LOWER(category) LIKE ?
+`
+
+type SearchHelpByCategoryRow struct {
+	Slug     string
+	Title    string
+	Sub      string
+	Category string
+}
+
+func (q *Queries) SearchHelpByCategory(ctx context.Context, category string) ([]SearchHelpByCategoryRow, error) {
+	rows, err := q.query(ctx, q.searchHelpByCategoryStmt, searchHelpByCategory, category)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchHelpByCategoryRow
+	for rows.Next() {
+		var i SearchHelpByCategoryRow
+		if err := rows.Scan(
+			&i.Slug,
+			&i.Title,
+			&i.Sub,
+			&i.Category,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const searchHelpByContent = `-- name: SearchHelpByContent :many
-SELECT slug, title, sub FROM help WHERE raw LIKE ? OR sub LIKE ?
+SELECT slug, title, sub, category FROM help WHERE raw LIKE ? OR sub LIKE ?
 `
 
 type SearchHelpByContentParams struct {
@@ -138,9 +177,10 @@ type SearchHelpByContentParams struct {
 }
 
 type SearchHelpByContentRow struct {
-	Slug  string
-	Title string
-	Sub   string
+	Slug     string
+	Title    string
+	Sub      string
+	Category string
 }
 
 func (q *Queries) SearchHelpByContent(ctx context.Context, arg SearchHelpByContentParams) ([]SearchHelpByContentRow, error) {
@@ -152,7 +192,12 @@ func (q *Queries) SearchHelpByContent(ctx context.Context, arg SearchHelpByConte
 	var items []SearchHelpByContentRow
 	for rows.Next() {
 		var i SearchHelpByContentRow
-		if err := rows.Scan(&i.Slug, &i.Title, &i.Sub); err != nil {
+		if err := rows.Scan(
+			&i.Slug,
+			&i.Title,
+			&i.Sub,
+			&i.Category,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -167,7 +212,7 @@ func (q *Queries) SearchHelpByContent(ctx context.Context, arg SearchHelpByConte
 }
 
 const searchHelpByTitle = `-- name: SearchHelpByTitle :many
-SELECT slug, title, sub FROM help WHERE slug LIKE ? OR title LIKE ?
+SELECT slug, title, sub, category FROM help WHERE slug LIKE ? OR title LIKE ?
 `
 
 type SearchHelpByTitleParams struct {
@@ -176,9 +221,10 @@ type SearchHelpByTitleParams struct {
 }
 
 type SearchHelpByTitleRow struct {
-	Slug  string
-	Title string
-	Sub   string
+	Slug     string
+	Title    string
+	Sub      string
+	Category string
 }
 
 func (q *Queries) SearchHelpByTitle(ctx context.Context, arg SearchHelpByTitleParams) ([]SearchHelpByTitleRow, error) {
@@ -190,7 +236,44 @@ func (q *Queries) SearchHelpByTitle(ctx context.Context, arg SearchHelpByTitlePa
 	var items []SearchHelpByTitleRow
 	for rows.Next() {
 		var i SearchHelpByTitleRow
-		if err := rows.Scan(&i.Slug, &i.Title, &i.Sub); err != nil {
+		if err := rows.Scan(
+			&i.Slug,
+			&i.Title,
+			&i.Sub,
+			&i.Category,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const searchTags = `-- name: SearchTags :many
+SELECT slug, tag FROM help_tags WHERE tag LIKE ?
+`
+
+type SearchTagsRow struct {
+	Slug string
+	Tag  string
+}
+
+func (q *Queries) SearchTags(ctx context.Context, tag string) ([]SearchTagsRow, error) {
+	rows, err := q.query(ctx, q.searchTagsStmt, searchTags, tag)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchTagsRow
+	for rows.Next() {
+		var i SearchTagsRow
+		if err := rows.Scan(&i.Slug, &i.Tag); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"html/template"
-	"log"
 	"slices"
 	"strings"
 
@@ -128,8 +127,6 @@ func SearchHelp(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		log.Println(in)
-
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -157,9 +154,10 @@ func SearchHelp(i *shared.Interfaces) fiber.Handler {
 			foundByTitle := []fiber.Map{}
 			for _, header := range byTitle {
 				foundByTitle = append(foundByTitle, fiber.Map{
-					"Title": header.Title,
-					"Sub":   header.Sub,
-					"Path":  routes.HelpFilePath(header.Slug),
+					"Title":    header.Title,
+					"Sub":      header.Sub,
+					"Category": header.Category,
+					"Path":     routes.HelpFilePath(header.Slug),
 				})
 			}
 
@@ -189,9 +187,10 @@ func SearchHelp(i *shared.Interfaces) fiber.Handler {
 			foundByContent := []fiber.Map{}
 			for _, header := range byContent {
 				foundByContent = append(foundByContent, fiber.Map{
-					"Title": header.Title,
-					"Sub":   header.Sub,
-					"Path":  routes.HelpFilePath(header.Slug),
+					"Title":    header.Title,
+					"Sub":      header.Sub,
+					"Category": header.Category,
+					"Path":     routes.HelpFilePath(header.Slug),
 				})
 			}
 
@@ -203,6 +202,36 @@ func SearchHelp(i *shared.Interfaces) fiber.Handler {
 					{
 						"Header":  containsHeaderSB.String(),
 						"Results": foundByContent,
+					},
+				},
+			})
+		}
+
+		if in.Category {
+			byCategory, err := qtx.SearchHelpByCategory(context.Background(), search)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+
+			foundByCategory := []fiber.Map{}
+			for _, header := range byCategory {
+				foundByCategory = append(foundByCategory, fiber.Map{
+					"Title":    header.Title,
+					"Sub":      header.Sub,
+					"Category": header.Category,
+					"Path":     routes.HelpFilePath(header.Slug),
+				})
+			}
+
+			var sb strings.Builder
+			fmt.Fprintf(&sb, "Help Files With Category Containing \"%s\"", in.Search)
+
+			results = append(results, fiber.Map{
+				"ResultSets": []fiber.Map{
+					{
+						"Header":  sb.String(),
+						"Results": foundByCategory,
 					},
 				},
 			})
