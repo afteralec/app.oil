@@ -29,7 +29,7 @@ func HelpPage(i *shared.Interfaces) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		headers, err := qtx.ListHelpTitleAndSub(context.Background())
+		headers, err := qtx.ListHelpHeaders(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
@@ -38,9 +38,10 @@ func HelpPage(i *shared.Interfaces) fiber.Handler {
 		help := []fiber.Map{}
 		for _, header := range headers {
 			help = append(help, fiber.Map{
-				"Title": header.Title,
-				"Sub":   header.Sub,
-				"Path":  routes.HelpFilePath(header.Slug),
+				"Title":    header.Title,
+				"Sub":      header.Sub,
+				"Category": header.Category,
+				"Path":     routes.HelpFilePath(header.Slug),
 			})
 		}
 
@@ -98,7 +99,7 @@ func HelpFilePage(i *shared.Interfaces) fiber.Handler {
 			related = append(related, fiber.Map{
 				"Title": record.RelatedTitle,
 				"Sub":   record.RelatedSub,
-				"Path":  routes.HelpFilePath(record.Related),
+				"Path":  routes.HelpFilePath(record.RelatedSlug),
 			})
 		}
 
@@ -114,11 +115,11 @@ func HelpFilePage(i *shared.Interfaces) fiber.Handler {
 
 func SearchHelp(i *shared.Interfaces) fiber.Handler {
 	type input struct {
-		Search     string `form:"search"`
-		Tags       string `form:"tags"`
-		Categories string `form:"categories"`
-		Title      string `form:"title"`
-		Content    string `form:"content"`
+		Search   string `form:"search"`
+		Title    bool   `form:"title"`
+		Content  bool   `form:"content"`
+		Category bool   `form:"category"`
+		Tags     bool   `form:"tags"`
 	}
 	return func(c *fiber.Ctx) error {
 		in := new(input)
@@ -126,6 +127,8 @@ func SearchHelp(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
+
+		log.Println(in)
 
 		tx, err := i.Database.Begin()
 		if err != nil {
@@ -139,24 +142,70 @@ func SearchHelp(i *shared.Interfaces) fiber.Handler {
 		fmt.Fprintf(&sb, "%%%s%%", in.Search)
 		search := sb.String()
 
-		byTitle, err := qtx.SearchHelpByTitle(context.Background(), queries.SearchHelpByTitleParams{
-			Slug:  search,
-			Title: search,
-		})
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
+		results := []fiber.Map{}
+
+		if in.Title {
+			byTitle, err := qtx.SearchHelpByTitle(context.Background(), queries.SearchHelpByTitleParams{
+				Slug:  search,
+				Title: search,
+			})
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+
+			foundByTitle := []fiber.Map{}
+			for _, header := range byTitle {
+				foundByTitle = append(foundByTitle, fiber.Map{
+					"Title": header.Title,
+					"Sub":   header.Sub,
+					"Path":  routes.HelpFilePath(header.Slug),
+				})
+			}
+
+			var containsHeaderSB strings.Builder
+			fmt.Fprintf(&containsHeaderSB, "Title Contains \"%s\"", in.Search)
+
+			results = append(results, fiber.Map{
+				"ResultSets": []fiber.Map{
+					{
+						"Header":  containsHeaderSB.String(),
+						"Results": foundByTitle,
+					},
+				},
+			})
 		}
 
-		log.Println(len(byTitle))
+		if in.Content {
+			byContent, err := qtx.SearchHelpByContent(context.Background(), queries.SearchHelpByContentParams{
+				Sub: search,
+				Raw: search,
+			})
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
 
-		byContent, err := qtx.SearchHelpByContent(context.Background(), queries.SearchHelpByContentParams{
-			Sub: search,
-			Raw: search,
-		})
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
+			foundByContent := []fiber.Map{}
+			for _, header := range byContent {
+				foundByContent = append(foundByContent, fiber.Map{
+					"Title": header.Title,
+					"Sub":   header.Sub,
+					"Path":  routes.HelpFilePath(header.Slug),
+				})
+			}
+
+			var containsHeaderSB strings.Builder
+			fmt.Fprintf(&containsHeaderSB, "Help Files Containing \"%s\"", in.Search)
+
+			results = append(results, fiber.Map{
+				"ResultSets": []fiber.Map{
+					{
+						"Header":  containsHeaderSB.String(),
+						"Results": foundByContent,
+					},
+				},
+			})
 		}
 
 		if err := tx.Commit(); err != nil {
@@ -164,39 +213,13 @@ func SearchHelp(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if len(byTitle) == 0 && len(byContent) == 0 {
+		if len(results) == 0 {
 			c.Status(fiber.StatusNotFound)
 			return nil
 		}
 
-		foundByTitle := []fiber.Map{}
-		for _, header := range byTitle {
-			foundByTitle = append(foundByTitle, fiber.Map{
-				"Title": header.Title,
-				"Sub":   header.Sub,
-				"Path":  routes.HelpFilePath(header.Slug),
-			})
-		}
-
-		foundByContent := []fiber.Map{}
-		for _, header := range byContent {
-			foundByContent = append(foundByContent, fiber.Map{
-				"Title": header.Title,
-				"Sub":   header.Sub,
-				"Path":  routes.HelpFilePath(header.Slug),
-			})
-		}
-
-		var contentHeaderSB strings.Builder
-		fmt.Fprintf(&contentHeaderSB, "Help Files Containing \"%s\"", in.Search)
-		var titleHeaderSB strings.Builder
-		fmt.Fprintf(&titleHeaderSB, "Best Matches for \"%s\"", in.Search)
-
 		b := views.Bind(c)
-		b["ByTitle"] = foundByTitle
-		b["ByContent"] = foundByContent
-		b["TitleHeader"] = titleHeaderSB.String()
-		b["ContentHeader"] = contentHeaderSB.String()
+		b["Results"] = results
 		return c.Render(partials.HelpIndexSearchResults, b, layouts.None)
 	}
 }

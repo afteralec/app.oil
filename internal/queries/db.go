@@ -138,11 +138,11 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
 	}
+	if q.listHelpHeadersStmt, err = db.PrepareContext(ctx, listHelpHeaders); err != nil {
+		return nil, fmt.Errorf("error preparing query ListHelpHeaders: %w", err)
+	}
 	if q.listHelpSlugsStmt, err = db.PrepareContext(ctx, listHelpSlugs); err != nil {
 		return nil, fmt.Errorf("error preparing query ListHelpSlugs: %w", err)
-	}
-	if q.listHelpTitleAndSubStmt, err = db.PrepareContext(ctx, listHelpTitleAndSub); err != nil {
-		return nil, fmt.Errorf("error preparing query ListHelpTitleAndSub: %w", err)
 	}
 	if q.listOpenCharacterApplicationsStmt, err = db.PrepareContext(ctx, listOpenCharacterApplications); err != nil {
 		return nil, fmt.Errorf("error preparing query ListOpenCharacterApplications: %w", err)
@@ -399,14 +399,14 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listEmailsStmt: %w", cerr)
 		}
 	}
+	if q.listHelpHeadersStmt != nil {
+		if cerr := q.listHelpHeadersStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listHelpHeadersStmt: %w", cerr)
+		}
+	}
 	if q.listHelpSlugsStmt != nil {
 		if cerr := q.listHelpSlugsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listHelpSlugsStmt: %w", cerr)
-		}
-	}
-	if q.listHelpTitleAndSubStmt != nil {
-		if cerr := q.listHelpTitleAndSubStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listHelpTitleAndSubStmt: %w", cerr)
 		}
 	}
 	if q.listOpenCharacterApplicationsStmt != nil {
@@ -586,8 +586,8 @@ type Queries struct {
 	listCommentsForRequestStmt                            *sql.Stmt
 	listCommentsForRequestWithAuthorStmt                  *sql.Stmt
 	listEmailsStmt                                        *sql.Stmt
+	listHelpHeadersStmt                                   *sql.Stmt
 	listHelpSlugsStmt                                     *sql.Stmt
-	listHelpTitleAndSubStmt                               *sql.Stmt
 	listOpenCharacterApplicationsStmt                     *sql.Stmt
 	listPlayerPermissionsStmt                             *sql.Stmt
 	listRequestsForPlayerStmt                             *sql.Stmt
@@ -652,8 +652,8 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listCommentsForRequestStmt:                            q.listCommentsForRequestStmt,
 		listCommentsForRequestWithAuthorStmt:                  q.listCommentsForRequestWithAuthorStmt,
 		listEmailsStmt:                                        q.listEmailsStmt,
+		listHelpHeadersStmt:                                   q.listHelpHeadersStmt,
 		listHelpSlugsStmt:                                     q.listHelpSlugsStmt,
-		listHelpTitleAndSubStmt:                               q.listHelpTitleAndSubStmt,
 		listOpenCharacterApplicationsStmt:                     q.listOpenCharacterApplicationsStmt,
 		listPlayerPermissionsStmt:                             q.listPlayerPermissionsStmt,
 		listRequestsForPlayerStmt:                             q.listRequestsForPlayerStmt,

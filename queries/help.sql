@@ -1,8 +1,8 @@
 -- name: ListHelpSlugs :many
 SELECT slug FROM help;
 
--- name: ListHelpTitleAndSub :many
-SELECT slug, title, sub FROM help ORDER BY slug;
+-- name: ListHelpHeaders :many
+SELECT slug, title, sub, category FROM help ORDER BY slug;
 
 -- name: GetHelp :one
 SELECT * FROM help WHERE slug = ?;

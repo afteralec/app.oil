@@ -10,7 +10,7 @@ import (
 )
 
 const getHelp = `-- name: GetHelp :one
-SELECT created_at, updated_at, html, raw, sub, title, slug, pid FROM help WHERE slug = ?
+SELECT created_at, updated_at, html, raw, sub, title, category, slug, pid FROM help WHERE slug = ?
 `
 
 func (q *Queries) GetHelp(ctx context.Context, slug string) (Help, error) {
@@ -23,6 +23,7 @@ func (q *Queries) GetHelp(ctx context.Context, slug string) (Help, error) {
 		&i.Raw,
 		&i.Sub,
 		&i.Title,
+		&i.Category,
 		&i.Slug,
 		&i.PID,
 	)
@@ -30,7 +31,7 @@ func (q *Queries) GetHelp(ctx context.Context, slug string) (Help, error) {
 }
 
 const getHelpRelated = `-- name: GetHelpRelated :many
-SELECT related_sub, related_title, related, slug FROM help_related WHERE slug = ?
+SELECT related_sub, related_title, related_slug, slug FROM help_related WHERE slug = ?
 `
 
 func (q *Queries) GetHelpRelated(ctx context.Context, slug string) ([]HelpRelated, error) {
@@ -45,8 +46,47 @@ func (q *Queries) GetHelpRelated(ctx context.Context, slug string) ([]HelpRelate
 		if err := rows.Scan(
 			&i.RelatedSub,
 			&i.RelatedTitle,
-			&i.Related,
+			&i.RelatedSlug,
 			&i.Slug,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listHelpHeaders = `-- name: ListHelpHeaders :many
+SELECT slug, title, sub, category FROM help ORDER BY slug
+`
+
+type ListHelpHeadersRow struct {
+	Slug     string
+	Title    string
+	Sub      string
+	Category string
+}
+
+func (q *Queries) ListHelpHeaders(ctx context.Context) ([]ListHelpHeadersRow, error) {
+	rows, err := q.query(ctx, q.listHelpHeadersStmt, listHelpHeaders)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListHelpHeadersRow
+	for rows.Next() {
+		var i ListHelpHeadersRow
+		if err := rows.Scan(
+			&i.Slug,
+			&i.Title,
+			&i.Sub,
+			&i.Category,
 		); err != nil {
 			return nil, err
 		}
@@ -78,39 +118,6 @@ func (q *Queries) ListHelpSlugs(ctx context.Context) ([]string, error) {
 			return nil, err
 		}
 		items = append(items, slug)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listHelpTitleAndSub = `-- name: ListHelpTitleAndSub :many
-SELECT slug, title, sub FROM help ORDER BY slug
-`
-
-type ListHelpTitleAndSubRow struct {
-	Slug  string
-	Title string
-	Sub   string
-}
-
-func (q *Queries) ListHelpTitleAndSub(ctx context.Context) ([]ListHelpTitleAndSubRow, error) {
-	rows, err := q.query(ctx, q.listHelpTitleAndSubStmt, listHelpTitleAndSub)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ListHelpTitleAndSubRow
-	for rows.Next() {
-		var i ListHelpTitleAndSubRow
-		if err := rows.Scan(&i.Slug, &i.Title, &i.Sub); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

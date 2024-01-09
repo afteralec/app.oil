@@ -49,6 +49,7 @@ type Help struct {
 	Raw       string
 	Sub       string
 	Title     string
+	Category  string
 	Slug      string
 	PID       int64
 }
@@ -56,8 +57,14 @@ type Help struct {
 type HelpRelated struct {
 	RelatedSub   string
 	RelatedTitle string
-	Related      string
+	RelatedSlug  string
 	Slug         string
+}
+
+type HelpTag struct {
+	Tag  string
+	Slug string
+	ID   int64
 }
 
 type Player struct {

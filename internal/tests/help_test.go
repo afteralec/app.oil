@@ -153,6 +153,7 @@ func TestSearchHelpSuccess(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("search", "test")
+	writer.WriteField("title", "true")
 	writer.Close()
 
 	url := MakeTestURL(routes.Help)
