@@ -114,7 +114,11 @@ func HelpFilePage(i *shared.Interfaces) fiber.Handler {
 
 func SearchHelp(i *shared.Interfaces) fiber.Handler {
 	type input struct {
-		Search string `form:"search"`
+		Search     string `form:"search"`
+		Tags       string `form:"tags"`
+		Categories string `form:"categories"`
+		Title      string `form:"title"`
+		Content    string `form:"content"`
 	}
 	return func(c *fiber.Ctx) error {
 		in := new(input)
