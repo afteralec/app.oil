@@ -1,5 +1,16 @@
 {{ define "view-help-file" }}
 <main class="flex flex-col items-center justify-center">
+  <nav class="w-full px-4 pb-4 pt-6 md:w-[750px] md:px-4 lg:w-[1000px]">
+    <a href="{{ .HelpPath }}" class="nav-button text-lg"
+      ><iconify-icon
+        class="icon"
+        icon="tabler:chevron-left"
+        height="18"
+        width="18"
+      ></iconify-icon>
+      Back to Help</a
+    >
+  </nav>
   <article class="help w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
     {{ .Content }}
   </article>

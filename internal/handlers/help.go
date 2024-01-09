@@ -101,6 +101,8 @@ func HelpFilePage(i *shared.Interfaces) fiber.Handler {
 		b := views.Bind(c)
 		b["Content"] = html
 		b["Related"] = related
+		// TODO: Once the help path can take a query string, save the last state of the session's help path
+		b["HelpPath"] = routes.Help
 		return c.Render(views.HelpFile, b, layouts.Main)
 	}
 }
