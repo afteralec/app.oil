@@ -177,6 +177,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.searchHelpByContentStmt, err = db.PrepareContext(ctx, searchHelpByContent); err != nil {
 		return nil, fmt.Errorf("error preparing query SearchHelpByContent: %w", err)
 	}
+	if q.searchHelpByTagsStmt, err = db.PrepareContext(ctx, searchHelpByTags); err != nil {
+		return nil, fmt.Errorf("error preparing query SearchHelpByTags: %w", err)
+	}
 	if q.searchHelpByTitleStmt, err = db.PrepareContext(ctx, searchHelpByTitle); err != nil {
 		return nil, fmt.Errorf("error preparing query SearchHelpByTitle: %w", err)
 	}
@@ -470,6 +473,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing searchHelpByContentStmt: %w", cerr)
 		}
 	}
+	if q.searchHelpByTagsStmt != nil {
+		if cerr := q.searchHelpByTagsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing searchHelpByTagsStmt: %w", cerr)
+		}
+	}
 	if q.searchHelpByTitleStmt != nil {
 		if cerr := q.searchHelpByTitleStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing searchHelpByTitleStmt: %w", cerr)
@@ -615,6 +623,7 @@ type Queries struct {
 	markRequestSubmittedStmt                              *sql.Stmt
 	searchHelpByCategoryStmt                              *sql.Stmt
 	searchHelpByContentStmt                               *sql.Stmt
+	searchHelpByTagsStmt                                  *sql.Stmt
 	searchHelpByTitleStmt                                 *sql.Stmt
 	searchPlayersByUsernameStmt                           *sql.Stmt
 	searchTagsStmt                                        *sql.Stmt
@@ -683,6 +692,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		markRequestSubmittedStmt:                              q.markRequestSubmittedStmt,
 		searchHelpByCategoryStmt:                              q.searchHelpByCategoryStmt,
 		searchHelpByContentStmt:                               q.searchHelpByContentStmt,
+		searchHelpByTagsStmt:                                  q.searchHelpByTagsStmt,
 		searchHelpByTitleStmt:                                 q.searchHelpByTitleStmt,
 		searchPlayersByUsernameStmt:                           q.searchPlayersByUsernameStmt,
 		searchTagsStmt:                                        q.searchTagsStmt,

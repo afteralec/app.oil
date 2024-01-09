@@ -21,3 +21,6 @@ SELECT slug, title, sub, category FROM help WHERE category LIKE ?;
 
 -- name: SearchTags :many
 SELECT slug, tag FROM help_tags WHERE tag LIKE ?;
+
+-- name: SearchHelpByTags :many
+SELECT slug, title, sub, category FROM help WHERE slug IN (SELECT slug FROM help_tags WHERE tag LIKE ?);

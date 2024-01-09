@@ -237,6 +237,37 @@ func SearchHelp(i *shared.Interfaces) fiber.Handler {
 			})
 		}
 
+		if in.Tags {
+			byTags, err := qtx.SearchHelpByTags(context.Background(), search)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+
+			foundByTags := []fiber.Map{}
+			for _, header := range byTags {
+				foundByTags = append(foundByTags, fiber.Map{
+					"Title":    header.Title,
+					"Sub":      header.Sub,
+					"Category": header.Category,
+					"Path":     routes.HelpFilePath(header.Slug),
+				})
+			}
+
+			var sb strings.Builder
+			fmt.Fprintf(&sb, "Help Files With Tags Containing \"%s\"", in.Search)
+
+			results = append(results, fiber.Map{
+				"ResultSets": []fiber.Map{
+					{
+						"Header":  sb.String(),
+						"Results": foundByTags,
+					},
+				},
+			})
+
+		}
+
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
