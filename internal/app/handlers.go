@@ -15,6 +15,7 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 
 	app.Get(routes.Help, handlers.HelpPage(i))
 	app.Get(routes.HelpFilePathParam, handlers.HelpFilePage(i))
+	app.Post(routes.Help, handlers.SearchHelp(i))
 
 	app.Post(routes.Requests, handlers.NewRequest(i))
 	app.Get(routes.RequestFieldPathParam, handlers.RequestFieldPage(i))

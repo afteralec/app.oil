@@ -120,3 +120,79 @@ func (q *Queries) ListHelpTitleAndSub(ctx context.Context) ([]ListHelpTitleAndSu
 	}
 	return items, nil
 }
+
+const searchHelpByContent = `-- name: SearchHelpByContent :many
+SELECT slug, title, sub FROM help WHERE raw LIKE ? OR sub LIKE ?
+`
+
+type SearchHelpByContentParams struct {
+	Raw string
+	Sub string
+}
+
+type SearchHelpByContentRow struct {
+	Slug  string
+	Title string
+	Sub   string
+}
+
+func (q *Queries) SearchHelpByContent(ctx context.Context, arg SearchHelpByContentParams) ([]SearchHelpByContentRow, error) {
+	rows, err := q.query(ctx, q.searchHelpByContentStmt, searchHelpByContent, arg.Raw, arg.Sub)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchHelpByContentRow
+	for rows.Next() {
+		var i SearchHelpByContentRow
+		if err := rows.Scan(&i.Slug, &i.Title, &i.Sub); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const searchHelpByTitle = `-- name: SearchHelpByTitle :many
+SELECT slug, title, sub FROM help WHERE slug LIKE ? OR title LIKE ?
+`
+
+type SearchHelpByTitleParams struct {
+	Slug  string
+	Title string
+}
+
+type SearchHelpByTitleRow struct {
+	Slug  string
+	Title string
+	Sub   string
+}
+
+func (q *Queries) SearchHelpByTitle(ctx context.Context, arg SearchHelpByTitleParams) ([]SearchHelpByTitleRow, error) {
+	rows, err := q.query(ctx, q.searchHelpByTitleStmt, searchHelpByTitle, arg.Slug, arg.Title)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchHelpByTitleRow
+	for rows.Next() {
+		var i SearchHelpByTitleRow
+		if err := rows.Scan(&i.Slug, &i.Title, &i.Sub); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"bytes"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -106,6 +108,56 @@ func TestHelpFilePageSuccess(t *testing.T) {
 
 	url := MakeTestURL(routes.HelpFilePath("test"))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestSearchHelpNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	config := configs.Fiber()
+	a := fiber.New(config)
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("search", "this string doesn't show up anywhere in help files")
+	writer.Close()
+
+	url := MakeTestURL(routes.Help)
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestSearchHelpSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	config := configs.Fiber()
+	a := fiber.New(config)
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("search", "test")
+	writer.Close()
+
+	url := MakeTestURL(routes.Help)
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)

@@ -47,7 +47,7 @@ func SearchPlayer(i *shared.Interfaces) fiber.Handler {
 			b := views.Bind(c)
 			b["Players"] = players
 			c.Status(fiber.StatusOK)
-			return c.Render(partials.PlayerPermissionsSearchResults, b, "")
+			return c.Render(partials.PlayerPermissionsSearchResults, b, layouts.None)
 		}
 
 		c.Status(fiber.StatusBadRequest)

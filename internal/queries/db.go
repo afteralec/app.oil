@@ -171,6 +171,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.markRequestSubmittedStmt, err = db.PrepareContext(ctx, markRequestSubmitted); err != nil {
 		return nil, fmt.Errorf("error preparing query MarkRequestSubmitted: %w", err)
 	}
+	if q.searchHelpByContentStmt, err = db.PrepareContext(ctx, searchHelpByContent); err != nil {
+		return nil, fmt.Errorf("error preparing query SearchHelpByContent: %w", err)
+	}
+	if q.searchHelpByTitleStmt, err = db.PrepareContext(ctx, searchHelpByTitle); err != nil {
+		return nil, fmt.Errorf("error preparing query SearchHelpByTitle: %w", err)
+	}
 	if q.searchPlayersByUsernameStmt, err = db.PrepareContext(ctx, searchPlayersByUsername); err != nil {
 		return nil, fmt.Errorf("error preparing query SearchPlayersByUsername: %w", err)
 	}
@@ -448,6 +454,16 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing markRequestSubmittedStmt: %w", cerr)
 		}
 	}
+	if q.searchHelpByContentStmt != nil {
+		if cerr := q.searchHelpByContentStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing searchHelpByContentStmt: %w", cerr)
+		}
+	}
+	if q.searchHelpByTitleStmt != nil {
+		if cerr := q.searchHelpByTitleStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing searchHelpByTitleStmt: %w", cerr)
+		}
+	}
 	if q.searchPlayersByUsernameStmt != nil {
 		if cerr := q.searchPlayersByUsernameStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing searchPlayersByUsernameStmt: %w", cerr)
@@ -581,6 +597,8 @@ type Queries struct {
 	markRequestInReviewStmt                               *sql.Stmt
 	markRequestReadyStmt                                  *sql.Stmt
 	markRequestSubmittedStmt                              *sql.Stmt
+	searchHelpByContentStmt                               *sql.Stmt
+	searchHelpByTitleStmt                                 *sql.Stmt
 	searchPlayersByUsernameStmt                           *sql.Stmt
 	updateCharacterApplicationContentBackstoryStmt        *sql.Stmt
 	updateCharacterApplicationContentDescriptionStmt      *sql.Stmt
@@ -645,6 +663,8 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		markRequestInReviewStmt:                               q.markRequestInReviewStmt,
 		markRequestReadyStmt:                                  q.markRequestReadyStmt,
 		markRequestSubmittedStmt:                              q.markRequestSubmittedStmt,
+		searchHelpByContentStmt:                               q.searchHelpByContentStmt,
+		searchHelpByTitleStmt:                                 q.searchHelpByTitleStmt,
 		searchPlayersByUsernameStmt:                           q.searchPlayersByUsernameStmt,
 		updateCharacterApplicationContentBackstoryStmt:        q.updateCharacterApplicationContentBackstoryStmt,
 		updateCharacterApplicationContentDescriptionStmt:      q.updateCharacterApplicationContentDescriptionStmt,
