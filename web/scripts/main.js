@@ -443,6 +443,15 @@ export function getPlayerPermissionsData() {
   };
 }
 
+export function getSearchHelpIndexData() {
+  return {
+    tags: false,
+    categories: false,
+    title: true,
+    content: true,
+  };
+}
+
 const HEADER_CSRF_TOKEN = "X-CSRF-Token";
 const HEADER_HX_ACCEPTABLE = "X-HX-Acceptable";
 const HX_ACCEPTABLE_STATUSES = {
@@ -493,3 +502,4 @@ window.getCharacterApplicationData = getCharacterApplicationData;
 window.getRequestData = getRequestData;
 window.getPlayerPermissionsData = getPlayerPermissionsData;
 window.getRequestCommentData = getRequestCommentData;
+window.getSearchHelpIndexData = getSearchHelpIndexData;

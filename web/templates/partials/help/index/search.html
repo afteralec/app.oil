@@ -3,6 +3,7 @@
   <form
     id="search-help"
     class="w-[60%] space-y-2 px-6"
+    x-data="getSearchHelpIndexData()"
     @submit.prevent
     hx-post="/help"
     hx-target="#search-help-results"
@@ -15,7 +16,39 @@
       >
       <input type="search" name="search" id="search" class="input" />
     </div>
-    <footer class="flex items-center justify-end">
+    <footer class="flex items-center justify-end gap-2">
+      <button
+        type="button"
+        class="cursor-pointer"
+        :class="tags ? 'toggle-button-active' : 'toggle-button'"
+        @click="tags = !tags;"
+      >
+        Tags
+      </button>
+      <button
+        type="button"
+        class="cursor-pointer"
+        :class="categories ? 'toggle-button-active' : 'toggle-button'"
+        @click="categories = !categories;"
+      >
+        Categories
+      </button>
+      <button
+        type="button"
+        class="cursor-pointer"
+        :class="title ? 'toggle-button-active' : 'toggle-button'"
+        @click="title = !title;"
+      >
+        Title
+      </button>
+      <button
+        type="button"
+        class="cursor-pointer"
+        :class="content ? 'toggle-button-active' : 'toggle-button'"
+        @click="content = !content;"
+      >
+        Content
+      </button>
       <button type="submit" class="button-primary">Search</button>
     </footer>
   </form>

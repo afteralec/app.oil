@@ -219,6 +219,22 @@ body {
   @apply bg-accent text-accent-fg outline-none;
 }
 
+.toggle-button {
+  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-bg leading-none px-4 py-2 text-sm font-medium transition-colors select-none;
+}
+
+.toggle-button:hover {
+  @apply bg-accent text-accent-fg;
+}
+
+.toggle-button-active {
+  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md leading-none px-4 py-2 text-sm font-medium bg-accent text-accent-fg select-none;
+}
+
+.toggle-button-active:hover {
+  @apply bg-primary text-primary-fg;
+}
+
 .button-primary {
   @apply inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-fg ring-offset-bg transition-colors;
 }
