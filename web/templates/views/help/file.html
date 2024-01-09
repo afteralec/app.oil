@@ -1,0 +1,20 @@
+{{ define "view-help-file" }}
+<main class="flex flex-col items-center justify-center">
+  <article class="help w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
+    {{ .Content }}
+  </article>
+  <footer class="md:w-[750]px w-full px-10 pt-6 md:px-4 lg:w-[1000px]">
+    <section class="border-t pt-6">
+      <h1 class="text-lg font-bold leading-none tracking-tight">
+        Related Files
+      </h1>
+      <div>
+        <!-- prettier-ignore -->
+        {{ range .Related }}
+          {{ template "partial-help-related" . }}
+        {{ end }}
+      </div>
+    </section>
+  </footer>
+</main>
+{{ end }}

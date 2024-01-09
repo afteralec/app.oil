@@ -19,41 +19,42 @@ func Bind(c *fiber.Ctx) fiber.Map {
 		"Title":         "Petrichor",
 		"MetaContent":   "Petrichor MUD - a modern take on a classic",
 		"Path":          c.Path(),
-		"Menus":         menus(c),
+		"Nav":           nav(c),
 	}
 }
 
-func menus(c *fiber.Ctx) []fiber.Map {
-	menus := []fiber.Map{
-		themeMenu(c),
+func nav(c *fiber.Ctx) []fiber.Map {
+	nav := []fiber.Map{
+		themeButton(c),
+		helpLink(c),
 	}
 
 	_, err := util.GetPID(c)
 	if err != nil {
-		menus = append(menus, fiber.Map{"Type": "Login"})
-		menus = append(menus, fiber.Map{"Type": "Register"})
-		return menus
+		nav = append(nav, fiber.Map{"Type": "Login"})
+		nav = append(nav, fiber.Map{"Type": "Register"})
+		return nav
 	}
 
-	menus = append(menus, accountMenu(c))
+	nav = append(nav, accountMenu(c))
 
 	perms, err := util.GetPermissions(c)
 	if err != nil {
-		return menus
+		return nav
 	}
 
 	if perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
-		menus = append(menus, reviewMenu(c))
+		nav = append(nav, reviewMenu(c))
 	}
 
 	if perms.Permissions[permissions.PlayerGrantAllPermissionsName] {
-		menus = append(menus, permissionsMenu(c))
+		nav = append(nav, permissionsMenu(c))
 	}
 
-	return menus
+	return nav
 }
 
-func themeMenu(c *fiber.Ctx) fiber.Map {
+func themeButton(c *fiber.Ctx) fiber.Map {
 	theme := c.Locals("theme")
 	toggleTheme := constants.ThemeDark
 	if theme == constants.ThemeDark {
@@ -69,6 +70,16 @@ func themeMenu(c *fiber.Ctx) fiber.Map {
 		"Theme":           theme,
 		"ThemeText":       themeText,
 		"ToggleThemePath": routes.ThemePath(toggleTheme),
+	}
+}
+
+// TODO: Re-do this as a dropdown menu with search and various links
+func helpLink(c *fiber.Ctx) fiber.Map {
+	return fiber.Map{
+		"Type":   "Link",
+		"Path":   routes.Help,
+		"Text":   "Help",
+		"Active": c.Path() == routes.Help,
 	}
 }
 

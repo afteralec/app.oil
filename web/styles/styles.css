@@ -200,7 +200,7 @@ body {
 }
 
 .nav-button {
-  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-bg leading-none px-4 py-2 text-sm font-medium transition-colors;
+  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-bg leading-none px-4 py-2 text-sm font-medium transition-colors select-none;
 }
 
 .nav-button:hover {
@@ -209,6 +209,10 @@ body {
 
 .nav-button:disabled {
   @apply pointer-events-none opacity-50;
+}
+
+.nav-button-active {
+  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md leading-none px-4 py-2 text-sm font-medium bg-accent text-accent-fg select-none cursor-default;
 }
 
 .nav-button:focus {

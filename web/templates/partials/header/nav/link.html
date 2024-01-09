@@ -1,0 +1,9 @@
+{{ define "partial-header-nav-link" }}
+<!-- prettier-ignore -->
+{{ if .Active }}
+<div class="nav-button-active">{{ .Text }}</div>
+{{ else }}
+<a href="{{ .Path }}" class="nav-button"> {{ .Text }} </a>
+<!-- prettier-ignore -->
+{{ end }} 
+{{ end }}

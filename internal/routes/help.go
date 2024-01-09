@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	Help          string = "/help"
-	HelpPathParam string = "/help/:slug"
+	Help              string = "/help"
+	HelpFilePathParam string = "/help/:slug"
 )
 
-func HelpPath(slug string) string {
+func HelpFilePath(slug string) string {
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s/%s", Help, slug)
 	return sb.String()

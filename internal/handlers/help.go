@@ -24,6 +24,37 @@ func HelpPage(i *shared.Interfaces) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
+		headers, err := qtx.ListHelpTitleAndSub(context.Background())
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+		}
+
+		help := []fiber.Map{}
+		for _, header := range headers {
+			help = append(help, fiber.Map{
+				"Title": header.Title,
+				"Sub":   header.Sub,
+				"Path":  routes.HelpFilePath(header.Slug),
+			})
+		}
+
+		b := views.Bind(c)
+		b["Help"] = help
+		return c.Render(views.Help, b, layouts.Main)
+	}
+}
+
+func HelpFilePage(i *shared.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
 		slugs, err := qtx.ListHelpSlugs(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -62,7 +93,7 @@ func HelpPage(i *shared.Interfaces) fiber.Handler {
 			related = append(related, fiber.Map{
 				"Title": record.RelatedTitle,
 				"Sub":   record.RelatedSub,
-				"Path":  routes.HelpPath(record.Related),
+				"Path":  routes.HelpFilePath(record.Related),
 			})
 		}
 
@@ -70,6 +101,6 @@ func HelpPage(i *shared.Interfaces) fiber.Handler {
 		b := views.Bind(c)
 		b["Content"] = html
 		b["Related"] = related
-		return c.Render(views.Help, b, layouts.Main)
+		return c.Render(views.HelpFile, b, layouts.Main)
 	}
 }

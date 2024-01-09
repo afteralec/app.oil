@@ -141,6 +141,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listHelpSlugsStmt, err = db.PrepareContext(ctx, listHelpSlugs); err != nil {
 		return nil, fmt.Errorf("error preparing query ListHelpSlugs: %w", err)
 	}
+	if q.listHelpTitleAndSubStmt, err = db.PrepareContext(ctx, listHelpTitleAndSub); err != nil {
+		return nil, fmt.Errorf("error preparing query ListHelpTitleAndSub: %w", err)
+	}
 	if q.listOpenCharacterApplicationsStmt, err = db.PrepareContext(ctx, listOpenCharacterApplications); err != nil {
 		return nil, fmt.Errorf("error preparing query ListOpenCharacterApplications: %w", err)
 	}
@@ -395,6 +398,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listHelpSlugsStmt: %w", cerr)
 		}
 	}
+	if q.listHelpTitleAndSubStmt != nil {
+		if cerr := q.listHelpTitleAndSubStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listHelpTitleAndSubStmt: %w", cerr)
+		}
+	}
 	if q.listOpenCharacterApplicationsStmt != nil {
 		if cerr := q.listOpenCharacterApplicationsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listOpenCharacterApplicationsStmt: %w", cerr)
@@ -563,6 +571,7 @@ type Queries struct {
 	listCommentsForRequestWithAuthorStmt                  *sql.Stmt
 	listEmailsStmt                                        *sql.Stmt
 	listHelpSlugsStmt                                     *sql.Stmt
+	listHelpTitleAndSubStmt                               *sql.Stmt
 	listOpenCharacterApplicationsStmt                     *sql.Stmt
 	listPlayerPermissionsStmt                             *sql.Stmt
 	listRequestsForPlayerStmt                             *sql.Stmt
@@ -626,6 +635,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listCommentsForRequestWithAuthorStmt:                  q.listCommentsForRequestWithAuthorStmt,
 		listEmailsStmt:                                        q.listEmailsStmt,
 		listHelpSlugsStmt:                                     q.listHelpSlugsStmt,
+		listHelpTitleAndSubStmt:                               q.listHelpTitleAndSubStmt,
 		listOpenCharacterApplicationsStmt:                     q.listOpenCharacterApplicationsStmt,
 		listPlayerPermissionsStmt:                             q.listPlayerPermissionsStmt,
 		listRequestsForPlayerStmt:                             q.listRequestsForPlayerStmt,

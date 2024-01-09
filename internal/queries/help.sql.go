@@ -87,3 +87,36 @@ func (q *Queries) ListHelpSlugs(ctx context.Context) ([]string, error) {
 	}
 	return items, nil
 }
+
+const listHelpTitleAndSub = `-- name: ListHelpTitleAndSub :many
+SELECT slug, title, sub FROM help ORDER BY slug
+`
+
+type ListHelpTitleAndSubRow struct {
+	Slug  string
+	Title string
+	Sub   string
+}
+
+func (q *Queries) ListHelpTitleAndSub(ctx context.Context) ([]ListHelpTitleAndSubRow, error) {
+	rows, err := q.query(ctx, q.listHelpTitleAndSubStmt, listHelpTitleAndSub)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListHelpTitleAndSubRow
+	for rows.Next() {
+		var i ListHelpTitleAndSubRow
+		if err := rows.Scan(&i.Slug, &i.Title, &i.Sub); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

@@ -14,9 +14,11 @@
     class="group ml-auto flex list-none items-center justify-center gap-1 space-x-[1.5]"
   >
     <!-- prettier-ignore -->
-    {{ range .Menus }}
+    {{ range .Nav }}
       {{ if eq .Type "List" }}
         {{ template "partial-header-nav-menu-list" . }}
+      {{ else if eq .Type "Link" }}
+        {{ template "partial-header-nav-link" . }}
       {{ else if eq .Type "Theme" }}
         {{ template "partial-header-nav-theme" . }}
       {{ else if eq .Type "Login" }}

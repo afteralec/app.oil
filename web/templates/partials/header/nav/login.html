@@ -1,5 +1,5 @@
 {{ define "partial-header-nav-login" }}
-<li x-data="getLoginData()">
+<div x-data="getLoginData()">
   <button
     type="button"
     class="nav-button"
@@ -15,5 +15,5 @@
     Log In
   </button>
   {{ template "partial-login-modal" . }}
-</li>
+</div>
 {{ end }}
