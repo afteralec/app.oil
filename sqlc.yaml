@@ -17,6 +17,7 @@ sql:
           cid: "CID"
           ipid: "IPID"
           rpid: "RPID"
+          html: "HTML"
         overrides:
           - column: character_application_content.created_at
             go_struct_tag: json:"-"

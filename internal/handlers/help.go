@@ -9,6 +9,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/views"
 )
@@ -45,14 +46,30 @@ func HelpPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
+		relatedRecords, err := qtx.GetHelpRelated(context.Background(), slug)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+		}
+
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		html := template.HTML(help.Html)
+		related := []fiber.Map{}
+		for _, record := range relatedRecords {
+			related = append(related, fiber.Map{
+				"Title": record.RelatedTitle,
+				"Sub":   record.RelatedSub,
+				"Path":  routes.HelpPath(record.Related),
+			})
+		}
+
+		html := template.HTML(help.HTML)
 		b := views.Bind(c)
 		b["Content"] = html
+		b["Related"] = related
 		return c.Render(views.Help, b, layouts.Main)
 	}
 }

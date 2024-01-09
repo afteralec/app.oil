@@ -45,15 +45,19 @@ type Email struct {
 type Help struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	Html      string
+	HTML      string
 	Raw       string
+	Sub       string
+	Title     string
 	Slug      string
 	PID       int64
 }
 
 type HelpRelated struct {
-	Related string
-	Slug    string
+	RelatedSub   string
+	RelatedTitle string
+	Related      string
+	Slug         string
 }
 
 type Player struct {

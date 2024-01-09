@@ -10,7 +10,7 @@ import (
 )
 
 const getHelp = `-- name: GetHelp :one
-SELECT created_at, updated_at, html, raw, slug, pid FROM help WHERE slug = ?
+SELECT created_at, updated_at, html, raw, sub, title, slug, pid FROM help WHERE slug = ?
 `
 
 func (q *Queries) GetHelp(ctx context.Context, slug string) (Help, error) {
@@ -19,8 +19,10 @@ func (q *Queries) GetHelp(ctx context.Context, slug string) (Help, error) {
 	err := row.Scan(
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Html,
+		&i.HTML,
 		&i.Raw,
+		&i.Sub,
+		&i.Title,
 		&i.Slug,
 		&i.PID,
 	)
@@ -28,7 +30,7 @@ func (q *Queries) GetHelp(ctx context.Context, slug string) (Help, error) {
 }
 
 const getHelpRelated = `-- name: GetHelpRelated :many
-SELECT related, slug FROM help_related WHERE slug = ?
+SELECT related_sub, related_title, related, slug FROM help_related WHERE slug = ?
 `
 
 func (q *Queries) GetHelpRelated(ctx context.Context, slug string) ([]HelpRelated, error) {
@@ -40,7 +42,12 @@ func (q *Queries) GetHelpRelated(ctx context.Context, slug string) ([]HelpRelate
 	var items []HelpRelated
 	for rows.Next() {
 		var i HelpRelated
-		if err := rows.Scan(&i.Related, &i.Slug); err != nil {
+		if err := rows.Scan(
+			&i.RelatedSub,
+			&i.RelatedTitle,
+			&i.Related,
+			&i.Slug,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
