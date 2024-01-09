@@ -97,15 +97,6 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
 
-		if err := tx.Commit(); err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			c.Append("HX-Retarget", "#login-error")
-			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
-			c.Status(fiber.StatusUnauthorized)
-			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
-		}
-
 		sess, err := i.Sessions.Get(c)
 		if err != nil {
 			c.Append("HX-Retarget", "#login-error")
@@ -132,6 +123,15 @@ func Login(i *shared.Interfaces) fiber.Handler {
 			sess.Set("theme", settings.Theme)
 		}
 		if err = sess.Save(); err != nil {
+			c.Append("HX-Retarget", "#login-error")
+			c.Append("HX-Reswap", "outerHTML")
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
+		}
+
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")

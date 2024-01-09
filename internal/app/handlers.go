@@ -13,6 +13,8 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 
 	app.Post(routes.ThemePathParam, handlers.SetTheme(i))
 
+	app.Get(routes.HelpPathParam, handlers.HelpPage(i))
+
 	app.Post(routes.Requests, handlers.NewRequest(i))
 	app.Get(routes.RequestFieldPathParam, handlers.RequestFieldPage(i))
 	app.Patch(routes.RequestFieldPathParam, handlers.UpdateRequestFieldNew(i))

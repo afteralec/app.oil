@@ -270,3 +270,42 @@ body {
 .input:placeholder {
   @apply text-muted-fg;
 }
+
+/* TODO: Put these into a header class */
+.help h1 {
+  @apply pb-6 font-extrabold tracking-tight leading-none text-3xl;
+}
+
+.help h2 {
+  @apply pb-4 font-extrabold tracking-tight leading-none text-xl;
+}
+
+.help p {
+  @apply pl-5;
+}
+
+.help ol {
+  @apply pl-14 list-decimal;
+}
+
+.help ul {
+  @apply pl-14 list-disc;
+}
+
+.help pre {
+  @apply pl-5 py-4;
+}
+
+.help code {
+  @apply block p-4 max-w-[60%] rounded-md bg-primary text-primary-fg;
+}
+
+@screen lg {
+  .help h1 {
+    @apply text-4xl;
+  }
+
+  .help h2 {
+    @apply text-2xl;
+  }
+}

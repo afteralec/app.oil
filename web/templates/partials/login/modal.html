@@ -1,6 +1,7 @@
 <!-- prettier-ignore -->
-{{ define "partial-login-modal" }}
-{{ template "partial-modal-overlay" "showModal" }}
+<!-- TODO: Add a function injection here to let the input be cleared -->
+{{ define "partial-login-modal" }} {{ template "partial-modal-overlay"
+"showModal" }}
 <div class="modal" @click.away="showModal = false;" x-cloak x-show="showModal">
   <section id="login-error"></section>
   {{ template "partial-modal-close" "showModal" }}

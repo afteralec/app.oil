@@ -42,6 +42,20 @@ type Email struct {
 	ID        int64
 }
 
+type Help struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Html      string
+	Raw       string
+	Slug      string
+	PID       int64
+}
+
+type HelpRelated struct {
+	Related string
+	Slug    string
+}
+
 type Player struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time

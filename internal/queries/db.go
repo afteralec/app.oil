@@ -93,6 +93,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getEmailByAddressForPlayerStmt, err = db.PrepareContext(ctx, getEmailByAddressForPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query GetEmailByAddressForPlayer: %w", err)
 	}
+	if q.getHelpStmt, err = db.PrepareContext(ctx, getHelp); err != nil {
+		return nil, fmt.Errorf("error preparing query GetHelp: %w", err)
+	}
+	if q.getHelpRelatedStmt, err = db.PrepareContext(ctx, getHelpRelated); err != nil {
+		return nil, fmt.Errorf("error preparing query GetHelpRelated: %w", err)
+	}
 	if q.getPlayerStmt, err = db.PrepareContext(ctx, getPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPlayer: %w", err)
 	}
@@ -131,6 +137,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
+	}
+	if q.listHelpSlugsStmt, err = db.PrepareContext(ctx, listHelpSlugs); err != nil {
+		return nil, fmt.Errorf("error preparing query ListHelpSlugs: %w", err)
 	}
 	if q.listOpenCharacterApplicationsStmt, err = db.PrepareContext(ctx, listOpenCharacterApplications); err != nil {
 		return nil, fmt.Errorf("error preparing query ListOpenCharacterApplications: %w", err)
@@ -306,6 +315,16 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getEmailByAddressForPlayerStmt: %w", cerr)
 		}
 	}
+	if q.getHelpStmt != nil {
+		if cerr := q.getHelpStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getHelpStmt: %w", cerr)
+		}
+	}
+	if q.getHelpRelatedStmt != nil {
+		if cerr := q.getHelpRelatedStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getHelpRelatedStmt: %w", cerr)
+		}
+	}
 	if q.getPlayerStmt != nil {
 		if cerr := q.getPlayerStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPlayerStmt: %w", cerr)
@@ -369,6 +388,11 @@ func (q *Queries) Close() error {
 	if q.listEmailsStmt != nil {
 		if cerr := q.listEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listEmailsStmt: %w", cerr)
+		}
+	}
+	if q.listHelpSlugsStmt != nil {
+		if cerr := q.listHelpSlugsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listHelpSlugsStmt: %w", cerr)
 		}
 	}
 	if q.listOpenCharacterApplicationsStmt != nil {
@@ -523,6 +547,8 @@ type Queries struct {
 	getCommentWithAuthorStmt                              *sql.Stmt
 	getEmailStmt                                          *sql.Stmt
 	getEmailByAddressForPlayerStmt                        *sql.Stmt
+	getHelpStmt                                           *sql.Stmt
+	getHelpRelatedStmt                                    *sql.Stmt
 	getPlayerStmt                                         *sql.Stmt
 	getPlayerByUsernameStmt                               *sql.Stmt
 	getPlayerSettingsStmt                                 *sql.Stmt
@@ -536,6 +562,7 @@ type Queries struct {
 	listCommentsForRequestStmt                            *sql.Stmt
 	listCommentsForRequestWithAuthorStmt                  *sql.Stmt
 	listEmailsStmt                                        *sql.Stmt
+	listHelpSlugsStmt                                     *sql.Stmt
 	listOpenCharacterApplicationsStmt                     *sql.Stmt
 	listPlayerPermissionsStmt                             *sql.Stmt
 	listRequestsForPlayerStmt                             *sql.Stmt
@@ -583,6 +610,8 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getCommentWithAuthorStmt:                              q.getCommentWithAuthorStmt,
 		getEmailStmt:                                          q.getEmailStmt,
 		getEmailByAddressForPlayerStmt:                        q.getEmailByAddressForPlayerStmt,
+		getHelpStmt:                                           q.getHelpStmt,
+		getHelpRelatedStmt:                                    q.getHelpRelatedStmt,
 		getPlayerStmt:                                         q.getPlayerStmt,
 		getPlayerByUsernameStmt:                               q.getPlayerByUsernameStmt,
 		getPlayerSettingsStmt:                                 q.getPlayerSettingsStmt,
@@ -596,6 +625,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listCommentsForRequestStmt:                            q.listCommentsForRequestStmt,
 		listCommentsForRequestWithAuthorStmt:                  q.listCommentsForRequestWithAuthorStmt,
 		listEmailsStmt:                                        q.listEmailsStmt,
+		listHelpSlugsStmt:                                     q.listHelpSlugsStmt,
 		listOpenCharacterApplicationsStmt:                     q.listOpenCharacterApplicationsStmt,
 		listPlayerPermissionsStmt:                             q.listPlayerPermissionsStmt,
 		listRequestsForPlayerStmt:                             q.listRequestsForPlayerStmt,
