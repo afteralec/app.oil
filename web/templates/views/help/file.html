@@ -1,6 +1,8 @@
 {{ define "view-help-file" }}
 <main class="flex flex-col items-center justify-center">
-  <nav class="flex w-full px-4 pb-4 pt-6 md:w-[750px] md:px-4 lg:w-[1000px]">
+  <nav
+    class="flex w-full items-center px-4 pb-4 pt-6 md:w-[750px] md:px-4 lg:w-[1000px]"
+  >
     <a href="{{ .HelpPath }}" class="nav-button text-lg"
       ><iconify-icon
         class="icon"
@@ -39,7 +41,7 @@
       {{ end }}
     </div>
     <section class="border-t pl-4 pt-6">
-      <h3 class="text-lg font-bold leading-none tracking-tight">
+      <h3 class="text-base font-bold leading-none tracking-tight">
         Related Files
       </h3>
       <div>
