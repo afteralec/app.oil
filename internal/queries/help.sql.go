@@ -62,6 +62,33 @@ func (q *Queries) GetHelpRelated(ctx context.Context, slug string) ([]HelpRelate
 	return items, nil
 }
 
+const getTagsForHelpFile = `-- name: GetTagsForHelpFile :many
+SELECT tag FROM help_tags WHERE slug = ?
+`
+
+func (q *Queries) GetTagsForHelpFile(ctx context.Context, slug string) ([]string, error) {
+	rows, err := q.query(ctx, q.getTagsForHelpFileStmt, getTagsForHelpFile, slug)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var tag string
+		if err := rows.Scan(&tag); err != nil {
+			return nil, err
+		}
+		items = append(items, tag)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listHelpHeaders = `-- name: ListHelpHeaders :many
 SELECT slug, title, sub, category FROM help ORDER BY slug
 `

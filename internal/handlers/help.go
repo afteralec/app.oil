@@ -36,10 +36,17 @@ func HelpPage(i *shared.Interfaces) fiber.Handler {
 
 		help := []fiber.Map{}
 		for _, header := range headers {
+			tags, err := qtx.GetTagsForHelpFile(context.Background(), header.Slug)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+
 			help = append(help, fiber.Map{
 				"Title":    header.Title,
 				"Sub":      header.Sub,
 				"Category": header.Category,
+				"Tags":     tags,
 				"Path":     routes.HelpFilePath(header.Slug),
 			})
 		}
@@ -153,10 +160,17 @@ func SearchHelp(i *shared.Interfaces) fiber.Handler {
 
 			foundByTitle := []fiber.Map{}
 			for _, header := range byTitle {
+				tags, err := qtx.GetTagsForHelpFile(context.Background(), header.Slug)
+				if err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return nil
+				}
+
 				foundByTitle = append(foundByTitle, fiber.Map{
 					"Title":    header.Title,
 					"Sub":      header.Sub,
 					"Category": header.Category,
+					"Tags":     tags,
 					"Path":     routes.HelpFilePath(header.Slug),
 				})
 			}
@@ -186,10 +200,17 @@ func SearchHelp(i *shared.Interfaces) fiber.Handler {
 
 			foundByContent := []fiber.Map{}
 			for _, header := range byContent {
+				tags, err := qtx.GetTagsForHelpFile(context.Background(), header.Slug)
+				if err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return nil
+				}
+
 				foundByContent = append(foundByContent, fiber.Map{
 					"Title":    header.Title,
 					"Sub":      header.Sub,
 					"Category": header.Category,
+					"Tags":     tags,
 					"Path":     routes.HelpFilePath(header.Slug),
 				})
 			}
@@ -216,10 +237,17 @@ func SearchHelp(i *shared.Interfaces) fiber.Handler {
 
 			foundByCategory := []fiber.Map{}
 			for _, header := range byCategory {
+				tags, err := qtx.GetTagsForHelpFile(context.Background(), header.Slug)
+				if err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return nil
+				}
+
 				foundByCategory = append(foundByCategory, fiber.Map{
 					"Title":    header.Title,
 					"Sub":      header.Sub,
 					"Category": header.Category,
+					"Tags":     tags,
 					"Path":     routes.HelpFilePath(header.Slug),
 				})
 			}
@@ -246,10 +274,17 @@ func SearchHelp(i *shared.Interfaces) fiber.Handler {
 
 			foundByTags := []fiber.Map{}
 			for _, header := range byTags {
+				tags, err := qtx.GetTagsForHelpFile(context.Background(), header.Slug)
+				if err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return nil
+				}
+
 				foundByTags = append(foundByTags, fiber.Map{
 					"Title":    header.Title,
 					"Sub":      header.Sub,
 					"Category": header.Category,
+					"Tags":     tags,
 					"Path":     routes.HelpFilePath(header.Slug),
 				})
 			}

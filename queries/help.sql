@@ -10,6 +10,9 @@ SELECT * FROM help WHERE slug = ?;
 -- name: GetHelpRelated :many
 SELECT * FROM help_related WHERE slug = ?;
 
+-- name: GetTagsForHelpFile :many
+SELECT tag FROM help_tags WHERE slug = ?;
+
 -- name: SearchHelpByTitle :many
 SELECT slug, title, sub, category FROM help WHERE slug LIKE ? OR title LIKE ?;
 

@@ -117,6 +117,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getRequestStmt, err = db.PrepareContext(ctx, getRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRequest: %w", err)
 	}
+	if q.getTagsForHelpFileStmt, err = db.PrepareContext(ctx, getTagsForHelpFile); err != nil {
+		return nil, fmt.Errorf("error preparing query GetTagsForHelpFile: %w", err)
+	}
 	if q.getVerifiedEmailByAddressStmt, err = db.PrepareContext(ctx, getVerifiedEmailByAddress); err != nil {
 		return nil, fmt.Errorf("error preparing query GetVerifiedEmailByAddress: %w", err)
 	}
@@ -373,6 +376,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getRequestStmt: %w", cerr)
 		}
 	}
+	if q.getTagsForHelpFileStmt != nil {
+		if cerr := q.getTagsForHelpFileStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getTagsForHelpFileStmt: %w", cerr)
+		}
+	}
 	if q.getVerifiedEmailByAddressStmt != nil {
 		if cerr := q.getVerifiedEmailByAddressStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getVerifiedEmailByAddressStmt: %w", cerr)
@@ -603,6 +611,7 @@ type Queries struct {
 	getPlayerUsernameStmt                                 *sql.Stmt
 	getPlayerUsernameByIdStmt                             *sql.Stmt
 	getRequestStmt                                        *sql.Stmt
+	getTagsForHelpFileStmt                                *sql.Stmt
 	getVerifiedEmailByAddressStmt                         *sql.Stmt
 	incrementRequestVersionStmt                           *sql.Stmt
 	listCharacterApplicationContentForPlayerStmt          *sql.Stmt
@@ -672,6 +681,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getPlayerUsernameStmt:                                 q.getPlayerUsernameStmt,
 		getPlayerUsernameByIdStmt:                             q.getPlayerUsernameByIdStmt,
 		getRequestStmt:                                        q.getRequestStmt,
+		getTagsForHelpFileStmt:                                q.getTagsForHelpFileStmt,
 		getVerifiedEmailByAddressStmt:                         q.getVerifiedEmailByAddressStmt,
 		incrementRequestVersionStmt:                           q.incrementRequestVersionStmt,
 		listCharacterApplicationContentForPlayerStmt:          q.listCharacterApplicationContentForPlayerStmt,
