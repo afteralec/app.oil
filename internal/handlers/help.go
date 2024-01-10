@@ -95,6 +95,12 @@ func HelpFilePage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
+		tags, err := qtx.GetTagsForHelpFile(context.Background(), slug)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+		}
+
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
@@ -115,6 +121,10 @@ func HelpFilePage(i *shared.Interfaces) fiber.Handler {
 		b["Related"] = related
 		// TODO: Once the help path can take a query string, save the last state of the session's help path
 		b["HelpPath"] = routes.Help
+		b["Title"] = help.Title
+		b["Sub"] = help.Sub
+		b["Category"] = help.Category
+		b["Tags"] = tags
 		return c.Render(views.HelpFile, b, layouts.Main)
 	}
 }
