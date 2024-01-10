@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	resend "github.com/resendlabs/resend-go"
+	resend "github.com/resend/resend-go/v2"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/shared"
 )
@@ -33,7 +33,7 @@ func Recover(i *shared.Interfaces, e queries.Email) (string, error) {
 	return id, nil
 }
 
-func SendRecoverUsernameEmail(i *shared.Interfaces, username string, email string) (resend.SendEmailResponse, error) {
+func SendRecoverUsernameEmail(i *shared.Interfaces, username string, email string) (*resend.SendEmailResponse, error) {
 	params := &resend.SendEmailRequest{
 		To:   []string{email},
 		From: "verify@petrichormud.com",

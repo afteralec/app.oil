@@ -9,7 +9,7 @@ require (
 	github.com/gofiber/template/html/v2 v2.0.5
 	github.com/google/uuid v1.4.0
 	github.com/redis/go-redis/v9 v9.2.1
-	github.com/resendlabs/resend-go v1.7.0
+	github.com/resend/resend-go/v2 v2.4.0
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/crypto v0.17.0

@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
-	resend "github.com/resendlabs/resend-go"
+	resend "github.com/resend/resend-go/v2"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -37,7 +37,7 @@ func RecoveryKey(key string) string {
 	return fmt.Sprintf("%s:%s", shared.RecoverPasswordTokenKey, key)
 }
 
-func SendRecoveryEmail(i *shared.Interfaces, key string, email string) (resend.SendEmailResponse, error) {
+func SendRecoveryEmail(i *shared.Interfaces, key string, email string) (*resend.SendEmailResponse, error) {
 	base := os.Getenv("BASE_URL")
 	url := fmt.Sprintf("%s/reset/password?t=%s", base, key)
 	params := &resend.SendEmailRequest{

@@ -8,7 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2/middleware/session"
 	redis "github.com/redis/go-redis/v9"
-	"github.com/resendlabs/resend-go"
+	resend "github.com/resend/resend-go/v2"
 
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/queries"

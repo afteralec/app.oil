@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
-	resend "github.com/resendlabs/resend-go"
+	resend "github.com/resend/resend-go/v2"
 
 	"petrichormud.com/app/internal/shared"
 )
