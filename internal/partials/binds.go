@@ -320,3 +320,21 @@ func BindProfileEmailResendVerificationSuccess(id int64) fiber.Map {
 		"NoticeIcon": true,
 	}
 }
+
+type BindNoticeSectionParams struct {
+	SectionID     string
+	SectionClass  string
+	NoticeText    []string
+	RefreshButton bool
+	NoticeIcon    bool
+}
+
+func BindNoticeSection(p BindNoticeSectionParams) fiber.Map {
+	return fiber.Map{
+		"NoticeSectionID": p.SectionID,
+		"SectionClass":    p.SectionClass,
+		"NoticeText":      p.NoticeText,
+		"RefreshButton":   p.RefreshButton,
+		"NoticeIcon":      p.NoticeIcon,
+	}
+}

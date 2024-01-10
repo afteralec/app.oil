@@ -445,6 +445,7 @@ export function getPlayerPermissionsData() {
 
 export function getSearchHelpIndexData() {
   return {
+    search: "",
     tags: false,
     category: false,
     title: true,

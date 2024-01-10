@@ -1,0 +1,11 @@
+{{ define "partial-help-index-search-no-results" }}
+<section id="search-help-results" class="pt-4">
+  <h2 class="px-6 text-xl font-extrabold tracking-tight lg:text-2xl">
+    Your search for "{{ .Search }}" didn't turn up any results.
+  </h2>
+  <!-- TODO: Link this to the various "Help By X" sections and tooling (also todo at time of writing) -->
+  <p class="px-6 leading-none text-muted-fg">
+    Please try again or feel free to browse the help files below.
+  </p>
+</section>
+{{ end }}

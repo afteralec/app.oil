@@ -1,5 +1,6 @@
 {{ define "partial-help-index-search" }}
-<section class="border-b py-4">
+<article class="border-b py-4">
+  <section id="search-help-error"></section>
   <form
     id="search-help"
     class="w-[60%] space-y-2 px-6"
@@ -7,6 +8,7 @@
     @submit.prevent
     hx-post="/help"
     hx-target="#search-help-results"
+    hx-swap="outerHTML"
   >
     <div>
       <label
@@ -14,7 +16,13 @@
         class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >Search</label
       >
-      <input type="search" name="search" id="search" class="input" />
+      <input
+        type="search"
+        name="search"
+        id="search"
+        class="input"
+        x-model="search"
+      />
       <input
         name="tags"
         name="tags"
@@ -76,9 +84,15 @@
       >
         Content
       </button>
-      <button type="submit" class="button-primary">Search</button>
+      <button
+        type="submit"
+        class="button-primary"
+        :disabled="search.length == 0 || search.length > 500"
+      >
+        Search
+      </button>
     </footer>
   </form>
-  <div id="search-help-results"></div>
-</section>
+  <section id="search-help-results"></section>
+</article>
 {{ end }}
