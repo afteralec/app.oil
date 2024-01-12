@@ -10,3 +10,6 @@ node_modules
 
 # Built artifacts
 bin/
+
+# Shared protobuf definition files
+/proto
