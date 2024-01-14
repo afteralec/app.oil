@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
-	resend "github.com/resend/resend-go/v2"
 
 	pb "petrichormud.com/app/internal/proto/sending"
 	"petrichormud.com/app/internal/shared"
@@ -37,18 +36,6 @@ func SendVerificationEmail(i *shared.Interfaces, id int64, email string) error {
 		Email: email,
 		Link:  url,
 	})
-	if err != nil {
-		return err
-	}
-
-	params := &resend.SendEmailRequest{
-		To:      []string{email},
-		From:    "verify@petrichormud.com",
-		Html:    fmt.Sprintf("Welcome to PetrichorMUD! Please <a href=%q>click here</a> to verify your email address.", url),
-		Subject: fmt.Sprintf("[PetrichorMUD] Verify %s", email),
-		ReplyTo: "support@petrichormud.com",
-	}
-	_, err = i.Resend.Emails.Send(params)
 	if err != nil {
 		return err
 	}

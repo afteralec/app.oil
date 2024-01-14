@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
-	resend "github.com/resend/resend-go/v2"
+
+	pb "petrichormud.com/app/internal/proto/sending"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -25,7 +27,16 @@ func SetupRecovery(i *shared.Interfaces, pid int64, email string) error {
 	if os.Getenv("DISABLE_RESEND") == "true" {
 		return nil
 	}
-	_, err = SendRecoveryEmail(i, id, email)
+
+	sender := pb.NewSenderClient(i.ClientConn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	base := os.Getenv("BASE_URL")
+	url := fmt.Sprintf("%s/reset/password?t=%s", base, key)
+	_, err = sender.SendPasswordRecovery(ctx, &pb.SendPasswordRecoveryRequest{
+		Email: email,
+		Link:  url,
+	})
 	if err != nil {
 		return err
 	}
@@ -35,21 +46,6 @@ func SetupRecovery(i *shared.Interfaces, pid int64, email string) error {
 
 func RecoveryKey(key string) string {
 	return fmt.Sprintf("%s:%s", shared.RecoverPasswordTokenKey, key)
-}
-
-func SendRecoveryEmail(i *shared.Interfaces, key string, email string) (*resend.SendEmailResponse, error) {
-	base := os.Getenv("BASE_URL")
-	url := fmt.Sprintf("%s/reset/password?t=%s", base, key)
-	params := &resend.SendEmailRequest{
-		To:   []string{email},
-		From: "recover@petrichormud.com",
-		// TODO: Set up a doc page for what people should do if they didn't request a password recovery
-		// TODO: Link to it here
-		Html:    fmt.Sprintf("Hello! <a href=%q>Click here</a> to reset your password.", url),
-		Subject: "[PetrichorMUD] Password Recovery",
-		ReplyTo: "support@petrichormud.com",
-	}
-	return i.Resend.Emails.Send(params)
 }
 
 func Cache(r *redis.Client, key string, pid int64) error {
