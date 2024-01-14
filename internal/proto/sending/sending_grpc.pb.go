@@ -19,14 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Sender_SendEmail_FullMethodName = "/sending.Sender/SendEmail"
+	Sender_SendEmailVerification_FullMethodName = "/sending.Sender/SendEmailVerification"
+	Sender_SendPasswordRecovery_FullMethodName  = "/sending.Sender/SendPasswordRecovery"
+	Sender_SendUsernameRecovery_FullMethodName  = "/sending.Sender/SendUsernameRecovery"
 )
 
 // SenderClient is the client API for Sender service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SenderClient interface {
-	SendEmail(ctx context.Context, in *SendEmailRequest, opts ...grpc.CallOption) (*SendEmailReply, error)
+	SendEmailVerification(ctx context.Context, in *SendEmailVerificationRequest, opts ...grpc.CallOption) (*SendEmailReply, error)
+	SendPasswordRecovery(ctx context.Context, in *SendPasswordRecoveryRequest, opts ...grpc.CallOption) (*SendEmailReply, error)
+	SendUsernameRecovery(ctx context.Context, in *SendUsernameRecoveryRequest, opts ...grpc.CallOption) (*SendEmailReply, error)
 }
 
 type senderClient struct {
@@ -37,9 +41,27 @@ func NewSenderClient(cc grpc.ClientConnInterface) SenderClient {
 	return &senderClient{cc}
 }
 
-func (c *senderClient) SendEmail(ctx context.Context, in *SendEmailRequest, opts ...grpc.CallOption) (*SendEmailReply, error) {
+func (c *senderClient) SendEmailVerification(ctx context.Context, in *SendEmailVerificationRequest, opts ...grpc.CallOption) (*SendEmailReply, error) {
 	out := new(SendEmailReply)
-	err := c.cc.Invoke(ctx, Sender_SendEmail_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Sender_SendEmailVerification_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *senderClient) SendPasswordRecovery(ctx context.Context, in *SendPasswordRecoveryRequest, opts ...grpc.CallOption) (*SendEmailReply, error) {
+	out := new(SendEmailReply)
+	err := c.cc.Invoke(ctx, Sender_SendPasswordRecovery_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *senderClient) SendUsernameRecovery(ctx context.Context, in *SendUsernameRecoveryRequest, opts ...grpc.CallOption) (*SendEmailReply, error) {
+	out := new(SendEmailReply)
+	err := c.cc.Invoke(ctx, Sender_SendUsernameRecovery_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +72,9 @@ func (c *senderClient) SendEmail(ctx context.Context, in *SendEmailRequest, opts
 // All implementations must embed UnimplementedSenderServer
 // for forward compatibility
 type SenderServer interface {
-	SendEmail(context.Context, *SendEmailRequest) (*SendEmailReply, error)
+	SendEmailVerification(context.Context, *SendEmailVerificationRequest) (*SendEmailReply, error)
+	SendPasswordRecovery(context.Context, *SendPasswordRecoveryRequest) (*SendEmailReply, error)
+	SendUsernameRecovery(context.Context, *SendUsernameRecoveryRequest) (*SendEmailReply, error)
 	mustEmbedUnimplementedSenderServer()
 }
 
@@ -58,8 +82,14 @@ type SenderServer interface {
 type UnimplementedSenderServer struct {
 }
 
-func (UnimplementedSenderServer) SendEmail(context.Context, *SendEmailRequest) (*SendEmailReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendEmail not implemented")
+func (UnimplementedSenderServer) SendEmailVerification(context.Context, *SendEmailVerificationRequest) (*SendEmailReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendEmailVerification not implemented")
+}
+func (UnimplementedSenderServer) SendPasswordRecovery(context.Context, *SendPasswordRecoveryRequest) (*SendEmailReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendPasswordRecovery not implemented")
+}
+func (UnimplementedSenderServer) SendUsernameRecovery(context.Context, *SendUsernameRecoveryRequest) (*SendEmailReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendUsernameRecovery not implemented")
 }
 func (UnimplementedSenderServer) mustEmbedUnimplementedSenderServer() {}
 
@@ -74,20 +104,56 @@ func RegisterSenderServer(s grpc.ServiceRegistrar, srv SenderServer) {
 	s.RegisterService(&Sender_ServiceDesc, srv)
 }
 
-func _Sender_SendEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendEmailRequest)
+func _Sender_SendEmailVerification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendEmailVerificationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SenderServer).SendEmail(ctx, in)
+		return srv.(SenderServer).SendEmailVerification(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Sender_SendEmail_FullMethodName,
+		FullMethod: Sender_SendEmailVerification_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SenderServer).SendEmail(ctx, req.(*SendEmailRequest))
+		return srv.(SenderServer).SendEmailVerification(ctx, req.(*SendEmailVerificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Sender_SendPasswordRecovery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendPasswordRecoveryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SenderServer).SendPasswordRecovery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Sender_SendPasswordRecovery_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SenderServer).SendPasswordRecovery(ctx, req.(*SendPasswordRecoveryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Sender_SendUsernameRecovery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendUsernameRecoveryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SenderServer).SendUsernameRecovery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Sender_SendUsernameRecovery_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SenderServer).SendUsernameRecovery(ctx, req.(*SendUsernameRecoveryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -100,8 +166,16 @@ var Sender_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*SenderServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SendEmail",
-			Handler:    _Sender_SendEmail_Handler,
+			MethodName: "SendEmailVerification",
+			Handler:    _Sender_SendEmailVerification_Handler,
+		},
+		{
+			MethodName: "SendPasswordRecovery",
+			Handler:    _Sender_SendPasswordRecovery_Handler,
+		},
+		{
+			MethodName: "SendUsernameRecovery",
+			Handler:    _Sender_SendUsernameRecovery_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

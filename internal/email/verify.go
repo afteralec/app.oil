@@ -23,22 +23,24 @@ func SendVerificationEmail(i *shared.Interfaces, id int64, email string) error {
 		return err
 	}
 
-	sender := pb.NewSenderClient(i.ClientConn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	_, err := sender.SendEmail(ctx, &pb.SendEmailRequest{
-		Email: "verification",
-	})
-	if err != nil {
-		return err
-	}
-
 	if os.Getenv("DISABLE_RESEND") == "true" {
 		return nil
 	}
 
 	base := os.Getenv("BASE_URL")
 	url := fmt.Sprintf("%s/verify?t=%s", base, token)
+
+	sender := pb.NewSenderClient(i.ClientConn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	_, err := sender.SendEmailVerification(ctx, &pb.SendEmailVerificationRequest{
+		Email: email,
+		Link:  url,
+	})
+	if err != nil {
+		return err
+	}
+
 	params := &resend.SendEmailRequest{
 		To:      []string{email},
 		From:    "verify@petrichormud.com",

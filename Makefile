@@ -2,7 +2,7 @@ build:
 	go build -o bin/ptrcr main.go
 
 test:
-	SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true SENDING_STONE=localhost:8010 REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=true DISABLE_CSRF=true DISABLE_LOGGING=true go test -v ./...
+	SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true SENDING_STONE_URL=localhost:8010 REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=true DISABLE_CSRF=true DISABLE_LOGGING=true go test -v ./...
 	bun test
 
 test-ci:
@@ -56,3 +56,6 @@ redis:
 
 proto:
 	git clone git@github.com:petrichormud/proto.git ./proto
+
+protoc:
+	protoc --proto_path=proto proto/*.proto --go_out=./ --go-grpc_out=.
