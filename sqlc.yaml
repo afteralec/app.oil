@@ -17,6 +17,8 @@ sql:
           cid: "CID"
           ipid: "IPID"
           rpid: "RPID"
+          riid: "RIID"
+          aiid: "AIID"
           html: "HTML"
         overrides:
           - column: character_application_content.created_at

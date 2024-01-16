@@ -8,6 +8,61 @@ import (
 	"time"
 )
 
+type ActorImage struct {
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
+	Description        string
+	ShortDescription   string
+	Name               string
+	Gender             string
+	EatsInto           int64
+	Sustenance         int32
+	ID                 int64
+	LiquidCapacity     int32
+	Seating            int32
+	IsContainer        bool
+	IsSurfaceContainer bool
+	Uniq               bool
+}
+
+type ActorImagesCan struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Can       string
+	ID        int64
+}
+
+type ActorImagesCanBe struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	CanBe     string
+	ID        int64
+}
+
+type ActorImagesHand struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	AIID      int64
+	ID        int64
+	Hand      int32
+}
+
+type ActorImagesKeyword struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Keyword   string
+	AIID      int64
+	ID        int64
+}
+
+type ActorImagesPrimaryHand struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	AIID      int64
+	ID        int64
+	Hand      int32
+}
+
 type CharacterApplicationContent struct {
 	CreatedAt        time.Time `json:"-"`
 	UpdatedAt        time.Time `json:"-"`
@@ -144,4 +199,29 @@ type RequestStatusChangeHistory struct {
 	PID       int64
 	ID        int64
 	VID       int32
+}
+
+type Room struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	North     int64
+	Northeast int64
+	East      int64
+	Southeast int64
+	South     int64
+	Southwest int64
+	West      int64
+	Northwest int64
+	RIID      int64
+	ID        int64
+}
+
+type RoomImage struct {
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Description string
+	Title       string
+	Name        string
+	ID          int64
+	Size        int32
 }
