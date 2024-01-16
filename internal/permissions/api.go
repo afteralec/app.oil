@@ -4,6 +4,9 @@ import (
 	"petrichormud.com/app/internal/queries"
 )
 
+// TODO: Rename PlayerGranted
+// TODO: Test
+
 type PlayerGranted struct {
 	Permissions     map[string]bool
 	PermissionsList []string
@@ -23,13 +26,29 @@ func MakePlayerGranted(pid int64, perms []queries.PlayerPermission) PlayerGrante
 	}
 }
 
+func (p *PlayerGranted) HasPermission(perm string) bool {
+	_, ok := p.Permissions[perm]
+	return ok
+}
+
 func (p *PlayerGranted) HasPermissionInSet(set []string) bool {
 	for _, perm := range set {
-		if p.Permissions[perm] {
+		_, ok := p.Permissions[perm]
+		if ok {
 			return true
 		}
 	}
 	return false
+}
+
+func (p *PlayerGranted) HasAllPermissionsInSet(set []string) bool {
+	for _, perm := range set {
+		_, ok := p.Permissions[perm]
+		if !ok {
+			return false
+		}
+	}
+	return true
 }
 
 // TODO: This is to enable adding sub-permissions to grant individual or groups of permissions
