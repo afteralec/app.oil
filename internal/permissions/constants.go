@@ -11,14 +11,14 @@ const (
 	PlayerGrantAllPermissionsName         string = "GrantAllPermissions"
 	PlayerRevokeAllPermissionsName        string = "RevokeAllPermissions"
 	PlayerReviewCharacterApplicationsName string = "ReviewCharacterApplications"
-	PlayerViewAllRoomsName                string = "ViewRooms"
+	PlayerViewAllRoomsName                string = "ViewAllRooms"
 )
 
 const (
 	PlayerGrantAllPermissionsTag         string = "grant-all"
 	PlayerRevokeAllPermissionsTag        string = "revoke-all"
 	PlayerReviewCharacterApplicationsTag string = "review-character-applications"
-	PlayerViewAllRoomsTag                string = "view-rooms"
+	PlayerViewAllRoomsTag                string = "view-all-rooms"
 )
 
 const (
@@ -85,6 +85,7 @@ var AllPlayerByTag map[string]Player = map[string]Player{
 	PlayerGrantAllPermissionsTag:         PlayerGrantAllPermissions,
 	PlayerRevokeAllPermissionsTag:        PlayerRevokeAllPermissions,
 	PlayerReviewCharacterApplicationsTag: PlayerReviewCharacterApplications,
+	PlayerViewAllRoomsTag:                PlayerViewAllRooms,
 }
 
 var RootPlayerByName map[string]Player = map[string]Player{

@@ -1,0 +1,10 @@
+{{ define "partial-page-header" }}
+<header class="px-6 pt-2">
+  <h1 class="text-3xl font-extrabold tracking-tight lg:text-4xl">
+    {{ .Title }}
+  </h1>
+  {{ if .SubTitle }}
+  <div class="text-base leading-7 text-muted-fg">{{ .SubTitle }}</div>
+  {{ end }}
+</header>
+{{ end }}

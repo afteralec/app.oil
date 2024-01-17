@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -24,13 +23,11 @@ func RoomsPage(i *shared.Interfaces) fiber.Handler {
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusForbidden)
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerViewAllRoomsName) {
-			log.Println("No permission")
 			c.Status(fiber.StatusForbidden)
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
@@ -43,6 +40,45 @@ func RoomsPage(i *shared.Interfaces) fiber.Handler {
 
 		b := views.Bind(c)
 		b["Rooms"] = rooms
-		return c.Render(views.Rooms, b, layouts.Main)
+		b["PageHeader"] = fiber.Map{
+			"Title":    "Rooms",
+			"SubTitle": "Individual rooms, where their exits and individual properties are assigned",
+		}
+		return c.Render(views.Rooms, b)
+	}
+}
+
+func RoomImagesPage(i *shared.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		_, err := util.GetPID(c)
+		if err != nil {
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusForbidden)
+			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+		}
+
+		if !perms.HasPermission(permissions.PlayerViewAllRoomsName) {
+			c.Status(fiber.StatusForbidden)
+			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+		}
+
+		room_images, err := i.Queries.ListRoomImages(context.Background())
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+		}
+
+		b := views.Bind(c)
+		b["PageHeader"] = fiber.Map{
+			"Title":    "Room Images",
+			"SubTitle": "Room Images are what a room assumes its title, description, and other properties from",
+		}
+		b["RoomImages"] = room_images
+		return c.Render(views.RoomImages, b)
 	}
 }

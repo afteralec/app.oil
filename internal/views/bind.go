@@ -1,6 +1,7 @@
 package views
 
 import (
+	"strings"
 	"time"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -36,20 +37,21 @@ func nav(c *fiber.Ctx) []fiber.Map {
 		return nav
 	}
 
-	nav = append(nav, accountMenu(c))
-
 	perms, err := util.GetPermissions(c)
 	if err != nil {
 		return nav
 	}
-
-	if perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
+	if perms.HasPermission(permissions.PlayerReviewCharacterApplicationsName) {
 		nav = append(nav, reviewMenu(c))
 	}
-
-	if perms.Permissions[permissions.PlayerGrantAllPermissionsName] {
+	if perms.HasPermission(permissions.PlayerViewAllRoomsName) {
+		nav = append(nav, roomsMenu(c))
+	}
+	if perms.HasPermission(permissions.PlayerGrantAllPermissionsName) {
 		nav = append(nav, permissionsMenu(c))
 	}
+
+	nav = append(nav, accountMenu(c))
 
 	return nav
 }
@@ -73,13 +75,40 @@ func themeButton(c *fiber.Ctx) fiber.Map {
 	}
 }
 
-// TODO: Re-do this as a dropdown menu with search and various links
 func helpLink(c *fiber.Ctx) fiber.Map {
 	return fiber.Map{
 		"Type":   "Link",
 		"Path":   routes.Help,
 		"Text":   "Help",
 		"Active": c.Path() == routes.Help,
+	}
+}
+
+func roomsMenu(c *fiber.Ctx) fiber.Map {
+	return fiber.Map{
+		"Type": "List",
+		"Button": fiber.Map{
+			"Label": "Rooms",
+		},
+		"Sections": []fiber.Map{
+			{
+				"Items": []fiber.Map{
+					{
+						"Label":  "Rooms",
+						"Path":   routes.Rooms,
+						"Active": c.Path() == routes.Rooms,
+					},
+					{
+						"Label":  "Images",
+						"Path":   routes.RoomImages,
+						"Active": c.Path() == routes.RoomImages,
+					},
+				},
+			},
+		},
+		"Path":   routes.Rooms,
+		"Text":   "Rooms",
+		"Active": strings.Contains(c.Path(), routes.Rooms),
 	}
 }
 
