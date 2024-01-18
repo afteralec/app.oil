@@ -1,6 +1,7 @@
 {{ define "characters" }}
 <main class="flex flex-col items-center justify-center">
   <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
+    <!-- TODO: Page Header partial -->
     <header class="px-6 pt-2">
       <h2 class="text-3xl font-extrabold tracking-tight lg:text-4xl">
         Character Applications
@@ -8,11 +9,7 @@
       <p class="leading-7 text-muted-fg">All of your character applications</p>
     </header>
     <section id="create-character-application" class="px-6 pt-4">
-      <button
-        type="button"
-        hx-post
-        class="htmx-trade-indicator-out button-primary"
-      >
+      <button type="button" hx-post class="button-primary">
         Create a Character
       </button>
     </section>

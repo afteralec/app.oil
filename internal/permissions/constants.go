@@ -12,6 +12,8 @@ const (
 	PlayerRevokeAllPermissionsName        string = "RevokeAllPermissions"
 	PlayerReviewCharacterApplicationsName string = "ReviewCharacterApplications"
 	PlayerViewAllRoomsName                string = "ViewAllRooms"
+	PlayerCreateRoomImageName             string = "CreateRoomImage"
+	PlayerCreateRoomName                  string = "CreateRoom"
 )
 
 const (
@@ -19,6 +21,8 @@ const (
 	PlayerRevokeAllPermissionsTag        string = "revoke-all"
 	PlayerReviewCharacterApplicationsTag string = "review-character-applications"
 	PlayerViewAllRoomsTag                string = "view-all-rooms"
+	PlayerCreateRoomImageTag             string = "create-room-image"
+	PlayerCreateRoomTag                  string = "create-room"
 )
 
 const (
@@ -26,6 +30,8 @@ const (
 	PlayerRevokeAllPermissionsTitle        string = "Revoke All Permissions"
 	PlayerReviewCharacterApplicationsTitle string = "Review Character Applications"
 	PlayerViewAllRoomsTitle                string = "View All Rooms"
+	PlayerCreateRoomImageTitle             string = "Create Room Images"
+	PlayerCreateRoomTitle                  string = "Create Room"
 )
 
 const (
@@ -33,6 +39,8 @@ const (
 	PlayerRevokeAllPermissionsAbout        string = "The root revocation permission. Only one person should have this at a time."
 	PlayerReviewCharacterApplicationsAbout string = "Enable this player to review Character Applications."
 	PlayerViewAllRoomsAbout                string = "The permission to view (but not edit) all room data."
+	PlayerCreateRoomImageAbout             string = "Create new room images."
+	PlayerCreateRoomAbout                  string = "Create a new room, but not connect it to the grid."
 )
 
 var PlayerGrantAllPermissions Player = Player{
@@ -63,6 +71,20 @@ var PlayerViewAllRooms Player = Player{
 	About: PlayerViewAllRoomsAbout,
 }
 
+var PlayerCreateRoomImage Player = Player{
+	Name:  PlayerCreateRoomImageName,
+	Tag:   PlayerCreateRoomImageTag,
+	Title: PlayerCreateRoomImageTitle,
+	About: PlayerCreateRoomImageAbout,
+}
+
+var PlayerCreateRoom Player = Player{
+	Name:  PlayerCreateRoomName,
+	Tag:   PlayerCreateRoomTag,
+	Title: PlayerCreateRoomTitle,
+	About: PlayerCreateRoomAbout,
+}
+
 var ShowPermissionViewPermissions []string = []string{
 	PlayerGrantAllPermissionsName,
 }
@@ -72,6 +94,8 @@ var AllPlayer []Player = []Player{
 	PlayerRevokeAllPermissions,
 	PlayerReviewCharacterApplications,
 	PlayerViewAllRooms,
+	PlayerCreateRoomImage,
+	PlayerCreateRoom,
 }
 
 var AllPlayerByName map[string]Player = map[string]Player{
@@ -79,6 +103,8 @@ var AllPlayerByName map[string]Player = map[string]Player{
 	PlayerRevokeAllPermissionsName:        PlayerRevokeAllPermissions,
 	PlayerReviewCharacterApplicationsName: PlayerReviewCharacterApplications,
 	PlayerViewAllRoomsName:                PlayerViewAllRooms,
+	PlayerCreateRoomImageName:             PlayerCreateRoomImage,
+	PlayerCreateRoomName:                  PlayerCreateRoom,
 }
 
 var AllPlayerByTag map[string]Player = map[string]Player{
@@ -86,6 +112,8 @@ var AllPlayerByTag map[string]Player = map[string]Player{
 	PlayerRevokeAllPermissionsTag:        PlayerRevokeAllPermissions,
 	PlayerReviewCharacterApplicationsTag: PlayerReviewCharacterApplications,
 	PlayerViewAllRoomsTag:                PlayerViewAllRooms,
+	PlayerCreateRoomImageTag:             PlayerCreateRoomImage,
+	PlayerCreateRoomTag:                  PlayerCreateRoom,
 }
 
 var RootPlayerByName map[string]Player = map[string]Player{

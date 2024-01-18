@@ -2,7 +2,12 @@
 <main class="flex flex-col items-center justify-center">
   <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
     {{ template "partial-page-header" .PageHeader }}
-    <section id="room-images">
+    <section id="create-room-image" class="px-6 pt-4">
+      <button type="button" hx-post class="button-primary">
+        New Room Image
+      </button>
+    </section>
+    <section id="room-images" class="pt-6">
       <!-- prettier-ignore -->
       {{ template "partial-room-link" }}
       {{ template "partial-room-link" }}

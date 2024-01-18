@@ -1,0 +1,39 @@
+{{ define "view-room-image-new" }}
+<main class="flex flex-col items-center justify-center">
+  <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
+    {{ template "partial-page-header" .PageHeader }}
+    <form class="w-[60%]">
+      <section id="room-image-name" class="space-y-2 p-4">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="name"
+        >
+          Image Name
+        </label>
+        <input name="name" class="input" />
+      </section>
+      <section id="room-image-title" class="space-y-2 p-4">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="title"
+        >
+          Room Title
+        </label>
+        <input name="title" class="input" />
+      </section>
+      <section id="room-image-description" class="space-y-2 p-4">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="description"
+        >
+          Room Description
+        </label>
+        <textarea name="description" class="input min-h-[10rem]"></textarea>
+      </section>
+      <section id="room-image-size" class="space-y-2 p-4">
+        <!-- TODO: A radio select, like gender -->
+      </section>
+    </form>
+  </div>
+</main>
+{{ end }}
