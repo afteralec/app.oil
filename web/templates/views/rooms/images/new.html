@@ -35,9 +35,10 @@
         <textarea name="description" class="input min-h-[10rem]"></textarea>
       </section>
       <section id="room-image-size" class="space-y-2 py-4">
-        <header>
-          <h2 class="pb-2 text-base font-semibold leading-none">Size</h2>
-        </header>
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >Size</label
+        >
         <section
           :class="{
             'cursor-pointer': size !== '{{ .SizeTiny }}',

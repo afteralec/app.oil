@@ -466,6 +466,7 @@ func TestNewRoomImageSuccess(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Add("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
