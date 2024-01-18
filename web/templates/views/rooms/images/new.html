@@ -2,8 +2,12 @@
 <main class="flex flex-col items-center justify-center">
   <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
     {{ template "partial-page-header" .PageHeader }}
-    <form class="w-[60%]">
-      <section id="room-image-name" class="space-y-2 p-4">
+    <form
+      class="w-[60%] pl-8"
+      x-data="{ name: '', title: '', description: '', size: '2' }"
+      hx-post="{{ .RoomImagesPath }}"
+    >
+      <section id="room-image-name" class="space-y-2 py-4">
         <label
           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           for="name"
@@ -12,7 +16,7 @@
         </label>
         <input name="name" class="input" />
       </section>
-      <section id="room-image-title" class="space-y-2 p-4">
+      <section id="room-image-title" class="space-y-2 py-4">
         <label
           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           for="title"
@@ -21,7 +25,7 @@
         </label>
         <input name="title" class="input" />
       </section>
-      <section id="room-image-description" class="space-y-2 p-4">
+      <section id="room-image-description" class="space-y-2 py-4">
         <label
           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           for="description"
@@ -30,12 +34,17 @@
         </label>
         <textarea name="description" class="input min-h-[10rem]"></textarea>
       </section>
-      <section id="room-image-size" class="space-y-2 p-4">
+      <section id="room-image-size" class="space-y-2 py-4">
         <header>
           <h2 class="pb-2 text-base font-semibold leading-none">Size</h2>
         </header>
         <section
+          :class="{
+            'cursor-pointer': size !== '{{ .SizeTiny }}',
+            'border-primary': size === '{{ .SizeTiny }}',
+          }"
           class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+          @click="size = '{{ .SizeTiny }}'"
         >
           {{ if .SizeIsTiny }}
           <input
@@ -52,7 +61,7 @@
           <input
             x-model="size"
             id="new-room-image-size-tiny"
-            :class="{ 'cursor-pointer': size !== '{{ .Sizetiny }}' }"
+            :class="{ 'cursor-pointer': size !== '{{ .SizeTiny }}' }"
             class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             type="radio"
             name="value"
@@ -68,7 +77,12 @@
           </label>
         </section>
         <section
+          :class="{
+            'cursor-pointer': size !== '{{ .SizeSmall }}',
+            'border-primary': size === '{{ .SizeSmall }}',
+          }"
           class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+          @click="size = '{{ .SizeSmall }}'"
         >
           {{ if .SizeIsSmall }}
           <input
@@ -101,7 +115,12 @@
           </label>
         </section>
         <section
+          :class="{
+            'cursor-pointer': size !== '{{ .SizeMedium }}',
+            'border-primary': size === '{{ .SizeMedium }}',
+          }"
           class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+          @click="size = '{{ .SizeMedium }}'"
         >
           {{ if .SizeIsMedium }}
           <input
@@ -134,7 +153,12 @@
           </label>
         </section>
         <section
+          :class="{
+            'cursor-pointer': size !== '{{ .SizeLarge }}',
+            'border-primary': size === '{{ .SizeLarge }}',
+          }"
           class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+          @click="size = '{{ .SizeLarge }}'"
         >
           {{ if .SizeIsLarge }}
           <input
@@ -167,7 +191,12 @@
           </label>
         </section>
         <section
+          :class="{
+            'cursor-pointer': size !== '{{ .SizeHuge }}',
+            'border-primary': size === '{{ .SizeHuge }}',
+          }"
           class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+          @click="size = '{{ .SizeHuge }}'"
         >
           {{ if .SizeIsHuge }}
           <input
@@ -200,6 +229,9 @@
           </label>
         </section>
       </section>
+      <footer class="flex justify-end">
+        <button type="submit" class="button-primary">Save</button>
+      </footer>
     </form>
   </div>
 </main>

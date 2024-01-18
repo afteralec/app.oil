@@ -7,6 +7,7 @@ import (
 
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/permissions"
+	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/views"
@@ -102,18 +103,18 @@ func NewRoomImagePage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
 
-		room_images, err := i.Queries.ListRoomImages(context.Background())
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
-		}
-
 		b := views.Bind(c)
+		b["SizeTiny"] = 0
+		b["SizeSmall"] = 1
+		b["SizeMedium"] = 2
+		b["SizeLarge"] = 3
+		b["SizeHuge"] = 4
+		b["SizeIsMedium"] = true
 		b["PageHeader"] = fiber.Map{
 			"Title":    "New Room Image",
 			"SubTitle": "Room Images are what a room assumes its title, description, and other properties from",
 		}
-		b["RoomImages"] = room_images
+		b["RoomImagesPath"] = routes.RoomImages
 		return c.Render(views.NewRoomImage, b)
 	}
 }

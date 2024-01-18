@@ -498,7 +498,9 @@ window.getCharacterApplicationDescriptionData =
   getCharacterApplicationDescriptionData;
 window.getCharacterApplicationBackstoryData =
   getCharacterApplicationBackstoryData;
+// TODO: I believe this function can be removed
 window.getCharacterApplicationSummaryData = getCharacterApplicationSummaryData;
+// TODO: I think this function can be removed
 window.getCharacterApplicationData = getCharacterApplicationData;
 window.getRequestData = getRequestData;
 window.getPlayerPermissionsData = getPlayerPermissionsData;
