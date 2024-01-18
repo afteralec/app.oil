@@ -31,7 +31,174 @@
         <textarea name="description" class="input min-h-[10rem]"></textarea>
       </section>
       <section id="room-image-size" class="space-y-2 p-4">
-        <!-- TODO: A radio select, like gender -->
+        <header>
+          <h2 class="pb-2 text-base font-semibold leading-none">Size</h2>
+        </header>
+        <section
+          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+        >
+          {{ if .SizeIsTiny }}
+          <input
+            x-model="size"
+            id="new-room-image-size-tiny"
+            :class="{ 'cursor-pointer': size !== '{{ .SizeTiny }}' }"
+            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            type="radio"
+            name="value"
+            value="{{ .SizeTiny }}"
+            checked
+          />
+          {{ else -}}
+          <input
+            x-model="size"
+            id="new-room-image-size-tiny"
+            :class="{ 'cursor-pointer': size !== '{{ .Sizetiny }}' }"
+            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            type="radio"
+            name="value"
+            value="{{ .SizeTiny }}"
+          />
+          {{ end -}}
+          <label
+            :class="{ 'cursor-pointer': size !== '{{ .SizeTiny }}' }"
+            class="flex items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="new-room-image-size-tiny"
+          >
+            Tiny
+          </label>
+        </section>
+        <section
+          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+        >
+          {{ if .SizeIsSmall }}
+          <input
+            x-model="size"
+            id="new-room-image-size-small"
+            :class="{ 'cursor-pointer': size !== '{{ .SizeSmall }}' }"
+            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            type="radio"
+            name="value"
+            value="{{ .SizeSmall }}"
+            checked
+          />
+          {{ else -}}
+          <input
+            x-model="size"
+            id="new-room-image-size-small"
+            :class="{ 'cursor-pointer': size !== '{{ .SizeSmall }}' }"
+            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            type="radio"
+            name="value"
+            value="{{ .SizeSmall }}"
+          />
+          {{ end -}}
+          <label
+            :class="{ 'cursor-pointer': size !== '{{ .SizeSmall }}' }"
+            class="flex items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="new-room-image-size-small"
+          >
+            Small
+          </label>
+        </section>
+        <section
+          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+        >
+          {{ if .SizeIsMedium }}
+          <input
+            x-model="size"
+            id="new-room-image-size-medium"
+            :class="{ 'cursor-pointer': size !== '{{ .SizeMedium }}' }"
+            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            type="radio"
+            name="value"
+            value="{{ .SizeMedium }}"
+            checked
+          />
+          {{ else -}}
+          <input
+            x-model="size"
+            id="new-room-image-size-medium"
+            :class="{ 'cursor-pointer': size !== '{{ .SizeMedium }}' }"
+            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            type="radio"
+            name="value"
+            value="{{ .SizeMedium }}"
+          />
+          {{ end -}}
+          <label
+            :class="{ 'cursor-pointer': size !== '{{ .SizeMedium }}' }"
+            class="flex items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="new-room-image-size-medium"
+          >
+            Medium
+          </label>
+        </section>
+        <section
+          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+        >
+          {{ if .SizeIsLarge }}
+          <input
+            x-model="size"
+            id="new-room-image-size-large"
+            :class="{ 'cursor-pointer': size !== '{{ .SizeLarge }}' }"
+            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            type="radio"
+            name="value"
+            value="{{ .SizeLarge }}"
+            checked
+          />
+          {{ else -}}
+          <input
+            x-model="size"
+            id="new-room-image-size-large"
+            :class="{ 'cursor-pointer': size !== '{{ .SizeLarge }}' }"
+            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            type="radio"
+            name="value"
+            value="{{ .SizeLarge }}"
+          />
+          {{ end -}}
+          <label
+            :class="{ 'cursor-pointer': size !== '{{ .SizeLarge }}' }"
+            class="flex items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="new-room-image-size-large"
+          >
+            Large
+          </label>
+        </section>
+        <section
+          class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+        >
+          {{ if .SizeIsHuge }}
+          <input
+            x-model="size"
+            id="new-room-image-size-huge"
+            :class="{ 'cursor-pointer': size !== '{{ .SizeHuge }}' }"
+            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            type="radio"
+            name="value"
+            value="{{ .SizeHuge }}"
+            checked
+          />
+          {{ else -}}
+          <input
+            x-model="size"
+            id="new-room-image-size-huge"
+            :class="{ 'cursor-pointer': size !== '{{ .SizeHuge }}' }"
+            class="focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            type="radio"
+            name="value"
+            value="{{ .SizeHuge }}"
+          />
+          {{ end -}}
+          <label
+            :class="{ 'cursor-pointer': size !== '{{ .SizeHuge }}' }"
+            class="flex items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="new-room-image-size-huge"
+          >
+            Huge
+          </label>
+        </section>
       </section>
     </form>
   </div>
