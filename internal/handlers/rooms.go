@@ -2,11 +2,14 @@ package handlers
 
 import (
 	"context"
+	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/permissions"
+	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/rooms"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/util"
@@ -116,5 +119,74 @@ func NewRoomImagePage(i *shared.Interfaces) fiber.Handler {
 		}
 		b["RoomImagesPath"] = routes.RoomImages
 		return c.Render(views.NewRoomImage, b)
+	}
+}
+
+func NewRoomImage(i *shared.Interfaces) fiber.Handler {
+	type input struct {
+		Name        string `form:"name"`
+		Title       string `form:"title"`
+		Description string `form:"description"`
+		Size        int32  `form:"size"`
+	}
+
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		_, err := util.GetPID(c)
+		if err != nil {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if !perms.HasPermission(permissions.PlayerCreateRoomImageName) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if !rooms.IsImageNameValid(in.Name) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !rooms.IsTitleValid(in.Title) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !rooms.IsDescriptionValid(in.Description) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !rooms.IsSizeValid(in.Size) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		_, err = i.Queries.CreateRoomImage(context.Background(), queries.CreateRoomImageParams{
+			Name:        in.Name,
+			Title:       in.Title,
+			Description: in.Description,
+			Size:        in.Size,
+		})
+		if err != nil {
+			log.Println(err)
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		c.Status(fiber.StatusCreated)
+		return nil
 	}
 }
