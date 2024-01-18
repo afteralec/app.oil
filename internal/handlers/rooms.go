@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"context"
-	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/rooms"
@@ -107,6 +107,43 @@ func NewRoomImagePage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		b := views.Bind(c)
+		b["SizeRadioGroup"] = []fiber.Map{
+			{
+				"ID":       "new-room-image-size-tiny",
+				"Variable": "size",
+				"Value":    "0",
+				"Active":   "false",
+				"Label":    "Tiny",
+			},
+			{
+				"ID":       "new-room-image-size-small",
+				"Variable": "size",
+				"Value":    "1",
+				"Active":   "false",
+				"Label":    "Small",
+			},
+			{
+				"ID":       "new-room-image-size-medium",
+				"Variable": "size",
+				"Value":    "2",
+				"Active":   "true",
+				"Label":    "Mediume",
+			},
+			{
+				"ID":       "new-room-image-size-large",
+				"Variable": "size",
+				"Value":    "3",
+				"Active":   "false",
+				"Label":    "Large",
+			},
+			{
+				"ID":       "new-room-image-size-huge",
+				"Variable": "size",
+				"Value":    "4",
+				"Active":   "false",
+				"Label":    "Huge",
+			},
+		}
 		b["SizeTiny"] = 0
 		b["SizeSmall"] = 1
 		b["SizeMedium"] = 2
@@ -134,44 +171,116 @@ func NewRoomImage(i *shared.Interfaces) fiber.Handler {
 		in := new(input)
 		if err := c.BodyParser(in); err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
 		}
 
 		_, err := util.GetPID(c)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"It looks like your session may have expired.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
 		}
 
 		if !perms.HasPermission(permissions.PlayerCreateRoomImageName) {
 			c.Status(fiber.StatusForbidden)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"You don't have the permission(s) necessary to create a Room Image.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
 		}
 
 		if !rooms.IsImageNameValid(in.Name) {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"The Image Name you entered isn't valid.",
+					"Please use only lowercase letters and dashes.",
+				},
+				NoticeIcon: true,
+			}), layouts.None)
 		}
 
 		if !rooms.IsTitleValid(in.Title) {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"The Room Title you entered isn't valid.",
+					"Please try again.",
+				},
+				NoticeIcon: true,
+			}), layouts.None)
 		}
 
 		if !rooms.IsDescriptionValid(in.Description) {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"The Room Description you entered isn't valid.",
+					"Please try again.",
+				},
+				NoticeIcon: true,
+			}), layouts.None)
 		}
 
 		if !rooms.IsSizeValid(in.Size) {
 			c.Status(fiber.StatusBadRequest)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"The Room Size you entered isn't valid.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
 		}
 
 		_, err = i.Queries.CreateRoomImage(context.Background(), queries.CreateRoomImageParams{
@@ -181,12 +290,22 @@ func NewRoomImage(i *shared.Interfaces) fiber.Handler {
 			Size:        in.Size,
 		})
 		if err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
 		}
 
 		c.Status(fiber.StatusCreated)
+		c.Append("HX-Redirect", routes.RoomImages)
+		c.Append("HX-Reswap", "none")
 		return nil
 	}
 }

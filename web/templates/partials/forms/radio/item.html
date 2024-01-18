@@ -1,0 +1,13 @@
+{{ define "partial-form-radio" }}
+<section
+  @click="{{ .Variable }} = '{{ .Value }}'"
+  :class="{
+    'cursor-pointer': {{ .Variable }} !== '{{ .Value }}',
+    'border-primary': {{ .Variable }} === '{{ .Value }}',
+  }"
+  class="flex items-center gap-3 rounded-md border px-8 py-4 hover:border-primary"
+>
+  {{ template "partial-form-radio-input" . }} {{ template
+  "partial-form-radio-label" . }}
+</section>
+{{ end }}

@@ -17,7 +17,7 @@
       disabled
       checked
     />
-    {{ template "partial-switch" }}
+    {{ template "partial-form-switch" }}
   </label>
   {{ else }}
   <label class="relative inline-flex items-center">
@@ -28,7 +28,7 @@
       class="peer sr-only"
       disabled
     />
-    {{ template "partial-switch" }}
+    {{ template "partial-form-switch" }}
   </label>
   {{ end }}
   <!-- prettier-ignore -->
@@ -44,7 +44,7 @@
       class="peer sr-only"
       checked
     />
-    {{ template "partial-switch" }}
+    {{ template "partial-form-switch" }}
   </label>
   {{ else -}}
   <label class="relative inline-flex cursor-pointer items-center">
@@ -57,7 +57,7 @@
       value="true"
       class="peer sr-only"
     />
-    {{ template "partial-switch" }}
+    {{ template "partial-form-switch" }}
   </label>
   {{ end }}
 </div>

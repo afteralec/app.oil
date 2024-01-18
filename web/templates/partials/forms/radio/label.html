@@ -1,0 +1,9 @@
+{{ define "partial-form-radio-label" }}
+<label
+  :class="{ 'cursor-pointer': {{ .Variable }} !== '{{ .Value }}' }"
+  class="flex items-center justify-center text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+  for="{{ .ID }}"
+>
+  {{ .Label }}
+</label>
+{{ end }}
