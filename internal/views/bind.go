@@ -18,7 +18,7 @@ func Bind(c *fiber.Ctx) fiber.Map {
 		"CSRF":          c.Locals("csrf"),
 		"Theme":         c.Locals("theme"),
 		"CopyrightYear": time.Now().Year(),
-		"Title":         "Petrichor",
+		"HeadTitle":     "Petrichor",
 		"MetaContent":   "Petrichor MUD - a modern take on a classic",
 		"Path":          c.Path(),
 		"Nav":           nav(c),

@@ -3,9 +3,7 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
-	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -138,13 +136,13 @@ func RoomImagePage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		var titleSB strings.Builder
-		fmt.Fprintf(&titleSB, "%s (Image)", roomImage.Title)
-		title := titleSB.String()
-
-		var subtitleSB strings.Builder
-		fmt.Fprintf(&subtitleSB, "Individual Room Image, name: %s", roomImage.Name)
-		subtitle := subtitleSB.String()
+		sizes := []string{
+			"Tiny",
+			"Small",
+			"Medium",
+			"Large",
+			"Huge",
+		}
 
 		b := views.Bind(c)
 		b["NavBack"] = fiber.Map{
@@ -152,9 +150,13 @@ func RoomImagePage(i *shared.Interfaces) fiber.Handler {
 			"Label": "Back to Room Images",
 		}
 		b["PageHeader"] = fiber.Map{
-			"Title":    title,
-			"SubTitle": subtitle,
+			"Title":    roomImage.Title,
+			"SubTitle": "Room Image",
 		}
+		b["Name"] = roomImage.Name
+		b["Title"] = roomImage.Title
+		b["Size"] = sizes[roomImage.Size]
+		b["Description"] = roomImage.Description
 		return c.Render(views.RoomImage, b, layouts.Main)
 	}
 }
