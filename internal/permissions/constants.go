@@ -14,6 +14,7 @@ const (
 	PlayerViewAllRoomImagesName           string = "ViewAllRoomImages"
 	PlayerViewAllRoomsName                string = "ViewAllRooms"
 	PlayerCreateRoomImageName             string = "CreateRoomImage"
+	PlayerEditRoomImageName               string = "EditRoomImage"
 	PlayerCreateRoomName                  string = "CreateRoom"
 )
 
@@ -24,6 +25,7 @@ const (
 	PlayerViewAllRoomImagesTag           string = "view-all-room-images"
 	PlayerViewAllRoomsTag                string = "view-all-rooms"
 	PlayerCreateRoomImageTag             string = "create-room-image"
+	PlayerEditRoomImageTag               string = "edit-room-image"
 	PlayerCreateRoomTag                  string = "create-room"
 )
 
@@ -34,6 +36,7 @@ const (
 	PlayerViewAllRoomImagesTitle           string = "View All Room Images"
 	PlayerViewAllRoomsTitle                string = "View All Rooms"
 	PlayerCreateRoomImageTitle             string = "Create Room Images"
+	PlayerEditRoomImageTitle               string = "Edit Room Images"
 	PlayerCreateRoomTitle                  string = "Create Room"
 )
 
@@ -44,6 +47,7 @@ const (
 	PlayerViewAllRoomImagesAbout           string = "The permission to view (but not edit) all room image data."
 	PlayerViewAllRoomsAbout                string = "The permission to view (but not edit) all room data."
 	PlayerCreateRoomImageAbout             string = "Create new room images."
+	PlayerEditRoomImageAbout               string = "Edit room images."
 	PlayerCreateRoomAbout                  string = "Create a new room, but not connect it to the grid."
 )
 
@@ -89,6 +93,13 @@ var PlayerCreateRoomImage Player = Player{
 	About: PlayerCreateRoomImageAbout,
 }
 
+var PlayerEditRoomImage Player = Player{
+	Name:  PlayerEditRoomImageName,
+	Tag:   PlayerEditRoomImageTag,
+	Title: PlayerEditRoomImageTitle,
+	About: PlayerEditRoomImageAbout,
+}
+
 var PlayerCreateRoom Player = Player{
 	Name:  PlayerCreateRoomName,
 	Tag:   PlayerCreateRoomTag,
@@ -107,6 +118,7 @@ var AllPlayer []Player = []Player{
 	PlayerViewAllRoomImages,
 	PlayerViewAllRooms,
 	PlayerCreateRoomImage,
+	PlayerEditRoomImage,
 	PlayerCreateRoom,
 }
 
@@ -117,6 +129,7 @@ var AllPlayerByName map[string]Player = map[string]Player{
 	PlayerViewAllRoomImagesName:           PlayerViewAllRoomImages,
 	PlayerViewAllRoomsName:                PlayerViewAllRooms,
 	PlayerCreateRoomImageName:             PlayerCreateRoomImage,
+	PlayerEditRoomImageName:               PlayerEditRoomImage,
 	PlayerCreateRoomName:                  PlayerCreateRoom,
 }
 
@@ -127,6 +140,7 @@ var AllPlayerByTag map[string]Player = map[string]Player{
 	PlayerViewAllRoomImagesTag:           PlayerViewAllRoomImages,
 	PlayerViewAllRoomsTag:                PlayerViewAllRooms,
 	PlayerCreateRoomImageTag:             PlayerCreateRoomImage,
+	PlayerEditRoomImageTag:               PlayerEditRoomImage,
 	PlayerCreateRoomTag:                  PlayerCreateRoom,
 }
 

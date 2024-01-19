@@ -370,6 +370,37 @@ func (q *Queries) UpdateRoomExitWest(ctx context.Context, arg UpdateRoomExitWest
 	return err
 }
 
+const updateRoomImage = `-- name: UpdateRoomImage :exec
+UPDATE
+  room_images
+SET
+  name = ?,
+  title = ?,
+  description = ?,
+  size = ?
+WHERE
+  id = ?
+`
+
+type UpdateRoomImageParams struct {
+	Name        string
+	Title       string
+	Description string
+	Size        int32
+	ID          int64
+}
+
+func (q *Queries) UpdateRoomImage(ctx context.Context, arg UpdateRoomImageParams) error {
+	_, err := q.exec(ctx, q.updateRoomImageStmt, updateRoomImage,
+		arg.Name,
+		arg.Title,
+		arg.Description,
+		arg.Size,
+		arg.ID,
+	)
+	return err
+}
+
 const updateRoomImageDescription = `-- name: UpdateRoomImageDescription :exec
 UPDATE room_images SET description = ? WHERE id = ?
 `

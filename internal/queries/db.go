@@ -267,6 +267,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updateRoomExitWestStmt, err = db.PrepareContext(ctx, updateRoomExitWest); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateRoomExitWest: %w", err)
 	}
+	if q.updateRoomImageStmt, err = db.PrepareContext(ctx, updateRoomImage); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRoomImage: %w", err)
+	}
 	if q.updateRoomImageDescriptionStmt, err = db.PrepareContext(ctx, updateRoomImageDescription); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateRoomImageDescription: %w", err)
 	}
@@ -689,6 +692,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateRoomExitWestStmt: %w", cerr)
 		}
 	}
+	if q.updateRoomImageStmt != nil {
+		if cerr := q.updateRoomImageStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRoomImageStmt: %w", cerr)
+		}
+	}
 	if q.updateRoomImageDescriptionStmt != nil {
 		if cerr := q.updateRoomImageDescriptionStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateRoomImageDescriptionStmt: %w", cerr)
@@ -829,6 +837,7 @@ type Queries struct {
 	updateRoomExitSoutheastStmt                           *sql.Stmt
 	updateRoomExitSouthwestStmt                           *sql.Stmt
 	updateRoomExitWestStmt                                *sql.Stmt
+	updateRoomImageStmt                                   *sql.Stmt
 	updateRoomImageDescriptionStmt                        *sql.Stmt
 	updateRoomImageNameStmt                               *sql.Stmt
 	updateRoomImageSizeStmt                               *sql.Stmt
@@ -920,6 +929,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updateRoomExitSoutheastStmt:                           q.updateRoomExitSoutheastStmt,
 		updateRoomExitSouthwestStmt:                           q.updateRoomExitSouthwestStmt,
 		updateRoomExitWestStmt:                                q.updateRoomExitWestStmt,
+		updateRoomImageStmt:                                   q.updateRoomImageStmt,
 		updateRoomImageDescriptionStmt:                        q.updateRoomImageDescriptionStmt,
 		updateRoomImageNameStmt:                               q.updateRoomImageNameStmt,
 		updateRoomImageSizeStmt:                               q.updateRoomImageSizeStmt,

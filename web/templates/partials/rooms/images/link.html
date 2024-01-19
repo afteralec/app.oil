@@ -7,6 +7,11 @@
   <div class="pl-4 text-sm leading-none">
     <div><span class="font-semibold">Size:</span> {{ .Size }}</div>
   </div>
-  <a href="{{ .Path }}" class="button-secondary ml-auto">View</a>
+  <div class="ml-auto flex items-center justify-center gap-2">
+    {{ if .EditPath }}
+    <a href="{{ .EditPath }}" class="button-secondary">Edit</a>
+    {{ end }}
+    <a href="{{ .Path }}" class="button-secondary">View</a>
+  </div>
 </div>
 {{ end }}

@@ -73,29 +73,33 @@ func RoomImagesPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
 
-		room_images, err := i.Queries.ListRoomImages(context.Background())
+		roomImages, err := i.Queries.ListRoomImages(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		page_room_images := []fiber.Map{}
-		for _, room_image := range room_images {
-			page_room_images = append(page_room_images, fiber.Map{
-				"RoomTitle": room_image.Title,
-				"ImageName": room_image.Name,
-				"Size":      room_image.Size,
-				"Path":      routes.RoomImagePath(room_image.ID),
-			})
+		pageRoomImages := []fiber.Map{}
+		for _, roomImage := range roomImages {
+			pageRoomImage := fiber.Map{
+				"RoomTitle": roomImage.Title,
+				"ImageName": roomImage.Name,
+				"Size":      roomImage.Size,
+				"Path":      routes.RoomImagePath(roomImage.ID),
+			}
+
+			if perms.HasPermission(permissions.PlayerEditRoomImageName) {
+				pageRoomImage["EditPath"] = routes.EditRoomImagePath(roomImage.ID)
+			}
+			pageRoomImages = append(pageRoomImages, pageRoomImage)
 		}
 
 		b := views.Bind(c)
-
 		b["PageHeader"] = fiber.Map{
 			"Title":    "Room Images",
 			"SubTitle": "Room Images are what a room assumes its title, description, and other properties from",
 		}
-		b["RoomImages"] = page_room_images
+		b["RoomImages"] = pageRoomImages
 		b["NewRoomImagePath"] = routes.NewRoomImage
 		return c.Render(views.RoomImages, b)
 	}
@@ -234,6 +238,103 @@ func NewRoomImagePage(i *shared.Interfaces) fiber.Handler {
 		}
 		b["RoomImagesPath"] = routes.RoomImages
 		return c.Render(views.NewRoomImage, b)
+	}
+}
+
+func EditRoomImagePage(i *shared.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		_, err := util.GetPID(c)
+		if err != nil {
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusForbidden)
+			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+		}
+
+		if !perms.HasPermission(permissions.PlayerEditRoomImageName) {
+			c.Status(fiber.StatusForbidden)
+			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+		}
+
+		id, err := util.GetID(c)
+		if err != nil {
+			c.Status(fiber.StatusNotFound)
+			return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
+		}
+
+		roomImage, err := i.Queries.GetRoomImage(context.Background(), id)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
+		}
+
+		b := views.Bind(c)
+		// TODO: Generalize this bind into a function
+		b["NavBack"] = fiber.Map{
+			"Path":  routes.RoomImages,
+			"Label": "Back to Room Images",
+		}
+		// TODO: Put this in a helper function
+		b["SizeRadioGroup"] = []fiber.Map{
+			{
+				"ID":       "edit-room-image-size-tiny",
+				"Name":     "size",
+				"Variable": "size",
+				"Value":    "0",
+				"Active":   roomImage.Size == 0,
+				"Label":    "Tiny",
+			},
+			{
+				"ID":       "edit-room-image-size-small",
+				"Name":     "size",
+				"Variable": "size",
+				"Value":    "1",
+				"Active":   roomImage.Size == 1,
+				"Label":    "Small",
+			},
+			{
+				"ID":       "edit-room-image-size-medium",
+				"Name":     "size",
+				"Variable": "size",
+				"Value":    "2",
+				"Active":   roomImage.Size == 2,
+				"Label":    "Medium",
+			},
+			{
+				"ID":       "edit-room-image-size-large",
+				"Name":     "size",
+				"Variable": "size",
+				"Value":    "3",
+				"Active":   roomImage.Size == 3,
+				"Label":    "Large",
+			},
+			{
+				"ID":       "edit-room-image-size-huge",
+				"Name":     "size",
+				"Variable": "size",
+				"Value":    "4",
+				"Active":   roomImage.Size == 4,
+				"Label":    "Huge",
+			},
+		}
+		b["PageHeader"] = fiber.Map{
+			"Title":    roomImage.Title,
+			"SubTitle": roomImage.Name,
+		}
+		b["RoomImagePath"] = routes.RoomImagePath(roomImage.ID)
+		b["Name"] = roomImage.Name
+		b["Title"] = roomImage.Title
+		b["Description"] = roomImage.Description
+		b["Size"] = roomImage.Size
+		return c.Render(views.EditRoomImage, b)
 	}
 }
 
@@ -384,6 +485,172 @@ func NewRoomImage(i *shared.Interfaces) fiber.Handler {
 
 		c.Status(fiber.StatusCreated)
 		c.Append("HX-Redirect", routes.RoomImages)
+		c.Append("HX-Reswap", "none")
+		return nil
+	}
+}
+
+func EditRoomImage(i *shared.Interfaces) fiber.Handler {
+	type input struct {
+		Name        string `form:"name"`
+		Title       string `form:"title"`
+		Description string `form:"description"`
+		Size        int32  `form:"size"`
+	}
+
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "edit-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		_, err := util.GetPID(c)
+		if err != nil {
+			c.Status(fiber.StatusUnauthorized)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "edit-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"It looks like your session may have expired.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusForbidden)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "edit-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		if !perms.HasPermission(permissions.PlayerEditRoomImageName) {
+			c.Status(fiber.StatusForbidden)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "edit-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"You don't have the permission(s) necessary to create a Room Image.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		if !rooms.IsImageNameValid(in.Name) {
+			c.Status(fiber.StatusBadRequest)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "edit-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"The Image Name you entered isn't valid.",
+					"Please use only lowercase letters and dashes.",
+				},
+				NoticeIcon: true,
+			}), layouts.None)
+		}
+
+		if !rooms.IsTitleValid(in.Title) {
+			c.Status(fiber.StatusBadRequest)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "edit-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"The Room Title you entered isn't valid.",
+					"Please try again.",
+				},
+				NoticeIcon: true,
+			}), layouts.None)
+		}
+
+		if !rooms.IsDescriptionValid(in.Description) {
+			c.Status(fiber.StatusBadRequest)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "edit-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"The Room Description you entered isn't valid.",
+					"Please try again.",
+				},
+				NoticeIcon: true,
+			}), layouts.None)
+		}
+
+		if !rooms.IsSizeValid(in.Size) {
+			c.Status(fiber.StatusBadRequest)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "edit-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"The Room Size you entered isn't valid.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		riid, err := util.GetID(c)
+		if err != nil {
+			c.Status(fiber.StatusNotFound)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "edit-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		if err := i.Queries.UpdateRoomImage(context.Background(), queries.UpdateRoomImageParams{
+			ID:          riid,
+			Name:        in.Name,
+			Title:       in.Title,
+			Description: in.Description,
+			Size:        in.Size,
+		}); err != nil {
+			log.Println(err)
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		c.Append("HX-Redirect", routes.RoomImagePath(riid))
 		c.Append("HX-Reswap", "none")
 		return nil
 	}

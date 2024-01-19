@@ -10,6 +10,17 @@ SELECT * FROM room_images;
 -- name: CreateRoomImage :execresult
 INSERT INTO room_images (name, title, description, size) VALUES (?, ?, ?, ?);
 
+-- name: UpdateRoomImage :exec
+UPDATE
+  room_images
+SET
+  name = ?,
+  title = ?,
+  description = ?,
+  size = ?
+WHERE
+  id = ?;
+
 -- name: UpdateRoomImageName :exec
 UPDATE room_images SET name = ? WHERE id = ?;
 

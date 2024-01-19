@@ -2,7 +2,60 @@
 <main class="flex flex-col items-center justify-center">
   <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
     {{ template "partial-page-header" .PageHeader }}
-    <section id="p-10 border"></section>
+    <form
+      class="w-[60%] pl-8"
+      x-data="{ 
+        name: '{{ .Name }}',
+        title: '{{ .Title }}',
+        description: '{{ .Description }}',
+        size: '{{ .Size }}'
+      }"
+      hx-put="{{ .RoomImagePath }}"
+      hx-target="#edit-room-image-error"
+    >
+      <section id="edit-room-image-error"></section>
+      <section id="room-image-name" class="space-y-2 py-4">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="name"
+        >
+          Image Name
+        </label>
+        <input name="name" x-model="name" class="input" />
+      </section>
+      <section id="room-image-title" class="space-y-2 py-4">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="title"
+        >
+          Room Title
+        </label>
+        <input name="title" x-model="title" class="input" />
+      </section>
+      <section id="room-image-description" class="space-y-2 py-4">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="description"
+        >
+          Room Description
+        </label>
+        <textarea
+          name="description"
+          x-model="description"
+          class="input min-h-[10rem]"
+        ></textarea>
+      </section>
+      <section id="room-image-size" class="space-y-2 py-4">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >Size</label
+        >
+        {{ template "partial-form-radio-group" .SizeRadioGroup }}
+      </section>
+      <footer class="flex justify-end">
+        <button type="submit" class="button-primary">Save</button>
+      </footer>
+    </form>
   </div>
 </main>
 {{ end }}
