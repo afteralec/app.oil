@@ -1,6 +1,7 @@
 package views
 
 import (
+	"os"
 	"strings"
 	"time"
 
@@ -53,7 +54,16 @@ func nav(c *fiber.Ctx) []fiber.Map {
 
 	nav = append(nav, accountMenu(c))
 
+	nav = append(nav, playButton())
+
 	return nav
+}
+
+func playButton() fiber.Map {
+	return fiber.Map{
+		"Type": "Play",
+		"Path": os.Getenv("PETRICHOR_PLAY_URL"),
+	}
 }
 
 func themeButton(c *fiber.Ctx) fiber.Map {

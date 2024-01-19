@@ -2,14 +2,14 @@ build:
 	go build -o bin/ptrcr main.go
 
 test:
-	SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true SENDING_STONE_URL=localhost:8010 REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=true DISABLE_CSRF=true DISABLE_LOGGING=true go test -v ./...
+	SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true SENDING_STONE_URL=localhost:8010 REDIS_ADDR=127.0.0.1:6379 PETRICHOR_PLAY_URL=http://localhost:5173 DISABLE_RESEND=true DISABLE_CSRF=true DISABLE_LOGGING=true go test -v ./...
 	bun test
 
 test-ci:
 	SERVER_READ_TIMEOUT=10 REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=true DISABLE_CSRF=true DISABLE_LOGGING=true go test -v ./...
 
 dev:
-	BASE_URL=http://localhost:8008 SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true SENDING_STONE_URL=localhost:8010 REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=false go run main.go run
+	BASE_URL=http://localhost:8008 PETRICHOR_PLAY_URL=http://localhost:5173 SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true SENDING_STONE_URL=localhost:8010 REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=false go run main.go run
 
 alpine:
 	curl -o \

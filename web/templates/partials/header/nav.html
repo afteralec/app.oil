@@ -2,7 +2,7 @@
 <nav
   class="relative flex w-full max-w-10xl items-center justify-start px-6 py-2"
 >
-  <a href="/">
+  <a href="/" class="flex items-center justify-center">
     <iconify-icon
       icon="wi:raindrop"
       class="mr-auto hover:text-primary/90"
@@ -10,6 +10,17 @@
       width="48"
     ></iconify-icon>
   </a>
+  {{ if .NavBack }}
+  <a href="{{ .NavBack.Path }}" class="nav-button pl-2 text-lg"
+    ><iconify-icon
+      class="icon"
+      icon="tabler:chevron-left"
+      height="18"
+      width="18"
+    ></iconify-icon>
+    {{ .NavBack.Label }}</a
+  >
+  {{ end }}
   <ul
     class="group ml-auto flex list-none items-center justify-center gap-1 space-x-[1.5]"
   >
@@ -25,6 +36,8 @@
           {{ template "partial-header-nav-login" }}
       {{ else if eq .Type "Register" }}
           {{ template "partial-header-nav-register" }}
+      {{ else if eq .Type "Play" }}
+          {{ template "partial-header-nav-play" . }}
       {{ end }}
     {{ end }}
   </ul>

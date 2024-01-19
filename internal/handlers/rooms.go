@@ -94,6 +94,7 @@ func RoomImagesPage(i *shared.Interfaces) fiber.Handler {
 			"SubTitle": "Room Images are what a room assumes its title, description, and other properties from",
 		}
 		b["RoomImages"] = page_room_images
+		b["NewRoomImagePath"] = routes.NewRoomImage
 		return c.Render(views.RoomImages, b)
 	}
 }
@@ -118,6 +119,11 @@ func NewRoomImagePage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		b := views.Bind(c)
+		// TODO: Generalize this bind into a function
+		b["NavBack"] = fiber.Map{
+			"Path":  routes.RoomImages,
+			"Label": "Back to Room Images",
+		}
 		b["SizeRadioGroup"] = []fiber.Map{
 			{
 				"ID":       "new-room-image-size-tiny",
