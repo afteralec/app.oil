@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -77,12 +78,22 @@ func RoomImagesPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
+		page_room_images := []fiber.Map{}
+		for _, room_image := range room_images {
+			page_room_images = append(page_room_images, fiber.Map{
+				"RoomTitle": room_image.Title,
+				"ImageName": room_image.Name,
+				"Size":      room_image.Size,
+				"Path":      routes.RoomImagePath(room_image.ID),
+			})
+		}
+
 		b := views.Bind(c)
 		b["PageHeader"] = fiber.Map{
 			"Title":    "Room Images",
 			"SubTitle": "Room Images are what a room assumes its title, description, and other properties from",
 		}
-		b["RoomImages"] = room_images
+		b["RoomImages"] = page_room_images
 		return c.Render(views.RoomImages, b)
 	}
 }
@@ -110,6 +121,7 @@ func NewRoomImagePage(i *shared.Interfaces) fiber.Handler {
 		b["SizeRadioGroup"] = []fiber.Map{
 			{
 				"ID":       "new-room-image-size-tiny",
+				"Name":     "size",
 				"Variable": "size",
 				"Value":    "0",
 				"Active":   "false",
@@ -117,6 +129,7 @@ func NewRoomImagePage(i *shared.Interfaces) fiber.Handler {
 			},
 			{
 				"ID":       "new-room-image-size-small",
+				"Name":     "size",
 				"Variable": "size",
 				"Value":    "1",
 				"Active":   "false",
@@ -124,13 +137,15 @@ func NewRoomImagePage(i *shared.Interfaces) fiber.Handler {
 			},
 			{
 				"ID":       "new-room-image-size-medium",
+				"Name":     "size",
 				"Variable": "size",
 				"Value":    "2",
 				"Active":   "true",
-				"Label":    "Mediume",
+				"Label":    "Medium",
 			},
 			{
 				"ID":       "new-room-image-size-large",
+				"Name":     "size",
 				"Variable": "size",
 				"Value":    "3",
 				"Active":   "false",
@@ -138,18 +153,13 @@ func NewRoomImagePage(i *shared.Interfaces) fiber.Handler {
 			},
 			{
 				"ID":       "new-room-image-size-huge",
+				"Name":     "size",
 				"Variable": "size",
 				"Value":    "4",
 				"Active":   "false",
 				"Label":    "Huge",
 			},
 		}
-		b["SizeTiny"] = 0
-		b["SizeSmall"] = 1
-		b["SizeMedium"] = 2
-		b["SizeLarge"] = 3
-		b["SizeHuge"] = 4
-		b["SizeIsMedium"] = true
 		b["PageHeader"] = fiber.Map{
 			"Title":    "New Room Image",
 			"SubTitle": "Room Images are what a room assumes its title, description, and other properties from",
@@ -290,6 +300,7 @@ func NewRoomImage(i *shared.Interfaces) fiber.Handler {
 			Size:        in.Size,
 		})
 		if err != nil {
+			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(shared.HeaderHXAcceptable, "true")
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{

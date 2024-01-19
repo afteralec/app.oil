@@ -1,0 +1,12 @@
+{{ define "partial-room-image-link" }}
+<div class="flex w-full items-center border-b p-4">
+  <header>
+    <h4 class="text-base font-semibold leading-none">{{ .RoomTitle }}</h4>
+    <div class="text-sm leading-none text-muted-fg">{{ .ImageName }}</div>
+  </header>
+  <div class="pl-4 text-sm leading-none">
+    <div><span class="font-semibold">Size:</span> {{ .Size }}</div>
+  </div>
+  <a href="{{ .RoomImagePath }}" class="button-secondary ml-auto">View</a>
+</div>
+{{ end }}

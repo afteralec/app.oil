@@ -9,8 +9,9 @@
     </section>
     <section id="room-images" class="pt-6">
       <!-- prettier-ignore -->
-      {{ template "partial-room-link" }}
-      {{ template "partial-room-link" }}
+      {{ range .RoomImages }}
+      {{ template "partial-room-image-link" . }}
+      {{ end }}
     </section>
   </div>
 </main>
