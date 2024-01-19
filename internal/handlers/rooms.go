@@ -2,7 +2,10 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"log"
+	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -67,7 +70,7 @@ func RoomImagesPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
 
-		if !perms.HasPermission(permissions.PlayerViewAllRoomsName) {
+		if !perms.HasPermission(permissions.PlayerViewAllRoomImagesName) {
 			c.Status(fiber.StatusForbidden)
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
@@ -89,6 +92,7 @@ func RoomImagesPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		b := views.Bind(c)
+
 		b["PageHeader"] = fiber.Map{
 			"Title":    "Room Images",
 			"SubTitle": "Room Images are what a room assumes its title, description, and other properties from",
@@ -96,6 +100,62 @@ func RoomImagesPage(i *shared.Interfaces) fiber.Handler {
 		b["RoomImages"] = page_room_images
 		b["NewRoomImagePath"] = routes.NewRoomImage
 		return c.Render(views.RoomImages, b)
+	}
+}
+
+func RoomImagePage(i *shared.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		_, err := util.GetPID(c)
+		if err != nil {
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusForbidden)
+			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+		}
+
+		if !perms.HasPermission(permissions.PlayerViewAllRoomImagesName) {
+			c.Status(fiber.StatusForbidden)
+			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+		}
+
+		riid, err := util.GetID(c)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+		}
+
+		roomImage, err := i.Queries.GetRoomImage(context.Background(), riid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+		}
+
+		var titleSB strings.Builder
+		fmt.Fprintf(&titleSB, "%s (Image)", roomImage.Title)
+		title := titleSB.String()
+
+		var subtitleSB strings.Builder
+		fmt.Fprintf(&subtitleSB, "Individual Room Image, name: %s", roomImage.Name)
+		subtitle := subtitleSB.String()
+
+		b := views.Bind(c)
+		b["NavBack"] = fiber.Map{
+			"Path":  routes.RoomImages,
+			"Label": "Back to Room Images",
+		}
+		b["PageHeader"] = fiber.Map{
+			"Title":    title,
+			"SubTitle": subtitle,
+		}
+		return c.Render(views.RoomImage, b, layouts.Main)
 	}
 }
 

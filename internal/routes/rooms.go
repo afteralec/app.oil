@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	Rooms        string = "/rooms"
-	RoomImages   string = "/rooms/images"
-	NewRoomImage string = "/rooms/images/new"
+	RoomImages         string = "/rooms/images"
+	RoomImagePathParam string = "/rooms/images/:id"
+	NewRoomImage       string = "/rooms/images/new"
+	Rooms              string = "/rooms"
 )
 
 func RoomImagePath(id int64) string {

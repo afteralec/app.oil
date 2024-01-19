@@ -1,7 +1,8 @@
 package views
 
 const (
-	Rooms        string = "view-rooms"
 	RoomImages   string = "view-room-images"
+	RoomImage    string = "view-room-image"
 	NewRoomImage string = "view-room-image-new"
+	Rooms        string = "view-rooms"
 )

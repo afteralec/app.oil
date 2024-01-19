@@ -11,6 +11,7 @@ const (
 	PlayerGrantAllPermissionsName         string = "GrantAllPermissions"
 	PlayerRevokeAllPermissionsName        string = "RevokeAllPermissions"
 	PlayerReviewCharacterApplicationsName string = "ReviewCharacterApplications"
+	PlayerViewAllRoomImagesName           string = "ViewAllRoomImages"
 	PlayerViewAllRoomsName                string = "ViewAllRooms"
 	PlayerCreateRoomImageName             string = "CreateRoomImage"
 	PlayerCreateRoomName                  string = "CreateRoom"
@@ -20,6 +21,7 @@ const (
 	PlayerGrantAllPermissionsTag         string = "grant-all"
 	PlayerRevokeAllPermissionsTag        string = "revoke-all"
 	PlayerReviewCharacterApplicationsTag string = "review-character-applications"
+	PlayerViewAllRoomImagesTag           string = "view-all-room-images"
 	PlayerViewAllRoomsTag                string = "view-all-rooms"
 	PlayerCreateRoomImageTag             string = "create-room-image"
 	PlayerCreateRoomTag                  string = "create-room"
@@ -29,6 +31,7 @@ const (
 	PlayerGrantAllPermissionsTitle         string = "Grant All Permissions"
 	PlayerRevokeAllPermissionsTitle        string = "Revoke All Permissions"
 	PlayerReviewCharacterApplicationsTitle string = "Review Character Applications"
+	PlayerViewAllRoomImagesTitle           string = "View All Room Images"
 	PlayerViewAllRoomsTitle                string = "View All Rooms"
 	PlayerCreateRoomImageTitle             string = "Create Room Images"
 	PlayerCreateRoomTitle                  string = "Create Room"
@@ -38,6 +41,7 @@ const (
 	PlayerGrantAllPermissionsAbout         string = "The root permission. Only one person should have this at a time."
 	PlayerRevokeAllPermissionsAbout        string = "The root revocation permission. Only one person should have this at a time."
 	PlayerReviewCharacterApplicationsAbout string = "Enable this player to review Character Applications."
+	PlayerViewAllRoomImagesAbout           string = "The permission to view (but not edit) all room image data."
 	PlayerViewAllRoomsAbout                string = "The permission to view (but not edit) all room data."
 	PlayerCreateRoomImageAbout             string = "Create new room images."
 	PlayerCreateRoomAbout                  string = "Create a new room, but not connect it to the grid."
@@ -62,6 +66,13 @@ var PlayerReviewCharacterApplications Player = Player{
 	Tag:   PlayerReviewCharacterApplicationsTag,
 	Title: PlayerReviewCharacterApplicationsTitle,
 	About: PlayerReviewCharacterApplicationsAbout,
+}
+
+var PlayerViewAllRoomImages Player = Player{
+	Name:  PlayerViewAllRoomImagesName,
+	Tag:   PlayerViewAllRoomImagesTag,
+	Title: PlayerViewAllRoomImagesTitle,
+	About: PlayerViewAllRoomImagesAbout,
 }
 
 var PlayerViewAllRooms Player = Player{
@@ -93,6 +104,7 @@ var AllPlayer []Player = []Player{
 	PlayerGrantAllPermissions,
 	PlayerRevokeAllPermissions,
 	PlayerReviewCharacterApplications,
+	PlayerViewAllRoomImages,
 	PlayerViewAllRooms,
 	PlayerCreateRoomImage,
 	PlayerCreateRoom,
@@ -102,6 +114,7 @@ var AllPlayerByName map[string]Player = map[string]Player{
 	PlayerGrantAllPermissionsName:         PlayerGrantAllPermissions,
 	PlayerRevokeAllPermissionsName:        PlayerRevokeAllPermissions,
 	PlayerReviewCharacterApplicationsName: PlayerReviewCharacterApplications,
+	PlayerViewAllRoomImagesName:           PlayerViewAllRoomImages,
 	PlayerViewAllRoomsName:                PlayerViewAllRooms,
 	PlayerCreateRoomImageName:             PlayerCreateRoomImage,
 	PlayerCreateRoomName:                  PlayerCreateRoom,
@@ -111,6 +124,7 @@ var AllPlayerByTag map[string]Player = map[string]Player{
 	PlayerGrantAllPermissionsTag:         PlayerGrantAllPermissions,
 	PlayerRevokeAllPermissionsTag:        PlayerRevokeAllPermissions,
 	PlayerReviewCharacterApplicationsTag: PlayerReviewCharacterApplications,
+	PlayerViewAllRoomImagesTag:           PlayerViewAllRoomImages,
 	PlayerViewAllRoomsTag:                PlayerViewAllRooms,
 	PlayerCreateRoomImageTag:             PlayerCreateRoomImage,
 	PlayerCreateRoomTag:                  PlayerCreateRoom,

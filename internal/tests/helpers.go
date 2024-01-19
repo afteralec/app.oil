@@ -261,3 +261,47 @@ func ListEmailsForPlayer(t *testing.T, i *shared.Interfaces, username string) []
 	}
 	return emails
 }
+
+type TestRoomImageParams struct {
+	Name        string
+	Title       string
+	Description string
+	Size        string
+}
+
+func CreateTestRoomImage(t *testing.T, i *shared.Interfaces, a *fiber.App, u, pw string, image TestRoomImageParams) int64 {
+	sessionCookie := LoginTestPlayer(t, a, u, pw)
+
+	url := MakeTestURL(routes.RoomImages)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("name", image.Name)
+	writer.WriteField("title", image.Title)
+	writer.WriteField("description", image.Description)
+	writer.WriteField("size", image.Size)
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	_, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	room_image, err := i.Queries.GetRoomImageByName(context.Background(), image.Name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return room_image.ID
+}
+
+func DeleteTestRoomImage(t *testing.T, i *shared.Interfaces, id int64) {
+	_, err := i.Database.Exec("DELETE FROM room_images WHERE id = ?;", id)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

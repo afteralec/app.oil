@@ -71,6 +71,7 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Get(routes.RoomImages, handlers.RoomImagesPage(i))
 	app.Post(routes.RoomImages, handlers.NewRoomImage(i))
 	app.Get(routes.NewRoomImage, handlers.NewRoomImagePage(i))
+	app.Get(routes.RoomImagePathParam, handlers.RoomImagePage(i))
 	app.Get(routes.Rooms, handlers.RoomsPage(i))
 
 	app.Post(routes.SearchPlayerPath(routes.Destination), handlers.SearchPlayer(i))
