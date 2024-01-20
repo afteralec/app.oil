@@ -1,0 +1,212 @@
+{{ define "view-room-new" }}
+<main class="flex flex-col items-center justify-center">
+  <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
+    {{ template "partial-page-header" .PageHeader }}
+    <form
+      class="w-[60%] pl-8"
+      x-data="{ 
+        image: '',
+        n: '',
+        ne: '',
+        e: '',
+        se: '',
+        s: '',
+        sw: '',
+        w: '',
+        nw: '',
+        show: {
+          exit: {
+            n: true,
+            ne: false,
+            e: false,
+            se: false,
+            s: false,
+            sw: false,
+            w: false,
+            nw: false
+          }
+        }
+      }"
+      hx-post="{{ .RoomsPath }}"
+      hx-target="#new-room-error"
+    >
+      <section id="new-room-error"></section>
+      <section id="new-room-image" class="space-y-2 pt-4">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="image"
+        >
+          Image ID
+        </label>
+        <input name="image" x-model="image" class="input" />
+      </section>
+      <section id="new-room-exits" class="space-y-2 pt-4">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >Exits</label
+        >
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            :class="show.exit.n ? 'toggle-button-active' : 'toggle-button'"
+            class="cursor-pointer"
+            @click="
+              show.exit.n = true;
+
+              show.exit.ne = false;
+              show.exit.e = false;
+              show.exit.se = false;
+              show.exit.s = false;
+              show.exit.sw = false;
+              show.exit.w = false;
+              show.exit.nw = false;
+            "
+          >
+            North
+          </button>
+          <button
+            type="button"
+            :class="show.exit.ne ? 'toggle-button-active' : 'toggle-button'"
+            class="cursor-pointer"
+            @click="
+              show.exit.ne = true;
+
+              show.exit.n = false;
+              show.exit.e = false;
+              show.exit.se = false;
+              show.exit.s = false;
+              show.exit.sw = false;
+              show.exit.w = false;
+              show.exit.nw = false;
+            "
+          >
+            Northeast
+          </button>
+          <button
+            type="button"
+            :class="show.exit.e ? 'toggle-button-active' : 'toggle-button'"
+            class="toggle-button"
+            class="cursor-pointer"
+            @click="
+              show.exit.e = true;
+
+              show.exit.n = false;
+              show.exit.ne = false;
+              show.exit.se = false;
+              show.exit.s = false;
+              show.exit.sw = false;
+              show.exit.w = false;
+              show.exit.nw = false;
+            "
+          >
+            East
+          </button>
+          <button
+            type="button"
+            :class="show.exit.se ? 'toggle-button-active' : 'toggle-button'"
+            class="cursor-pointer"
+            @click="
+              show.exit.se = true;
+
+              show.exit.n = false;
+              show.exit.ne = false;
+              show.exit.e = false;
+              show.exit.s = false;
+              show.exit.sw = false;
+              show.exit.w = false;
+              show.exit.nw = false;
+            "
+          >
+            Southeast
+          </button>
+          <button
+            type="button"
+            :class="show.exit.s ? 'toggle-button-active' : 'toggle-button'"
+            class="cursor-pointer"
+            @click="
+              show.exit.s = true;
+
+              show.exit.n = false;
+              show.exit.ne = false;
+              show.exit.e = false;
+              show.exit.se = false;
+              show.exit.sw = false;
+              show.exit.w = false;
+              show.exit.nw = false;
+            "
+          >
+            South
+          </button>
+          <button
+            type="button"
+            :class="show.exit.sw ? 'toggle-button-active' : 'toggle-button'"
+            class="cursor-pointer"
+            @click="
+              show.exit.sw = true;
+
+              show.exit.n = false;
+              show.exit.ne = false;
+              show.exit.e = false;
+              show.exit.se = false;
+              show.exit.s = false;
+              show.exit.w = false;
+              show.exit.nw = false;
+            "
+          >
+            Southwest
+          </button>
+          <button
+            type="button"
+            :class="show.exit.w ? 'toggle-button-active' : 'toggle-button'"
+            class="cursor-pointer"
+            @click="
+              show.exit.w = true;
+
+              show.exit.n = false;
+              show.exit.ne = false;
+              show.exit.e = false;
+              show.exit.se = false;
+              show.exit.s = false;
+              show.exit.sw = false;
+              show.exit.nw = false;
+            "
+          >
+            West
+          </button>
+          <button
+            type="button"
+            :class="show.exit.nw ? 'toggle-button-active' : 'toggle-button'"
+            class="cursor-pointer"
+            @click="
+              show.exit.nw = true;
+
+              show.exit.n = false;
+              show.exit.ne = false;
+              show.exit.e = false;
+              show.exit.se = false;
+              show.exit.s = false;
+              show.exit.sw = false;
+              show.exit.w = false;
+            "
+          >
+            Northwest
+          </button>
+        </div>
+        <div>
+          <div x-show="show.exit.n">Set North Exit</div>
+          <div x-show="show.exit.ne">Set Northeast Exit</div>
+          <div x-show="show.exit.e">Set East Exit</div>
+          <div x-show="show.exit.se">Set Southeast Exit</div>
+          <div x-show="show.exit.s">Set South Exit</div>
+          <div x-show="show.exit.sw">Set Southwest Exit</div>
+          <div x-show="show.exit.w">Set West Exit</div>
+          <div x-show="show.exit.nw">Set Northwest Exit</div>
+        </div>
+      </section>
+      <footer class="flex justify-end pt-2">
+        <button type="submit" class="button-primary">Create</button>
+      </footer>
+    </form>
+  </div>
+</main>
+{{ end }}

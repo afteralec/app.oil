@@ -655,3 +655,37 @@ func EditRoomImage(i *shared.Interfaces) fiber.Handler {
 		return nil
 	}
 }
+
+func NewRoomPage(i *shared.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		_, err := util.GetPID(c)
+		if err != nil {
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusForbidden)
+			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+		}
+
+		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+			c.Status(fiber.StatusForbidden)
+			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+		}
+
+		b := views.Bind(c)
+		// TODO: Generalize this bind into a function
+		b["NavBack"] = fiber.Map{
+			"Path":  routes.Rooms,
+			"Label": "Back to Rooms",
+		}
+		b["PageHeader"] = fiber.Map{
+			"Title":    "New Room",
+			"SubTitle": "Create a new room, using a Room Image as a template",
+		}
+		b["RoomsPath"] = routes.RoomImages
+		return c.Render(views.NewRoom, b)
+	}
+}
