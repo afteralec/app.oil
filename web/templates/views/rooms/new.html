@@ -193,17 +193,213 @@
           </button>
         </div>
         <div>
-          <div x-show="show.exit.n">Set North Exit</div>
-          <div x-show="show.exit.ne">Set Northeast Exit</div>
-          <div x-show="show.exit.e">Set East Exit</div>
-          <div x-show="show.exit.se">Set Southeast Exit</div>
-          <div x-show="show.exit.s">Set South Exit</div>
-          <div x-show="show.exit.sw">Set Southwest Exit</div>
-          <div x-show="show.exit.w">Set West Exit</div>
-          <div x-show="show.exit.nw">Set Northwest Exit</div>
+          <div x-show="show.exit.n">
+            <section id="new-room-image" class="space-y-2 pt-4">
+              <h3
+                class="py-2 text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                North Exit
+              </h3>
+              <div class="space-y-2">
+                <label
+                  class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  for="north"
+                >
+                  Already know the Room ID? Enter it here:
+                </label>
+                <input name="north" class="input" />
+              </div>
+              <div class="space-y-2">
+                <label
+                  class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  for="north"
+                >
+                  Search for a Room:
+                </label>
+                <input name="title-search" class="input" />
+              </div>
+            </section>
+          </div>
+          <div x-show="show.exit.ne">
+            <section id="new-room-image" class="space-y-2 pt-4">
+              <label
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                for="northeast"
+              >
+                Northeast Room ID
+              </label>
+              <input name="northeast" class="input" />
+            </section>
+          </div>
+          <div x-show="show.exit.e">
+            <section id="new-room-image" class="space-y-2 pt-4">
+              <label
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                for="east"
+              >
+                East Room ID
+              </label>
+              <input name="east" class="input" />
+            </section>
+          </div>
+          <div x-show="show.exit.se">
+            <section id="new-room-image" class="space-y-2 pt-4">
+              <label
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                for="southeast"
+              >
+                Southeast Room ID
+              </label>
+              <input name="southeast" class="input" />
+            </section>
+          </div>
+          <div x-show="show.exit.s">
+            <section id="new-room-image" class="space-y-2 pt-4">
+              <label
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                for="south"
+              >
+                South Room ID
+              </label>
+              <input name="south" class="input" />
+            </section>
+          </div>
+          <div x-show="show.exit.sw">
+            <section id="new-room-image" class="space-y-2 pt-4">
+              <label
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                for="southwest"
+              >
+                Southwest Room ID
+              </label>
+              <input name="southwest" class="input" />
+            </section>
+          </div>
+          <div x-show="show.exit.w">
+            <section id="new-room-image" class="space-y-2 pt-4">
+              <label
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                for="west"
+              >
+                West Room ID
+              </label>
+              <input name="west" class="input" />
+            </section>
+          </div>
+          <div x-show="show.exit.nw">
+            <section id="new-room-image" class="space-y-2 pt-4">
+              <label
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                for="northwest"
+              >
+                Northwest Room ID
+              </label>
+              <input name="northwest" class="input" />
+            </section>
+          </div>
         </div>
       </section>
-      <footer class="flex justify-end pt-2">
+      <section id="test-area-map" class="flex flex-col gap-4 p-6">
+        <section
+          id="test-area-map-row-one"
+          class="flex items-center justify-center gap-4"
+        >
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+        </section>
+        <section
+          id="test-area-map-row-two"
+          class="flex items-center justify-center gap-4"
+        >
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div class="rounded-md border border-muted-fg p-12"></div>
+          <div
+            class="cursor-pointer rounded-md bg-muted p-12 hover:bg-primary"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-muted p-12 hover:bg-primary"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+        </section>
+        <section
+          id="test-area-map-row-three"
+          class="flex items-center justify-center gap-4"
+        >
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+        </section>
+        <section
+          id="test-area-map-row-four"
+          class="flex items-center justify-center gap-4"
+        >
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+        </section>
+        <section
+          id="test-area-map-row-five"
+          class="flex items-center justify-center gap-4"
+        >
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+          <div
+            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
+          ></div>
+        </section>
+      </section>
+      <footer class="flex justify-end border-t pt-6">
         <button type="submit" class="button-primary">Create</button>
       </footer>
     </form>
