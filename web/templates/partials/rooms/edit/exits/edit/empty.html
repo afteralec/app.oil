@@ -1,23 +1,26 @@
 {{ define "partial-edit-room-exits-edit-empty" }}
 <section
   id="edit-room-exit-{{ .Exit }}"
-  class="space-y-2 pt-4"
+  class="space-y-2"
   x-cloak
   x-show="show.exit.{{ .ExitLetter }}"
 >
-  <h3
-    class="py-2 text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-  >
-    {{ .ExitTitle }} Exit
-  </h3>
-  <div class="space-y-2">
-    <label
-      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="north"
+  <header>
+    <h3
+      class="py-2 text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
     >
-      Already know the Room ID? Enter it here:
-    </label>
-    <input name="{{ .Exit }}" class="input" />
-  </div>
+      {{ .ExitTitle }} Exit
+    </h3>
+    <p class="text-sm leading-none text-muted-fg">This exit is empty.</p>
+  </header>
+
+  <footer class="flex items-center gap-2 pt-2">
+    <div>
+      <button type="button" class="button-secondary">Link</button>
+    </div>
+    <div>
+      <button type="button" class="button-primary">Create</button>
+    </div>
+  </footer>
 </section>
 {{ end }}

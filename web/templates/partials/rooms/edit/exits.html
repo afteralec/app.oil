@@ -25,11 +25,11 @@
     }
   }"
 >
-  <label
-    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-    >Exits</label
+  <h4 class="text-sm font-medium leading-none">Exits</h4>
+  <section
+    id="edit-room-exits-select"
+    class="flex flex-col items-center gap-2 md:max-w-sm md:flex-row md:flex-wrap md:items-start md:justify-between"
   >
-  <section id="edit-room-exits-select" class="flex items-center gap-2">
     <!-- prettier-ignore -->
     {{ range .Exits }}
       {{ template "partial-edit-room-exits-select" . }}
@@ -42,6 +42,4 @@
     {{ end }}
   </div>
 </section>
-<!-- prettier-ignore -->
-{{ template "partial-room-grid" . }}
 {{ end }}

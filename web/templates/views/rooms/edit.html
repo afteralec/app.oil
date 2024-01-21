@@ -71,10 +71,9 @@
         </button>
       </footer>
     </form>
+    <!-- prettier-ignore -->
     {{ template "partial-edit-room-exits" . }}
-    <footer class="flex justify-end border-t pt-6">
-      <button type="submit" class="button-primary">Create</button>
-    </footer>
+    {{ template "partial-edit-room-exits-grid" . }}
   </div>
 </main>
 {{ end }}
