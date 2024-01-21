@@ -3,148 +3,43 @@
   id="edit-room-exits"
   class="space-y-2 pt-4"
   x-data="{ 
-        n: '',
-        ne: '',
-        e: '',
-        se: '',
-        s: '',
-        sw: '',
-        w: '',
-        nw: '',
-        show: {
-          exit: {
-            n: true,
-            ne: false,
-            e: false,
-            se: false,
-            s: false,
-            sw: false,
-            w: false,
-            nw: false
-          }
-        }
-      }"
+    n: '{{ .North }}',
+    ne: '{{ .Northeast }}',
+    e: '{{ .East }}',
+    se: '{{ .Southeast }}',
+    s: '{{ .South }}',
+    sw: '{{ .Southwest }}',
+    w: '{{ .West }}',
+    nw: '{{ .Northwest }}',
+    show: {
+      exit: {
+        n: true,
+        ne: false,
+        e: false,
+        se: false,
+        s: false,
+        sw: false,
+        w: false,
+        nw: false
+      }
+    }
+  }"
 >
   <label
     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
     >Exits</label
   >
-  <section id="edit-room-select-exit" class="flex items-center gap-2">
+  <section id="edit-room-exits-select" class="flex items-center gap-2">
     <!-- prettier-ignore -->
-    {{ template "partial-edit-room-exits-button-north" }}
-    {{ template "partial-edit-room-exits-button-northeast" }}
-    {{ template "partial-edit-room-exits-button-east" }}
-    {{ template "partial-edit-room-exits-button-southeast" }}
-    {{ template "partial-edit-room-exits-button-south" }}
-    {{ template "partial-edit-room-exits-button-southwest" }}
-    {{ template "partial-edit-room-exits-button-west" }}
-    {{ template "partial-edit-room-exits-button-northwest" }}
+    {{ range .Exits }}
+      {{ template "partial-edit-room-exits-select" . }}
+    {{ end }}
   </section>
   <div>
-    <div x-show="show.exit.n">
-      <section id="new-room-image" class="space-y-2 pt-4">
-        <h3
-          class="py-2 text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          North Exit
-        </h3>
-        <div class="space-y-2">
-          <label
-            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            for="north"
-          >
-            Already know the Room ID? Enter it here:
-          </label>
-          <input name="north" class="input" />
-        </div>
-        <div class="space-y-2">
-          <label
-            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            for="north"
-          >
-            Search for a Room:
-          </label>
-          <input name="title-search" class="input" />
-        </div>
-      </section>
-    </div>
-    <div x-show="show.exit.ne">
-      <section id="new-room-image" class="space-y-2 pt-4">
-        <label
-          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          for="northeast"
-        >
-          Northeast Room ID
-        </label>
-        <input name="northeast" class="input" />
-      </section>
-    </div>
-    <div x-show="show.exit.e">
-      <section id="new-room-image" class="space-y-2 pt-4">
-        <label
-          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          for="east"
-        >
-          East Room ID
-        </label>
-        <input name="east" class="input" />
-      </section>
-    </div>
-    <div x-show="show.exit.se">
-      <section id="new-room-image" class="space-y-2 pt-4">
-        <label
-          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          for="southeast"
-        >
-          Southeast Room ID
-        </label>
-        <input name="southeast" class="input" />
-      </section>
-    </div>
-    <div x-show="show.exit.s">
-      <section id="new-room-image" class="space-y-2 pt-4">
-        <label
-          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          for="south"
-        >
-          South Room ID
-        </label>
-        <input name="south" class="input" />
-      </section>
-    </div>
-    <div x-show="show.exit.sw">
-      <section id="new-room-image" class="space-y-2 pt-4">
-        <label
-          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          for="southwest"
-        >
-          Southwest Room ID
-        </label>
-        <input name="southwest" class="input" />
-      </section>
-    </div>
-    <div x-show="show.exit.w">
-      <section id="new-room-image" class="space-y-2 pt-4">
-        <label
-          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          for="west"
-        >
-          West Room ID
-        </label>
-        <input name="west" class="input" />
-      </section>
-    </div>
-    <div x-show="show.exit.nw">
-      <section id="new-room-image" class="space-y-2 pt-4">
-        <label
-          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          for="northwest"
-        >
-          Northwest Room ID
-        </label>
-        <input name="northwest" class="input" />
-      </section>
-    </div>
+    <!-- prettier-ignore -->
+    {{ range .Exits }}
+      {{ template "partial-edit-room-exits-edit" . }}
+    {{ end }}
   </div>
 </section>
 <!-- prettier-ignore -->

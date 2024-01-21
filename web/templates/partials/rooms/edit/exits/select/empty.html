@@ -1,20 +1,22 @@
-{{ define "partial-edit-room-exits-button-west" }}
+{{ define "partial-edit-room-exits-select-empty" }}
 <button
   type="button"
-  :class="show.exit.w ? 'toggle-button-active' : 'toggle-button'"
+  :class="show.exit.{{ .ExitLetter }} ? 'toggle-button-active' : 'toggle-button'"
+  class="toggle-button"
   class="cursor-pointer"
   @click="
-    show.exit.w = true;
-
     show.exit.n = false;
     show.exit.ne = false;
     show.exit.e = false;
     show.exit.se = false;
     show.exit.s = false;
     show.exit.sw = false;
+    show.exit.w = false;
     show.exit.nw = false;
+
+    show.exit.{{ .ExitLetter }} = true;
   "
 >
-  West
+  {{ .ExitTitle }}
 </button>
 {{ end }}

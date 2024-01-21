@@ -384,6 +384,64 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 				"Label":    "Huge",
 			},
 		}
+		b["North"] = record.North
+		b["Northeast"] = record.Northeast
+		b["East"] = record.East
+		b["Southeast"] = record.Southeast
+		b["South"] = record.South
+		b["Southwest"] = record.Southwest
+		b["West"] = record.West
+		b["Northwest"] = record.Northwest
+		b["Exits"] = []fiber.Map{
+			{
+				"ID":         0,
+				"Exit":       "north",
+				"ExitLetter": "n",
+				"ExitTitle":  "North",
+			},
+			{
+				"ID":         0,
+				"Exit":       "northeast",
+				"ExitLetter": "ne",
+				"ExitTitle":  "Northeast",
+			},
+			{
+				"ID":         0,
+				"Exit":       "east",
+				"ExitLetter": "e",
+				"ExitTitle":  "East",
+			},
+			{
+				"ID":         0,
+				"Exit":       "southeast",
+				"ExitLetter": "se",
+				"ExitTitle":  "Southeast",
+			},
+			{
+				"ID":         0,
+				"Exit":       "south",
+				"ExitLetter": "s",
+				"ExitTitle":  "South",
+			},
+			{
+				"ID":         0,
+				"Exit":       "southwest",
+				"ExitLetter": "sw",
+				"ExitTitle":  "Southwest",
+			},
+			{
+				"ID":         0,
+				"Exit":       "west",
+				"ExitLetter": "w",
+				"ExitTitle":  "West",
+			},
+			{
+				"ID":         0,
+				"Exit":       "northwest",
+				"ExitLetter": "nw",
+				"ExitTitle":  "Northwest",
+			},
+		}
 		return c.Render(views.EditRoom, b)
 	}
 }

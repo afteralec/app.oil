@@ -1,0 +1,8 @@
+<!-- prettier-ignore -->
+{{ define "partial-edit-room-exits-edit" }}
+{{ if eq .ID 0 }}
+{{ template "partial-edit-room-exits-edit-empty" . }}
+{{ else }}
+{{ template "partial-edit-room-exits-edit-existing" . }}
+{{ end }}
+{{ end }}
