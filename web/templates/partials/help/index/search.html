@@ -55,7 +55,7 @@
       <button
         type="button"
         class="cursor-pointer"
-        :class="tags ? 'toggle-button-active' : 'toggle-button'"
+        :class="tags ? 'button-toggle-active' : 'button-toggle'"
         @click="tags = !tags;"
       >
         Tags
@@ -63,7 +63,7 @@
       <button
         type="button"
         class="cursor-pointer"
-        :class="category ? 'toggle-button-active' : 'toggle-button'"
+        :class="category ? 'button-toggle-active' : 'button-toggle'"
         @click="category = !category;"
       >
         Category
@@ -71,7 +71,7 @@
       <button
         type="button"
         class="cursor-pointer"
-        :class="title ? 'toggle-button-active' : 'toggle-button'"
+        :class="title ? 'button-toggle-active' : 'button-toggle'"
         @click="title = !title;"
       >
         Title
@@ -79,7 +79,7 @@
       <button
         type="button"
         class="cursor-pointer"
-        :class="content ? 'toggle-button-active' : 'toggle-button'"
+        :class="content ? 'button-toggle-active' : 'button-toggle'"
         @click="content = !content;"
       >
         Content

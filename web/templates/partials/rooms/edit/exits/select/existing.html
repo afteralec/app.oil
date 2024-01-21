@@ -1,8 +1,8 @@
 {{ define "partial-edit-room-exits-select-existing" }}
 <button
   type="button"
-  :class="show.exit.{{ .ExitLetter }} ? 'toggle-button-active' : 'toggle-button'"
-  class="toggle-button"
+  :class="show.exit.{{ .ExitLetter }} ? 'button-toggle-active' : 'button-toggle'"
+  class="button-toggle"
   class="cursor-pointer"
   @click="
     show.exit.n = false;
