@@ -1,0 +1,20 @@
+{{ define "partial-edit-room-exits-button-southeast" }}
+<button
+  type="button"
+  :class="show.exit.se ? 'toggle-button-active' : 'toggle-button'"
+  class="cursor-pointer"
+  @click="
+    show.exit.se = true;
+
+    show.exit.n = false;
+    show.exit.ne = false;
+    show.exit.e = false;
+    show.exit.s = false;
+    show.exit.sw = false;
+    show.exit.w = false;
+    show.exit.nw = false;
+  "
+>
+  Southeast
+</button>
+{{ end }}
