@@ -17,6 +17,7 @@ sql:
           cid: "CID"
           ipid: "IPID"
           rpid: "RPID"
+          rmid: "RMID"
           riid: "RIID"
           aiid: "AIID"
           html: "HTML"

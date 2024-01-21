@@ -8,4 +8,5 @@ const (
 	Rooms         string = "view-rooms"
 	Room          string = "view-room"
 	NewRoom       string = "view-room-new"
+	EditRoom      string = "view-room-edit"
 )

@@ -654,12 +654,135 @@ func EditRoomImage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func NewRoomPage(i *shared.Interfaces) fiber.Handler {
+func NewRoom(i *shared.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		_, err := util.GetPID(c)
+		if err != nil {
+			c.Status(fiber.StatusUnauthorized)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"It looks like your session may have expired.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusForbidden)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+			c.Status(fiber.StatusForbidden)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"You don't have the permission(s) necessary to create a Room Image.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+		qtx := i.Queries.WithTx(tx)
+
+		result, err := qtx.CreateRoom(context.Background(), queries.CreateRoomParams{
+			Title:       rooms.DefaultTitle,
+			Description: rooms.DefaultDescription,
+			Size:        rooms.DefaultSize,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		rid, err := result.LastInsertId()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		c.Status(fiber.StatusCreated)
+		c.Append("HX-Redirect", routes.EditRoomPath(rid))
+		c.Append("HX-Reswap", "none")
+		return nil
+	}
+}
+
+func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		_, err := util.GetPID(c)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
+		}
+
+		rmid, err := util.GetID(c)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
@@ -671,6 +794,16 @@ func NewRoomPage(i *shared.Interfaces) fiber.Handler {
 		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+		}
+
+		_, err = i.Queries.GetRoom(context.Background(), rmid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
 		roomGrid := []fiber.Map{
@@ -738,7 +871,7 @@ func NewRoomPage(i *shared.Interfaces) fiber.Handler {
 			"SubTitle": "Create a new room, using a Room Image as a template",
 		}
 		b["RoomsPath"] = routes.RoomImages
-		return c.Render(views.NewRoom, b)
+		return c.Render(views.EditRoom, b)
 	}
 }
 
