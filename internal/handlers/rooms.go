@@ -394,10 +394,12 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		b["Northwest"] = record.Northwest
 		b["Exits"] = []fiber.Map{
 			{
-				"ID":         0,
-				"Exit":       "north",
-				"ExitLetter": "n",
-				"ExitTitle":  "North",
+				"ID":          1,
+				"Exit":        "north",
+				"ExitLetter":  "n",
+				"ExitTitle":   "North",
+				"Title":       rooms.DefaultTitle,
+				"Description": rooms.DefaultDescription,
 			},
 			{
 				"ID":         0,

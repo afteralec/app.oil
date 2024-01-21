@@ -1,3 +1,14 @@
 {{ define "partial-edit-room-exits-edit-existing" }}
-<div class="text-base font-semibold leading-none">Existing Room At Exit</div>
+<footer class="h-full w-full rounded-md p-6 hover:bg-muted">
+  <header>
+    <h3 class="text-large font-semibold leading-none tracking-tight">
+      {{ .Title }}
+    </h3>
+  </header>
+  <div
+    class="overflow-hidden text-ellipsis whitespace-nowrap text-sm leading-none text-muted-fg"
+  >
+    {{ .Description }}
+  </div>
+</footer>
 {{ end }}

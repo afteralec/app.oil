@@ -1,8 +1,30 @@
-<!-- prettier-ignore -->
 {{ define "partial-edit-room-exits-edit" }}
-{{ if eq .ID 0 }}
-{{ template "partial-edit-room-exits-edit-empty" . }}
-{{ else }}
-{{ template "partial-edit-room-exits-edit-existing" . }}
-{{ end }}
+<section
+  id="edit-room-exits-edit-{{ .Exit }}"
+  x-cloak
+  x-show="show.exit.{{ .ExitLetter }}"
+>
+  <header>
+    <h3
+      class="py-2 text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+    >
+      {{ .ExitTitle }} Exit
+    </h3>
+    {{ if eq .ID 0 }}
+    <p class="text-sm leading-none text-muted-fg">
+      This exit is <span class="font-semibold">empty</span>.
+    </p>
+    {{ else }}
+    <p class="text-sm leading-none text-muted-fg">
+      This exit is <span class="font-semibold">linked</span>.
+    </p>
+    {{ end }}
+  </header>
+  <!-- prettier-ignore -->
+  {{ if eq .ID 0 }}
+    {{ template "partial-edit-room-exits-edit-empty" . }}
+  {{ else }}
+    {{ template "partial-edit-room-exits-edit-existing" . }}
+  {{ end }}
+</section>
 {{ end }}
