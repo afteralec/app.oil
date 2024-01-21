@@ -73,7 +73,7 @@ func RoomImagesPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
 
-		roomImages, err := i.Queries.ListRoomImages(context.Background())
+		roomImages, err := i.Queries.ListRooms(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
@@ -83,7 +83,7 @@ func RoomImagesPage(i *shared.Interfaces) fiber.Handler {
 		for _, roomImage := range roomImages {
 			pageRoomImage := fiber.Map{
 				"RoomTitle": roomImage.Title,
-				"ImageName": roomImage.Name,
+				"ImageName": "ImageName",
 				"Size":      roomImage.Size,
 				"Path":      routes.RoomImagePath(roomImage.ID),
 			}
@@ -124,13 +124,13 @@ func RoomImagePage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
 
-		riid, err := util.GetID(c)
+		rmid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
 
-		roomImage, err := i.Queries.GetRoomImage(context.Background(), riid)
+		roomImage, err := i.Queries.GetRoom(context.Background(), rmid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -157,7 +157,7 @@ func RoomImagePage(i *shared.Interfaces) fiber.Handler {
 			"Title":    roomImage.Title,
 			"SubTitle": "Room Image",
 		}
-		b["Name"] = roomImage.Name
+		b["Name"] = "ImageName"
 		b["Title"] = roomImage.Title
 		b["Size"] = sizes[roomImage.Size]
 		b["Description"] = roomImage.Description
@@ -266,7 +266,7 @@ func EditRoomImagePage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
 		}
 
-		roomImage, err := i.Queries.GetRoomImage(context.Background(), id)
+		roomImage, err := i.Queries.GetRoom(context.Background(), id)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -327,10 +327,10 @@ func EditRoomImagePage(i *shared.Interfaces) fiber.Handler {
 		}
 		b["PageHeader"] = fiber.Map{
 			"Title":    roomImage.Title,
-			"SubTitle": roomImage.Name,
+			"SubTitle": "ImageName",
 		}
 		b["RoomImagePath"] = routes.RoomImagePath(roomImage.ID)
-		b["Name"] = roomImage.Name
+		b["Name"] = "ImageName"
 		b["Title"] = roomImage.Title
 		b["Description"] = roomImage.Description
 		b["Size"] = roomImage.Size
@@ -462,8 +462,7 @@ func NewRoomImage(i *shared.Interfaces) fiber.Handler {
 			}), layouts.None)
 		}
 
-		_, err = i.Queries.CreateRoomImage(context.Background(), queries.CreateRoomImageParams{
-			Name:        in.Name,
+		_, err = i.Queries.CreateRoom(context.Background(), queries.CreateRoomParams{
 			Title:       in.Title,
 			Description: in.Description,
 			Size:        in.Size,
@@ -629,9 +628,8 @@ func EditRoomImage(i *shared.Interfaces) fiber.Handler {
 			}), layouts.None)
 		}
 
-		if err := i.Queries.UpdateRoomImage(context.Background(), queries.UpdateRoomImageParams{
+		if err := i.Queries.UpdateRoom(context.Background(), queries.UpdateRoomParams{
 			ID:          riid,
-			Name:        in.Name,
 			Title:       in.Title,
 			Description: in.Description,
 			Size:        in.Size,
@@ -675,8 +673,62 @@ func NewRoomPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
 
+		roomGrid := []fiber.Map{
+			{
+				"ID": "test-room-grid-row-one",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+				},
+			},
+			{
+				"ID": "test-room-grid-row-two",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 1},
+					{"ID": 5},
+				},
+			},
+			{
+				"ID": "test-room-grid-row-three",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 2},
+					{"ID": 0},
+				},
+			},
+			{
+				"ID": "test-room-grid-row-four",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+				},
+			},
+			{
+				"ID": "test-room-grid-row-five",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+				},
+			},
+		}
+
 		b := views.Bind(c)
 		// TODO: Generalize this bind into a function
+		b["RoomGrid"] = roomGrid
 		b["NavBack"] = fiber.Map{
 			"Path":  routes.Rooms,
 			"Label": "Back to Rooms",
@@ -687,5 +739,143 @@ func NewRoomPage(i *shared.Interfaces) fiber.Handler {
 		}
 		b["RoomsPath"] = routes.RoomImages
 		return c.Render(views.NewRoom, b)
+	}
+}
+
+func RoomGrid() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		_, err := util.GetPID(c)
+		if err != nil {
+			return nil
+		}
+
+		roomGridOne := []fiber.Map{
+			{
+				"ID": "test-room-grid-row-one",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+				},
+			},
+			{
+				"ID": "test-room-grid-row-two",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 1},
+					{"ID": 5},
+				},
+			},
+			{
+				"ID": "test-room-grid-row-three",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 2},
+					{"ID": 0},
+				},
+			},
+			{
+				"ID": "test-room-grid-row-four",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+				},
+			},
+			{
+				"ID": "test-room-grid-row-five",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+				},
+			},
+		}
+
+		roomGridTwo := []fiber.Map{
+			{
+				"ID": "test-room-grid-row-one",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+				},
+			},
+			{
+				"ID": "test-room-grid-row-two",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 1},
+					{"ID": 6},
+				},
+			},
+			{
+				"ID": "test-room-grid-row-three",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 2},
+					{"ID": 0},
+				},
+			},
+			{
+				"ID": "test-room-grid-row-four",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+				},
+			},
+			{
+				"ID": "test-room-grid-row-five",
+				"Rooms": []fiber.Map{
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+					{"ID": 0},
+				},
+			},
+		}
+
+		id, err := util.GetID(c)
+		if err != nil {
+			return nil
+		}
+
+		selected, err := util.GetParamID(c, "selected")
+		if err != nil {
+			return nil
+		}
+
+		if id != 0 {
+			return nil
+		}
+
+		b := views.Bind(c)
+		if selected == 2 {
+			b["RoomGrid"] = roomGridTwo
+		} else {
+			b["RoomGrid"] = roomGridOne
+		}
+
+		return c.Render(partials.RoomGrid, b, layouts.None)
 	}
 }

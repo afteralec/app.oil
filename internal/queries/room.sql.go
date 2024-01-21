@@ -11,35 +11,21 @@ import (
 )
 
 const createRoom = `-- name: CreateRoom :execresult
-INSERT INTO rooms (riid) VALUES (?)
+INSERT INTO rooms (title, description, size) VALUES (?, ?, ?)
 `
 
-func (q *Queries) CreateRoom(ctx context.Context, riid int64) (sql.Result, error) {
-	return q.exec(ctx, q.createRoomStmt, createRoom, riid)
-}
-
-const createRoomImage = `-- name: CreateRoomImage :execresult
-INSERT INTO room_images (name, title, description, size) VALUES (?, ?, ?, ?)
-`
-
-type CreateRoomImageParams struct {
-	Name        string
+type CreateRoomParams struct {
 	Title       string
 	Description string
 	Size        int32
 }
 
-func (q *Queries) CreateRoomImage(ctx context.Context, arg CreateRoomImageParams) (sql.Result, error) {
-	return q.exec(ctx, q.createRoomImageStmt, createRoomImage,
-		arg.Name,
-		arg.Title,
-		arg.Description,
-		arg.Size,
-	)
+func (q *Queries) CreateRoom(ctx context.Context, arg CreateRoomParams) (sql.Result, error) {
+	return q.exec(ctx, q.createRoomStmt, createRoom, arg.Title, arg.Description, arg.Size)
 }
 
 const getRoom = `-- name: GetRoom :one
-SELECT created_at, updated_at, north, northeast, east, southeast, south, southwest, west, northwest, riid, id FROM rooms WHERE id = ?
+SELECT created_at, updated_at, description, title, north, northeast, east, southeast, south, southwest, west, northwest, id, size FROM rooms WHERE id = ?
 `
 
 func (q *Queries) GetRoom(ctx context.Context, id int64) (Room, error) {
@@ -48,6 +34,8 @@ func (q *Queries) GetRoom(ctx context.Context, id int64) (Room, error) {
 	err := row.Scan(
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Description,
+		&i.Title,
 		&i.North,
 		&i.Northeast,
 		&i.East,
@@ -56,93 +44,38 @@ func (q *Queries) GetRoom(ctx context.Context, id int64) (Room, error) {
 		&i.Southwest,
 		&i.West,
 		&i.Northwest,
-		&i.RIID,
-		&i.ID,
-	)
-	return i, err
-}
-
-const getRoomByImageId = `-- name: GetRoomByImageId :one
-SELECT created_at, updated_at, north, northeast, east, southeast, south, southwest, west, northwest, riid, id FROM rooms WHERE riid = ?
-`
-
-func (q *Queries) GetRoomByImageId(ctx context.Context, riid int64) (Room, error) {
-	row := q.queryRow(ctx, q.getRoomByImageIdStmt, getRoomByImageId, riid)
-	var i Room
-	err := row.Scan(
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.North,
-		&i.Northeast,
-		&i.East,
-		&i.Southeast,
-		&i.South,
-		&i.Southwest,
-		&i.West,
-		&i.Northwest,
-		&i.RIID,
-		&i.ID,
-	)
-	return i, err
-}
-
-const getRoomImage = `-- name: GetRoomImage :one
-SELECT created_at, updated_at, description, title, name, id, size FROM room_images WHERE id = ?
-`
-
-func (q *Queries) GetRoomImage(ctx context.Context, id int64) (RoomImage, error) {
-	row := q.queryRow(ctx, q.getRoomImageStmt, getRoomImage, id)
-	var i RoomImage
-	err := row.Scan(
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Description,
-		&i.Title,
-		&i.Name,
 		&i.ID,
 		&i.Size,
 	)
 	return i, err
 }
 
-const getRoomImageByName = `-- name: GetRoomImageByName :one
-SELECT created_at, updated_at, description, title, name, id, size FROM room_images WHERE name = ?
+const listRooms = `-- name: ListRooms :many
+SELECT created_at, updated_at, description, title, north, northeast, east, southeast, south, southwest, west, northwest, id, size FROM rooms
 `
 
-func (q *Queries) GetRoomImageByName(ctx context.Context, name string) (RoomImage, error) {
-	row := q.queryRow(ctx, q.getRoomImageByNameStmt, getRoomImageByName, name)
-	var i RoomImage
-	err := row.Scan(
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Description,
-		&i.Title,
-		&i.Name,
-		&i.ID,
-		&i.Size,
-	)
-	return i, err
-}
-
-const listRoomImages = `-- name: ListRoomImages :many
-SELECT created_at, updated_at, description, title, name, id, size FROM room_images
-`
-
-func (q *Queries) ListRoomImages(ctx context.Context) ([]RoomImage, error) {
-	rows, err := q.query(ctx, q.listRoomImagesStmt, listRoomImages)
+func (q *Queries) ListRooms(ctx context.Context) ([]Room, error) {
+	rows, err := q.query(ctx, q.listRoomsStmt, listRooms)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []RoomImage
+	var items []Room
 	for rows.Next() {
-		var i RoomImage
+		var i Room
 		if err := rows.Scan(
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Description,
 			&i.Title,
-			&i.Name,
+			&i.North,
+			&i.Northeast,
+			&i.East,
+			&i.Southeast,
+			&i.South,
+			&i.Southwest,
+			&i.West,
+			&i.Northwest,
 			&i.ID,
 			&i.Size,
 		); err != nil {
@@ -159,103 +92,46 @@ func (q *Queries) ListRoomImages(ctx context.Context) ([]RoomImage, error) {
 	return items, nil
 }
 
-const listRooms = `-- name: ListRooms :many
-SELECT created_at, updated_at, north, northeast, east, southeast, south, southwest, west, northwest, riid, id FROM rooms
-`
-
-func (q *Queries) ListRooms(ctx context.Context) ([]Room, error) {
-	rows, err := q.query(ctx, q.listRoomsStmt, listRooms)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Room
-	for rows.Next() {
-		var i Room
-		if err := rows.Scan(
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.North,
-			&i.Northeast,
-			&i.East,
-			&i.Southeast,
-			&i.South,
-			&i.Southwest,
-			&i.West,
-			&i.Northwest,
-			&i.RIID,
-			&i.ID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listRoomsWithImage = `-- name: ListRoomsWithImage :many
-SELECT
-  room_images.created_at, room_images.updated_at, room_images.description, room_images.title, room_images.name, room_images.id, room_images.size, rooms.created_at, rooms.updated_at, rooms.north, rooms.northeast, rooms.east, rooms.southeast, rooms.south, rooms.southwest, rooms.west, rooms.northwest, rooms.riid, rooms.id
-FROM
+const updateRoom = `-- name: UpdateRoom :exec
+UPDATE
   rooms
-JOIN
-  room_images
-ON
-  rooms.riid = room_images.id
+SET
+  title = ?,
+  description = ?,
+  size = ?
+WHERE
+  id = ?
 `
 
-type ListRoomsWithImageRow struct {
-	RoomImage RoomImage
-	Room      Room
+type UpdateRoomParams struct {
+	Title       string
+	Description string
+	Size        int32
+	ID          int64
 }
 
-func (q *Queries) ListRoomsWithImage(ctx context.Context) ([]ListRoomsWithImageRow, error) {
-	rows, err := q.query(ctx, q.listRoomsWithImageStmt, listRoomsWithImage)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ListRoomsWithImageRow
-	for rows.Next() {
-		var i ListRoomsWithImageRow
-		if err := rows.Scan(
-			&i.RoomImage.CreatedAt,
-			&i.RoomImage.UpdatedAt,
-			&i.RoomImage.Description,
-			&i.RoomImage.Title,
-			&i.RoomImage.Name,
-			&i.RoomImage.ID,
-			&i.RoomImage.Size,
-			&i.Room.CreatedAt,
-			&i.Room.UpdatedAt,
-			&i.Room.North,
-			&i.Room.Northeast,
-			&i.Room.East,
-			&i.Room.Southeast,
-			&i.Room.South,
-			&i.Room.Southwest,
-			&i.Room.West,
-			&i.Room.Northwest,
-			&i.Room.RIID,
-			&i.Room.ID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) UpdateRoom(ctx context.Context, arg UpdateRoomParams) error {
+	_, err := q.exec(ctx, q.updateRoomStmt, updateRoom,
+		arg.Title,
+		arg.Description,
+		arg.Size,
+		arg.ID,
+	)
+	return err
+}
+
+const updateRoomDescription = `-- name: UpdateRoomDescription :exec
+UPDATE rooms SET description = ? WHERE id = ?
+`
+
+type UpdateRoomDescriptionParams struct {
+	Description string
+	ID          int64
+}
+
+func (q *Queries) UpdateRoomDescription(ctx context.Context, arg UpdateRoomDescriptionParams) error {
+	_, err := q.exec(ctx, q.updateRoomDescriptionStmt, updateRoomDescription, arg.Description, arg.ID)
+	return err
 }
 
 const updateRoomExitEast = `-- name: UpdateRoomExitEast :exec
@@ -370,89 +246,30 @@ func (q *Queries) UpdateRoomExitWest(ctx context.Context, arg UpdateRoomExitWest
 	return err
 }
 
-const updateRoomImage = `-- name: UpdateRoomImage :exec
-UPDATE
-  room_images
-SET
-  name = ?,
-  title = ?,
-  description = ?,
-  size = ?
-WHERE
-  id = ?
+const updateRoomSize = `-- name: UpdateRoomSize :exec
+UPDATE rooms SET size = ? WHERE id = ?
 `
 
-type UpdateRoomImageParams struct {
-	Name        string
-	Title       string
-	Description string
-	Size        int32
-	ID          int64
-}
-
-func (q *Queries) UpdateRoomImage(ctx context.Context, arg UpdateRoomImageParams) error {
-	_, err := q.exec(ctx, q.updateRoomImageStmt, updateRoomImage,
-		arg.Name,
-		arg.Title,
-		arg.Description,
-		arg.Size,
-		arg.ID,
-	)
-	return err
-}
-
-const updateRoomImageDescription = `-- name: UpdateRoomImageDescription :exec
-UPDATE room_images SET description = ? WHERE id = ?
-`
-
-type UpdateRoomImageDescriptionParams struct {
-	Description string
-	ID          int64
-}
-
-func (q *Queries) UpdateRoomImageDescription(ctx context.Context, arg UpdateRoomImageDescriptionParams) error {
-	_, err := q.exec(ctx, q.updateRoomImageDescriptionStmt, updateRoomImageDescription, arg.Description, arg.ID)
-	return err
-}
-
-const updateRoomImageName = `-- name: UpdateRoomImageName :exec
-UPDATE room_images SET name = ? WHERE id = ?
-`
-
-type UpdateRoomImageNameParams struct {
-	Name string
-	ID   int64
-}
-
-func (q *Queries) UpdateRoomImageName(ctx context.Context, arg UpdateRoomImageNameParams) error {
-	_, err := q.exec(ctx, q.updateRoomImageNameStmt, updateRoomImageName, arg.Name, arg.ID)
-	return err
-}
-
-const updateRoomImageSize = `-- name: UpdateRoomImageSize :exec
-UPDATE room_images SET size = ? WHERE id = ?
-`
-
-type UpdateRoomImageSizeParams struct {
+type UpdateRoomSizeParams struct {
 	Size int32
 	ID   int64
 }
 
-func (q *Queries) UpdateRoomImageSize(ctx context.Context, arg UpdateRoomImageSizeParams) error {
-	_, err := q.exec(ctx, q.updateRoomImageSizeStmt, updateRoomImageSize, arg.Size, arg.ID)
+func (q *Queries) UpdateRoomSize(ctx context.Context, arg UpdateRoomSizeParams) error {
+	_, err := q.exec(ctx, q.updateRoomSizeStmt, updateRoomSize, arg.Size, arg.ID)
 	return err
 }
 
-const updateRoomImageTitle = `-- name: UpdateRoomImageTitle :exec
-UPDATE room_images SET title = ? WHERE id = ?
+const updateRoomTitle = `-- name: UpdateRoomTitle :exec
+UPDATE rooms SET title = ? WHERE id = ?
 `
 
-type UpdateRoomImageTitleParams struct {
+type UpdateRoomTitleParams struct {
 	Title string
 	ID    int64
 }
 
-func (q *Queries) UpdateRoomImageTitle(ctx context.Context, arg UpdateRoomImageTitleParams) error {
-	_, err := q.exec(ctx, q.updateRoomImageTitleStmt, updateRoomImageTitle, arg.Title, arg.ID)
+func (q *Queries) UpdateRoomTitle(ctx context.Context, arg UpdateRoomTitleParams) error {
+	_, err := q.exec(ctx, q.updateRoomTitleStmt, updateRoomTitle, arg.Title, arg.ID)
 	return err
 }

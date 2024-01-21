@@ -3,7 +3,7 @@
   <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
     {{ template "partial-page-header" .PageHeader }}
     <form
-      class="w-[60%] pl-8"
+      class="pl-8"
       x-data="{ 
         image: '',
         n: '',
@@ -299,106 +299,7 @@
           </div>
         </div>
       </section>
-      <section id="test-area-map" class="flex flex-col gap-4 p-6">
-        <section
-          id="test-area-map-row-one"
-          class="flex items-center justify-center gap-4"
-        >
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-        </section>
-        <section
-          id="test-area-map-row-two"
-          class="flex items-center justify-center gap-4"
-        >
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div class="rounded-md border border-muted-fg p-12"></div>
-          <div
-            class="cursor-pointer rounded-md bg-muted p-12 hover:bg-primary"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-muted p-12 hover:bg-primary"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-        </section>
-        <section
-          id="test-area-map-row-three"
-          class="flex items-center justify-center gap-4"
-        >
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-        </section>
-        <section
-          id="test-area-map-row-four"
-          class="flex items-center justify-center gap-4"
-        >
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-        </section>
-        <section
-          id="test-area-map-row-five"
-          class="flex items-center justify-center gap-4"
-        >
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-          <div
-            class="cursor-pointer rounded-md bg-primary p-12 hover:bg-accent"
-          ></div>
-        </section>
-      </section>
+      {{ template "partial-room-grid" . }}
       <footer class="flex justify-end border-t pt-6">
         <button type="submit" class="button-primary">Create</button>
       </footer>

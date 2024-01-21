@@ -72,9 +72,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createRoomStmt, err = db.PrepareContext(ctx, createRoom); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateRoom: %w", err)
 	}
-	if q.createRoomImageStmt, err = db.PrepareContext(ctx, createRoomImage); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateRoomImage: %w", err)
-	}
 	if q.deleteEmailStmt, err = db.PrepareContext(ctx, deleteEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteEmail: %w", err)
 	}
@@ -126,15 +123,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getRoomStmt, err = db.PrepareContext(ctx, getRoom); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRoom: %w", err)
 	}
-	if q.getRoomByImageIdStmt, err = db.PrepareContext(ctx, getRoomByImageId); err != nil {
-		return nil, fmt.Errorf("error preparing query GetRoomByImageId: %w", err)
-	}
-	if q.getRoomImageStmt, err = db.PrepareContext(ctx, getRoomImage); err != nil {
-		return nil, fmt.Errorf("error preparing query GetRoomImage: %w", err)
-	}
-	if q.getRoomImageByNameStmt, err = db.PrepareContext(ctx, getRoomImageByName); err != nil {
-		return nil, fmt.Errorf("error preparing query GetRoomImageByName: %w", err)
-	}
 	if q.getTagsForHelpFileStmt, err = db.PrepareContext(ctx, getTagsForHelpFile); err != nil {
 		return nil, fmt.Errorf("error preparing query GetTagsForHelpFile: %w", err)
 	}
@@ -174,14 +162,8 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listRequestsForPlayerStmt, err = db.PrepareContext(ctx, listRequestsForPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query ListRequestsForPlayer: %w", err)
 	}
-	if q.listRoomImagesStmt, err = db.PrepareContext(ctx, listRoomImages); err != nil {
-		return nil, fmt.Errorf("error preparing query ListRoomImages: %w", err)
-	}
 	if q.listRoomsStmt, err = db.PrepareContext(ctx, listRooms); err != nil {
 		return nil, fmt.Errorf("error preparing query ListRooms: %w", err)
-	}
-	if q.listRoomsWithImageStmt, err = db.PrepareContext(ctx, listRoomsWithImage); err != nil {
-		return nil, fmt.Errorf("error preparing query ListRoomsWithImage: %w", err)
 	}
 	if q.listVerifiedEmailsStmt, err = db.PrepareContext(ctx, listVerifiedEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListVerifiedEmails: %w", err)
@@ -243,6 +225,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updateRequestStatusStmt, err = db.PrepareContext(ctx, updateRequestStatus); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateRequestStatus: %w", err)
 	}
+	if q.updateRoomStmt, err = db.PrepareContext(ctx, updateRoom); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRoom: %w", err)
+	}
+	if q.updateRoomDescriptionStmt, err = db.PrepareContext(ctx, updateRoomDescription); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRoomDescription: %w", err)
+	}
 	if q.updateRoomExitEastStmt, err = db.PrepareContext(ctx, updateRoomExitEast); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateRoomExitEast: %w", err)
 	}
@@ -267,20 +255,11 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updateRoomExitWestStmt, err = db.PrepareContext(ctx, updateRoomExitWest); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateRoomExitWest: %w", err)
 	}
-	if q.updateRoomImageStmt, err = db.PrepareContext(ctx, updateRoomImage); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateRoomImage: %w", err)
+	if q.updateRoomSizeStmt, err = db.PrepareContext(ctx, updateRoomSize); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRoomSize: %w", err)
 	}
-	if q.updateRoomImageDescriptionStmt, err = db.PrepareContext(ctx, updateRoomImageDescription); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateRoomImageDescription: %w", err)
-	}
-	if q.updateRoomImageNameStmt, err = db.PrepareContext(ctx, updateRoomImageName); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateRoomImageName: %w", err)
-	}
-	if q.updateRoomImageSizeStmt, err = db.PrepareContext(ctx, updateRoomImageSize); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateRoomImageSize: %w", err)
-	}
-	if q.updateRoomImageTitleStmt, err = db.PrepareContext(ctx, updateRoomImageTitle); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateRoomImageTitle: %w", err)
+	if q.updateRoomTitleStmt, err = db.PrepareContext(ctx, updateRoomTitle); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRoomTitle: %w", err)
 	}
 	return &q, nil
 }
@@ -365,11 +344,6 @@ func (q *Queries) Close() error {
 	if q.createRoomStmt != nil {
 		if cerr := q.createRoomStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createRoomStmt: %w", cerr)
-		}
-	}
-	if q.createRoomImageStmt != nil {
-		if cerr := q.createRoomImageStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createRoomImageStmt: %w", cerr)
 		}
 	}
 	if q.deleteEmailStmt != nil {
@@ -457,21 +431,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getRoomStmt: %w", cerr)
 		}
 	}
-	if q.getRoomByImageIdStmt != nil {
-		if cerr := q.getRoomByImageIdStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getRoomByImageIdStmt: %w", cerr)
-		}
-	}
-	if q.getRoomImageStmt != nil {
-		if cerr := q.getRoomImageStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getRoomImageStmt: %w", cerr)
-		}
-	}
-	if q.getRoomImageByNameStmt != nil {
-		if cerr := q.getRoomImageByNameStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getRoomImageByNameStmt: %w", cerr)
-		}
-	}
 	if q.getTagsForHelpFileStmt != nil {
 		if cerr := q.getTagsForHelpFileStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getTagsForHelpFileStmt: %w", cerr)
@@ -537,19 +496,9 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listRequestsForPlayerStmt: %w", cerr)
 		}
 	}
-	if q.listRoomImagesStmt != nil {
-		if cerr := q.listRoomImagesStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listRoomImagesStmt: %w", cerr)
-		}
-	}
 	if q.listRoomsStmt != nil {
 		if cerr := q.listRoomsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listRoomsStmt: %w", cerr)
-		}
-	}
-	if q.listRoomsWithImageStmt != nil {
-		if cerr := q.listRoomsWithImageStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listRoomsWithImageStmt: %w", cerr)
 		}
 	}
 	if q.listVerifiedEmailsStmt != nil {
@@ -652,6 +601,16 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateRequestStatusStmt: %w", cerr)
 		}
 	}
+	if q.updateRoomStmt != nil {
+		if cerr := q.updateRoomStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRoomStmt: %w", cerr)
+		}
+	}
+	if q.updateRoomDescriptionStmt != nil {
+		if cerr := q.updateRoomDescriptionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRoomDescriptionStmt: %w", cerr)
+		}
+	}
 	if q.updateRoomExitEastStmt != nil {
 		if cerr := q.updateRoomExitEastStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateRoomExitEastStmt: %w", cerr)
@@ -692,29 +651,14 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateRoomExitWestStmt: %w", cerr)
 		}
 	}
-	if q.updateRoomImageStmt != nil {
-		if cerr := q.updateRoomImageStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateRoomImageStmt: %w", cerr)
+	if q.updateRoomSizeStmt != nil {
+		if cerr := q.updateRoomSizeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRoomSizeStmt: %w", cerr)
 		}
 	}
-	if q.updateRoomImageDescriptionStmt != nil {
-		if cerr := q.updateRoomImageDescriptionStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateRoomImageDescriptionStmt: %w", cerr)
-		}
-	}
-	if q.updateRoomImageNameStmt != nil {
-		if cerr := q.updateRoomImageNameStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateRoomImageNameStmt: %w", cerr)
-		}
-	}
-	if q.updateRoomImageSizeStmt != nil {
-		if cerr := q.updateRoomImageSizeStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateRoomImageSizeStmt: %w", cerr)
-		}
-	}
-	if q.updateRoomImageTitleStmt != nil {
-		if cerr := q.updateRoomImageTitleStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateRoomImageTitleStmt: %w", cerr)
+	if q.updateRoomTitleStmt != nil {
+		if cerr := q.updateRoomTitleStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRoomTitleStmt: %w", cerr)
 		}
 	}
 	return err
@@ -772,7 +716,6 @@ type Queries struct {
 	createRequestStmt                                     *sql.Stmt
 	createRequestCommentStmt                              *sql.Stmt
 	createRoomStmt                                        *sql.Stmt
-	createRoomImageStmt                                   *sql.Stmt
 	deleteEmailStmt                                       *sql.Stmt
 	deletePlayerPermissionStmt                            *sql.Stmt
 	getCharacterApplicationStmt                           *sql.Stmt
@@ -790,9 +733,6 @@ type Queries struct {
 	getPlayerUsernameByIdStmt                             *sql.Stmt
 	getRequestStmt                                        *sql.Stmt
 	getRoomStmt                                           *sql.Stmt
-	getRoomByImageIdStmt                                  *sql.Stmt
-	getRoomImageStmt                                      *sql.Stmt
-	getRoomImageByNameStmt                                *sql.Stmt
 	getTagsForHelpFileStmt                                *sql.Stmt
 	getVerifiedEmailByAddressStmt                         *sql.Stmt
 	incrementRequestVersionStmt                           *sql.Stmt
@@ -806,9 +746,7 @@ type Queries struct {
 	listOpenCharacterApplicationsStmt                     *sql.Stmt
 	listPlayerPermissionsStmt                             *sql.Stmt
 	listRequestsForPlayerStmt                             *sql.Stmt
-	listRoomImagesStmt                                    *sql.Stmt
 	listRoomsStmt                                         *sql.Stmt
-	listRoomsWithImageStmt                                *sql.Stmt
 	listVerifiedEmailsStmt                                *sql.Stmt
 	markEmailVerifiedStmt                                 *sql.Stmt
 	markRequestCanceledStmt                               *sql.Stmt
@@ -829,6 +767,8 @@ type Queries struct {
 	updatePlayerPasswordStmt                              *sql.Stmt
 	updatePlayerSettingsThemeStmt                         *sql.Stmt
 	updateRequestStatusStmt                               *sql.Stmt
+	updateRoomStmt                                        *sql.Stmt
+	updateRoomDescriptionStmt                             *sql.Stmt
 	updateRoomExitEastStmt                                *sql.Stmt
 	updateRoomExitNorthStmt                               *sql.Stmt
 	updateRoomExitNortheastStmt                           *sql.Stmt
@@ -837,11 +777,8 @@ type Queries struct {
 	updateRoomExitSoutheastStmt                           *sql.Stmt
 	updateRoomExitSouthwestStmt                           *sql.Stmt
 	updateRoomExitWestStmt                                *sql.Stmt
-	updateRoomImageStmt                                   *sql.Stmt
-	updateRoomImageDescriptionStmt                        *sql.Stmt
-	updateRoomImageNameStmt                               *sql.Stmt
-	updateRoomImageSizeStmt                               *sql.Stmt
-	updateRoomImageTitleStmt                              *sql.Stmt
+	updateRoomSizeStmt                                    *sql.Stmt
+	updateRoomTitleStmt                                   *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -864,7 +801,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createRequestStmt:                                     q.createRequestStmt,
 		createRequestCommentStmt:                              q.createRequestCommentStmt,
 		createRoomStmt:                                        q.createRoomStmt,
-		createRoomImageStmt:                                   q.createRoomImageStmt,
 		deleteEmailStmt:                                       q.deleteEmailStmt,
 		deletePlayerPermissionStmt:                            q.deletePlayerPermissionStmt,
 		getCharacterApplicationStmt:                           q.getCharacterApplicationStmt,
@@ -882,9 +818,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getPlayerUsernameByIdStmt:                             q.getPlayerUsernameByIdStmt,
 		getRequestStmt:                                        q.getRequestStmt,
 		getRoomStmt:                                           q.getRoomStmt,
-		getRoomByImageIdStmt:                                  q.getRoomByImageIdStmt,
-		getRoomImageStmt:                                      q.getRoomImageStmt,
-		getRoomImageByNameStmt:                                q.getRoomImageByNameStmt,
 		getTagsForHelpFileStmt:                                q.getTagsForHelpFileStmt,
 		getVerifiedEmailByAddressStmt:                         q.getVerifiedEmailByAddressStmt,
 		incrementRequestVersionStmt:                           q.incrementRequestVersionStmt,
@@ -898,9 +831,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listOpenCharacterApplicationsStmt:                     q.listOpenCharacterApplicationsStmt,
 		listPlayerPermissionsStmt:                             q.listPlayerPermissionsStmt,
 		listRequestsForPlayerStmt:                             q.listRequestsForPlayerStmt,
-		listRoomImagesStmt:                                    q.listRoomImagesStmt,
 		listRoomsStmt:                                         q.listRoomsStmt,
-		listRoomsWithImageStmt:                                q.listRoomsWithImageStmt,
 		listVerifiedEmailsStmt:                                q.listVerifiedEmailsStmt,
 		markEmailVerifiedStmt:                                 q.markEmailVerifiedStmt,
 		markRequestCanceledStmt:                               q.markRequestCanceledStmt,
@@ -921,6 +852,8 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updatePlayerPasswordStmt:                              q.updatePlayerPasswordStmt,
 		updatePlayerSettingsThemeStmt:                         q.updatePlayerSettingsThemeStmt,
 		updateRequestStatusStmt:                               q.updateRequestStatusStmt,
+		updateRoomStmt:                                        q.updateRoomStmt,
+		updateRoomDescriptionStmt:                             q.updateRoomDescriptionStmt,
 		updateRoomExitEastStmt:                                q.updateRoomExitEastStmt,
 		updateRoomExitNorthStmt:                               q.updateRoomExitNorthStmt,
 		updateRoomExitNortheastStmt:                           q.updateRoomExitNortheastStmt,
@@ -929,10 +862,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updateRoomExitSoutheastStmt:                           q.updateRoomExitSoutheastStmt,
 		updateRoomExitSouthwestStmt:                           q.updateRoomExitSouthwestStmt,
 		updateRoomExitWestStmt:                                q.updateRoomExitWestStmt,
-		updateRoomImageStmt:                                   q.updateRoomImageStmt,
-		updateRoomImageDescriptionStmt:                        q.updateRoomImageDescriptionStmt,
-		updateRoomImageNameStmt:                               q.updateRoomImageNameStmt,
-		updateRoomImageSizeStmt:                               q.updateRoomImageSizeStmt,
-		updateRoomImageTitleStmt:                              q.updateRoomImageTitleStmt,
+		updateRoomSizeStmt:                                    q.updateRoomSizeStmt,
+		updateRoomTitleStmt:                                   q.updateRoomTitleStmt,
 	}
 }

@@ -1,0 +1,17 @@
+{{ define "partial-room-grid" }}
+<section id="test-room-grid" class="flex flex-col gap-4 p-6">
+  <!-- prettier-ignore -->
+  {{ range .RoomGrid }}
+  <section id="{{ .ID }}" class="flex items-center justify-center gap-4">
+    <!-- prettier-ignore -->
+    {{ range .Rooms }} 
+      {{ if eq .ID 0 }}
+        {{ template "partial-room-grid-empty" . }}
+      {{ else }}
+        {{ template "partial-room-grid-room" . }}
+      {{ end }}
+    {{ end }}
+  </section>
+  {{ end }}
+</section>
+{{ end }}

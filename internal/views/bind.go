@@ -108,11 +108,6 @@ func roomsMenu(c *fiber.Ctx) fiber.Map {
 						"Path":   routes.Rooms,
 						"Active": c.Path() == routes.Rooms,
 					},
-					{
-						"Label":  "Images",
-						"Path":   routes.RoomImages,
-						"Active": c.Path() == routes.RoomImages,
-					},
 				},
 			},
 		},

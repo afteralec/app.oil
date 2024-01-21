@@ -1,0 +1,10 @@
+{{ define "partial-room-grid-room" }}
+<div
+  class="h-24 w-24 cursor-pointer rounded-md bg-muted hover:bg-muted-fg"
+  hx-get="/rooms/0/grid/{{ .ID }}"
+  hx-target="#test-room-grid"
+  hx-swap="outerHTML"
+>
+  {{ .ID }}
+</div>
+{{ end }}

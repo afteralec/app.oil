@@ -269,38 +269,32 @@ type TestRoomImageParams struct {
 	Size        string
 }
 
-func CreateTestRoomImage(t *testing.T, i *shared.Interfaces, a *fiber.App, u, pw string, image TestRoomImageParams) int64 {
-	sessionCookie := LoginTestPlayer(t, a, u, pw)
-
-	url := MakeTestURL(routes.RoomImages)
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("name", image.Name)
-	writer.WriteField("title", image.Title)
-	writer.WriteField("description", image.Description)
-	writer.WriteField("size", image.Size)
-	writer.Close()
-
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-
-	_, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	room_image, err := i.Queries.GetRoomImageByName(context.Background(), image.Name)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	return room_image.ID
+type CreateTestRoomParams struct {
+	Title       string
+	Description string
+	Size        int32
 }
 
-func DeleteTestRoomImage(t *testing.T, i *shared.Interfaces, id int64) {
-	_, err := i.Database.Exec("DELETE FROM room_images WHERE id = ?;", id)
+func CreateTestRoom(t *testing.T, i *shared.Interfaces, p CreateTestRoomParams) int64 {
+	result, err := i.Queries.CreateRoom(context.Background(), queries.CreateRoomParams{
+		Title:       p.Title,
+		Description: p.Description,
+		Size:        p.Size,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rid, err := result.LastInsertId()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return rid
+}
+
+func DeleteTestRoom(t *testing.T, i *shared.Interfaces, id int64) {
+	_, err := i.Database.Exec("DELETE FROM rooms WHERE id = ?;", id)
 	if err != nil {
 		t.Fatal(err)
 	}

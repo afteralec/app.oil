@@ -14,6 +14,7 @@ const (
 	RoomPathParam          string = "/rooms/:id"
 	NewRoom                string = "/rooms/new"
 	EditRoomPathParam      string = "/rooms/:id/edit"
+	RoomGridPathParam      string = "/rooms/:id/grid/:selected"
 )
 
 func RoomImagePath(id int64) string {

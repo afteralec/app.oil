@@ -19,6 +19,12 @@ var TestRoomImage TestRoomImageParams = TestRoomImageParams{
 	Size:        "2",
 }
 
+var TestRoom CreateTestRoomParams = CreateTestRoomParams{
+	Title:       "An elegant, wood-paneled office",
+	Description: "Dark, oiled wood encloses this cozy office, each panel polished to an immaculate sheen. In stark contrast, the floor is a pale, sanded expanse of knotted hardwood, with brightly-colored rugs waiting to soften footsteps. A sweeping vista sprawls beyond the floor-to-ceiling windows, its misty landscape dotted with jagged peaks.",
+	Size:        2,
+}
+
 func MakeTestURL(path string) string {
 	return fmt.Sprintf("%s%s", TestURL, path)
 }

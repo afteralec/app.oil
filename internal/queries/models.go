@@ -202,26 +202,18 @@ type RequestStatusChangeHistory struct {
 }
 
 type Room struct {
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	North     int64
-	Northeast int64
-	East      int64
-	Southeast int64
-	South     int64
-	Southwest int64
-	West      int64
-	Northwest int64
-	RIID      int64
-	ID        int64
-}
-
-type RoomImage struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	Description string
 	Title       string
-	Name        string
+	North       int64
+	Northeast   int64
+	East        int64
+	Southeast   int64
+	South       int64
+	Southwest   int64
+	West        int64
+	Northwest   int64
 	ID          int64
 	Size        int32
 }

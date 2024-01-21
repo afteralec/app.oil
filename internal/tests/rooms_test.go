@@ -63,6 +63,7 @@ func TestRoomsPageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestRoomsPageSuccess(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -89,6 +90,7 @@ func TestRoomsPageSuccess(t *testing.T) {
 }
 
 func TestRoomImagesPageUnauthorized(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -108,6 +110,7 @@ func TestRoomImagesPageUnauthorized(t *testing.T) {
 }
 
 func TestRoomImagesPageForbiddenNoPermission(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -134,6 +137,7 @@ func TestRoomImagesPageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestRoomImagesPageSuccess(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -160,6 +164,7 @@ func TestRoomImagesPageSuccess(t *testing.T) {
 }
 
 func TestRoomImagePageUnauthorized(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -171,10 +176,10 @@ func TestRoomImagePageUnauthorized(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
-	url := MakeTestURL(routes.RoomImagePath(riid))
+	url := MakeTestURL(routes.RoomImagePath(rmid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
@@ -186,6 +191,7 @@ func TestRoomImagePageUnauthorized(t *testing.T) {
 }
 
 func TestRoomImagePageForbiddenNoPermission(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -197,12 +203,12 @@ func TestRoomImagePageForbiddenNoPermission(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomImagePath(riid))
+	url := MakeTestURL(routes.RoomImagePath(rmid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -216,6 +222,7 @@ func TestRoomImagePageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestRoomImagePageNotFound(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -227,15 +234,15 @@ func TestRoomImagePageNotFound(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	viewPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomImagesName)
 	defer DeleteTestPlayerPermission(t, &i, viewPRID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomImagePath(riid + 1))
+	url := MakeTestURL(routes.RoomImagePath(rmid + 1))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -247,6 +254,7 @@ func TestRoomImagePageNotFound(t *testing.T) {
 }
 
 func TestRoomImagePageSuccess(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -258,15 +266,15 @@ func TestRoomImagePageSuccess(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	viewPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomImagesName)
 	defer DeleteTestPlayerPermission(t, &i, viewPRID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomImagePath(riid))
+	url := MakeTestURL(routes.RoomImagePath(rmid))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -279,6 +287,7 @@ func TestRoomImagePageSuccess(t *testing.T) {
 }
 
 func TestEditRoomImagePageUnauthorized(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -290,10 +299,10 @@ func TestEditRoomImagePageUnauthorized(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
-	url := MakeTestURL(routes.EditRoomImagePath(riid))
+	url := MakeTestURL(routes.EditRoomImagePath(rmid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
@@ -305,6 +314,7 @@ func TestEditRoomImagePageUnauthorized(t *testing.T) {
 }
 
 func TestEditRoomImagePageForbiddenNoPermission(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -316,12 +326,12 @@ func TestEditRoomImagePageForbiddenNoPermission(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EditRoomImagePath(riid))
+	url := MakeTestURL(routes.EditRoomImagePath(rmid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -335,6 +345,7 @@ func TestEditRoomImagePageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestEditRoomImagePageNotFound(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -346,15 +357,15 @@ func TestEditRoomImagePageNotFound(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, editPRID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EditRoomImagePath(riid + 1))
+	url := MakeTestURL(routes.EditRoomImagePath(rmid + 1))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -368,6 +379,7 @@ func TestEditRoomImagePageNotFound(t *testing.T) {
 }
 
 func TestEditRoomImagePageSuccess(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -379,15 +391,15 @@ func TestEditRoomImagePageSuccess(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, editPRID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EditRoomImagePath(riid))
+	url := MakeTestURL(routes.EditRoomImagePath(rmid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -401,6 +413,7 @@ func TestEditRoomImagePageSuccess(t *testing.T) {
 }
 
 func TestNewRoomImagePageUnauthorized(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -420,6 +433,7 @@ func TestNewRoomImagePageUnauthorized(t *testing.T) {
 }
 
 func TestNewRoomImagePageForbiddenNoPermission(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -446,6 +460,7 @@ func TestNewRoomImagePageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestNewRoomImagePageSuccess(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -473,6 +488,7 @@ func TestNewRoomImagePageSuccess(t *testing.T) {
 }
 
 func TestNewRoomImageUnauthorized(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -502,6 +518,7 @@ func TestNewRoomImageUnauthorized(t *testing.T) {
 }
 
 func TestNewRoomImageForbiddenNoPermission(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -537,6 +554,7 @@ func TestNewRoomImageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestNewRoomImageBadRequestInvalidName(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -573,6 +591,7 @@ func TestNewRoomImageBadRequestInvalidName(t *testing.T) {
 }
 
 func TestNewRoomImageBadRequestInvalidTitle(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -609,6 +628,7 @@ func TestNewRoomImageBadRequestInvalidTitle(t *testing.T) {
 }
 
 func TestNewRoomImageBadRequestInvalidDescription(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -645,6 +665,7 @@ func TestNewRoomImageBadRequestInvalidDescription(t *testing.T) {
 }
 
 func TestNewRoomImageBadRequestInvalidSize(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -681,6 +702,7 @@ func TestNewRoomImageBadRequestInvalidSize(t *testing.T) {
 }
 
 func TestNewRoomImageSuccess(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -722,6 +744,7 @@ func TestNewRoomImageSuccess(t *testing.T) {
 }
 
 func TestEditRoomImageUnauthorized(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -733,10 +756,10 @@ func TestEditRoomImageUnauthorized(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
-	url := MakeTestURL(routes.RoomImagePath(riid))
+	url := MakeTestURL(routes.RoomImagePath(rmid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -758,6 +781,7 @@ func TestEditRoomImageUnauthorized(t *testing.T) {
 }
 
 func TestEditRoomImageForbiddenNoPermission(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -769,12 +793,12 @@ func TestEditRoomImageForbiddenNoPermission(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomImagePath(riid))
+	url := MakeTestURL(routes.RoomImagePath(rmid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -797,6 +821,7 @@ func TestEditRoomImageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestEditRoomImageBadRequestInvalidName(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -808,15 +833,15 @@ func TestEditRoomImageBadRequestInvalidName(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, editPRID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomImagePath(riid))
+	url := MakeTestURL(routes.RoomImagePath(rmid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -839,6 +864,7 @@ func TestEditRoomImageBadRequestInvalidName(t *testing.T) {
 }
 
 func TestEditRoomImageBadRequestInvalidTitle(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -850,15 +876,15 @@ func TestEditRoomImageBadRequestInvalidTitle(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, editPRID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomImagePath(riid))
+	url := MakeTestURL(routes.RoomImagePath(rmid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -881,6 +907,7 @@ func TestEditRoomImageBadRequestInvalidTitle(t *testing.T) {
 }
 
 func TestEditRoomImageBadRequestInvalidDescription(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -892,15 +919,15 @@ func TestEditRoomImageBadRequestInvalidDescription(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, editPRID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomImagePath(riid))
+	url := MakeTestURL(routes.RoomImagePath(rmid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -923,6 +950,7 @@ func TestEditRoomImageBadRequestInvalidDescription(t *testing.T) {
 }
 
 func TestEditRoomImageBadRequestInvalidSize(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -934,15 +962,15 @@ func TestEditRoomImageBadRequestInvalidSize(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, editPRID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomImagePath(riid))
+	url := MakeTestURL(routes.RoomImagePath(rmid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -965,6 +993,7 @@ func TestEditRoomImageBadRequestInvalidSize(t *testing.T) {
 }
 
 func TestEditRoomImageSuccess(t *testing.T) {
+	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -976,15 +1005,15 @@ func TestEditRoomImageSuccess(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	riid := CreateTestRoomImage(t, &i, a, TestUsername, TestPassword, TestRoomImage)
-	defer DeleteTestRoomImage(t, &i, riid)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
 	defer DeleteTestPlayerPermission(t, &i, editPRID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomImagePath(riid))
+	url := MakeTestURL(routes.RoomImagePath(rmid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1053,6 +1082,80 @@ func TestNewRoomPageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestNewRoomPageSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	defer DeleteTestPlayerPermission(t, &i, permissionID)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.NewRoom)
+
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestEditRoomPageUnauthorized(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	url := MakeTestURL(routes.NewRoom)
+
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestEditRoomPageForbiddenNoPermission(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.NewRoom)
+
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestEditRoomPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 

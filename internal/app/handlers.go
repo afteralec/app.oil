@@ -68,14 +68,9 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Get(routes.PlayerPermissionsDetailPath(routes.Username), handlers.PlayerPermissionsDetailPage(i))
 	app.Post(routes.PlayerPermissionsTogglePath(routes.ID, routes.Tag), handlers.TogglePlayerPermission(i))
 
-	app.Get(routes.RoomImages, handlers.RoomImagesPage(i))
-	app.Post(routes.RoomImages, handlers.NewRoomImage(i))
-	app.Get(routes.NewRoomImage, handlers.NewRoomImagePage(i))
-	app.Get(routes.EditRoomImagePathParam, handlers.EditRoomImagePage(i))
-	app.Put(routes.RoomImagePathParam, handlers.EditRoomImage(i))
-	app.Get(routes.RoomImagePathParam, handlers.RoomImagePage(i))
 	app.Get(routes.Rooms, handlers.RoomsPage(i))
 	app.Get(routes.NewRoom, handlers.NewRoomPage(i))
+	app.Get(routes.RoomGridPathParam, handlers.RoomGrid())
 
 	app.Post(routes.SearchPlayerPath(routes.Destination), handlers.SearchPlayer(i))
 }

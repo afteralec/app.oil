@@ -43,6 +43,19 @@ func GetID(c *fiber.Ctx) (int64, error) {
 	return id, nil
 }
 
+func GetParamID(c *fiber.Ctx, key string) (int64, error) {
+	param := c.Params(key)
+	if len(param) == 0 {
+		return 0, ErrNoID
+	}
+	id, err := strconv.ParseInt(param, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
 var ErrNoPermissions error = errors.New("no permissions found")
 
 func GetPermissions(c *fiber.Ctx) (permissions.PlayerGranted, error) {
