@@ -263,7 +263,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
 
-		_, err = i.Queries.GetRoom(context.Background(), rmid)
+		record, err := i.Queries.GetRoom(context.Background(), rmid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -327,15 +327,62 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		b := views.Bind(c)
-		// TODO: Generalize this bind into a function
-		b["RoomGrid"] = roomGrid
+		// TODO: Get a bind function for this
 		b["NavBack"] = fiber.Map{
 			"Path":  routes.Rooms,
 			"Label": "Back to Rooms",
 		}
+		// TODO: Get a bind function for this too
 		b["PageHeader"] = fiber.Map{
-			"Title":    "New Room",
-			"SubTitle": "Create a new room, using a Room Image as a template",
+			"Title":    record.Title,
+			"SubTitle": "Update room properties here",
+		}
+		b["RoomGrid"] = roomGrid
+		b["Title"] = record.Title
+		b["Description"] = record.Description
+		b["Size"] = record.Size
+		// TODO: Put this in a helper function
+		b["SizeRadioGroup"] = []fiber.Map{
+			{
+				"ID":       "edit-room-image-size-tiny",
+				"Name":     "size",
+				"Variable": "size",
+				"Value":    "0",
+				"Active":   record.Size == 0,
+				"Label":    "Tiny",
+			},
+			{
+				"ID":       "edit-room-image-size-small",
+				"Name":     "size",
+				"Variable": "size",
+				"Value":    "1",
+				"Active":   record.Size == 1,
+				"Label":    "Small",
+			},
+			{
+				"ID":       "edit-room-image-size-medium",
+				"Name":     "size",
+				"Variable": "size",
+				"Value":    "2",
+				"Active":   record.Size == 2,
+				"Label":    "Medium",
+			},
+			{
+				"ID":       "edit-room-image-size-large",
+				"Name":     "size",
+				"Variable": "size",
+				"Value":    "3",
+				"Active":   record.Size == 3,
+				"Label":    "Large",
+			},
+			{
+				"ID":       "edit-room-image-size-huge",
+				"Name":     "size",
+				"Variable": "size",
+				"Value":    "4",
+				"Active":   record.Size == 4,
+				"Label":    "Huge",
+			},
 		}
 		return c.Render(views.EditRoom, b)
 	}
