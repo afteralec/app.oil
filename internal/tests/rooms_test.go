@@ -1,8 +1,6 @@
 package tests
 
 import (
-	"bytes"
-	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -63,7 +61,6 @@ func TestRoomsPageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestRoomsPageSuccess(t *testing.T) {
-	t.Skip()
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -89,8 +86,7 @@ func TestRoomsPageSuccess(t *testing.T) {
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
-func TestRoomImagesPageUnauthorized(t *testing.T) {
-	t.Skip()
+func TestRoomPageUnauthorized(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -98,9 +94,17 @@ func TestRoomImagesPageUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.RoomImages)
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomsName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+
+	url := MakeTestURL(routes.RoomPath(rmid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -109,8 +113,7 @@ func TestRoomImagesPageUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestRoomImagesPageForbiddenNoPermission(t *testing.T) {
-	t.Skip()
+func TestRoomPageForbiddenNoPermission(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -120,10 +123,12 @@ func TestRoomImagesPageForbiddenNoPermission(t *testing.T) {
 
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomImages)
+	url := MakeTestURL(routes.RoomPath(rmid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -136,8 +141,7 @@ func TestRoomImagesPageForbiddenNoPermission(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestRoomImagesPageSuccess(t *testing.T) {
-	t.Skip()
+func TestRoomPageNotFound(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -147,225 +151,14 @@ func TestRoomImagesPageSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomImagesName)
-	defer DeleteTestPlayerPermission(t, &i, permissionID)
+	rmid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rmid)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomsName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomImages)
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func TestRoomImagePageUnauthorized(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, permissionID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	url := MakeTestURL(routes.RoomImagePath(rmid))
-
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
-}
-
-func TestRoomImagePageForbiddenNoPermission(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, permissionID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	url := MakeTestURL(routes.RoomImagePath(rmid))
-
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
-}
-
-func TestRoomImagePageNotFound(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	viewPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomImagesName)
-	defer DeleteTestPlayerPermission(t, &i, viewPRID)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	url := MakeTestURL(routes.RoomImagePath(rmid + 1))
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	req.AddCookie(sessionCookie)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
-}
-
-func TestRoomImagePageSuccess(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	viewPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomImagesName)
-	defer DeleteTestPlayerPermission(t, &i, viewPRID)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	url := MakeTestURL(routes.RoomImagePath(rmid))
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusOK, res.StatusCode)
-}
-
-func TestEditRoomImagePageUnauthorized(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	url := MakeTestURL(routes.EditRoomImagePath(rmid))
-
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
-}
-
-func TestEditRoomImagePageForbiddenNoPermission(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	url := MakeTestURL(routes.EditRoomImagePath(rmid))
-
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
-}
-
-func TestEditRoomImagePageNotFound(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, editPRID)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	url := MakeTestURL(routes.EditRoomImagePath(rmid + 1))
+	url := MakeTestURL(routes.RoomPath(rmid + 1))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -378,8 +171,7 @@ func TestEditRoomImagePageNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
-func TestEditRoomImagePageSuccess(t *testing.T) {
-	t.Skip()
+func TestRoomPageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -389,18 +181,15 @@ func TestEditRoomImagePageSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
 	rmid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rmid)
 
-	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, editPRID)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomsName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EditRoomImagePath(rmid))
-
+	url := MakeTestURL(routes.RoomPath(rmid))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -485,298 +274,6 @@ func TestNewRoomSuccess(t *testing.T) {
 	// TODO: Clean up this created room
 
 	require.Equal(t, fiber.StatusCreated, res.StatusCode)
-}
-
-func TestEditRoomImageUnauthorized(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	url := MakeTestURL(routes.RoomImagePath(rmid))
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("name", "ci-test-room-image")
-	writer.WriteField("title", "An elegant, wood-paneled office")
-	writer.WriteField("description", "Dark, oiled wood encloses this cozy office, each panel polished to an immaculate sheen. In stark contrast, the floor is a pale, sanded expanse of knotted hardwood, with brightly-colored rugs waiting to soften footsteps. A sweeping vista sprawls beyond the floor-to-ceiling windows, its misty landscape dotted with jagged peaks.")
-	writer.WriteField("size", "1")
-	writer.Close()
-
-	req := httptest.NewRequest(http.MethodPut, url, body)
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
-}
-
-func TestEditRoomImageForbiddenNoPermission(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	url := MakeTestURL(routes.RoomImagePath(rmid))
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("name", "ci-test-room-image")
-	writer.WriteField("title", "An elegant, wood-paneled office")
-	writer.WriteField("description", "Dark, oiled wood encloses this cozy office, each panel polished to an immaculate sheen. In stark contrast, the floor is a pale, sanded expanse of knotted hardwood, with brightly-colored rugs waiting to soften footsteps. A sweeping vista sprawls beyond the floor-to-ceiling windows, its misty landscape dotted with jagged peaks.")
-	writer.WriteField("size", "1")
-	writer.Close()
-
-	req := httptest.NewRequest(http.MethodPut, url, body)
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
-}
-
-func TestEditRoomImageBadRequestInvalidName(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, editPRID)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	url := MakeTestURL(routes.RoomImagePath(rmid))
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("name", "invalid_name!")
-	writer.WriteField("title", "An elegant, wood-paneled office")
-	writer.WriteField("description", "Dark, oiled wood encloses this cozy office, each panel polished to an immaculate sheen. In stark contrast, the floor is a pale, sanded expanse of knotted hardwood, with brightly-colored rugs waiting to soften footsteps. A sweeping vista sprawls beyond the floor-to-ceiling windows, its misty landscape dotted with jagged peaks.")
-	writer.WriteField("size", "1")
-	writer.Close()
-
-	req := httptest.NewRequest(http.MethodPut, url, body)
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
-}
-
-func TestEditRoomImageBadRequestInvalidTitle(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, editPRID)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	url := MakeTestURL(routes.RoomImagePath(rmid))
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("name", "ci-test-room-image")
-	writer.WriteField("title", "Invalid_Title")
-	writer.WriteField("description", "Dark, oiled wood encloses this cozy office, each panel polished to an immaculate sheen. In stark contrast, the floor is a pale, sanded expanse of knotted hardwood, with brightly-colored rugs waiting to soften footsteps. A sweeping vista sprawls beyond the floor-to-ceiling windows, its misty landscape dotted with jagged peaks.")
-	writer.WriteField("size", "1")
-	writer.Close()
-
-	req := httptest.NewRequest(http.MethodPut, url, body)
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
-}
-
-func TestEditRoomImageBadRequestInvalidDescription(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, editPRID)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	url := MakeTestURL(routes.RoomImagePath(rmid))
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("name", "ci-test-room-image")
-	writer.WriteField("title", "An elegant, wood-paneled office")
-	writer.WriteField("description", "An invalid description, by God! There are 12345 reasons it is.")
-	writer.WriteField("size", "1")
-	writer.Close()
-
-	req := httptest.NewRequest(http.MethodPut, url, body)
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
-}
-
-func TestEditRoomImageBadRequestInvalidSize(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, editPRID)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	url := MakeTestURL(routes.RoomImagePath(rmid))
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("name", "ci-test-room-image")
-	writer.WriteField("title", "An elegant, wood-paneled office")
-	writer.WriteField("description", "Dark, oiled wood encloses this cozy office, each panel polished to an immaculate sheen. In stark contrast, the floor is a pale, sanded expanse of knotted hardwood, with brightly-colored rugs waiting to soften footsteps. A sweeping vista sprawls beyond the floor-to-ceiling windows, its misty landscape dotted with jagged peaks.")
-	writer.WriteField("size", "5")
-	writer.Close()
-
-	req := httptest.NewRequest(http.MethodPut, url, body)
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
-}
-
-func TestEditRoomImageSuccess(t *testing.T) {
-	t.Skip()
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	a := fiber.New(configs.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	createPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, createPRID)
-	rmid := CreateTestRoom(t, &i, TestRoom)
-	defer DeleteTestRoom(t, &i, rmid)
-
-	editPRID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerEditRoomImageName)
-	defer DeleteTestPlayerPermission(t, &i, editPRID)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	url := MakeTestURL(routes.RoomImagePath(rmid))
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("name", "ci-test-room-image")
-	writer.WriteField("title", "A dark, wood-paneled office")
-	writer.WriteField("description", "Dark, oiled wood encloses this cozy office, each panel polished to an immaculate sheen. In stark contrast, the floor is a pale, sanded expanse of knotted hardwood, with brightly-colored rugs waiting to soften footsteps. A sweeping vista sprawls beyond the floor-to-ceiling windows, its misty landscape dotted with jagged peaks.")
-	writer.WriteField("size", "1")
-	writer.Close()
-
-	req := httptest.NewRequest(http.MethodPut, url, body)
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
 func TestEditRoomPageUnauthorized(t *testing.T) {

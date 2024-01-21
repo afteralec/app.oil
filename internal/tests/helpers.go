@@ -262,13 +262,6 @@ func ListEmailsForPlayer(t *testing.T, i *shared.Interfaces, username string) []
 	return emails
 }
 
-type TestRoomImageParams struct {
-	Name        string
-	Title       string
-	Description string
-	Size        string
-}
-
 type CreateTestRoomParams struct {
 	Title       string
 	Description string

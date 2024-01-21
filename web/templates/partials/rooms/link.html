@@ -1,15 +1,14 @@
 {{ define "partial-room-link" }}
 <div class="flex w-full items-center border-b p-4">
   <header>
-    <h4 class="text-base font-semibold leading-none">
-      An Elegant, Wood-Paneled Office
-    </h4>
-    <div class="text-sm leading-none text-muted-fg">backrooms-office-one</div>
+    <h4 class="text-base font-semibold leading-none">{{ .Title }}</h4>
+    <div class="text-sm leading-none text-muted-fg">{{ .SizeString }}</div>
   </header>
-  <div class="pl-4 text-sm leading-none">
-    <div><span class="font-semibold">Exits:</span> 3</div>
-    <div><span class="font-semibold">Size:</span> Medium</div>
+  <div class="ml-auto flex items-center justify-center gap-2">
+    {{ if .EditPath }}
+    <a href="{{ .EditPath }}" class="button-secondary">Edit</a>
+    {{ end }}
+    <a href="{{ .Path }}" class="button-secondary">View</a>
   </div>
-  <button type="button" class="button-secondary ml-auto">View</button>
 </div>
 {{ end }}

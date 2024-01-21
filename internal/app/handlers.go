@@ -70,6 +70,7 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 
 	app.Get(routes.Rooms, handlers.RoomsPage(i))
 	app.Post(routes.Rooms, handlers.NewRoom(i))
+	app.Get(routes.RoomPathParam, handlers.RoomPage(i))
 	app.Get(routes.EditRoomPathParam, handlers.EditRoomPage(i))
 	app.Get(routes.RoomGridPathParam, handlers.RoomGrid())
 

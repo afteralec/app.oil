@@ -2,7 +2,31 @@
 <main class="flex flex-col items-center justify-center">
   <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
     {{ template "partial-page-header" .PageHeader }}
-    <section id="p-10 border"></section>
+
+    <section id="room-title" class="pt-6">
+      <header>
+        <h3 class="pb-2 text-lg font-semibold leading-none tracking-tight">
+          Title
+        </h3>
+      </header>
+      <p class="text-base leading-none">{{ .Title }}</p>
+    </section>
+    <section id="room-size" class="pt-6">
+      <header>
+        <h3 class="pb-2 text-lg font-semibold leading-none tracking-tight">
+          Size
+        </h3>
+      </header>
+      <p class="text-base leading-none">{{ .Size }}</p>
+    </section>
+    <section id="room-description" class="pt-6">
+      <header>
+        <h3 class="pb-2 text-lg font-semibold leading-none tracking-tight">
+          Description
+        </h3>
+      </header>
+      <p class="text-wrap pr-16 text-base leading-none">{{ .Description }}</p>
+    </section>
   </div>
 </main>
 {{ end }}
