@@ -216,4 +216,5 @@ type Room struct {
 	Northwest   int64
 	ID          int64
 	Size        int32
+	Unmodified  bool
 }

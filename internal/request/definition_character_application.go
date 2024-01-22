@@ -3,7 +3,6 @@ package request
 import (
 	"context"
 	"html/template"
-	"log"
 	"regexp"
 
 	"petrichormud.com/app/internal/constants"
@@ -117,9 +116,7 @@ func (u *UtilitiesCharacterApplication) IsFieldValueValid(f, v string) bool {
 }
 
 func (u *UtilitiesCharacterApplication) GetNextIncompleteField() string {
-	for _, field := range FieldsCharacterApplication {
-		// TODO: Let this take in the content
-		log.Println(field.Name)
+	for range FieldsCharacterApplication {
 	}
 	return ""
 }

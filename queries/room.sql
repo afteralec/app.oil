@@ -13,15 +13,16 @@ UPDATE
 SET
   title = ?,
   description = ?,
-  size = ?
+  size = ?,
+  unmodified = false
 WHERE
   id = ?;
 
 -- name: UpdateRoomTitle :exec
-UPDATE rooms SET title = ? WHERE id = ?;
+UPDATE rooms SET title = ?, unmodified = false WHERE id = ?;
 
 -- name: UpdateRoomDescription :exec
-UPDATE rooms SET description = ? WHERE id = ?;
+UPDATE rooms SET description = ?, unmodified = false WHERE id = ?;
 
 -- name: UpdateRoomSize :exec
 UPDATE rooms SET size = ? WHERE id = ?;

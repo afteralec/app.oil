@@ -122,6 +122,12 @@ func RoomPage(i *shared.Interfaces) fiber.Handler {
 }
 
 func NewRoom(i *shared.Interfaces) fiber.Handler {
+	type input struct {
+		Direction string `form:"direction"`
+		LinkID    int64  `form:"id"`
+		TwoWay    bool   `form:"two-way"`
+	}
+
 	return func(c *fiber.Ctx) error {
 		_, err := util.GetPID(c)
 		if err != nil {
@@ -181,6 +187,7 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				NoticeIcon:    true,
 			}), layouts.None)
 		}
+		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
 		result, err := qtx.CreateRoom(context.Background(), queries.CreateRoomParams{
@@ -215,6 +222,53 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				RefreshButton: true,
 				NoticeIcon:    true,
 			}), layouts.None)
+		}
+
+		in := new(input)
+		if err := c.BodyParser(in); err != nil && err != fiber.ErrUnprocessableEntity {
+			c.Status(fiber.StatusBadRequest)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    "new-room-image-error",
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		if in.LinkID != 0 {
+			// TODO: Can run validations on the room to be linked here, ensuring that:
+			// 1. The link-to exit isn't already filled
+			// 2. There isn't a setpiece that leads to the proposed destination room
+			// etc
+			_, err = qtx.GetRoom(context.Background(), in.LinkID)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					c.Status(fiber.StatusNotFound)
+					return nil
+				}
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+
+			if !rooms.IsDirectionValid(in.Direction) {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+
+			if err := rooms.Link(rooms.LinkParams{
+				Queries:   qtx,
+				ID:        in.LinkID,
+				To:        rid,
+				Direction: in.Direction,
+				TwoWay:    in.TwoWay,
+			}); err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
 		}
 
 		if err := tx.Commit(); err != nil {

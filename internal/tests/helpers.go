@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
+
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
@@ -288,6 +289,14 @@ func CreateTestRoom(t *testing.T, i *shared.Interfaces, p CreateTestRoomParams) 
 
 func DeleteTestRoom(t *testing.T, i *shared.Interfaces, id int64) {
 	_, err := i.Database.Exec("DELETE FROM rooms WHERE id = ?;", id)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func DeleteTestUnmodifiedRooms(t *testing.T, i *shared.Interfaces) {
+	// TODO: Get a helper to delete rooms that are orphaned, off-grid, closely resemble the base room, etc
+	_, err := i.Database.Exec("DELETE FROM rooms WHERE unmodified = true;")
 	if err != nil {
 		t.Fatal(err)
 	}
