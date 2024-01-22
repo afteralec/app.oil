@@ -1,0 +1,22 @@
+<!-- prettier-ignore -->
+{{ define "partial-edit-room-exits-dialog-link" }}
+{{ template "partial-modal-overlay" "showLinkDialog" }}
+<div
+  class="modal"
+  @click.away="showLinkDialog = false;"
+  x-cloak
+  x-show="showLinkDialog"
+>
+  {{ template "partial-modal-close" "showLinkDialog" }}
+  <h3 class="pt-4 text-lg font-semibold leading-none tracking-tight">
+    Link Room:
+  </h3>
+  <form class="space-y-2 pt-4">
+    <label for="id" class="text-sm font-semibold leading-none">Room ID</label>
+    <input name="id" class="input" />
+  </form>
+  <footer class="flex justify-end gap-2 pt-6">
+    <button type="button" class="button-primary">Link</button>
+  </footer>
+</div>
+{{ end }}

@@ -400,6 +400,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 				"ExitTitle":   "North",
 				"Title":       rooms.DefaultTitle,
 				"Description": rooms.DefaultDescription,
+				"Path":        routes.RoomPath(1),
 			},
 			{
 				"ID":         0,

@@ -1,14 +1,32 @@
 {{ define "partial-edit-room-exits-edit-existing" }}
-<footer class="h-full w-full rounded-md p-6 hover:bg-muted">
-  <header>
-    <h3 class="text-large font-semibold leading-none tracking-tight">
-      {{ .Title }}
-    </h3>
-  </header>
-  <div
-    class="overflow-hidden text-ellipsis whitespace-nowrap text-sm leading-none text-muted-fg"
-  >
-    {{ .Description }}
+<div class="py-6">
+  <div class="rounded-md bg-muted p-4">
+    <header>
+      <h3 class="text-large font-semibold leading-none">
+        [{{ .ID }}] {{ .Title }}
+      </h3>
+    </header>
+    <p
+      class="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-muted-fg"
+    >
+      {{ .Description }}
+    </p>
+    <p class="pt-2 text-sm font-semibold">This is a two-way connection.</p>
   </div>
-</footer>
+
+  <footer
+    class="flex items-center justify-end gap-2 pt-6"
+    x-data="{ showClearDialog: false }"
+  >
+    {{ template "partial-edit-room-exits-dialog-clear" }}
+    <button
+      type="button"
+      class="button-secondary button-secondary-destructive"
+      @click="showClearDialog = true;"
+    >
+      Clear
+    </button>
+    <a href="{{ .Path }}" class="button-secondary">View</a>
+  </footer>
+</div>
 {{ end }}

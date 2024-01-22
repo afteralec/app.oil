@@ -1,0 +1,21 @@
+<!-- prettier-ignore -->
+{{ define "partial-edit-room-exits-dialog-create" }}
+{{ template "partial-modal-overlay" "showCreateDialog" }}
+<div
+  class="modal"
+  @click.away="showCreateDialog = false;"
+  x-cloak
+  x-show="showCreateDialog"
+>
+  {{ template "partial-modal-close" "showCreateDialog" }}
+  <h3 class="pt-4 text-lg font-semibold leading-none tracking-tight">
+    Are you sure?
+  </h3>
+  <p class="pt-2 text-base leading-none">
+    This will create a new room and link to it at this exit.
+  </p>
+  <footer class="flex justify-end gap-2 pt-6">
+    <button type="button" class="button-primary">Create</button>
+  </footer>
+</div>
+{{ end }}

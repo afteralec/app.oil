@@ -1,0 +1,23 @@
+<!-- prettier-ignore -->
+{{ define "partial-edit-room-exits-dialog-clear" }}
+{{ template "partial-modal-overlay" "showClearDialog" }}
+<div
+  class="modal"
+  @click.away="showClearDialog = false;"
+  x-cloak
+  x-show="showClearDialog"
+>
+  {{ template "partial-modal-close" "showClearDialog" }}
+  <h3 class="pt-4 text-lg font-semibold leading-none tracking-tight">
+    Are you sure?
+  </h3>
+  <p class="pt-2 text-base leading-none">
+    This will empty this exit, unlinking this room.
+  </p>
+  <footer class="flex justify-end gap-2 pt-6">
+    <button type="button" class="button-primary button-primary-destructive">
+      I'm Sure
+    </button>
+  </footer>
+</div>
+{{ end }}
