@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -725,7 +724,8 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 		TwoWay    bool   `form:"two-way"`
 	}
 
-	const sectionID string = "edit-room-exits-link-error"
+	// TODO: Get this in a shared constant
+	const sectionID string = "edit-room-exits-edit-error"
 
 	internalServerErrorNoticeParams := partials.BindNoticeSectionParams{
 		SectionID:    sectionID,
@@ -955,7 +955,8 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 }
 
 func ClearRoomExit(i *shared.Interfaces) fiber.Handler {
-	const sectionID string = "edit-room-exits-link-error"
+	// TODO: Get constants for common section IDs
+	const sectionID string = "edit-room-exits-edit-error"
 
 	internalServerErrorNoticeParams := partials.BindNoticeSectionParams{
 		SectionID:    sectionID,
@@ -1016,7 +1017,6 @@ func ClearRoomExit(i *shared.Interfaces) fiber.Handler {
 
 		dir := c.Params("exit")
 		if !rooms.IsDirectionValid(dir) {
-			log.Println("Exit isn't a valid dir")
 			c.Status(fiber.StatusBadRequest)
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
