@@ -111,3 +111,78 @@ func Link(in LinkParams) error {
 
 	return nil
 }
+
+type UnlinkParams struct {
+	Queries   *queries.Queries
+	Direction string
+	ID        int64
+}
+
+func Unlink(in UnlinkParams) error {
+	if !IsDirectionValid(in.Direction) {
+		return ErrInvalidDirection
+	}
+
+	switch in.Direction {
+	case DirectionNorth:
+		if err := in.Queries.UpdateRoomExitNorth(context.Background(), queries.UpdateRoomExitNorthParams{
+			ID:    in.ID,
+			North: 0,
+		}); err != nil {
+			return err
+		}
+	case DirectionNortheast:
+		if err := in.Queries.UpdateRoomExitNortheast(context.Background(), queries.UpdateRoomExitNortheastParams{
+			ID:        in.ID,
+			Northeast: 0,
+		}); err != nil {
+			return err
+		}
+	case DirectionEast:
+		if err := in.Queries.UpdateRoomExitEast(context.Background(), queries.UpdateRoomExitEastParams{
+			ID:   in.ID,
+			East: 0,
+		}); err != nil {
+			return err
+		}
+	case DirectionSoutheast:
+		if err := in.Queries.UpdateRoomExitSoutheast(context.Background(), queries.UpdateRoomExitSoutheastParams{
+			ID:        in.ID,
+			Southeast: 0,
+		}); err != nil {
+			return err
+		}
+	case DirectionSouth:
+		if err := in.Queries.UpdateRoomExitSouth(context.Background(), queries.UpdateRoomExitSouthParams{
+			ID:    in.ID,
+			South: 0,
+		}); err != nil {
+			return err
+		}
+	case DirectionSouthwest:
+		if err := in.Queries.UpdateRoomExitSouthwest(context.Background(), queries.UpdateRoomExitSouthwestParams{
+			ID:        in.ID,
+			Southwest: 0,
+		}); err != nil {
+			return err
+		}
+	case DirectionWest:
+		if err := in.Queries.UpdateRoomExitWest(context.Background(), queries.UpdateRoomExitWestParams{
+			ID:   in.ID,
+			West: 0,
+		}); err != nil {
+			return err
+		}
+	case DirectionNorthwest:
+		if err := in.Queries.UpdateRoomExitNorthwest(context.Background(), queries.UpdateRoomExitNorthwestParams{
+			ID:        in.ID,
+			Northwest: 0,
+		}); err != nil {
+			return err
+		}
+	default:
+		return ErrInvalidDirection
+	}
+
+	return nil
+}

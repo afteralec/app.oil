@@ -734,6 +734,44 @@ func TestEditRoomExitBadRequestInvalidID(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
+func TestEditRoomExitBadRequestEmptyID(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	ridOne := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridOne)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomExitsPath(ridOne))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("id", "0")
+	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("two-way", "true")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
 func TestEditRoomExitBadRequestInvalidTwoWay(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()

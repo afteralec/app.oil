@@ -771,6 +771,13 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
 		}
 
+		if in.LinkID == 0 {
+			c.Status(fiber.StatusBadRequest)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+		}
+
 		_, err := util.GetPID(c)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
