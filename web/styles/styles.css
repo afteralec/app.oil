@@ -291,6 +291,14 @@ body {
   @apply text-muted-fg;
 }
 
+.switch {
+  @apply h-6 w-11 rounded-full bg-gray-400;
+}
+
+.switch:after {
+  @apply absolute start-[2px] top-[2px] h-5 w-5 rounded-full border border-bg bg-bg transition-all content-[''];
+}
+
 /* TODO: Put these into a header class */
 .help h1 {
   @apply pb-6 font-extrabold tracking-tight leading-none text-3xl;
