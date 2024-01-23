@@ -298,6 +298,7 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				"Description":     rooms.DefaultDescription,
 				"ExitPath":        routes.RoomPath(rid),
 				"ExitEditPath":    routes.EditRoomPath(rid),
+				"RoomsPath":       routes.Rooms,
 			}
 
 			c.Status(fiber.StatusCreated)

@@ -69,6 +69,7 @@ func BuildEmptyExit(room *queries.Room, dir string) fiber.Map {
 		"ExitTitle":       DirectionTitle(dir),
 		"EditElementID":   ExitEditElementID(dir),
 		"SelectElementID": ExitSelectElementID(dir),
+		"RoomsPath":       routes.Rooms,
 	}
 }
 
@@ -79,6 +80,7 @@ func BuildExit(room *queries.Room, exitRoom *queries.Room, dir string) fiber.Map
 	exit["Description"] = exitRoom.Description
 	exit["ExitPath"] = routes.RoomPath(exitRoom.ID)
 	exit["ExitEditPath"] = routes.EditRoomPath(exitRoom.ID)
+	exit["TwoWay"] = IsExitTwoWay(room, exitRoom, dir)
 	return exit
 }
 

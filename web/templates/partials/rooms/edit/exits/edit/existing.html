@@ -11,7 +11,13 @@
     >
       {{ .Description }}
     </p>
-    <p class="pt-2 text-sm font-semibold">This is a two-way connection.</p>
+    <p class="pt-2 text-sm leading-none">
+      This is a
+      <span class="font-semibold">
+        {{ if .TwoWay }} two-way {{ else }} one-way {{ end }}
+      </span>
+      connection.
+    </p>
   </div>
 
   <footer

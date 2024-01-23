@@ -16,7 +16,7 @@
   </p>
   <form
     class="space-y-2 pt-4"
-    hx-post="/rooms"
+    hx-post="{{ .RoomsPath }}"
     hx-target="#{{ .EditElementID }}"
     hx-swap="outerHTML"
     @submit.prevent="showCreateDialog = false;"
@@ -31,6 +31,7 @@
         <input
           name="two-way"
           type="checkbox"
+          checked="true"
           value="true"
           id="edit-room-exits-create-two-way"
           class="peer sr-only"
