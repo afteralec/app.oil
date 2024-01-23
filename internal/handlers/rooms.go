@@ -3,6 +3,9 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"log"
+	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -244,7 +247,9 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 			// 1. The link-to exit isn't already filled
 			// 2. There isn't a setpiece that leads to the proposed destination room
 			// etc
-			_, err = qtx.GetRoom(context.Background(), in.LinkID)
+
+			log.Println(in.TwoWay)
+			record, err := qtx.GetRoom(context.Background(), in.LinkID)
 			if err != nil {
 				if err == sql.ErrNoRows {
 					c.Status(fiber.StatusNotFound)
@@ -269,6 +274,37 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusInternalServerError)
 				return nil
 			}
+
+			if err := tx.Commit(); err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				c.Append(shared.HeaderHXAcceptable, "true")
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					SectionID:    "new-room-image-error",
+					SectionClass: "pt-2",
+					NoticeText: []string{
+						"Something's gone terribly wrong.",
+					},
+					RefreshButton: true,
+					NoticeIcon:    true,
+				}), layouts.None)
+			}
+
+			var sb strings.Builder
+			fmt.Fprintf(&sb, "#%s", rooms.ExitElementID(in.Direction))
+
+			exit := fiber.Map{
+				"ID":          record.ID,
+				"RoomID":      rid,
+				"Exit":        in.Direction,
+				"ExitLetter":  rooms.DirectionLetter(in.Direction),
+				"ExitTitle":   rooms.DirectionTitle(in.Direction),
+				"ElementID":   rooms.ExitElementID(in.Direction),
+				"Title":       record.Title,
+				"Description": record.Description,
+			}
+
+			c.Status(fiber.StatusCreated)
+			return c.Render(partials.EditRoomExit, exit, layouts.None)
 		}
 
 		if err := tx.Commit(); err != nil {
@@ -446,59 +482,68 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		b["Southwest"] = record.Southwest
 		b["West"] = record.West
 		b["Northwest"] = record.Northwest
-		b["Exits"] = []fiber.Map{
-			{
-				"ID":          1,
-				"Exit":        "north",
-				"ExitLetter":  "n",
-				"ExitTitle":   "North",
-				"Title":       rooms.DefaultTitle,
-				"Description": rooms.DefaultDescription,
-				"Path":        routes.RoomPath(1),
-			},
-			{
-				"ID":         0,
-				"Exit":       "northeast",
-				"ExitLetter": "ne",
-				"ExitTitle":  "Northeast",
-			},
-			{
-				"ID":         0,
-				"Exit":       "east",
-				"ExitLetter": "e",
-				"ExitTitle":  "East",
-			},
-			{
-				"ID":         0,
-				"Exit":       "southeast",
-				"ExitLetter": "se",
-				"ExitTitle":  "Southeast",
-			},
-			{
-				"ID":         0,
-				"Exit":       "south",
-				"ExitLetter": "s",
-				"ExitTitle":  "South",
-			},
-			{
-				"ID":         0,
-				"Exit":       "southwest",
-				"ExitLetter": "sw",
-				"ExitTitle":  "Southwest",
-			},
-			{
-				"ID":         0,
-				"Exit":       "west",
-				"ExitLetter": "w",
-				"ExitTitle":  "West",
-			},
-			{
-				"ID":         0,
-				"Exit":       "northwest",
-				"ExitLetter": "nw",
-				"ExitTitle":  "Northwest",
-			},
-		}
+		b["Exits"] = rooms.BuildExits(&record)
+		// b["Exits"] = []fiber.Map{
+		// 	{
+		// 		"ID":          1,
+		// 		"Exit":        "north",
+		// 		"ExitLetter":  "n",
+		// 		"ExitTitle":   "North",
+		// 		"ElementID":   "edit-room-exits-edit-exit-north",
+		// 		"Title":       rooms.DefaultTitle,
+		// 		"Description": rooms.DefaultDescription,
+		// 		"Path":        routes.RoomPath(1),
+		// 	},
+		// 	{
+		// 		"ID":         0,
+		// 		"Exit":       "northeast",
+		// 		"ExitLetter": "ne",
+		// 		"ExitTitle":  "Northeast",
+		// 		"ElementID":  "edit-room-exits-edit-exit-northeast",
+		// 	},
+		// 	{
+		// 		"ID":         0,
+		// 		"Exit":       "east",
+		// 		"ExitLetter": "e",
+		// 		"ExitTitle":  "East",
+		// 		"ElementID":  "edit-room-exits-edit-exit-east",
+		// 	},
+		// 	{
+		// 		"ID":         0,
+		// 		"Exit":       "southeast",
+		// 		"ExitLetter": "se",
+		// 		"ExitTitle":  "Southeast",
+		// 		"ElementID":  "edit-room-exits-edit-exit-southeast",
+		// 	},
+		// 	{
+		// 		"ID":         0,
+		// 		"Exit":       "south",
+		// 		"ExitLetter": "s",
+		// 		"ExitTitle":  "South",
+		// 		"ElementID":  "edit-room-exits-edit-exit-south",
+		// 	},
+		// 	{
+		// 		"ID":         0,
+		// 		"Exit":       "southwest",
+		// 		"ExitLetter": "sw",
+		// 		"ExitTitle":  "Southwest",
+		// 		"ElementID":  "edit-room-exits-edit-exit-southwest",
+		// 	},
+		// 	{
+		// 		"ID":         0,
+		// 		"Exit":       "west",
+		// 		"ExitLetter": "w",
+		// 		"ExitTitle":  "West",
+		// 		"ElementID":  "edit-room-exits-edit-exit-west",
+		// 	},
+		// 	{
+		// 		"ID":         0,
+		// 		"Exit":       "northwest",
+		// 		"ExitLetter": "nw",
+		// 		"ExitTitle":  "Northwest",
+		// 		"ElementID":  "edit-room-exits-edit-exit-northwest",
+		// 	},
+		// }
 		return c.Render(views.EditRoom, b)
 	}
 }

@@ -1,9 +1,6 @@
 {{ define "partial-edit-room-exits-edit-empty" }}
-<footer
-  class="flex items-center gap-2 py-6"
-  x-data="{ showCreateDialog: false }"
->
-  {{ template "partial-edit-room-exits-dialog-create" }}
+<div class="flex items-center gap-2 py-6" x-data="{ showCreateDialog: false }">
+  {{ template "partial-edit-room-exits-dialog-create" . }}
   <button type="button" class="button-secondary">Link</button>
   <button
     type="button"
@@ -12,5 +9,5 @@
   >
     Create
   </button>
-</footer>
+</div>
 {{ end }}

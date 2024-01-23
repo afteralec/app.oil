@@ -12,57 +12,107 @@ const (
 )
 
 const (
-	DirectionNorthOpposite     string = DirectionSouth
-	DirectionNortheastOpposite string = DirectionSouthwest
-	DirectionEastOpposite      string = DirectionWest
-	DirectionSoutheastOpposite string = DirectionNorthwest
-	DirectionSouthOpposite     string = DirectionNorth
-	DirectionSouthwestOpposite string = DirectionNortheast
-	DirectionWestOpposite      string = DirectionEast
-	DirectionNorthwestOpposite string = DirectionSoutheast
+	DirectionLetterNorth     string = "n"
+	DirectionLetterNortheast string = "ne"
+	DirectionLetterEast      string = "e"
+	DirectionLetterSoutheast string = "se"
+	DirectionLetterSouth     string = "s"
+	DirectionLetterSouthwest string = "sw"
+	DirectionLetterWest      string = "w"
+	DirectionLetterNorthwest string = "nw"
 )
 
-func IsDirectionValid(dir string) bool {
-	switch dir {
-	case DirectionNorth:
-		return true
-	case DirectionNortheast:
-		return true
-	case DirectionEast:
-		return true
-	case DirectionSoutheast:
-		return true
-	case DirectionSouth:
-		return true
-	case DirectionSouthwest:
-		return true
-	case DirectionWest:
-		return true
-	case DirectionNorthwest:
-		return true
-	}
-	return false
+const (
+	DirectionTitleNorth     string = "North"
+	DirectionTitleNortheast string = "Northeast"
+	DirectionTitleEast      string = "East"
+	DirectionTitleSoutheast string = "Southeast"
+	DirectionTitleSouth     string = "South"
+	DirectionTitleSouthwest string = "Southwest"
+	DirectionTitleWest      string = "West"
+	DirectionTitleNorthwest string = "Northwest"
+)
+
+var DirectionsList []string = []string{
+	DirectionNorth,
+	DirectionNortheast,
+	DirectionEast,
+	DirectionSoutheast,
+	DirectionSouth,
+	DirectionSouthwest,
+	DirectionWest,
+	DirectionNorthwest,
 }
 
-func GetDirectionOpposite(dir string) string {
-	switch dir {
-	case DirectionNorth:
-		return DirectionNorthOpposite
-	case DirectionNortheast:
-		return DirectionNortheastOpposite
-	case DirectionEast:
-		return DirectionEastOpposite
-	case DirectionSoutheast:
-		return DirectionSoutheastOpposite
-	case DirectionSouth:
-		return DirectionSouthOpposite
-	case DirectionSouthwest:
-		return DirectionSouthwestOpposite
-	case DirectionWest:
-		return DirectionWestOpposite
-	case DirectionNorthwest:
-		return DirectionNorthwestOpposite
-	}
+var Directions map[string]bool = map[string]bool{
+	DirectionNorth:     true,
+	DirectionNortheast: true,
+	DirectionEast:      true,
+	DirectionSoutheast: true,
+	DirectionSouth:     true,
+	DirectionSouthwest: true,
+	DirectionWest:      true,
+	DirectionNorthwest: true,
+}
 
-	return ""
+var DirectionOpposites map[string]string = map[string]string{
+	DirectionNorth:     DirectionSouth,
+	DirectionNortheast: DirectionSouthwest,
+	DirectionEast:      DirectionWest,
+	DirectionSoutheast: DirectionNorthwest,
+	DirectionSouth:     DirectionNorth,
+	DirectionSouthwest: DirectionNortheast,
+	DirectionWest:      DirectionEast,
+	DirectionNorthwest: DirectionSoutheast,
+}
+
+var DirectionLetters map[string]string = map[string]string{
+	DirectionNorth:     DirectionLetterNorth,
+	DirectionNortheast: DirectionLetterNortheast,
+	DirectionEast:      DirectionLetterEast,
+	DirectionSoutheast: DirectionLetterSoutheast,
+	DirectionSouth:     DirectionLetterSouth,
+	DirectionSouthwest: DirectionLetterSouthwest,
+	DirectionWest:      DirectionLetterWest,
+	DirectionNorthwest: DirectionLetterNorthwest,
+}
+
+var DirectionTitles map[string]string = map[string]string{
+	DirectionNorth:     DirectionTitleNorth,
+	DirectionNortheast: DirectionTitleNortheast,
+	DirectionEast:      DirectionTitleEast,
+	DirectionSoutheast: DirectionTitleSoutheast,
+	DirectionSouth:     DirectionTitleSouth,
+	DirectionSouthwest: DirectionTitleSouthwest,
+	DirectionWest:      DirectionTitleWest,
+	DirectionNorthwest: DirectionTitleNorthwest,
+}
+
+func IsDirectionValid(dir string) bool {
+	_, ok := Directions[dir]
+	return ok
+}
+
+func DirectionOpposite(dir string) string {
+	opposite, ok := DirectionOpposites[dir]
+	if !ok {
+		return ""
+	}
+	return opposite
+}
+
+func DirectionLetter(dir string) string {
+	letter, ok := DirectionLetters[dir]
+	if !ok {
+		return ""
+	}
+	return letter
+}
+
+func DirectionTitle(dir string) string {
+	title, ok := DirectionTitles[dir]
+	if !ok {
+		return ""
+	}
+	return title
 }

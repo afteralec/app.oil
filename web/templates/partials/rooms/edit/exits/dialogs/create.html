@@ -14,8 +14,34 @@
   <p class="pt-2 text-base leading-none">
     This will create a new room and link to it at this exit.
   </p>
-  <footer class="flex justify-end gap-2 pt-6">
-    <button type="button" class="button-primary">Create</button>
-  </footer>
+  <form
+    class="space-y-2 pt-4"
+    hx-post="/rooms"
+    hx-target="#{{ .ElementID }}"
+    hx-swap="outerHTML"
+    @submit.prevent="showCreateDialog = false;"
+  >
+    <input name="id" value="{{ .RoomID }}" class="sr-only" />
+    <input name="direction" value="{{ .Exit }}" class="sr-only" />
+
+    <footer class="flex items-center gap-2 pt-4">
+      <label
+        class="relative mr-auto inline-flex cursor-pointer items-center gap-2"
+      >
+        <input
+          name="two-way"
+          type="checkbox"
+          value="true"
+          id="edit-room-exits-create-two-way"
+          class="peer sr-only"
+        />
+        {{ template "partial-form-switch" }}
+        <p class="text-sm font-semibold leading-none">
+          This is a two-way connection
+        </p>
+      </label>
+      <button type="submit" class="button-primary ml-auto">Create</button>
+    </footer>
+  </form>
 </div>
 {{ end }}

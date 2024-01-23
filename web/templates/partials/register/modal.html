@@ -22,16 +22,16 @@
         x-model="username"
         @focus="notifs.u = true;"
         @input="
-            eval.u.len = true;
-            const reservedEl = document.getElementById('username-reserved');
-            reservedEl.classList.add('htmx-request');
-            usernameReserved = true;
-            document.body.addEventListener('ptrcr:username-reserved', () => {
-              const el = document.getElementById('player-reserved');
-              usernameReserved = Boolean(el);
-            }, { once: true });
-            username = sanitizeUsername(event.target.value);
-          "
+          eval.u.len = true;
+          const reservedEl = document.getElementById('username-reserved');
+          reservedEl.classList.add('htmx-request');
+          usernameReserved = true;
+          document.body.addEventListener('ptrcr:username-reserved', () => {
+            const el = document.getElementById('player-reserved');
+            usernameReserved = Boolean(el);
+          }, { once: true });
+          username = sanitizeUsername(event.target.value);
+        "
         hx-post="/player/reserved"
         hx-params="username"
         hx-trigger="keyup changed delay:500ms"

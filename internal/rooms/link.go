@@ -20,6 +20,10 @@ type LinkParams struct {
 }
 
 func Link(in LinkParams) error {
+	if !IsDirectionValid(in.Direction) {
+		return errors.New(ErrInvalidDirection)
+	}
+
 	switch in.Direction {
 	case DirectionNorth:
 		if err := in.Queries.UpdateRoomExitNorth(context.Background(), queries.UpdateRoomExitNorthParams{
@@ -87,7 +91,7 @@ func Link(in LinkParams) error {
 			ID:        in.To,
 			To:        in.ID,
 			TwoWay:    false,
-			Direction: GetDirectionOpposite(in.Direction),
+			Direction: DirectionOpposite(in.Direction),
 		}); err != nil {
 			return err
 		}
