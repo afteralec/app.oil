@@ -245,7 +245,17 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 			// 2. There isn't a setpiece that leads to the proposed destination room
 			// etc
 
-			record, err := qtx.GetRoom(context.Background(), in.LinkID)
+			room, err := qtx.GetRoom(context.Background(), in.LinkID)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					c.Status(fiber.StatusNotFound)
+					return nil
+				}
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+
+			exitRoom, err := qtx.GetRoom(context.Background(), rid)
 			if err != nil {
 				if err == sql.ErrNoRows {
 					c.Status(fiber.StatusNotFound)
@@ -285,21 +295,7 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				}), layouts.None)
 			}
 
-			// TODO: Get a factory for this
-			exit := fiber.Map{
-				"ID":              rid,
-				"RoomID":          record.ID,
-				"Exit":            in.Direction,
-				"ExitLetter":      rooms.DirectionLetter(in.Direction),
-				"ExitTitle":       rooms.DirectionTitle(in.Direction),
-				"EditElementID":   rooms.ExitEditElementID(in.Direction),
-				"SelectElementID": rooms.ExitSelectElementID(in.Direction),
-				"Title":           rooms.DefaultTitle,
-				"Description":     rooms.DefaultDescription,
-				"ExitPath":        routes.RoomPath(rid),
-				"ExitEditPath":    routes.EditRoomPath(rid),
-				"RoomsPath":       routes.Rooms,
-			}
+			exit := rooms.BuildExit(&room, &exitRoom, in.Direction)
 
 			c.Status(fiber.StatusCreated)
 			return c.Render(partials.EditRoomExitEdit, exit, layouts.None)
