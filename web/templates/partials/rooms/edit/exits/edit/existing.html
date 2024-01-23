@@ -27,13 +27,13 @@
     {{ template "partial-edit-room-exits-dialog-clear" . }}
     <button
       type="button"
-      class="button-secondary button-secondary-destructive"
+      class="button-outline button-outline-destructive"
       @click="showClearDialog = true;"
     >
       Clear
     </button>
-    <a href="{{ .ExitEditPath }}" class="button-secondary">Edit</a>
-    <a href="{{ .ExitPath }}" class="button-secondary">View</a>
+    <a href="{{ .ExitEditPath }}" class="button-outline">Edit</a>
+    <a href="{{ .ExitPath }}" class="button-outline">View</a>
   </footer>
 </div>
 {{ end }}

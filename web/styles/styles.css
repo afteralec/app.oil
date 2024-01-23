@@ -255,23 +255,23 @@ body {
   @apply bg-err-hl;
 }
 
-.button-secondary {
+.button-outline {
   @apply inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-bg transition-colors;
 }
 
-.button-secondary:hover {
+.button-outline:hover {
   @apply text-muted-fg border-muted-fg;
 }
 
-.button-secondary:disabled {
+.button-outline:disabled {
   @apply pointer-events-none opacity-50;
 }
 
-.button-secondary-destructive {
+.button-outline-destructive {
   @apply border-err text-err;
 }
 
-.button-secondary-destructive:hover {
+.button-outline-destructive:hover {
   @apply text-err-hl border-err-hl;
 }
 

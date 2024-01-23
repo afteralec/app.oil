@@ -6,11 +6,7 @@
   <!-- prettier-ignore -->
   {{ template "partial-edit-room-exits-dialog-link" . }}
   {{ template "partial-edit-room-exits-dialog-create" . }}
-  <button
-    type="button"
-    class="button-secondary"
-    @click="showLinkDialog = true;"
-  >
+  <button type="button" class="button-outline" @click="showLinkDialog = true;">
     Link
   </button>
   <button

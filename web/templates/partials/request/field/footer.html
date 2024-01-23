@@ -3,7 +3,7 @@
   {{ if and .ViewedByReviewer .StatusIsInReview -}}
   <button
     type="button"
-    class="button-secondary"
+    class="button-outline"
     @click.prevent="commentOpen = true;"
   >
     Comment
@@ -12,7 +12,7 @@
 
   <!-- prettier-ignore -->
   {{ if .BackLink -}}
-  <a href="{{ .BackLink }}" class="button-secondary">Back</a>
+  <a href="{{ .BackLink }}" class="button-outline">Back</a>
   {{ end -}}
   <!-- prettier-ignore -->
   <!-- TODO: This should disable if the field is incomplete -->
