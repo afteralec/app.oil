@@ -74,6 +74,7 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Get(routes.EditRoomPathParam, handlers.EditRoomPage(i))
 	app.Get(routes.RoomGridPathParam, handlers.RoomGrid())
 	app.Patch(routes.RoomExitsPathParam, handlers.EditRoomExit(i))
+	app.Delete(routes.RoomExitPathParam, handlers.ClearRoomExit(i))
 
 	app.Post(routes.SearchPlayerPath(routes.Destination), handlers.SearchPlayer(i))
 }

@@ -849,3 +849,121 @@ func TestEditRoomExitSuccess(t *testing.T) {
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
+
+func TestClearRoomExitUnauthorized(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	ridOne := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridOne)
+	ridTwo := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridTwo)
+
+	if err := rooms.Link(rooms.LinkParams{
+		Queries:   i.Queries,
+		ID:        ridOne,
+		To:        ridTwo,
+		Direction: rooms.DirectionNorth,
+		TwoWay:    true,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	url := MakeTestURL(routes.RoomExitPath(ridOne, rooms.DirectionNorth))
+
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer DeleteTestUnmodifiedRooms(t, &i)
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestClearRoomExitForbiddenNoPermission(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	ridOne := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridOne)
+	ridTwo := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridTwo)
+
+	if err := rooms.Link(rooms.LinkParams{
+		Queries:   i.Queries,
+		ID:        ridOne,
+		To:        ridTwo,
+		Direction: rooms.DirectionNorth,
+		TwoWay:    true,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomExitPath(ridOne, rooms.DirectionNorth))
+
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestClearRoomExitSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	ridOne := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridOne)
+	ridTwo := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridTwo)
+
+	if err := rooms.Link(rooms.LinkParams{
+		Queries:   i.Queries,
+		ID:        ridOne,
+		To:        ridTwo,
+		Direction: rooms.DirectionNorth,
+		TwoWay:    true,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomExitPath(ridOne, rooms.DirectionNorth))
+
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}

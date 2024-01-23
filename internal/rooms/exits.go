@@ -2,6 +2,7 @@ package rooms
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -10,6 +11,8 @@ import (
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 )
+
+var ErrExitIDNotFound error = errors.New("no exit found for that RID")
 
 func LoadExitRooms(q *queries.Queries, room *queries.Room) (map[string]queries.Room, error) {
 	exitRooms := make(map[string]queries.Room)
@@ -117,6 +120,29 @@ func ExitID(room *queries.Room, dir string) int64 {
 		return room.Northwest
 	default:
 		return 0
+	}
+}
+
+func ExitDirection(room *queries.Room, id int64) (string, error) {
+	switch id {
+	case room.North:
+		return DirectionNorth, nil
+	case room.Northeast:
+		return DirectionNortheast, nil
+	case room.East:
+		return DirectionEast, nil
+	case room.Southeast:
+		return DirectionSoutheast, nil
+	case room.South:
+		return DirectionSouth, nil
+	case room.Southwest:
+		return DirectionSouthwest, nil
+	case room.West:
+		return DirectionWest, nil
+	case room.Northwest:
+		return DirectionNorthwest, nil
+	default:
+		return "", ErrExitIDNotFound
 	}
 }
 
