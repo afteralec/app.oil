@@ -128,13 +128,16 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 		TwoWay    bool   `form:"two-way"`
 	}
 
+	const sectionID string = "edit-room-exits-create-error"
+
 	return func(c *fiber.Ctx) error {
 		_, err := util.GetPID(c)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
-				SectionID:    "new-room-error",
+				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
 					"It looks like your session may have expired.",
@@ -148,8 +151,9 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
 			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
-				SectionID:    "new-room-error",
+				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
 					"Something's gone terribly wrong.",
@@ -162,8 +166,9 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
 			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
-				SectionID:    "new-room-error",
+				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
 					"You don't have the permission(s) necessary to create a Room Image.",
@@ -177,8 +182,9 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
-				SectionID:    "new-room-image-error",
+				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
 					"Something's gone terribly wrong.",
@@ -198,8 +204,9 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
-				SectionID:    "new-room-image-error",
+				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
 					"Something's gone terribly wrong.",
@@ -213,8 +220,9 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
-				SectionID:    "new-room-image-error",
+				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
 					"Something's gone terribly wrong.",
@@ -228,8 +236,9 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 		if err := c.BodyParser(in); err != nil && err != fiber.ErrUnprocessableEntity {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
-				SectionID:    "new-room-image-error",
+				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
 					"Something's gone terribly wrong.",
@@ -249,25 +258,75 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 			if err != nil {
 				if err == sql.ErrNoRows {
 					c.Status(fiber.StatusNotFound)
-					return nil
+					c.Append(shared.HeaderHXAcceptable, "true")
+					c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+					return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+						SectionID:    sectionID,
+						SectionClass: "pt-2",
+						NoticeText: []string{
+							"Something's gone terribly wrong.",
+						},
+						RefreshButton: true,
+						NoticeIcon:    true,
+					}), layouts.None)
 				}
 				c.Status(fiber.StatusInternalServerError)
-				return nil
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					SectionID:    sectionID,
+					SectionClass: "pt-2",
+					NoticeText: []string{
+						"Something's gone terribly wrong.",
+					},
+					RefreshButton: true,
+					NoticeIcon:    true,
+				}), layouts.None)
 			}
 
 			exitRoom, err := qtx.GetRoom(context.Background(), rid)
 			if err != nil {
 				if err == sql.ErrNoRows {
 					c.Status(fiber.StatusNotFound)
-					return nil
+					c.Append(shared.HeaderHXAcceptable, "true")
+					c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+					return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+						SectionID:    sectionID,
+						SectionClass: "pt-2",
+						NoticeText: []string{
+							"Something's gone terribly wrong.",
+						},
+						RefreshButton: true,
+						NoticeIcon:    true,
+					}), layouts.None)
 				}
 				c.Status(fiber.StatusInternalServerError)
-				return nil
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					SectionID:    sectionID,
+					SectionClass: "pt-2",
+					NoticeText: []string{
+						"Something's gone terribly wrong.",
+					},
+					RefreshButton: true,
+					NoticeIcon:    true,
+				}), layouts.None)
 			}
 
 			if !rooms.IsDirectionValid(in.Direction) {
 				c.Status(fiber.StatusBadRequest)
-				return nil
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					SectionID:    sectionID,
+					SectionClass: "pt-2",
+					NoticeText: []string{
+						"Something's gone terribly wrong.",
+					},
+					RefreshButton: true,
+					NoticeIcon:    true,
+				}), layouts.None)
 			}
 
 			if err := rooms.Link(rooms.LinkParams{
@@ -278,14 +337,25 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				TwoWay:    in.TwoWay,
 			}); err != nil {
 				c.Status(fiber.StatusInternalServerError)
-				return nil
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					SectionID:    sectionID,
+					SectionClass: "pt-2",
+					NoticeText: []string{
+						"Something's gone terribly wrong.",
+					},
+					RefreshButton: true,
+					NoticeIcon:    true,
+				}), layouts.None)
 			}
 
 			if err := tx.Commit(); err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
-					SectionID:    "new-room-image-error",
+					SectionID:    sectionID,
 					SectionClass: "pt-2",
 					NoticeText: []string{
 						"Something's gone terribly wrong.",
@@ -304,8 +374,9 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
-				SectionID:    "new-room-image-error",
+				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
 					"Something's gone terribly wrong.",
@@ -639,5 +710,232 @@ func RoomGrid() fiber.Handler {
 		}
 
 		return c.Render(partials.RoomGrid, b, layouts.None)
+	}
+}
+
+func EditRoomExit(i *shared.Interfaces) fiber.Handler {
+	type input struct {
+		Direction string `form:"direction"`
+		LinkID    int64  `form:"id"`
+		TwoWay    bool   `form:"two-way"`
+	}
+
+	const sectionID string = "edit-room-exits-link-error"
+
+	internalServerErrorNoticeParams := partials.BindNoticeSectionParams{
+		SectionID:    sectionID,
+		SectionClass: "pt-2",
+		NoticeText: []string{
+			"Something's gone terribly wrong.",
+		},
+		RefreshButton: true,
+		NoticeIcon:    true,
+	}
+
+	sessionExpiredNoticeParams := partials.BindNoticeSectionParams{
+		SectionID:    sectionID,
+		SectionClass: "pt-2",
+		NoticeText: []string{
+			"It looks like your session may have expired.",
+		},
+		RefreshButton: true,
+		NoticeIcon:    true,
+	}
+
+	noPermissionNoticeParams := partials.BindNoticeSectionParams{
+		SectionID:    sectionID,
+		SectionClass: "pt-2",
+		NoticeText: []string{
+			"You don't have the permission required to edit this room.",
+		},
+		RefreshButton: true,
+		NoticeIcon:    true,
+	}
+
+	notFoundNoticeParams := partials.BindNoticeSectionParams{
+		SectionID:    sectionID,
+		SectionClass: "pt-2",
+		NoticeText: []string{
+			"The room you're looking for no longer exists.",
+		},
+		RefreshButton: true,
+		NoticeIcon:    true,
+	}
+
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil && err != fiber.ErrUnprocessableEntity {
+			c.Status(fiber.StatusBadRequest)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+		}
+
+		_, err := util.GetPID(c)
+		if err != nil {
+			c.Status(fiber.StatusUnauthorized)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(sessionExpiredNoticeParams), layouts.None)
+		}
+
+		rid, err := util.GetID(c)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusForbidden)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+		}
+
+		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+			c.Status(fiber.StatusForbidden)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(noPermissionNoticeParams), layouts.None)
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		room, err := qtx.GetRoom(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				c.Append(shared.HeaderHXAcceptable, "true")
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(notFoundNoticeParams), layouts.None)
+			}
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+		}
+
+		exitRoom, err := qtx.GetRoom(context.Background(), in.LinkID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(notFoundNoticeParams), layouts.None)
+			}
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+		}
+
+		if !rooms.IsDirectionValid(in.Direction) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if err := rooms.Link(rooms.LinkParams{
+			Queries:   qtx,
+			ID:        rid,
+			To:        in.LinkID,
+			Direction: in.Direction,
+			TwoWay:    in.TwoWay,
+		}); err != nil {
+			if err == rooms.ErrLinkSelf {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		room, err = qtx.GetRoom(context.Background(), room.ID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					SectionID:    sectionID,
+					SectionClass: "pt-2",
+					NoticeText: []string{
+						"The room you're looking for no longer exists.",
+					},
+					RefreshButton: true,
+					NoticeIcon:    true,
+				}), layouts.None)
+			}
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    sectionID,
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+		exitRoom, err = qtx.GetRoom(context.Background(), exitRoom.ID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					SectionID:    sectionID,
+					SectionClass: "pt-2",
+					NoticeText: []string{
+						"The room you're looking for no longer exists.",
+					},
+					RefreshButton: true,
+					NoticeIcon:    true,
+				}), layouts.None)
+			}
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    sectionID,
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    sectionID,
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
+		// TODO: Build a way to do this without re-pulling the room and exit room
+		exit := rooms.BuildExit(&room, &exitRoom, in.Direction)
+
+		c.Status(fiber.StatusOK)
+		return c.Render(partials.EditRoomExitEdit, exit, layouts.None)
 	}
 }

@@ -8,15 +8,49 @@
   x-show="showLinkDialog"
 >
   {{ template "partial-modal-close" "showLinkDialog" }}
+  <section id="edit-room-exits-link-error"></section>
   <h3 class="pt-4 text-lg font-semibold leading-none tracking-tight">
     Link Room:
   </h3>
-  <form class="space-y-2 pt-4">
-    <label for="id" class="text-sm font-semibold leading-none">Room ID</label>
-    <input name="id" class="input" />
+  <form
+    class="space-y-2 pt-4"
+    x-data="{ id: '' }"
+    hx-patch="{{ .RoomExitsPath }}"
+    hx-target="#{{ .EditElementID }}"
+    hx-swap="outerHTML"
+    @submit.prevent="showLinkDialog = false;"
+  >
+    <label
+      for="edit-room-exits-link-id-input"
+      class="text-sm font-semibold leading-none"
+      >Room ID</label
+    >
+    <input
+      name="id"
+      id="edit-rooms-exits-link-id-input"
+      x-model="id"
+      class="input"
+    />
+    <input name="direction" value="{{ .Exit }}" class="sr-only" />
+    <footer class="flex items-center gap-2 pt-6">
+      <label
+        class="relative mr-auto inline-flex cursor-pointer items-center gap-2"
+      >
+        <input
+          name="two-way"
+          type="checkbox"
+          checked="true"
+          value="true"
+          id="edit-room-exits-create-two-way"
+          class="peer sr-only"
+        />
+        {{ template "partial-form-switch" }}
+        <p class="text-sm font-semibold leading-none">
+          This is a two-way connection
+        </p>
+      </label>
+      <button type="submit" class="button-primary ml-auto">Link</button>
+    </footer>
   </form>
-  <footer class="flex justify-end gap-2 pt-6">
-    <button type="button" class="button-primary">Link</button>
-  </footer>
 </div>
 {{ end }}

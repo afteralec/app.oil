@@ -1,7 +1,18 @@
 {{ define "partial-edit-room-exits-edit-empty" }}
-<div class="flex items-center gap-2 py-6" x-data="{ showCreateDialog: false }">
+<div
+  class="flex items-center gap-2 py-6"
+  x-data="{ showLinkDialog: false, showCreateDialog: false }"
+>
+  <!-- prettier-ignore -->
+  {{ template "partial-edit-room-exits-dialog-link" . }}
   {{ template "partial-edit-room-exits-dialog-create" . }}
-  <button type="button" class="button-secondary">Link</button>
+  <button
+    type="button"
+    class="button-secondary"
+    @click="showLinkDialog = true;"
+  >
+    Link
+  </button>
   <button
     type="button"
     class="button-primary"

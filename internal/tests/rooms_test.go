@@ -547,3 +547,267 @@ func TestEditRoomPageSuccess(t *testing.T) {
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
+
+func TestEditRoomExitUnauthorized(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	ridOne := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridOne)
+	ridTwo := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridTwo)
+
+	url := MakeTestURL(routes.RoomExitsPath(ridOne))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("id", strconv.FormatInt(ridTwo, 10))
+	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("two-way", "true")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer DeleteTestUnmodifiedRooms(t, &i)
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestEditRoomExitForbiddenNoPermission(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	ridOne := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridOne)
+	ridTwo := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridTwo)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomExitsPath(ridOne))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("id", strconv.FormatInt(ridTwo, 10))
+	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("two-way", "true")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestEditRoomExitRoomNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	rid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomExitsPath(rid))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("id", strconv.FormatInt(rid+1000, 10))
+	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("two-way", "true")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestEditRoomExitBadRequestLinkToSelf(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	rid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomExitsPath(rid))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("id", strconv.FormatInt(rid, 10))
+	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("two-way", "true")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestEditRoomExitBadRequestInvalidID(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	ridOne := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridOne)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomExitsPath(ridOne))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("id", "notanid")
+	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("two-way", "true")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestEditRoomExitBadRequestInvalidTwoWay(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	rid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomExitsPath(rid))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("id", strconv.FormatInt(rid+1000, 10))
+	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("two-way", "notaboolean")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestEditRoomExitSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	ridOne := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridOne)
+	ridTwo := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, ridTwo)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomExitsPath(ridOne))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("id", strconv.FormatInt(ridTwo, 10))
+	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("two-way", "true")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}

@@ -2,7 +2,9 @@ package util
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
+	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
 	"petrichormud.com/app/internal/permissions"
@@ -69,4 +71,10 @@ func GetPermissions(c *fiber.Ctx) (permissions.PlayerGranted, error) {
 		return permissions.PlayerGranted{}, nil
 	}
 	return perms, nil
+}
+
+func PrependHTMLID(id string) string {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "#%s", id)
+	return sb.String()
 }

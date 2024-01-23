@@ -9,7 +9,15 @@ import (
 	"petrichormud.com/app/internal/queries"
 )
 
-const ErrInvalidDirection string = "invalid direction"
+const (
+	errInvalidDirection string = "invalid direction"
+	errLinkSelf         string = "cannot link a room to itself"
+)
+
+var (
+	ErrInvalidDirection error = errors.New(errInvalidDirection)
+	ErrLinkSelf         error = errors.New(errLinkSelf)
+)
 
 type LinkParams struct {
 	Queries   *queries.Queries
@@ -21,7 +29,11 @@ type LinkParams struct {
 
 func Link(in LinkParams) error {
 	if !IsDirectionValid(in.Direction) {
-		return errors.New(ErrInvalidDirection)
+		return ErrInvalidDirection
+	}
+
+	if in.To == in.ID {
+		return ErrLinkSelf
 	}
 
 	switch in.Direction {
@@ -82,7 +94,7 @@ func Link(in LinkParams) error {
 			return err
 		}
 	default:
-		return errors.New(ErrInvalidDirection)
+		return ErrInvalidDirection
 	}
 
 	if in.TwoWay {
