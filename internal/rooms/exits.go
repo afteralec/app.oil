@@ -116,3 +116,26 @@ func ExitID(room *queries.Room, dir string) int64 {
 		return 0
 	}
 }
+
+func IsExitTwoWay(room *queries.Room, exitRoom *queries.Room, dir string) bool {
+	if !IsDirectionValid(dir) {
+		return false
+	}
+
+	roomExitID := ExitID(room, dir)
+	if roomExitID == 0 {
+		return false
+	}
+
+	opposite := DirectionOpposite(dir)
+	if len(opposite) == 0 {
+		return false
+	}
+
+	exitRoomExitID := ExitID(exitRoom, opposite)
+	if exitRoomExitID == 0 {
+		return false
+	}
+
+	return exitRoomExitID == room.ID
+}
