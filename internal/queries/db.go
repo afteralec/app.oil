@@ -165,6 +165,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listRoomsStmt, err = db.PrepareContext(ctx, listRooms); err != nil {
 		return nil, fmt.Errorf("error preparing query ListRooms: %w", err)
 	}
+	if q.listRoomsByIDsStmt, err = db.PrepareContext(ctx, listRoomsByIDs); err != nil {
+		return nil, fmt.Errorf("error preparing query ListRoomsByIDs: %w", err)
+	}
 	if q.listVerifiedEmailsStmt, err = db.PrepareContext(ctx, listVerifiedEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListVerifiedEmails: %w", err)
 	}
@@ -501,6 +504,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listRoomsStmt: %w", cerr)
 		}
 	}
+	if q.listRoomsByIDsStmt != nil {
+		if cerr := q.listRoomsByIDsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listRoomsByIDsStmt: %w", cerr)
+		}
+	}
 	if q.listVerifiedEmailsStmt != nil {
 		if cerr := q.listVerifiedEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listVerifiedEmailsStmt: %w", cerr)
@@ -747,6 +755,7 @@ type Queries struct {
 	listPlayerPermissionsStmt                             *sql.Stmt
 	listRequestsForPlayerStmt                             *sql.Stmt
 	listRoomsStmt                                         *sql.Stmt
+	listRoomsByIDsStmt                                    *sql.Stmt
 	listVerifiedEmailsStmt                                *sql.Stmt
 	markEmailVerifiedStmt                                 *sql.Stmt
 	markRequestCanceledStmt                               *sql.Stmt
@@ -832,6 +841,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listPlayerPermissionsStmt:                             q.listPlayerPermissionsStmt,
 		listRequestsForPlayerStmt:                             q.listRequestsForPlayerStmt,
 		listRoomsStmt:                                         q.listRoomsStmt,
+		listRoomsByIDsStmt:                                    q.listRoomsByIDsStmt,
 		listVerifiedEmailsStmt:                                q.listVerifiedEmailsStmt,
 		markEmailVerifiedStmt:                                 q.markEmailVerifiedStmt,
 		markRequestCanceledStmt:                               q.markRequestCanceledStmt,

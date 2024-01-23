@@ -3,9 +3,6 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"fmt"
-	"log"
-	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -113,7 +110,7 @@ func RoomPage(i *shared.Interfaces) fiber.Handler {
 			"Label": "Back to Rooms",
 		}
 		b["PageHeader"] = fiber.Map{
-			"Title":    record.Title,
+			"Title":    rooms.TitleWithID(record.Title, record.ID),
 			"SubTitle": "Room",
 		}
 		b["Name"] = "ImageName"
@@ -248,7 +245,6 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 			// 2. There isn't a setpiece that leads to the proposed destination room
 			// etc
 
-			log.Println(in.TwoWay)
 			record, err := qtx.GetRoom(context.Background(), in.LinkID)
 			if err != nil {
 				if err == sql.ErrNoRows {
@@ -289,22 +285,23 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				}), layouts.None)
 			}
 
-			var sb strings.Builder
-			fmt.Fprintf(&sb, "#%s", rooms.ExitElementID(in.Direction))
-
+			// TODO: Get a factory for this
 			exit := fiber.Map{
-				"ID":          record.ID,
-				"RoomID":      rid,
-				"Exit":        in.Direction,
-				"ExitLetter":  rooms.DirectionLetter(in.Direction),
-				"ExitTitle":   rooms.DirectionTitle(in.Direction),
-				"ElementID":   rooms.ExitElementID(in.Direction),
-				"Title":       record.Title,
-				"Description": record.Description,
+				"ID":              rid,
+				"RoomID":          record.ID,
+				"Exit":            in.Direction,
+				"ExitLetter":      rooms.DirectionLetter(in.Direction),
+				"ExitTitle":       rooms.DirectionTitle(in.Direction),
+				"EditElementID":   rooms.ExitEditElementID(in.Direction),
+				"SelectElementID": rooms.ExitSelectElementID(in.Direction),
+				"Title":           rooms.DefaultTitle,
+				"Description":     rooms.DefaultDescription,
+				"ExitPath":        routes.RoomPath(rid),
+				"ExitEditPath":    routes.EditRoomPath(rid),
 			}
 
 			c.Status(fiber.StatusCreated)
-			return c.Render(partials.EditRoomExit, exit, layouts.None)
+			return c.Render(partials.EditRoomExitEdit, exit, layouts.None)
 		}
 
 		if err := tx.Commit(); err != nil {
@@ -353,7 +350,15 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
 
-		record, err := i.Queries.GetRoom(context.Background(), rmid)
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		record, err := qtx.GetRoom(context.Background(), rmid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -363,6 +368,20 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
+		exitRooms, err := rooms.LoadExitRooms(qtx, &record)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+		}
+
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+		}
+
+		exits := rooms.BuildExits(&record, exitRooms)
+
+		// TODO: Defer this to a load function
 		roomGrid := []fiber.Map{
 			{
 				"ID": "test-room-grid-row-one",
@@ -424,7 +443,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		}
 		// TODO: Get a bind function for this too
 		b["PageHeader"] = fiber.Map{
-			"Title":    record.Title,
+			"Title":    rooms.TitleWithID(record.Title, record.ID),
 			"SubTitle": "Update room properties here",
 		}
 		b["RoomGrid"] = roomGrid
@@ -474,6 +493,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 				"Label":    "Huge",
 			},
 		}
+		// TODO: I don't think these individual dirs are needed
 		b["North"] = record.North
 		b["Northeast"] = record.Northeast
 		b["East"] = record.East
@@ -482,68 +502,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		b["Southwest"] = record.Southwest
 		b["West"] = record.West
 		b["Northwest"] = record.Northwest
-		b["Exits"] = rooms.BuildExits(&record)
-		// b["Exits"] = []fiber.Map{
-		// 	{
-		// 		"ID":          1,
-		// 		"Exit":        "north",
-		// 		"ExitLetter":  "n",
-		// 		"ExitTitle":   "North",
-		// 		"ElementID":   "edit-room-exits-edit-exit-north",
-		// 		"Title":       rooms.DefaultTitle,
-		// 		"Description": rooms.DefaultDescription,
-		// 		"Path":        routes.RoomPath(1),
-		// 	},
-		// 	{
-		// 		"ID":         0,
-		// 		"Exit":       "northeast",
-		// 		"ExitLetter": "ne",
-		// 		"ExitTitle":  "Northeast",
-		// 		"ElementID":  "edit-room-exits-edit-exit-northeast",
-		// 	},
-		// 	{
-		// 		"ID":         0,
-		// 		"Exit":       "east",
-		// 		"ExitLetter": "e",
-		// 		"ExitTitle":  "East",
-		// 		"ElementID":  "edit-room-exits-edit-exit-east",
-		// 	},
-		// 	{
-		// 		"ID":         0,
-		// 		"Exit":       "southeast",
-		// 		"ExitLetter": "se",
-		// 		"ExitTitle":  "Southeast",
-		// 		"ElementID":  "edit-room-exits-edit-exit-southeast",
-		// 	},
-		// 	{
-		// 		"ID":         0,
-		// 		"Exit":       "south",
-		// 		"ExitLetter": "s",
-		// 		"ExitTitle":  "South",
-		// 		"ElementID":  "edit-room-exits-edit-exit-south",
-		// 	},
-		// 	{
-		// 		"ID":         0,
-		// 		"Exit":       "southwest",
-		// 		"ExitLetter": "sw",
-		// 		"ExitTitle":  "Southwest",
-		// 		"ElementID":  "edit-room-exits-edit-exit-southwest",
-		// 	},
-		// 	{
-		// 		"ID":         0,
-		// 		"Exit":       "west",
-		// 		"ExitLetter": "w",
-		// 		"ExitTitle":  "West",
-		// 		"ElementID":  "edit-room-exits-edit-exit-west",
-		// 	},
-		// 	{
-		// 		"ID":         0,
-		// 		"Exit":       "northwest",
-		// 		"ExitLetter": "nw",
-		// 		"ExitTitle":  "Northwest",
-		// 		"ElementID":  "edit-room-exits-edit-exit-northwest",
-		// 	},
-		// }
+		b["Exits"] = exits
 		return c.Render(views.EditRoom, b)
 	}
 }

@@ -17,7 +17,7 @@
   <form
     class="space-y-2 pt-4"
     hx-post="/rooms"
-    hx-target="#{{ .ElementID }}"
+    hx-target="#{{ .EditElementID }}"
     hx-swap="outerHTML"
     @submit.prevent="showCreateDialog = false;"
   >

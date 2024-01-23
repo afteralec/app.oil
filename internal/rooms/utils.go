@@ -1,5 +1,16 @@
 package rooms
 
+import (
+	"fmt"
+	"strings"
+)
+
+func TitleWithID(title string, id int64) string {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "[%d] %s", id, title)
+	return sb.String()
+}
+
 func SizeToString(size int32) string {
 	var sizeString string
 	switch size {

@@ -1,6 +1,7 @@
 package rooms
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -10,40 +11,86 @@ import (
 	"petrichormud.com/app/internal/routes"
 )
 
-func BuildExits(room *queries.Room) []fiber.Map {
+func LoadExitRooms(q *queries.Queries, room *queries.Room) (map[string]queries.Room, error) {
+	exitRooms := make(map[string]queries.Room)
+	exitRoomDirections := make(map[int64]string)
+
+	exitIDs := []int64{}
+	for _, dir := range DirectionsList {
+		exitID := ExitID(room, dir)
+		if exitID == 0 {
+			continue
+		}
+		exitIDs = append(exitIDs, exitID)
+		exitRoomDirections[exitID] = dir
+	}
+
+	records, err := q.ListRoomsByIDs(context.Background(), exitIDs)
+	if err != nil {
+		return exitRooms, err
+	}
+
+	for _, record := range records {
+		dir, ok := exitRoomDirections[record.ID]
+		if !ok {
+			// TODO: This should be a fatal error
+			continue
+		}
+		exitRooms[dir] = record
+	}
+
+	return exitRooms, nil
+}
+
+func BuildExits(room *queries.Room, exitRooms map[string]queries.Room) []fiber.Map {
 	exits := []fiber.Map{}
 
 	for _, dir := range DirectionsList {
-		exits = append(exits, BuildExit(room, dir))
+		exitRoom, ok := exitRooms[dir]
+		if !ok {
+			exits = append(exits, BuildEmptyExit(room, dir))
+			continue
+		}
+
+		exit := BuildExit(room, &exitRoom, dir)
+
+		exits = append(exits, exit)
 	}
 
 	return exits
 }
 
-func BuildExit(room *queries.Room, dir string) fiber.Map {
-	id := ExitID(room, dir)
-	exit := fiber.Map{
-		"ID":         id,
-		"RoomID":     room.ID,
-		"Exit":       dir,
-		"ExitLetter": DirectionLetter(dir),
-		"ExitTitle":  DirectionTitle(dir),
-		"ElementID":  ExitElementID(dir),
+func BuildEmptyExit(room *queries.Room, dir string) fiber.Map {
+	return fiber.Map{
+		"ID":              0,
+		"RoomID":          room.ID,
+		"Exit":            dir,
+		"ExitLetter":      DirectionLetter(dir),
+		"ExitTitle":       DirectionTitle(dir),
+		"EditElementID":   ExitEditElementID(dir),
+		"SelectElementID": ExitSelectElementID(dir),
 	}
+}
 
-	// TODO: Figure out getting room exit summaries in here
-	if id > 0 {
-		exit["Title"] = DefaultTitle
-		exit["Description"] = DefaultDescription
-		exit["RoomPath"] = routes.RoomPath(id)
-	}
-
+func BuildExit(room *queries.Room, exitRoom *queries.Room, dir string) fiber.Map {
+	exit := BuildEmptyExit(room, dir)
+	exit["ID"] = exitRoom.ID
+	exit["Title"] = exitRoom.Title
+	exit["Description"] = exitRoom.Description
+	exit["ExitPath"] = routes.RoomPath(exitRoom.ID)
+	exit["ExitEditPath"] = routes.EditRoomPath(exitRoom.ID)
 	return exit
 }
 
-func ExitElementID(dir string) string {
+func ExitEditElementID(dir string) string {
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "edit-room-exits-edit-%s", dir)
+	return sb.String()
+}
+
+func ExitSelectElementID(dir string) string {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "edit-room-exits-select-%s", dir)
 	return sb.String()
 }
 

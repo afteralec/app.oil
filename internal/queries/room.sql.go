@@ -8,6 +8,7 @@ package queries
 import (
 	"context"
 	"database/sql"
+	"strings"
 )
 
 const createRoom = `-- name: CreateRoom :execresult
@@ -94,6 +95,59 @@ func (q *Queries) ListRooms(ctx context.Context) ([]Room, error) {
 	return items, nil
 }
 
+const listRoomsByIDs = `-- name: ListRoomsByIDs :many
+SELECT created_at, updated_at, description, title, north, northeast, east, southeast, south, southwest, west, northwest, id, size, unmodified FROM rooms WHERE id IN (/*SLICE:ids*/?)
+`
+
+func (q *Queries) ListRoomsByIDs(ctx context.Context, ids []int64) ([]Room, error) {
+	query := listRoomsByIDs
+	var queryParams []interface{}
+	if len(ids) > 0 {
+		for _, v := range ids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:ids*/?", strings.Repeat(",?", len(ids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:ids*/?", "NULL", 1)
+	}
+	rows, err := q.query(ctx, nil, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Room
+	for rows.Next() {
+		var i Room
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Description,
+			&i.Title,
+			&i.North,
+			&i.Northeast,
+			&i.East,
+			&i.Southeast,
+			&i.South,
+			&i.Southwest,
+			&i.West,
+			&i.Northwest,
+			&i.ID,
+			&i.Size,
+			&i.Unmodified,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateRoom = `-- name: UpdateRoom :exec
 UPDATE
   rooms
@@ -138,7 +192,7 @@ func (q *Queries) UpdateRoomDescription(ctx context.Context, arg UpdateRoomDescr
 }
 
 const updateRoomExitEast = `-- name: UpdateRoomExitEast :exec
-UPDATE rooms SET east = ?, unmodified = false WHERE id = ?
+UPDATE rooms SET east = ? WHERE id = ?
 `
 
 type UpdateRoomExitEastParams struct {
@@ -152,7 +206,7 @@ func (q *Queries) UpdateRoomExitEast(ctx context.Context, arg UpdateRoomExitEast
 }
 
 const updateRoomExitNorth = `-- name: UpdateRoomExitNorth :exec
-UPDATE rooms SET north = ?, unmodified = false WHERE id = ?
+UPDATE rooms SET north = ? WHERE id = ?
 `
 
 type UpdateRoomExitNorthParams struct {
@@ -166,7 +220,7 @@ func (q *Queries) UpdateRoomExitNorth(ctx context.Context, arg UpdateRoomExitNor
 }
 
 const updateRoomExitNortheast = `-- name: UpdateRoomExitNortheast :exec
-UPDATE rooms SET northeast = ?, unmodified = false WHERE id = ?
+UPDATE rooms SET northeast = ? WHERE id = ?
 `
 
 type UpdateRoomExitNortheastParams struct {
@@ -180,7 +234,7 @@ func (q *Queries) UpdateRoomExitNortheast(ctx context.Context, arg UpdateRoomExi
 }
 
 const updateRoomExitNorthwest = `-- name: UpdateRoomExitNorthwest :exec
-UPDATE rooms SET northwest = ?, unmodified = false WHERE id = ?
+UPDATE rooms SET northwest = ? WHERE id = ?
 `
 
 type UpdateRoomExitNorthwestParams struct {
@@ -194,7 +248,7 @@ func (q *Queries) UpdateRoomExitNorthwest(ctx context.Context, arg UpdateRoomExi
 }
 
 const updateRoomExitSouth = `-- name: UpdateRoomExitSouth :exec
-UPDATE rooms SET south = ?, unmodified = false WHERE id = ?
+UPDATE rooms SET south = ? WHERE id = ?
 `
 
 type UpdateRoomExitSouthParams struct {
@@ -208,7 +262,7 @@ func (q *Queries) UpdateRoomExitSouth(ctx context.Context, arg UpdateRoomExitSou
 }
 
 const updateRoomExitSoutheast = `-- name: UpdateRoomExitSoutheast :exec
-UPDATE rooms SET southeast = ?, unmodified = false WHERE id = ?
+UPDATE rooms SET southeast = ? WHERE id = ?
 `
 
 type UpdateRoomExitSoutheastParams struct {
@@ -222,7 +276,7 @@ func (q *Queries) UpdateRoomExitSoutheast(ctx context.Context, arg UpdateRoomExi
 }
 
 const updateRoomExitSouthwest = `-- name: UpdateRoomExitSouthwest :exec
-UPDATE rooms SET southwest = ?, unmodified = false WHERE id = ?
+UPDATE rooms SET southwest = ? WHERE id = ?
 `
 
 type UpdateRoomExitSouthwestParams struct {
@@ -236,7 +290,7 @@ func (q *Queries) UpdateRoomExitSouthwest(ctx context.Context, arg UpdateRoomExi
 }
 
 const updateRoomExitWest = `-- name: UpdateRoomExitWest :exec
-UPDATE rooms SET west = ?, unmodified = false WHERE id = ?
+UPDATE rooms SET west = ? WHERE id = ?
 `
 
 type UpdateRoomExitWestParams struct {
@@ -250,7 +304,7 @@ func (q *Queries) UpdateRoomExitWest(ctx context.Context, arg UpdateRoomExitWest
 }
 
 const updateRoomSize = `-- name: UpdateRoomSize :exec
-UPDATE rooms SET size = ?, unmodified = false WHERE id = ?
+UPDATE rooms SET size = ? WHERE id = ?
 `
 
 type UpdateRoomSizeParams struct {

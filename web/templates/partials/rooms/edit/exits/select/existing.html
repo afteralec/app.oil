@@ -1,6 +1,7 @@
 {{ define "partial-edit-room-exits-select-existing" }}
 <button
   type="button"
+  id="{{ .SelectElementID }}"
   class="button-toggle-active"
   class="cursor-pointer"
   @click="
@@ -15,6 +16,7 @@
 
     show.exit.{{ .ExitLetter }} = true;
   "
+  hx-swap-oob="{{ .SelectElementID }}"
 >
   {{ .ExitTitle }}
 </button>
