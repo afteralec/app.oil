@@ -74,6 +74,7 @@ func BuildEmptyExit(room *queries.Room, dir string) fiber.Map {
 		"SelectElementID": ExitSelectElementID(dir),
 		"RoomsPath":       routes.Rooms,
 		"RoomExitsPath":   routes.RoomExitsPath(room.ID),
+		"RoomExitPath":    routes.RoomExitPath(room.ID, dir),
 	}
 }
 

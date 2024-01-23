@@ -1,8 +1,16 @@
-<!-- prettier-ignore -->
 {{ define "partial-edit-room-exits-select" }}
-{{ if eq .ID 0 }}
-{{ template "partial-edit-room-exits-select-empty" . }}
-{{ else }}
-{{ template "partial-edit-room-exits-select-existing" . }}
-{{ end }}
+<section
+  id="edit-room-exits-select"
+  class="flex flex-col items-center gap-2 md:max-w-sm md:flex-row md:flex-wrap md:items-start md:justify-between"
+  hx-swap-oob="outerHTML"
+>
+  <!-- prettier-ignore -->
+  {{ range .Exits }}
+    {{ if eq .ID 0 }}
+      {{ template "partial-edit-room-exits-select-empty" . }}
+    {{ else }}
+      {{ template "partial-edit-room-exits-select-existing" . }}
+    {{ end }}
+  {{ end }}
+</section>
 {{ end }}

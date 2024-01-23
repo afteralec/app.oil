@@ -26,15 +26,8 @@
   }"
 >
   <h4 class="text-sm font-medium leading-none">Exits</h4>
-  <section
-    id="edit-room-exits-select"
-    class="flex flex-col items-center gap-2 md:max-w-sm md:flex-row md:flex-wrap md:items-start md:justify-between"
-  >
-    <!-- prettier-ignore -->
-    {{ range .Exits }}
-      {{ template "partial-edit-room-exits-select" . }}
-    {{ end }}
-  </section>
+  <!-- prettier-ignore -->
+  {{ template "partial-edit-room-exits-select" . }}
   <section id="edit-room-exits-edit" class="md:max-w-sm">
     <!-- prettier-ignore -->
     {{ range .Exits }}

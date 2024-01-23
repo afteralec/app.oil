@@ -12,12 +12,19 @@
     Are you sure?
   </h3>
   <p class="pt-2 text-base leading-none">
-    This will empty this exit, unlinking this room.
+    This will empty this exit, unlinking this room
+    <span class="font-semibold">in both directions</span>.
   </p>
-  <footer class="flex justify-end gap-2 pt-6">
-    <button type="button" class="button-primary button-primary-destructive">
+  <form
+    class="flex justify-end gap-2 pt-6"
+    hx-delete="{{ .RoomExitPath }}"
+    hx-target="#{{ .EditElementID }}"
+    hx-swap="outerHTML"
+    @submit.prevent="showClearDialog = false;"
+  >
+    <button type="submit" class="button-primary button-primary-destructive">
       I'm Sure
     </button>
-  </footer>
+  </form>
 </div>
 {{ end }}

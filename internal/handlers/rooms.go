@@ -3,6 +3,9 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"log"
+	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -45,8 +48,10 @@ func RoomsPage(i *shared.Interfaces) fiber.Handler {
 
 		pageRooms := []fiber.Map{}
 		for _, record := range records {
+			var sb strings.Builder
+			fmt.Fprintf(&sb, "[%d] %s", record.ID, record.Title)
 			pageRoom := fiber.Map{
-				"Title":      record.Title,
+				"Title":      sb.String(),
 				"Size":       record.Size,
 				"SizeString": rooms.SizeToString(record.Size),
 				"Path":       routes.RoomPath(record.ID),
@@ -1011,6 +1016,7 @@ func ClearRoomExit(i *shared.Interfaces) fiber.Handler {
 
 		dir := c.Params("exit")
 		if !rooms.IsDirectionValid(dir) {
+			log.Println("Exit isn't a valid dir")
 			c.Status(fiber.StatusBadRequest)
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
@@ -1097,6 +1103,24 @@ func ClearRoomExit(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		room, err = qtx.GetRoom(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(notFoundNoticeParams), layouts.None)
+			}
+		}
+
+		exitRooms, err := rooms.LoadExitRooms(qtx, &room)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+		}
+
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(shared.HeaderHXAcceptable, "true")
@@ -1112,9 +1136,9 @@ func ClearRoomExit(i *shared.Interfaces) fiber.Handler {
 			}), layouts.None)
 		}
 
-		exit := rooms.BuildEmptyExit(&room, dir)
-
 		c.Status(fiber.StatusOK)
-		return c.Render(partials.EditRoomExitEdit, exit, layouts.None)
+		b := rooms.BuildEmptyExit(&room, dir)
+		b["Exits"] = rooms.BuildExits(&room, exitRooms)
+		return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
 	}
 }
