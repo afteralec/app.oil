@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -30,6 +31,7 @@ func Reserved(i *shared.Interfaces) fiber.Handler {
 					"CSRF": c.Locals("csrf"),
 				}, layouts.CSRF)
 			}
+			log.Println(err)
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)

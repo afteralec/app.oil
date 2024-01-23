@@ -6,6 +6,7 @@ import (
 	"time"
 
 	fiber "github.com/gofiber/fiber/v2"
+
 	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/routes"

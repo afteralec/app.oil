@@ -10,11 +10,16 @@ import (
 )
 
 const createPlayerSettings = `-- name: CreatePlayerSettings :exec
-INSERT INTO player_settings (pid) VALUES (?)
+INSERT INTO player_settings (theme, pid) VALUES (?, ?)
 `
 
-func (q *Queries) CreatePlayerSettings(ctx context.Context, pid int64) error {
-	_, err := q.exec(ctx, q.createPlayerSettingsStmt, createPlayerSettings, pid)
+type CreatePlayerSettingsParams struct {
+	Theme string
+	PID   int64
+}
+
+func (q *Queries) CreatePlayerSettings(ctx context.Context, arg CreatePlayerSettingsParams) error {
+	_, err := q.exec(ctx, q.createPlayerSettingsStmt, createPlayerSettings, arg.Theme, arg.PID)
 	return err
 }
 

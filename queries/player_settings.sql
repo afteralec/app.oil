@@ -1,5 +1,5 @@
 -- name: CreatePlayerSettings :exec
-INSERT INTO player_settings (pid) VALUES (?);
+INSERT INTO player_settings (theme, pid) VALUES (?, ?);
 
 -- name: GetPlayerSettings :one
 SELECT * FROM player_settings WHERE pid = ?;

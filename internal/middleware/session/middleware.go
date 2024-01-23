@@ -23,7 +23,7 @@ func New(i *shared.Interfaces) fiber.Handler {
 
 		theme := sess.Get("theme")
 		if theme == nil {
-			c.Locals("theme", constants.ThemeLight)
+			c.Locals("theme", constants.ThemeDefault)
 		} else {
 			c.Locals("theme", theme)
 		}

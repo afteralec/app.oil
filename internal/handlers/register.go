@@ -7,6 +7,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/password"
@@ -119,7 +120,10 @@ func Register(i *shared.Interfaces) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
 		}
 
-		if err := qtx.CreatePlayerSettings(context.Background(), pid); err != nil {
+		if err := qtx.CreatePlayerSettings(context.Background(), queries.CreatePlayerSettingsParams{
+			PID:   pid,
+			Theme: constants.ThemeDefault,
+		}); err != nil {
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(shared.HeaderHXAcceptable, "true")
