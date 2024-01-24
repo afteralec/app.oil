@@ -385,6 +385,22 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				}), layouts.None)
 			}
 
+			exitRooms, err := rooms.LoadExitRooms(qtx, &room)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					SectionID:    sectionID,
+					SectionClass: "pt-2",
+					NoticeText: []string{
+						"Something's gone terribly wrong.",
+					},
+					RefreshButton: true,
+					NoticeIcon:    true,
+				}), layouts.None)
+			}
+
 			if err := tx.Commit(); err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(shared.HeaderHXAcceptable, "true")
@@ -400,10 +416,10 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				}), layouts.None)
 			}
 
-			exit := rooms.BuildExit(&room, &exitRoom, in.Direction)
-
 			c.Status(fiber.StatusCreated)
-			return c.Render(partials.EditRoomExitEdit, exit, layouts.None)
+			b := rooms.BuildExit(&room, &exitRoom, in.Direction)
+			b["Exits"] = rooms.BuildExits(&room, exitRooms)
+			return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
 		}
 
 		if err := tx.Commit(); err != nil {
@@ -873,7 +889,6 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 			c.Append(shared.HeaderHXAcceptable, "true")
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
 		}
-
 		exitRoom, err := qtx.GetRoom(context.Background(), in.LinkID)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -962,6 +977,22 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 			}), layouts.None)
 		}
 
+		exitRooms, err := rooms.LoadExitRooms(qtx, &room)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				SectionID:    sectionID,
+				SectionClass: "pt-2",
+				NoticeText: []string{
+					"Something's gone terribly wrong.",
+				},
+				RefreshButton: true,
+				NoticeIcon:    true,
+			}), layouts.None)
+		}
+
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(shared.HeaderHXAcceptable, "true")
@@ -977,11 +1008,10 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 			}), layouts.None)
 		}
 
-		// TODO: Build a way to do this without re-pulling the room and exit room
-		exit := rooms.BuildExit(&room, &exitRoom, in.Direction)
-
 		c.Status(fiber.StatusOK)
-		return c.Render(partials.EditRoomExitEdit, exit, layouts.None)
+		b := rooms.BuildExit(&room, &exitRoom, in.Direction)
+		b["Exits"] = rooms.BuildExits(&room, exitRooms)
+		return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
 	}
 }
 
