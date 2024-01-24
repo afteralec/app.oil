@@ -6,3 +6,5 @@ const (
 	Login  string = "login"
 	Logout string = "logout"
 )
+
+const DesignDictionary string = "view-design-dictionary"

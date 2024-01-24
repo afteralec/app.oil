@@ -22,9 +22,16 @@ module.exports = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        on: {
+          secondary: "hsl(var(--on-secondary))",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           fg: "hsl(var(--primary-fg))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          hl: "hsl(var(--secondary-hl))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",

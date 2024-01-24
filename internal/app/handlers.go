@@ -77,4 +77,6 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Delete(routes.RoomExitPathParam, handlers.ClearRoomExit(i))
 
 	app.Post(routes.SearchPlayerPath(routes.Destination), handlers.SearchPlayer(i))
+
+	app.Get(routes.DesignDictionary, handlers.DesignDictionaryPage())
 }

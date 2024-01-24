@@ -44,6 +44,10 @@
     --primary: 222.2 47.4% 11.2%;
     --primary-fg: 210 40% 98%;
 
+    --secondary: 252.5 73.3% 57.8%;
+    --on-secondary: 210 40% 98%;
+    --secondary-hl: 252.5 93.2% 87.3%;
+
     --muted: 210 40% 96.1%;
     --muted-fg: 215.4 16.3% 46.9%;
 
@@ -61,6 +65,10 @@
 
     --primary: var(--fg);
     --primary-fg: 222.2 47.4% 11.2%;
+
+    --secondary: 252.5 73.3% 57.8%;
+    --on-secondary: var(--fg);
+    --secondary-hl: 252.5 93.2% 87.3%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-fg: 215 20.2% 65.1%;
@@ -253,6 +261,18 @@ body {
 
 .button-primary-destructive:hover {
   @apply bg-err-hl;
+}
+
+.button-secondary {
+  @apply inline-flex h-10 items-center justify-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-on-secondary ring-offset-bg transition-colors;
+}
+
+.button-secondary:hover {
+  @apply bg-secondary-hl text-primary-fg;
+}
+
+.button-secondary:disabled {
+  @apply opacity-50 pointer-events-none;
 }
 
 .button-outline {

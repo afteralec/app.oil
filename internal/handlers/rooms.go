@@ -354,6 +354,37 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				}), layouts.None)
 			}
 
+			room, err = qtx.GetRoom(context.Background(), room.ID)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					SectionID:    sectionID,
+					SectionClass: "pt-2",
+					NoticeText: []string{
+						"Something's gone terribly wrong.",
+					},
+					RefreshButton: true,
+					NoticeIcon:    true,
+				}), layouts.None)
+			}
+			exitRoom, err = qtx.GetRoom(context.Background(), exitRoom.ID)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					SectionID:    sectionID,
+					SectionClass: "pt-2",
+					NoticeText: []string{
+						"Something's gone terribly wrong.",
+					},
+					RefreshButton: true,
+					NoticeIcon:    true,
+				}), layouts.None)
+			}
+
 			if err := tx.Commit(); err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(shared.HeaderHXAcceptable, "true")
