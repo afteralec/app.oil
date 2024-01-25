@@ -477,7 +477,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		record, err := qtx.GetRoom(context.Background(), rmid)
+		room, err := qtx.GetRoom(context.Background(), rmid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -487,72 +487,25 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		exitRooms, err := rooms.LoadExitRooms(qtx, &record)
+		exitRooms, err := rooms.LoadExitRooms(qtx, &room)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
+
+		exitMap := rooms.GridExitMap(rooms.GridExitMapParams{
+			Queries:  qtx,
+			Room:     &room,
+			MaxDepth: 1,
+			Depth:    0,
+		})
 
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		exits := rooms.BuildExits(&record, exitRooms)
-
-		// TODO: Defer this to a load function
-		roomGrid := []fiber.Map{
-			{
-				"ID": "test-room-grid-row-one",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-				},
-			},
-			{
-				"ID": "test-room-grid-row-two",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 1},
-					{"ID": 5},
-				},
-			},
-			{
-				"ID": "test-room-grid-row-three",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 2},
-					{"ID": 0},
-				},
-			},
-			{
-				"ID": "test-room-grid-row-four",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-				},
-			},
-			{
-				"ID": "test-room-grid-row-five",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-				},
-			},
-		}
+		exits := rooms.BuildExits(&room, exitRooms)
 
 		b := views.Bind(c)
 		// TODO: Get a bind function for this
@@ -562,13 +515,13 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		}
 		// TODO: Get a bind function for this too
 		b["PageHeader"] = fiber.Map{
-			"Title":    rooms.TitleWithID(record.Title, record.ID),
+			"Title":    rooms.TitleWithID(room.Title, room.ID),
 			"SubTitle": "Update room properties here",
 		}
-		b["RoomGrid"] = roomGrid
-		b["Title"] = record.Title
-		b["Description"] = record.Description
-		b["Size"] = record.Size
+		b["RoomGrid"] = rooms.NewGridFromExitMap(exitMap)
+		b["Title"] = room.Title
+		b["Description"] = room.Description
+		b["Size"] = room.Size
 		// TODO: Put this in a helper function
 		b["SizeRadioGroup"] = []fiber.Map{
 			{
@@ -576,7 +529,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 				"Name":     "size",
 				"Variable": "size",
 				"Value":    "0",
-				"Active":   record.Size == 0,
+				"Active":   room.Size == 0,
 				"Label":    "Tiny",
 			},
 			{
@@ -584,7 +537,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 				"Name":     "size",
 				"Variable": "size",
 				"Value":    "1",
-				"Active":   record.Size == 1,
+				"Active":   room.Size == 1,
 				"Label":    "Small",
 			},
 			{
@@ -592,7 +545,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 				"Name":     "size",
 				"Variable": "size",
 				"Value":    "2",
-				"Active":   record.Size == 2,
+				"Active":   room.Size == 2,
 				"Label":    "Medium",
 			},
 			{
@@ -600,7 +553,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 				"Name":     "size",
 				"Variable": "size",
 				"Value":    "3",
-				"Active":   record.Size == 3,
+				"Active":   room.Size == 3,
 				"Label":    "Large",
 			},
 			{
@@ -608,19 +561,19 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 				"Name":     "size",
 				"Variable": "size",
 				"Value":    "4",
-				"Active":   record.Size == 4,
+				"Active":   room.Size == 4,
 				"Label":    "Huge",
 			},
 		}
 		// TODO: I don't think these individual dirs are needed
-		b["North"] = record.North
-		b["Northeast"] = record.Northeast
-		b["East"] = record.East
-		b["Southeast"] = record.Southeast
-		b["South"] = record.South
-		b["Southwest"] = record.Southwest
-		b["West"] = record.West
-		b["Northwest"] = record.Northwest
+		b["North"] = room.North
+		b["Northeast"] = room.Northeast
+		b["East"] = room.East
+		b["Southeast"] = room.Southeast
+		b["South"] = room.South
+		b["Southwest"] = room.Southwest
+		b["West"] = room.West
+		b["Northwest"] = room.Northwest
 		b["Exits"] = exits
 		return c.Render(views.EditRoom, b)
 	}

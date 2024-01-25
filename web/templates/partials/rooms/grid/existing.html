@@ -1,10 +1,22 @@
 {{ define "partial-edit-room-exits-grid-existing" }}
-<div
-  class="h-24 w-24 cursor-pointer rounded-md bg-muted hover:bg-muted-fg"
-  hx-get="/rooms/0/grid/{{ .ID }}"
-  hx-target="#test-room-grid"
-  hx-swap="outerHTML"
->
-  {{ .ID }}
+<div class="h-36 w-36 cursor-pointer rounded-md bg-muted p-4 hover:bg-muted-fg">
+  <header>
+    <h5
+      class="overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold leading-none"
+    >
+      [{{ .ID }}] {{ .Title }}
+    </h5>
+  </header>
+  <p
+    class="overflow-hidden text-ellipsis whitespace-nowrap text-xs leading-none"
+  >
+    {{ .Description }}
+  </p>
 </div>
+<!-- <div -->
+<!-- hx-get="/rooms/0/grid/{{ .ID }}" -->
+<!--   hx-target="#room-grid" -->
+<!--   hx-swap="outerHTML" -->
+<!-- > -->
+<!-- </div> -->
 {{ end }}

@@ -18,22 +18,22 @@
       </span>
       connection.
     </p>
-  </div>
 
-  <footer
-    class="flex items-center justify-end gap-2 pt-6"
-    x-data="{ showClearDialog: false }"
-  >
-    {{ template "partial-edit-room-exits-dialog-clear" . }}
-    <button
-      type="button"
-      class="button-outline button-outline-destructive"
-      @click="showClearDialog = true;"
+    <footer
+      class="flex items-center justify-end gap-2 pt-6"
+      x-data="{ showClearDialog: false }"
     >
-      Clear
-    </button>
-    <a href="{{ .ExitEditPath }}" class="button-outline">Edit</a>
-    <a href="{{ .ExitPath }}" class="button-outline">View</a>
-  </footer>
+      {{ template "partial-edit-room-exits-dialog-clear" . }}
+      <button
+        type="button"
+        class="button-outline button-outline-destructive"
+        @click="showClearDialog = true;"
+      >
+        Clear
+      </button>
+      <a href="{{ .ExitEditPath }}" class="button-outline">Edit</a>
+      <a href="{{ .ExitPath }}" class="button-outline">View</a>
+    </footer>
+  </div>
 </div>
 {{ end }}
