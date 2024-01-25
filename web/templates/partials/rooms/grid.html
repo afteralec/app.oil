@@ -1,14 +1,16 @@
-{{ define "partial-edit-room-exits-grid" }}
+{{ define "partial-room-grid" }}
 <section id="room-grid" class="flex flex-col gap-4 pt-6">
   <h4 class="text-sm font-medium leading-none">Grid</h4>
   {{ range .RoomGrid }}
-  <section id="{{ .ID }}" class="flex items-center gap-4">
+  <section class="flex items-center gap-4">
     <!-- prettier-ignore -->
     {{ range .Rooms }} 
-      {{ if eq .ID 0 }}
-        {{ template "partial-edit-room-exits-grid-empty" . }}
+      {{ if .Self }}
+        {{ template "partial-room-grid-room-self" . }}
+      {{ else if eq .ID 0 }}
+        {{ template "partial-room-grid-room-empty" . }}
       {{ else }}
-        {{ template "partial-edit-room-exits-grid-existing" . }}
+        {{ template "partial-room-grid-room-existing" . }}
       {{ end }}
     {{ end }}
   </section>

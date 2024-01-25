@@ -1,5 +1,5 @@
-{{ define "partial-edit-room-exits-grid-existing" }}
-<div class="h-36 w-36 cursor-pointer rounded-md bg-muted p-4 hover:bg-muted-fg">
+{{ define "partial-room-grid-room-existing" }}
+<div class="h-36 w-36 rounded-md bg-muted p-4">
   <header>
     <h5
       class="overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold leading-none"
@@ -12,6 +12,144 @@
   >
     {{ .Description }}
   </p>
+  <div class="flex w-full flex-col items-center justify-center gap-1 pt-2">
+    <div class="flex items-center gap-1">
+      {{ if ne .northwest.ID 0 }}
+      <iconify-icon
+        class="icon"
+        icon="tabler:chevron-up-left"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ else }}
+      <iconify-icon
+        class="icon opacity-0"
+        icon="tabler:chevron-up-left"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      <!-- prettier-ignore -->
+      {{ end }}
+      {{ if ne .north.ID 0 }}
+      <iconify-icon
+        class="icon"
+        icon="tabler:chevron-up"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ else }}
+      <iconify-icon
+        class="icon opacity-0"
+        icon="tabler:chevron-up"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      <!-- prettier-ignore -->
+      {{ end }}
+      {{ if ne .northeast.ID 0 }}
+      <iconify-icon
+        class="icon"
+        icon="tabler:chevron-up-right"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ else }}
+      <iconify-icon
+        class="icon opacity-0"
+        icon="tabler:chevron-up-right"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ end }}
+    </div>
+    <div class="flex items-center gap-1">
+      {{ if ne .west.ID 0 }}
+      <iconify-icon
+        class="icon"
+        icon="tabler:chevron-left"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ else }}
+      <iconify-icon
+        class="icon opacity-0"
+        icon="tabler:chevron-left"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ end }}
+      <iconify-icon
+        class="icon opacity-0"
+        icon="tabler:square"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ if ne .east.ID 0 }}
+      <iconify-icon
+        class="icon"
+        icon="tabler:chevron-right"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ else }}
+      <iconify-icon
+        class="icon opacity-0"
+        icon="tabler:chevron-right"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ end }}
+    </div>
+    <div class="flex items-center gap-1">
+      {{ if ne .southwest.ID 0 }}
+      <iconify-icon
+        class="icon"
+        icon="tabler:chevron-down-left"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ else }}
+      <iconify-icon
+        class="icon opacity-0"
+        icon="tabler:chevron-down-left"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      <!-- prettier-ignore -->
+      {{ end }}
+      {{ if ne .south.ID 0 }}
+      <iconify-icon
+        class="icon"
+        icon="tabler:chevron-down"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ else }}
+      <iconify-icon
+        class="icon opacity-0"
+        icon="tabler:chevron-down"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      <!-- prettier-ignore -->
+      {{ end }}
+      {{ if ne .southeast.ID 0 }}
+      <iconify-icon
+        class="icon"
+        icon="tabler:chevron-down-right"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ else }}
+      <iconify-icon
+        class="icon opacity-0"
+        icon="tabler:chevron-down-right"
+        height="20"
+        width="20"
+      ></iconify-icon>
+      {{ end }}
+    </div>
+  </div>
 </div>
 <!-- <div -->
 <!-- hx-get="/rooms/0/grid/{{ .ID }}" -->

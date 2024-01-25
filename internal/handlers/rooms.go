@@ -518,7 +518,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 			"Title":    rooms.TitleWithID(room.Title, room.ID),
 			"SubTitle": "Update room properties here",
 		}
-		b["RoomGrid"] = rooms.NewGridFromExitMap(exitMap)
+		b["RoomGrid"] = rooms.Grid(exitMap)
 		b["Title"] = room.Title
 		b["Description"] = room.Description
 		b["Size"] = room.Size

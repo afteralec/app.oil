@@ -102,7 +102,7 @@ func FilterGridRoom(p map[string]fiber.Map) fiber.Map {
 	return GridRoomEmpty()
 }
 
-func NewGridFromExitMap(exitMap fiber.Map) []fiber.Map {
+func Grid(exitMap fiber.Map) []fiber.Map {
 	northMap := exitMap[DirectionNorth].(fiber.Map)
 	northeastMap := exitMap[DirectionNortheast].(fiber.Map)
 	eastMap := exitMap[DirectionEast].(fiber.Map)
@@ -159,7 +159,7 @@ func NewGridFromExitMap(exitMap fiber.Map) []fiber.Map {
 				DirectionNorthwest: southwestMap,
 			}),
 			westMap,
-			{"ID": exitMap["ID"].(int64)},
+			{"Self": true},
 			eastMap,
 			FilterGridRoom(map[string]fiber.Map{
 				DirectionSoutheast: northeastMap,
