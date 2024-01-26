@@ -104,17 +104,17 @@ func TestGraph(t *testing.T) {
 	}
 
 	node := &graph
-	require.Equal(t, testRIDs[1], node.GetExit(DirectionNorth).ID)
+	require.Equal(t, testRIDs[1], node.Exit(DirectionNorth).ID)
 	require.True(t, node.IsExitEmpty(DirectionSoutheast))
 
-	node = node.GetExit(DirectionNorth)
-	require.Equal(t, testRIDs[2], node.GetExit(DirectionNorthwest).ID)
-	require.Equal(t, testRIDs[3], node.GetExit(DirectionNorth).ID)
+	node = node.Exit(DirectionNorth)
+	require.Equal(t, testRIDs[2], node.Exit(DirectionNorthwest).ID)
+	require.Equal(t, testRIDs[3], node.Exit(DirectionNorth).ID)
 
-	node = node.GetExit(DirectionNorthwest)
-	require.Equal(t, int64(0), node.GetExit(DirectionNorth).ID)
-	require.True(t, node.GetExit(DirectionNorth).IsExitEmpty(DirectionSouth))
-	require.Equal(t, testRIDs[6], node.GetExit(DirectionEast).ID)
+	node = node.Exit(DirectionNorthwest)
+	require.Equal(t, int64(0), node.Exit(DirectionNorth).ID)
+	require.True(t, node.Exit(DirectionNorth).IsExitEmpty(DirectionSouth))
+	require.Equal(t, testRIDs[6], node.Exit(DirectionEast).ID)
 }
 
 func TestNodeGetExit(t *testing.T) {
@@ -139,7 +139,7 @@ func TestNodeGetExit(t *testing.T) {
 	}
 
 	for _, dir := range DirectionsList {
-		require.Equal(t, int64(0), node.GetExit(dir).ID)
+		require.Equal(t, int64(0), node.Exit(dir).ID)
 	}
 
 	ridTwo := tests.CreateTestRoom(t, &i, tests.TestRoom)
@@ -170,7 +170,7 @@ func TestNodeGetExit(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, ridTwo, node.GetExit(DirectionSouth).ID)
+	require.Equal(t, ridTwo, node.Exit(DirectionSouth).ID)
 }
 
 func TestNodeIsExitEmpty(t *testing.T) {

@@ -21,9 +21,7 @@ import (
 
 func RoomsPage(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// TODO: IsLoggedIn helper?
-		_, err := util.GetPID(c)
-		if err != nil {
+		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
 		}
@@ -422,7 +420,7 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 			}
 
 			c.Status(fiber.StatusCreated)
-			b := graph.BindExit(graph.GetExit(in.Direction), in.Direction)
+			b := graph.BindExit(in.Direction)
 			b["Exits"] = graph.BindExits()
 			return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
 		}
@@ -976,7 +974,7 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusOK)
-		b := graph.BindExit(graph.GetExit(in.Direction), in.Direction)
+		b := graph.BindExit(in.Direction)
 		b["Exits"] = graph.BindExits()
 		return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
 	}

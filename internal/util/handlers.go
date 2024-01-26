@@ -29,6 +29,11 @@ func GetPID(c *fiber.Ctx) (int64, error) {
 	return pid, nil
 }
 
+func IsLoggedIn(c *fiber.Ctx) bool {
+	_, err := GetPID(c)
+	return err == nil
+}
+
 var ErrNoID error = errors.New("no ID value found")
 
 func GetID(c *fiber.Ctx) (int64, error) {

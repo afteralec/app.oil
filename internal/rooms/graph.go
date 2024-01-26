@@ -31,7 +31,7 @@ type Node struct {
 var nilNode *Node = nil
 
 func (n *Node) IsExitEmpty(dir string) bool {
-	exitNode := n.GetExit(dir)
+	exitNode := n.Exit(dir)
 	if exitNode == nil {
 		return true
 	}
@@ -43,10 +43,10 @@ func (n *Node) ExitID(dir string) int64 {
 	if n.IsExitEmpty(dir) {
 		return 0
 	}
-	return n.GetExit(dir).ID
+	return n.Exit(dir).ID
 }
 
-func (n *Node) GetExit(dir string) *Node {
+func (n *Node) Exit(dir string) *Node {
 	switch dir {
 	case DirectionNorth:
 		return n.North
@@ -71,7 +71,7 @@ func (n *Node) GetExit(dir string) *Node {
 func (n *Node) GetExitID(dir string) int64 {
 	exitID := int64(0)
 	if !n.IsExitEmpty(dir) {
-		return n.GetExit(dir).ID
+		return n.Exit(dir).ID
 	}
 	return exitID
 }
@@ -145,7 +145,7 @@ func (n *Node) BindMatrix(p BindMatrixParams) [][]fiber.Map {
 		if n.IsExitEmpty(dir) {
 			continue
 		}
-		p.Matrix = n.GetExit(DirectionNorth).BindMatrix(BindMatrixParams{
+		p.Matrix = n.Exit(DirectionNorth).BindMatrix(BindMatrixParams{
 			Matrix:  p.Matrix,
 			Row:     row,
 			Col:     col,
@@ -158,7 +158,7 @@ func (n *Node) BindMatrix(p BindMatrixParams) [][]fiber.Map {
 		if n.IsExitEmpty(dir) {
 			continue
 		}
-		p.Matrix = n.GetExit(DirectionNorth).BindMatrix(BindMatrixParams{
+		p.Matrix = n.Exit(DirectionNorth).BindMatrix(BindMatrixParams{
 			Matrix:  p.Matrix,
 			Row:     row,
 			Col:     col,
@@ -303,7 +303,7 @@ func (n *Node) BuildExitRooms() map[string]*Node {
 			emptyNode := EmptyGraphNode()
 			exitRooms[dir] = &emptyNode
 		} else {
-			exitRooms[dir] = n.GetExit(dir)
+			exitRooms[dir] = n.Exit(dir)
 		}
 	}
 	return exitRooms
@@ -316,7 +316,7 @@ func (n *Node) BindExits() []fiber.Map {
 		if n.IsExitEmpty(dir) {
 			exits = append(exits, n.BindEmptyExit(dir))
 		} else {
-			exits = append(exits, n.BindExit(n.GetExit(dir), dir))
+			exits = append(exits, n.BindExit(dir))
 		}
 	}
 
@@ -338,8 +338,12 @@ func (n *Node) BindEmptyExit(dir string) fiber.Map {
 	}
 }
 
-func (n *Node) BindExit(en *Node, dir string) fiber.Map {
+func (n *Node) BindExit(dir string) fiber.Map {
 	exit := n.BindEmptyExit(dir)
+	if n.IsExitEmpty(dir) {
+		return exit
+	}
+	en := n.Exit(dir)
 	exit["ID"] = en.ID
 	exit["Title"] = en.Title
 	exit["Description"] = en.Description
