@@ -14,140 +14,22 @@
   </p>
   <div class="flex w-full flex-col items-center justify-center gap-1 pt-2">
     <div class="flex items-center gap-1">
-      {{ if ne .Northwest 0 }}
-      <iconify-icon
-        class="icon"
-        icon="tabler:chevron-up-left"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ else }}
-      <iconify-icon
-        class="icon opacity-0"
-        icon="tabler:chevron-up-left"
-        height="20"
-        width="20"
-      ></iconify-icon>
       <!-- prettier-ignore -->
-      {{ end }}
-      {{ if ne .North 0 }}
-      <iconify-icon
-        class="icon"
-        icon="tabler:chevron-up"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ else }}
-      <iconify-icon
-        class="icon opacity-0"
-        icon="tabler:chevron-up"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      <!-- prettier-ignore -->
-      {{ end }}
-      {{ if ne .Northeast 0 }}
-      <iconify-icon
-        class="icon"
-        icon="tabler:chevron-up-right"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ else }}
-      <iconify-icon
-        class="icon opacity-0"
-        icon="tabler:chevron-up-right"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ end }}
+      {{ template "partial-room-grid-exit-arrow-northwest" .Northwest }}
+      {{ template "partial-room-grid-exit-arrow-north" .North }}
+      {{ template "partial-room-grid-exit-arrow-northeast" .Northeast }}
     </div>
     <div class="flex items-center gap-1">
-      {{ if ne .West 0 }}
-      <iconify-icon
-        class="icon"
-        icon="tabler:chevron-left"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ else }}
-      <iconify-icon
-        class="icon opacity-0"
-        icon="tabler:chevron-left"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ end }}
-      <iconify-icon
-        class="icon opacity-0"
-        icon="tabler:square"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ if ne .East 0 }}
-      <iconify-icon
-        class="icon"
-        icon="tabler:chevron-right"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ else }}
-      <iconify-icon
-        class="icon opacity-0"
-        icon="tabler:chevron-right"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ end }}
+      <!-- prettier-ignore -->
+      {{ template "partial-room-grid-exit-arrow-west" .West }}
+      {{ template "partial-room-grid-exit-arrow-none" }}
+      {{ template "partial-room-grid-exit-arrow-east" .East }}
     </div>
     <div class="flex items-center gap-1">
-      {{ if ne .Southwest 0 }}
-      <iconify-icon
-        class="icon"
-        icon="tabler:chevron-down-left"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ else }}
-      <iconify-icon
-        class="icon opacity-0"
-        icon="tabler:chevron-down-left"
-        height="20"
-        width="20"
-      ></iconify-icon>
       <!-- prettier-ignore -->
-      {{ end }}
-      {{ if ne .South 0 }}
-      <iconify-icon
-        class="icon"
-        icon="tabler:chevron-down"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ else }}
-      <iconify-icon
-        class="icon opacity-0"
-        icon="tabler:chevron-down"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      <!-- prettier-ignore -->
-      {{ end }}
-      {{ if ne .Southeast 0 }}
-      <iconify-icon
-        class="icon"
-        icon="tabler:chevron-down-right"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ else }}
-      <iconify-icon
-        class="icon opacity-0"
-        icon="tabler:chevron-down-right"
-        height="20"
-        width="20"
-      ></iconify-icon>
-      {{ end }}
+      {{ template "partial-room-grid-exit-arrow-southwest" .Southwest }}
+      {{ template "partial-room-grid-exit-arrow-south" .South }}
+      {{ template "partial-room-grid-exit-arrow-southeast" .Southeast }}
     </div>
   </div>
 </div>

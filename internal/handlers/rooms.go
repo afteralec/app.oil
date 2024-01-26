@@ -512,6 +512,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 			Col:     2,
 			Shallow: false,
 		})
+		grid = rooms.AnnotateMatrixExits(grid)
 		exits := graph.BindExits()
 
 		b := views.Bind(c)

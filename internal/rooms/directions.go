@@ -33,6 +33,17 @@ const (
 	DirectionTitleNorthwest string = "Northwest"
 )
 
+const (
+	DirectionBindIDNorth     string = "North"
+	DirectionBindIDNortheast string = "Northeast"
+	DirectionBindIDEast      string = "East"
+	DirectionBindIDSoutheast string = "Southeast"
+	DirectionBindIDSouth     string = "South"
+	DirectionBindIDSouthwest string = "Southwest"
+	DirectionBindIDWest      string = "West"
+	DirectionBindIDNorthwest string = "Northwest"
+)
+
 var DirectionsList []string = []string{
 	DirectionNorth,
 	DirectionNortheast,
@@ -88,6 +99,17 @@ var DirectionTitles map[string]string = map[string]string{
 	DirectionNorthwest: DirectionTitleNorthwest,
 }
 
+var DirectionBindIDs map[string]string = map[string]string{
+	DirectionNorth:     DirectionBindIDNorth,
+	DirectionNortheast: DirectionBindIDNortheast,
+	DirectionEast:      DirectionBindIDEast,
+	DirectionSoutheast: DirectionBindIDSoutheast,
+	DirectionSouth:     DirectionBindIDSouth,
+	DirectionSouthwest: DirectionBindIDSouthwest,
+	DirectionWest:      DirectionBindIDWest,
+	DirectionNorthwest: DirectionBindIDNorthwest,
+}
+
 func IsDirectionValid(dir string) bool {
 	_, ok := Directions[dir]
 	return ok
@@ -115,4 +137,12 @@ func DirectionTitle(dir string) string {
 		return ""
 	}
 	return title
+}
+
+func DirectionBindID(dir string) string {
+	bindID, ok := DirectionBindIDs[dir]
+	if !ok {
+		return ""
+	}
+	return bindID
 }

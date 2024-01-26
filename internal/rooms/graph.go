@@ -77,18 +77,24 @@ func (n *Node) GetExitID(dir string) int64 {
 }
 
 func (n *Node) Bind() fiber.Map {
-	return fiber.Map{
+	bind := fiber.Map{
 		"ID":          n.ID,
 		"Title":       n.Title,
 		"Description": n.Description,
-		"North":       n.GetExitID(DirectionNorth),
-		"Northeast":   n.GetExitID(DirectionNortheast),
-		"East":        n.GetExitID(DirectionEast),
-		"Southeast":   n.GetExitID(DirectionSoutheast),
-		"South":       n.GetExitID(DirectionSouth),
-		"Southwest":   n.GetExitID(DirectionSouthwest),
-		"West":        n.GetExitID(DirectionWest),
-		"Northwest":   n.GetExitID(DirectionNorthwest),
+	}
+
+	for _, dir := range DirectionsList {
+		bindID := DirectionBindID(dir)
+		bind[bindID] = BindGridExit(n.GetExitID(dir))
+	}
+
+	return bind
+}
+
+func BindGridExit(id int64) fiber.Map {
+	return fiber.Map{
+		"ID":       id,
+		"InMatrix": false,
 	}
 }
 
@@ -130,40 +136,36 @@ func (n *Node) BindMatrix(p BindMatrixParams) [][]fiber.Map {
 		return p.Matrix
 	}
 
-	if p.Matrix[p.Row][p.Col]["ID"] != int64(0) {
-		return p.Matrix
-	}
-
-	p.Matrix[p.Row][p.Col] = n.Bind()
-
-	if p.Shallow {
-		return p.Matrix
-	}
-
-	for _, dir := range DirectionsList {
-		row, col := MatrixCoordinateForDirection(dir, p.Row, p.Col)
-		if n.IsExitEmpty(dir) {
-			continue
+	if !p.Shallow {
+		for _, dir := range DirectionsList {
+			row, col := MatrixCoordinateForDirection(dir, p.Row, p.Col)
+			if n.IsExitEmpty(dir) {
+				continue
+			}
+			p.Matrix = n.Exit(dir).BindMatrix(BindMatrixParams{
+				Matrix:  p.Matrix,
+				Row:     row,
+				Col:     col,
+				Shallow: true,
+			})
 		}
-		p.Matrix = n.Exit(DirectionNorth).BindMatrix(BindMatrixParams{
-			Matrix:  p.Matrix,
-			Row:     row,
-			Col:     col,
-			Shallow: true,
-		})
+
+		for _, dir := range DirectionsList {
+			row, col := MatrixCoordinateForDirection(dir, p.Row, p.Col)
+			if n.IsExitEmpty(dir) {
+				continue
+			}
+			p.Matrix = n.Exit(dir).BindMatrix(BindMatrixParams{
+				Matrix:  p.Matrix,
+				Row:     row,
+				Col:     col,
+				Shallow: false,
+			})
+		}
 	}
 
-	for _, dir := range DirectionsList {
-		row, col := MatrixCoordinateForDirection(dir, p.Row, p.Col)
-		if n.IsExitEmpty(dir) {
-			continue
-		}
-		p.Matrix = n.Exit(DirectionNorth).BindMatrix(BindMatrixParams{
-			Matrix:  p.Matrix,
-			Row:     row,
-			Col:     col,
-			Shallow: false,
-		})
+	if p.Matrix[p.Row][p.Col]["ID"] == int64(0) {
+		p.Matrix[p.Row][p.Col] = n.Bind()
 	}
 
 	return p.Matrix
@@ -389,4 +391,45 @@ func EmptyGraphNode() Node {
 	return Node{
 		ID: 0,
 	}
+}
+
+// TODO: Clean up and test
+// This may be a good use case for a fully-qualified data structure that maintains
+// independent pointers to Nodes in the graph by ID
+func AnnotateMatrixExits(matrix [][]fiber.Map) [][]fiber.Map {
+	matrixIDs := map[int64]bool{}
+	for i := 0; i < len(matrix); i++ {
+		row := matrix[i]
+		for j := 0; j < len(row); j++ {
+			room := row[j]
+			matrixIDs[room["ID"].(int64)] = true
+		}
+	}
+
+	for i := 0; i < len(matrix); i++ {
+		row := matrix[i]
+		for j := 0; j < len(row); j++ {
+			room := row[j]
+
+			for _, dir := range DirectionsList {
+				bindID := DirectionBindID(dir)
+				exit := room[bindID]
+				if exit == nil {
+					continue
+				}
+				exitBound := exit.(fiber.Map)
+				exitID := exitBound["ID"].(int64)
+				if exitID == int64(0) {
+					continue
+				}
+				_, ok := matrixIDs[exitID]
+				if ok {
+					exitBound["InMatrix"] = true
+				}
+			}
+
+		}
+	}
+
+	return matrix
 }
