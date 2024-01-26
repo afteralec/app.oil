@@ -385,7 +385,12 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				}), layouts.None)
 			}
 
-			exitRooms, err := rooms.LoadExitRooms(qtx, &room)
+			graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
+				Queries:  qtx,
+				Room:     &room,
+				Depth:    0,
+				MaxDepth: 1,
+			})
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(shared.HeaderHXAcceptable, "true")
@@ -417,8 +422,8 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 			}
 
 			c.Status(fiber.StatusCreated)
-			b := rooms.BuildExit(&room, &exitRoom, in.Direction)
-			b["Exits"] = rooms.BuildExits(&room, exitRooms)
+			b := graph.BindExit(graph.GetExit(in.Direction), in.Direction)
+			b["Exits"] = graph.BindExits()
 			return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
 		}
 
@@ -487,25 +492,19 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		exitRooms, err := rooms.LoadExitRooms(qtx, &room)
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
-		}
-
-		exitMap := rooms.GridExitMap(rooms.GridExitMapParams{
+		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
 			Queries:  qtx,
 			Room:     &room,
-			MaxDepth: 1,
+			MaxDepth: 2,
 			Depth:    0,
 		})
-
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		exits := rooms.BuildExits(&room, exitRooms)
+		grid := graph.BindMatrix(rooms.EmptyBindMatrix(), 2, 2)
+		exits := graph.BindExits()
 
 		b := views.Bind(c)
 		// TODO: Get a bind function for this
@@ -518,7 +517,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 			"Title":    rooms.TitleWithID(room.Title, room.ID),
 			"SubTitle": "Update room properties here",
 		}
-		b["RoomGrid"] = rooms.Grid(exitMap)
+		b["RoomGrid"] = grid
 		b["Title"] = room.Title
 		b["Description"] = room.Description
 		b["Size"] = room.Size
@@ -930,7 +929,12 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 			}), layouts.None)
 		}
 
-		exitRooms, err := rooms.LoadExitRooms(qtx, &room)
+		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
+			Queries:  qtx,
+			Room:     &room,
+			Depth:    0,
+			MaxDepth: 1,
+		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(shared.HeaderHXAcceptable, "true")
@@ -962,8 +966,8 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusOK)
-		b := rooms.BuildExit(&room, &exitRoom, in.Direction)
-		b["Exits"] = rooms.BuildExits(&room, exitRooms)
+		b := graph.BindExit(graph.GetExit(in.Direction), in.Direction)
+		b["Exits"] = graph.BindExits()
 		return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
 	}
 }
@@ -1127,7 +1131,12 @@ func ClearRoomExit(i *shared.Interfaces) fiber.Handler {
 			}
 		}
 
-		exitRooms, err := rooms.LoadExitRooms(qtx, &room)
+		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
+			Queries:  qtx,
+			Room:     &room,
+			Depth:    0,
+			MaxDepth: 1,
+		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(shared.HeaderHXAcceptable, "true")
@@ -1151,8 +1160,8 @@ func ClearRoomExit(i *shared.Interfaces) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusOK)
-		b := rooms.BuildEmptyExit(&room, dir)
-		b["Exits"] = rooms.BuildExits(&room, exitRooms)
+		b := graph.BindEmptyExit(dir)
+		b["Exits"] = graph.BindExits()
 		return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
 	}
 }

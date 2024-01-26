@@ -4,7 +4,7 @@
   {{ range .RoomGrid }}
   <section class="flex items-center gap-4">
     <!-- prettier-ignore -->
-    {{ range .Rooms }} 
+    {{ range . }} 
       {{ if .Self }}
         {{ template "partial-room-grid-room-self" . }}
       {{ else if eq .ID 0 }}

@@ -14,7 +14,7 @@
   </p>
   <div class="flex w-full flex-col items-center justify-center gap-1 pt-2">
     <div class="flex items-center gap-1">
-      {{ if ne .northwest.ID 0 }}
+      {{ if ne .Northwest 0 }}
       <iconify-icon
         class="icon"
         icon="tabler:chevron-up-left"
@@ -30,7 +30,7 @@
       ></iconify-icon>
       <!-- prettier-ignore -->
       {{ end }}
-      {{ if ne .north.ID 0 }}
+      {{ if ne .North 0 }}
       <iconify-icon
         class="icon"
         icon="tabler:chevron-up"
@@ -46,7 +46,7 @@
       ></iconify-icon>
       <!-- prettier-ignore -->
       {{ end }}
-      {{ if ne .northeast.ID 0 }}
+      {{ if ne .Northeast 0 }}
       <iconify-icon
         class="icon"
         icon="tabler:chevron-up-right"
@@ -63,7 +63,7 @@
       {{ end }}
     </div>
     <div class="flex items-center gap-1">
-      {{ if ne .west.ID 0 }}
+      {{ if ne .West 0 }}
       <iconify-icon
         class="icon"
         icon="tabler:chevron-left"
@@ -84,7 +84,7 @@
         height="20"
         width="20"
       ></iconify-icon>
-      {{ if ne .east.ID 0 }}
+      {{ if ne .East 0 }}
       <iconify-icon
         class="icon"
         icon="tabler:chevron-right"
@@ -101,7 +101,7 @@
       {{ end }}
     </div>
     <div class="flex items-center gap-1">
-      {{ if ne .southwest.ID 0 }}
+      {{ if ne .Southwest 0 }}
       <iconify-icon
         class="icon"
         icon="tabler:chevron-down-left"
@@ -117,7 +117,7 @@
       ></iconify-icon>
       <!-- prettier-ignore -->
       {{ end }}
-      {{ if ne .south.ID 0 }}
+      {{ if ne .South 0 }}
       <iconify-icon
         class="icon"
         icon="tabler:chevron-down"
@@ -133,7 +133,7 @@
       ></iconify-icon>
       <!-- prettier-ignore -->
       {{ end }}
-      {{ if ne .southeast.ID 0 }}
+      {{ if ne .Southeast 0 }}
       <iconify-icon
         class="icon"
         icon="tabler:chevron-down-right"
