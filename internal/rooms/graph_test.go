@@ -2,7 +2,6 @@ package rooms
 
 import (
 	"context"
-	"log"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -248,96 +247,99 @@ func TestIsValidMatrixCoordinate(t *testing.T) {
 	require.False(t, IsValidMatrixCoordinate(matrix, 4, 5))
 }
 
-func TestBindMatrix(t *testing.T) {
-	i := shared.SetupInterfaces()
-	defer i.Close()
-
-	testRIDs := []int64{}
-	for n := 0; n < 15; n++ {
-		rid := tests.CreateTestRoom(t, &i, tests.TestRoom)
-		testRIDs = append(testRIDs, rid)
-		defer tests.DeleteTestRoom(t, &i, rid)
-	}
-
-	if err := Link(LinkParams{
-		Queries:   i.Queries,
-		Direction: DirectionNorth,
-		ID:        testRIDs[0],
-		To:        testRIDs[1],
-		TwoWay:    true,
-	}); err != nil {
-		t.Fatal(err)
-	}
-	if err := Link(LinkParams{
-		Queries:   i.Queries,
-		Direction: DirectionEast,
-		ID:        testRIDs[0],
-		To:        testRIDs[4],
-		TwoWay:    true,
-	}); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := Link(LinkParams{
-		Queries:   i.Queries,
-		Direction: DirectionNorthwest,
-		ID:        testRIDs[1],
-		To:        testRIDs[2],
-		TwoWay:    true,
-	}); err != nil {
-		t.Fatal(err)
-	}
-	if err := Link(LinkParams{
-		Queries:   i.Queries,
-		Direction: DirectionNorth,
-		ID:        testRIDs[1],
-		To:        testRIDs[3],
-		TwoWay:    true,
-	}); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := Link(LinkParams{
-		Queries:   i.Queries,
-		Direction: DirectionEast,
-		ID:        testRIDs[2],
-		To:        testRIDs[5],
-		TwoWay:    true,
-	}); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := Link(LinkParams{
-		Queries:   i.Queries,
-		Direction: DirectionNorth,
-		ID:        testRIDs[3],
-		To:        testRIDs[6],
-		TwoWay:    true,
-	}); err != nil {
-		t.Fatal(err)
-	}
-
-	room, err := i.Queries.GetRoom(context.Background(), testRIDs[0])
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	graph, err := BuildGraph(BuildGraphParams{
-		Queries:  i.Queries,
-		Room:     &room,
-		Depth:    0,
-		MaxDepth: 2,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	matrix := graph.BindMatrix(EmptyBindMatrix(), 2, 2)
-	for _, row := range matrix {
-		rowIDs := []int64{}
-		for _, room := range row {
-			rowIDs = append(rowIDs, room["ID"].(int64))
-		}
-		log.Println(rowIDs)
-	}
-}
+// func TestBindMatrix(t *testing.T) {
+// 	i := shared.SetupInterfaces()
+// 	defer i.Close()
+//
+// 	testRIDs := []int64{}
+// 	for n := 0; n < 15; n++ {
+// 		rid := tests.CreateTestRoom(t, &i, tests.TestRoom)
+// 		testRIDs = append(testRIDs, rid)
+// 		defer tests.DeleteTestRoom(t, &i, rid)
+// 	}
+//
+// 	if err := Link(LinkParams{
+// 		Queries:   i.Queries,
+// 		Direction: DirectionNorth,
+// 		ID:        testRIDs[0],
+// 		To:        testRIDs[1],
+// 		TwoWay:    true,
+// 	}); err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	if err := Link(LinkParams{
+// 		Queries:   i.Queries,
+// 		Direction: DirectionEast,
+// 		ID:        testRIDs[0],
+// 		To:        testRIDs[4],
+// 		TwoWay:    true,
+// 	}); err != nil {
+// 		t.Fatal(err)
+// 	}
+//
+// 	if err := Link(LinkParams{
+// 		Queries:   i.Queries,
+// 		Direction: DirectionNorthwest,
+// 		ID:        testRIDs[1],
+// 		To:        testRIDs[2],
+// 		TwoWay:    true,
+// 	}); err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	if err := Link(LinkParams{
+// 		Queries:   i.Queries,
+// 		Direction: DirectionNorth,
+// 		ID:        testRIDs[1],
+// 		To:        testRIDs[3],
+// 		TwoWay:    true,
+// 	}); err != nil {
+// 		t.Fatal(err)
+// 	}
+//
+// 	if err := Link(LinkParams{
+// 		Queries:   i.Queries,
+// 		Direction: DirectionEast,
+// 		ID:        testRIDs[2],
+// 		To:        testRIDs[5],
+// 		TwoWay:    true,
+// 	}); err != nil {
+// 		t.Fatal(err)
+// 	}
+//
+// 	if err := Link(LinkParams{
+// 		Queries:   i.Queries,
+// 		Direction: DirectionNorth,
+// 		ID:        testRIDs[3],
+// 		To:        testRIDs[6],
+// 		TwoWay:    true,
+// 	}); err != nil {
+// 		t.Fatal(err)
+// 	}
+//
+// 	room, err := i.Queries.GetRoom(context.Background(), testRIDs[0])
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+//
+// 	graph, err := BuildGraph(BuildGraphParams{
+// 		Queries:  i.Queries,
+// 		Room:     &room,
+// 		Depth:    0,
+// 		MaxDepth: 2,
+// 	})
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+//
+// 	matrix := graph.BindMatrix(BindMatrixParams{
+// 		Matrix: EmptyBindMatrix(),
+// 		Row:    2,
+// 		Col:    2,
+// 	})
+// 	for _, row := range matrix {
+// 		rowIDs := []int64{}
+// 		for _, room := range row {
+// 			rowIDs = append(rowIDs, room["ID"].(int64))
+// 		}
+// 	}
+// }

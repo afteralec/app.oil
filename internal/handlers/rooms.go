@@ -498,12 +498,22 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 			MaxDepth: 2,
 			Depth:    0,
 		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+		}
+
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		grid := graph.BindMatrix(rooms.EmptyBindMatrix(), 2, 2)
+		grid := graph.BindMatrix(rooms.BindMatrixParams{
+			Matrix:  rooms.EmptyBindMatrix(),
+			Row:     2,
+			Col:     2,
+			Shallow: false,
+		})
 		exits := graph.BindExits()
 
 		b := views.Bind(c)

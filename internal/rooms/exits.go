@@ -1,102 +1,14 @@
 package rooms
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"strings"
 
-	fiber "github.com/gofiber/fiber/v2"
-
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/routes"
 )
 
 var ErrExitIDNotFound error = errors.New("no exit found for that RID")
-
-func LoadExitRooms(q *queries.Queries, room *queries.Room) (map[string]queries.Room, error) {
-	exitRooms := make(map[string]queries.Room)
-	exitRoomDirections := make(map[int64]string)
-
-	exitIDs := []int64{}
-	for _, dir := range DirectionsList {
-		exitID := ExitID(room, dir)
-		if exitID == 0 {
-			continue
-		}
-		exitIDs = append(exitIDs, exitID)
-		exitRoomDirections[exitID] = dir
-	}
-
-	records, err := q.ListRoomsByIDs(context.Background(), exitIDs)
-	if err != nil {
-		return exitRooms, err
-	}
-
-	for _, record := range records {
-		dir, ok := exitRoomDirections[record.ID]
-		if !ok {
-			// TODO: This should be a fatal error
-			continue
-		}
-		exitRooms[dir] = record
-	}
-
-	return exitRooms, nil
-}
-
-func (n *Node) BuildExitRooms() map[string]*Node {
-	exitRooms := map[string]*Node{}
-	for _, dir := range DirectionsList {
-		if n.IsExitEmpty(dir) {
-			emptyNode := BuildEmptyGraphNode()
-			exitRooms[dir] = &emptyNode
-		} else {
-			exitRooms[dir] = n.GetExit(dir)
-		}
-	}
-	return exitRooms
-}
-
-func (n *Node) BindExits() []fiber.Map {
-	exits := []fiber.Map{}
-
-	for _, dir := range DirectionsList {
-		if n.IsExitEmpty(dir) {
-			exits = append(exits, n.BindEmptyExit(dir))
-		} else {
-			exits = append(exits, n.BindExit(n.GetExit(dir), dir))
-		}
-	}
-
-	return exits
-}
-
-func (n *Node) BindEmptyExit(dir string) fiber.Map {
-	return fiber.Map{
-		"ID":              0,
-		"RoomID":          n.ID,
-		"Exit":            dir,
-		"ExitLetter":      DirectionLetter(dir),
-		"ExitTitle":       DirectionTitle(dir),
-		"EditElementID":   ExitEditElementID(dir),
-		"SelectElementID": ExitSelectElementID(dir),
-		"RoomsPath":       routes.Rooms,
-		"RoomExitsPath":   routes.RoomExitsPath(n.ID),
-		"RoomExitPath":    routes.RoomExitPath(n.ID, dir),
-	}
-}
-
-func (n *Node) BindExit(en *Node, dir string) fiber.Map {
-	exit := n.BindEmptyExit(dir)
-	exit["ID"] = en.ID
-	exit["Title"] = en.Title
-	exit["Description"] = en.Description
-	exit["ExitPath"] = routes.RoomPath(en.ID)
-	exit["ExitEditPath"] = routes.EditRoomPath(en.ID)
-	exit["TwoWay"] = n.IsExitTwoWay(en, dir)
-	return exit
-}
 
 func ExitEditElementID(dir string) string {
 	var sb strings.Builder
