@@ -251,7 +251,7 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 		}
 
 		if in.LinkID != 0 {
-			// TODO: Can run validations on the room to be linked here, ensuring that:
+			// TODO: Can run validations on the room to be linked here, asserting that:
 			// 1. The link-to exit isn't already filled
 			// 2. There isn't a setpiece that leads to the proposed destination room
 			// etc
@@ -493,7 +493,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
 			Queries:  qtx,
 			Room:     &room,
-			MaxDepth: 2,
+			MaxDepth: 3,
 			Depth:    0,
 		})
 		if err != nil {

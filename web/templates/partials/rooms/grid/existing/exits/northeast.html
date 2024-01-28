@@ -1,22 +1,36 @@
 <!-- prettier-ignore -->
 {{ define "partial-room-grid-exit-arrow-northeast" }}
 {{ if eq .ID 0 }}
-  {{ template "partial-room-grid-exit-arrow-none" }}
+<div class="flex items-center justify-center p-0.5">
+  <iconify-icon
+    class="icon cursor-pointer opacity-0 hover:opacity-100"
+    icon="tabler:chevron-up-right"
+    height="20"
+    width="20"
+  ></iconify-icon>
+</div>
+<!-- prettier-ignore -->
 {{ else }}
 {{ if .InMatrix }}
-<iconify-icon
-  class="icon"
-  icon="tabler:chevron-up-right"
-  height="20"
-  width="20"
-></iconify-icon>
+<div
+  class="flex cursor-pointer items-center justify-center rounded-md p-0.5 hover:bg-secondary"
+>
+  <iconify-icon
+    class="icon"
+    icon="tabler:chevron-up-right"
+    height="20"
+    width="20"
+  ></iconify-icon>
+</div>
 {{ else }}
-<iconify-icon
-  class="icon text-sky-600"
-  icon="tabler:chevron-up-right"
-  height="20"
-  width="20"
-></iconify-icon>
+<div class="flex items-center justify-center">
+  <iconify-icon
+    class="icon text-sky-600"
+    icon="tabler:chevron-up-right"
+    height="20"
+    width="20"
+  ></iconify-icon>
+</div>
 <!-- prettier-ignore -->
 {{ end }}
 {{ end }}

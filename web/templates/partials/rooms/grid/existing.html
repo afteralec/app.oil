@@ -7,13 +7,13 @@
       [{{ .ID }}] {{ .Title }}
     </h5>
   </header>
-  <p
-    class="overflow-hidden text-ellipsis whitespace-nowrap text-xs leading-none"
-  >
-    {{ .Description }}
-  </p>
+  <!-- <p -->
+  <!--   class="overflow-hidden text-ellipsis whitespace-nowrap text-xs leading-none" -->
+  <!-- > -->
+  <!--   {{ .Description }} -->
+  <!-- </p> -->
   <div class="flex w-full flex-col items-center justify-center gap-1 pt-2">
-    <div class="flex items-center gap-1">
+    <div class="flex items-center">
       <!-- prettier-ignore -->
       {{ template "partial-room-grid-exit-arrow-northwest" .Northwest }}
       {{ template "partial-room-grid-exit-arrow-north" .North }}
@@ -22,15 +22,20 @@
     <div class="flex items-center gap-1">
       <!-- prettier-ignore -->
       {{ template "partial-room-grid-exit-arrow-west" .West }}
-      {{ template "partial-room-grid-exit-arrow-none" }}
+      {{ template "partial-room-grid-exit-arrow-center" }}
       {{ template "partial-room-grid-exit-arrow-east" .East }}
     </div>
-    <div class="flex items-center gap-1">
+    <div class="flex items-center">
       <!-- prettier-ignore -->
       {{ template "partial-room-grid-exit-arrow-southwest" .Southwest }}
       {{ template "partial-room-grid-exit-arrow-south" .South }}
       {{ template "partial-room-grid-exit-arrow-southeast" .Southeast }}
     </div>
+  </div>
+  <div class="hidden items-center justify-end gap-1 pt-1 text-xs">
+    <div class="cursor-pointer opacity-50 hover:opacity-100">Alt</div>
+    <div class="cursor-pointer opacity-50 hover:opacity-100">Set</div>
+    <div class="cursor-pointer opacity-50 hover:opacity-100">Spec</div>
   </div>
 </div>
 <!-- <div -->
