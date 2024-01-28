@@ -121,16 +121,19 @@ func MatrixCoordinateForDirection(dir string, row, col int) (int, int) {
 }
 
 type BindMatrixParams struct {
-	Matrix  [][]fiber.Map
-	Row     int
-	Col     int
-	Shallow bool
+	Matrix   [][]fiber.Map
+	Priority []int64
+	Row      int
+	Col      int
+	Shallow  bool
 }
 
 func (n *Node) BindMatrix(p BindMatrixParams) [][]fiber.Map {
 	// TODO: Set up an algorithm for this to write *out* from the center node
 	// This would predicate the grid being an odd-sized square: i.e. 5x5, 7x7, etc
 	// Bind the center cell to the data of the root node
+
+	priorityMap := PriorityMap(p.Priority)
 
 	if !IsValidMatrixCoordinate(p.Matrix, p.Row, p.Col) {
 		return p.Matrix
@@ -164,7 +167,8 @@ func (n *Node) BindMatrix(p BindMatrixParams) [][]fiber.Map {
 		}
 	}
 
-	if p.Matrix[p.Row][p.Col]["ID"] == int64(0) {
+	visitedID := p.Matrix[p.Row][p.Col]["ID"].(int64)
+	if visitedID == int64(0) || Priority(priorityMap, n.ID, visitedID) {
 		p.Matrix[p.Row][p.Col] = n.Bind()
 	}
 
@@ -412,6 +416,7 @@ func AnnotateMatrixExits(matrix [][]fiber.Map) [][]fiber.Map {
 			room := row[j]
 
 			for _, dir := range DirectionsList {
+
 				bindID := DirectionBindID(dir)
 				exit := room[bindID]
 				if exit == nil {
@@ -422,9 +427,14 @@ func AnnotateMatrixExits(matrix [][]fiber.Map) [][]fiber.Map {
 				if exitID == int64(0) {
 					continue
 				}
+
 				_, ok := matrixIDs[exitID]
 				if ok {
 					exitBound["InMatrix"] = true
+				}
+				row, col := MatrixCoordinateForDirection(dir, i, j)
+				if !IsValidMatrixCoordinate(matrix, row, col) {
+					exitBound["OffMatrix"] = true
 				}
 			}
 
@@ -432,4 +442,27 @@ func AnnotateMatrixExits(matrix [][]fiber.Map) [][]fiber.Map {
 	}
 
 	return matrix
+}
+
+func PriorityMap(priority []int64) map[int64]int {
+	priorityMap := map[int64]int{}
+	priorityWeight := 1
+	for i := len(priority) - 1; i >= 0; i++ {
+		priorityID := priority[i]
+		priorityMap[priorityID] = priorityWeight
+		priorityWeight++
+	}
+	return priorityMap
+}
+
+func Priority(priorityMap map[int64]int, priorityID, visitedID int64) bool {
+	priorityWeight, ok := priorityMap[priorityID]
+	if !ok {
+		return false
+	}
+	visitedWeight, ok := priorityMap[visitedID]
+	if !ok {
+		return true
+	}
+	return priorityWeight > visitedWeight
 }
