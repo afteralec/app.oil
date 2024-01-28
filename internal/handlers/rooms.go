@@ -387,7 +387,7 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				Queries:  qtx,
 				Room:     &room,
 				Depth:    0,
-				MaxDepth: 1,
+				MaxDepth: 3,
 			})
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
@@ -419,9 +419,18 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				}), layouts.None)
 			}
 
+			grid := graph.BindMatrix(rooms.BindMatrixParams{
+				Matrix:  rooms.EmptyBindMatrix(),
+				Row:     2,
+				Col:     2,
+				Shallow: false,
+			})
+			grid = rooms.AnnotateMatrixExits(grid)
+
 			c.Status(fiber.StatusCreated)
 			b := graph.BindExit(in.Direction)
 			b["Exits"] = graph.BindExits()
+			b["RoomGrid"] = grid
 			return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
 		}
 
@@ -587,140 +596,68 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func RoomGrid() fiber.Handler {
+func RoomGrid(i *shared.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		_, err := util.GetPID(c)
+		if !util.IsLoggedIn(c) {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		perms, err := util.GetPermissions(c)
 		if err != nil {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
-		roomGridOne := []fiber.Map{
-			{
-				"ID": "test-room-grid-row-one",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-				},
-			},
-			{
-				"ID": "test-room-grid-row-two",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 1},
-					{"ID": 5},
-				},
-			},
-			{
-				"ID": "test-room-grid-row-three",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 2},
-					{"ID": 0},
-				},
-			},
-			{
-				"ID": "test-room-grid-row-four",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-				},
-			},
-			{
-				"ID": "test-room-grid-row-five",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-				},
-			},
+		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+			c.Status(fiber.StatusForbidden)
+			return nil
 		}
 
-		roomGridTwo := []fiber.Map{
-			{
-				"ID": "test-room-grid-row-one",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-				},
-			},
-			{
-				"ID": "test-room-grid-row-two",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 1},
-					{"ID": 6},
-				},
-			},
-			{
-				"ID": "test-room-grid-row-three",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 2},
-					{"ID": 0},
-				},
-			},
-			{
-				"ID": "test-room-grid-row-four",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-				},
-			},
-			{
-				"ID": "test-room-grid-row-five",
-				"Rooms": []fiber.Map{
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-					{"ID": 0},
-				},
-			},
-		}
-
-		id, err := util.GetID(c)
+		rid, err := util.GetID(c)
 		if err != nil {
+			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
 
-		selected, err := util.GetParamID(c, "selected")
+		tx, err := i.Database.Begin()
 		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		qtx := i.Queries.WithTx(tx)
+
+		room, err := qtx.GetRoom(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		if id != 0 {
+		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
+			Queries:  qtx,
+			Room:     &room,
+			MaxDepth: 3,
+			Depth:    0,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		b := views.Bind(c)
-		if selected == 2 {
-			b["RoomGrid"] = roomGridTwo
-		} else {
-			b["RoomGrid"] = roomGridOne
-		}
+		grid := graph.BindMatrix(rooms.BindMatrixParams{
+			Matrix:  rooms.EmptyBindMatrix(),
+			Row:     2,
+			Col:     2,
+			Shallow: false,
+		})
+		grid = rooms.AnnotateMatrixExits(grid)
 
+		b := fiber.Map{}
+		b["RoomGrid"] = grid
 		return c.Render(partials.RoomGrid, b, layouts.None)
 	}
 }
@@ -942,7 +879,7 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 			Queries:  qtx,
 			Room:     &room,
 			Depth:    0,
-			MaxDepth: 1,
+			MaxDepth: 3,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -974,9 +911,18 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 			}), layouts.None)
 		}
 
+		grid := graph.BindMatrix(rooms.BindMatrixParams{
+			Matrix:  rooms.EmptyBindMatrix(),
+			Row:     2,
+			Col:     2,
+			Shallow: false,
+		})
+		grid = rooms.AnnotateMatrixExits(grid)
+
 		c.Status(fiber.StatusOK)
 		b := graph.BindExit(in.Direction)
 		b["Exits"] = graph.BindExits()
+		b["RoomGrid"] = grid
 		return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
 	}
 }
@@ -1144,7 +1090,7 @@ func ClearRoomExit(i *shared.Interfaces) fiber.Handler {
 			Queries:  qtx,
 			Room:     &room,
 			Depth:    0,
-			MaxDepth: 1,
+			MaxDepth: 3,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -1168,9 +1114,18 @@ func ClearRoomExit(i *shared.Interfaces) fiber.Handler {
 			}), layouts.None)
 		}
 
+		grid := graph.BindMatrix(rooms.BindMatrixParams{
+			Matrix:  rooms.EmptyBindMatrix(),
+			Row:     2,
+			Col:     2,
+			Shallow: false,
+		})
+		grid = rooms.AnnotateMatrixExits(grid)
+
 		c.Status(fiber.StatusOK)
 		b := graph.BindEmptyExit(dir)
 		b["Exits"] = graph.BindExits()
+		b["RoomGrid"] = grid
 		return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
 	}
 }
