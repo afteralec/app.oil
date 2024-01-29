@@ -31,7 +31,7 @@
 </div>
 <!-- prettier-ignore -->
 {{ else }}
-{{ if .InMatrix }}
+{{ if .Canonical }}
 <div class="flex items-center justify-center p-0.5">
   <iconify-icon
     icon="tabler:chevron-up-left"
@@ -51,11 +51,10 @@
 </div>
 {{ else }}
 <div
-  class="flex cursor-pointer items-center justify-center rounded-md p-0.5"
-  :class="roomGridEditMode ? 'opacity-50 hover:opacity-100 cursor-pointer' : ''"
+  class="flex cursor-pointer items-center justify-center rounded-md p-0.5 hover:bg-secondary"
 >
   <iconify-icon
-    class="icon text-sky-600"
+    class="icon"
     icon="mynaui:chevron-double-up-left"
     height="20"
     width="20"

@@ -444,7 +444,10 @@ func AnnotateMatrixExits(matrix [][]fiber.Map) [][]fiber.Map {
 					exitBound["InMatrix"] = true
 				}
 				row, col := MatrixCoordinateForDirection(dir, i, j)
-				if !IsValidMatrixCoordinate(matrix, row, col) {
+				if IsValidMatrixCoordinate(matrix, row, col) {
+					exitBound["Canonical"] = matrix[row][col]["ID"].(int64) == exitID
+					exitBound["OffMatrix"] = false
+				} else {
 					exitBound["OffMatrix"] = true
 				}
 			}
