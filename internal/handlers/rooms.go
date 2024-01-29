@@ -383,7 +383,27 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				}), layouts.None)
 			}
 
-			graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
+			exitGraph, err := rooms.BuildGraph(rooms.BuildGraphParams{
+				Queries:  qtx,
+				Room:     &room,
+				MaxDepth: 1,
+			})
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+				return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					SectionID:    sectionID,
+					SectionClass: "pt-2",
+					NoticeText: []string{
+						"Something's gone terribly wrong.",
+					},
+					RefreshButton: true,
+					NoticeIcon:    true,
+				}), layouts.None)
+			}
+
+			gridGraph, err := rooms.BuildGraph(rooms.BuildGraphParams{
 				Queries: qtx,
 				Room:    &room,
 			})
@@ -417,7 +437,7 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 				}), layouts.None)
 			}
 
-			grid := graph.BindMatrix(rooms.BindMatrixParams{
+			grid := gridGraph.BindMatrix(rooms.BindMatrixParams{
 				Matrix:  rooms.EmptyBindMatrix(5),
 				Row:     2,
 				Col:     2,
@@ -426,8 +446,8 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 			grid = rooms.AnnotateMatrixExits(grid)
 
 			c.Status(fiber.StatusCreated)
-			b := graph.BindExit(in.Direction)
-			b["Exits"] = graph.BindExits()
+			b := exitGraph.BindExit(in.Direction)
+			b["Exits"] = exitGraph.BindExits()
 			b["RoomGrid"] = grid
 			return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
 		}
