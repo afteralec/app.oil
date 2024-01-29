@@ -94,10 +94,8 @@ func TestGraph(t *testing.T) {
 	}
 
 	graph, err := BuildGraph(BuildGraphParams{
-		Queries:  i.Queries,
-		Room:     &room,
-		Depth:    0,
-		MaxDepth: 2,
+		Queries: i.Queries,
+		Room:    &room,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -129,10 +127,8 @@ func TestNodeGetExit(t *testing.T) {
 	}
 
 	node, err := BuildGraph(BuildGraphParams{
-		Queries:  i.Queries,
-		Room:     &room,
-		Depth:    0,
-		MaxDepth: 1,
+		Queries: i.Queries,
+		Room:    &room,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -161,10 +157,8 @@ func TestNodeGetExit(t *testing.T) {
 	}
 
 	node, err = BuildGraph(BuildGraphParams{
-		Queries:  i.Queries,
-		Room:     &room,
-		Depth:    0,
-		MaxDepth: 1,
+		Queries: i.Queries,
+		Room:    &room,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -185,10 +179,8 @@ func TestNodeIsExitEmpty(t *testing.T) {
 	}
 
 	node, err := BuildGraph(BuildGraphParams{
-		Queries:  i.Queries,
-		Room:     &room,
-		Depth:    0,
-		MaxDepth: 1,
+		Queries: i.Queries,
+		Room:    &room,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -217,10 +209,8 @@ func TestNodeIsExitEmpty(t *testing.T) {
 	}
 
 	node, err = BuildGraph(BuildGraphParams{
-		Queries:  i.Queries,
-		Room:     &room,
-		Depth:    0,
-		MaxDepth: 1,
+		Queries: i.Queries,
+		Room:    &room,
 	})
 	if err != nil {
 		t.Fatal(err)

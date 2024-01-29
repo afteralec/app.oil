@@ -6,6 +6,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 )
@@ -218,6 +219,10 @@ type BuildGraphParams struct {
 }
 
 func BuildGraph(p BuildGraphParams) (Node, error) {
+	maxDepth := p.MaxDepth
+	if maxDepth == 0 {
+		maxDepth = constants.DefaultRoomGraphDepth
+	}
 	exitIDs := ExitIDs(p.Room)
 	exitRooms, err := p.Queries.ListRoomsByIDs(context.Background(), exitIDs)
 	if err != nil {
@@ -237,14 +242,14 @@ func BuildGraph(p BuildGraphParams) (Node, error) {
 			if !ok {
 				continue
 			}
-			if p.Depth >= p.MaxDepth {
+			if p.Depth >= maxDepth {
 				node := TerminalNode(&exitRoom)
 				nodesByDirection[dir] = node
 			} else {
 				node, err := BuildGraph(BuildGraphParams{
 					Queries:  p.Queries,
 					Room:     &exitRoom,
-					MaxDepth: p.MaxDepth,
+					MaxDepth: maxDepth,
 					Depth:    p.Depth + 1,
 				})
 				if err != nil {

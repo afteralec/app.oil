@@ -384,10 +384,8 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 			}
 
 			graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
-				Queries:  qtx,
-				Room:     &room,
-				Depth:    0,
-				MaxDepth: 3,
+				Queries: qtx,
+				Room:    &room,
 			})
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
@@ -500,10 +498,8 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
-			Queries:  qtx,
-			Room:     &room,
-			MaxDepth: 4,
-			Depth:    0,
+			Queries: qtx,
+			Room:    &room,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -638,10 +634,8 @@ func RoomGrid(i *shared.Interfaces) fiber.Handler {
 		}
 
 		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
-			Queries:  qtx,
-			Room:     &room,
-			MaxDepth: 3,
-			Depth:    0,
+			Queries: qtx,
+			Room:    &room,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -876,10 +870,8 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 		}
 
 		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
-			Queries:  qtx,
-			Room:     &room,
-			Depth:    0,
-			MaxDepth: 3,
+			Queries: qtx,
+			Room:    &room,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -1087,10 +1079,8 @@ func ClearRoomExit(i *shared.Interfaces) fiber.Handler {
 		}
 
 		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
-			Queries:  qtx,
-			Room:     &room,
-			Depth:    0,
-			MaxDepth: 3,
+			Queries: qtx,
+			Room:    &room,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
