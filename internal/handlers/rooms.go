@@ -420,7 +420,7 @@ func NewRoom(i *shared.Interfaces) fiber.Handler {
 			}
 
 			grid := graph.BindMatrix(rooms.BindMatrixParams{
-				Matrix:  rooms.EmptyBindMatrix(),
+				Matrix:  rooms.EmptyBindMatrix(5),
 				Row:     2,
 				Col:     2,
 				Shallow: false,
@@ -502,7 +502,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
 			Queries:  qtx,
 			Room:     &room,
-			MaxDepth: 3,
+			MaxDepth: 4,
 			Depth:    0,
 		})
 		if err != nil {
@@ -516,7 +516,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		}
 
 		grid := graph.BindMatrix(rooms.BindMatrixParams{
-			Matrix:  rooms.EmptyBindMatrix(),
+			Matrix:  rooms.EmptyBindMatrix(5),
 			Row:     2,
 			Col:     2,
 			Shallow: false,
@@ -649,7 +649,7 @@ func RoomGrid(i *shared.Interfaces) fiber.Handler {
 		}
 
 		grid := graph.BindMatrix(rooms.BindMatrixParams{
-			Matrix:  rooms.EmptyBindMatrix(),
+			Matrix:  rooms.EmptyBindMatrix(5),
 			Row:     2,
 			Col:     2,
 			Shallow: false,
@@ -912,7 +912,7 @@ func EditRoomExit(i *shared.Interfaces) fiber.Handler {
 		}
 
 		grid := graph.BindMatrix(rooms.BindMatrixParams{
-			Matrix:  rooms.EmptyBindMatrix(),
+			Matrix:  rooms.EmptyBindMatrix(5),
 			Row:     2,
 			Col:     2,
 			Shallow: false,
@@ -1115,7 +1115,7 @@ func ClearRoomExit(i *shared.Interfaces) fiber.Handler {
 		}
 
 		grid := graph.BindMatrix(rooms.BindMatrixParams{
-			Matrix:  rooms.EmptyBindMatrix(),
+			Matrix:  rooms.EmptyBindMatrix(5),
 			Row:     2,
 			Col:     2,
 			Shallow: false,

@@ -35,7 +35,6 @@ func (n *Node) IsExitEmpty(dir string) bool {
 	if exitNode == nil {
 		return true
 	}
-
 	return exitNode.ID == 0
 }
 
@@ -199,11 +198,11 @@ func IsValidMatrixCoordinate(matrix [][]fiber.Map, row, col int) bool {
 	return true
 }
 
-func EmptyBindMatrix() [][]fiber.Map {
+func EmptyBindMatrix(size int) [][]fiber.Map {
 	matrix := [][]fiber.Map{}
-	for i := 0; i < 5; i++ {
+	for i := 0; i < size; i++ {
 		row := []fiber.Map{}
-		for j := 0; j < 5; j++ {
+		for j := 0; j < size; j++ {
 			row = append(row, fiber.Map{"ID": int64(0)})
 		}
 		matrix = append(matrix, row)
