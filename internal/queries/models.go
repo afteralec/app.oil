@@ -9,26 +9,21 @@ import (
 )
 
 type ActorImage struct {
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
-	Description        string
-	ShortDescription   string
-	Name               string
-	Gender             string
-	EatsInto           int64
-	Sustenance         int32
-	ID                 int64
-	LiquidCapacity     int32
-	Seating            int32
-	IsContainer        bool
-	IsSurfaceContainer bool
-	Uniq               bool
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	Description      string
+	ShortDescription string
+	Name             string
+	Gender           string
+	ID               int64
+	Uniq             bool
 }
 
 type ActorImagesCan struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	Can       string
+	AIID      int64
 	ID        int64
 }
 
@@ -36,7 +31,35 @@ type ActorImagesCanBe struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	CanBe     string
+	AIID      int64
 	ID        int64
+}
+
+type ActorImagesContainerProperty struct {
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
+	LiquidCapacity     int32
+	AIID               int64
+	ID                 int64
+	IsContainer        bool
+	IsSurfaceContainer bool
+}
+
+type ActorImagesFoodProperty struct {
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	EatsInto   int64
+	AIID       int64
+	ID         int64
+	Sustenance int32
+}
+
+type ActorImagesFurnitureProperty struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	AIID      int64
+	ID        int64
+	Seating   int32
 }
 
 type ActorImagesHand struct {

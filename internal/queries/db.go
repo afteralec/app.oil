@@ -36,6 +36,33 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.countUnresolvedCommentsStmt, err = db.PrepareContext(ctx, countUnresolvedComments); err != nil {
 		return nil, fmt.Errorf("error preparing query CountUnresolvedComments: %w", err)
 	}
+	if q.createActorImageStmt, err = db.PrepareContext(ctx, createActorImage); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateActorImage: %w", err)
+	}
+	if q.createActorImageCanStmt, err = db.PrepareContext(ctx, createActorImageCan); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateActorImageCan: %w", err)
+	}
+	if q.createActorImageCanBeStmt, err = db.PrepareContext(ctx, createActorImageCanBe); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateActorImageCanBe: %w", err)
+	}
+	if q.createActorImageContainerPropertiesStmt, err = db.PrepareContext(ctx, createActorImageContainerProperties); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateActorImageContainerProperties: %w", err)
+	}
+	if q.createActorImageFoodPropertiesStmt, err = db.PrepareContext(ctx, createActorImageFoodProperties); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateActorImageFoodProperties: %w", err)
+	}
+	if q.createActorImageFurniturePropertiesStmt, err = db.PrepareContext(ctx, createActorImageFurnitureProperties); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateActorImageFurnitureProperties: %w", err)
+	}
+	if q.createActorImageHandStmt, err = db.PrepareContext(ctx, createActorImageHand); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateActorImageHand: %w", err)
+	}
+	if q.createActorImageKeywordStmt, err = db.PrepareContext(ctx, createActorImageKeyword); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateActorImageKeyword: %w", err)
+	}
+	if q.createActorImagePrimaryHandStmt, err = db.PrepareContext(ctx, createActorImagePrimaryHand); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateActorImagePrimaryHand: %w", err)
+	}
 	if q.createCharacterApplicationContentStmt, err = db.PrepareContext(ctx, createCharacterApplicationContent); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateCharacterApplicationContent: %w", err)
 	}
@@ -72,11 +99,44 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createRoomStmt, err = db.PrepareContext(ctx, createRoom); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateRoom: %w", err)
 	}
+	if q.deleteActorImageCanStmt, err = db.PrepareContext(ctx, deleteActorImageCan); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteActorImageCan: %w", err)
+	}
+	if q.deleteActorImageCanBeStmt, err = db.PrepareContext(ctx, deleteActorImageCanBe); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteActorImageCanBe: %w", err)
+	}
+	if q.deleteActorImageContainerPropertiesStmt, err = db.PrepareContext(ctx, deleteActorImageContainerProperties); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteActorImageContainerProperties: %w", err)
+	}
+	if q.deleteActorImageFoodPropertiesStmt, err = db.PrepareContext(ctx, deleteActorImageFoodProperties); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteActorImageFoodProperties: %w", err)
+	}
+	if q.deleteActorImageFurniturePropertiesStmt, err = db.PrepareContext(ctx, deleteActorImageFurnitureProperties); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteActorImageFurnitureProperties: %w", err)
+	}
+	if q.deleteActorImageHandStmt, err = db.PrepareContext(ctx, deleteActorImageHand); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteActorImageHand: %w", err)
+	}
+	if q.deleteActorImagePrimaryHandStmt, err = db.PrepareContext(ctx, deleteActorImagePrimaryHand); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteActorImagePrimaryHand: %w", err)
+	}
 	if q.deleteEmailStmt, err = db.PrepareContext(ctx, deleteEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteEmail: %w", err)
 	}
 	if q.deletePlayerPermissionStmt, err = db.PrepareContext(ctx, deletePlayerPermission); err != nil {
 		return nil, fmt.Errorf("error preparing query DeletePlayerPermission: %w", err)
+	}
+	if q.getActorImageStmt, err = db.PrepareContext(ctx, getActorImage); err != nil {
+		return nil, fmt.Errorf("error preparing query GetActorImage: %w", err)
+	}
+	if q.getActorImageContainerPropertiesStmt, err = db.PrepareContext(ctx, getActorImageContainerProperties); err != nil {
+		return nil, fmt.Errorf("error preparing query GetActorImageContainerProperties: %w", err)
+	}
+	if q.getActorImageFoodPropertiesStmt, err = db.PrepareContext(ctx, getActorImageFoodProperties); err != nil {
+		return nil, fmt.Errorf("error preparing query GetActorImageFoodProperties: %w", err)
+	}
+	if q.getActorImageFurniturePropertiesStmt, err = db.PrepareContext(ctx, getActorImageFurnitureProperties); err != nil {
+		return nil, fmt.Errorf("error preparing query GetActorImageFurnitureProperties: %w", err)
 	}
 	if q.getCharacterApplicationStmt, err = db.PrepareContext(ctx, getCharacterApplication); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCharacterApplication: %w", err)
@@ -131,6 +191,24 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.incrementRequestVersionStmt, err = db.PrepareContext(ctx, incrementRequestVersion); err != nil {
 		return nil, fmt.Errorf("error preparing query IncrementRequestVersion: %w", err)
+	}
+	if q.listActorImageCanStmt, err = db.PrepareContext(ctx, listActorImageCan); err != nil {
+		return nil, fmt.Errorf("error preparing query ListActorImageCan: %w", err)
+	}
+	if q.listActorImageCanBeStmt, err = db.PrepareContext(ctx, listActorImageCanBe); err != nil {
+		return nil, fmt.Errorf("error preparing query ListActorImageCanBe: %w", err)
+	}
+	if q.listActorImageKeywordsStmt, err = db.PrepareContext(ctx, listActorImageKeywords); err != nil {
+		return nil, fmt.Errorf("error preparing query ListActorImageKeywords: %w", err)
+	}
+	if q.listActorImagesStmt, err = db.PrepareContext(ctx, listActorImages); err != nil {
+		return nil, fmt.Errorf("error preparing query ListActorImages: %w", err)
+	}
+	if q.listActorImagesHandsStmt, err = db.PrepareContext(ctx, listActorImagesHands); err != nil {
+		return nil, fmt.Errorf("error preparing query ListActorImagesHands: %w", err)
+	}
+	if q.listActorImagesPrimaryHandsStmt, err = db.PrepareContext(ctx, listActorImagesPrimaryHands); err != nil {
+		return nil, fmt.Errorf("error preparing query ListActorImagesPrimaryHands: %w", err)
 	}
 	if q.listCharacterApplicationContentForPlayerStmt, err = db.PrepareContext(ctx, listCharacterApplicationContentForPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query ListCharacterApplicationContentForPlayer: %w", err)
@@ -289,6 +367,51 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing countUnresolvedCommentsStmt: %w", cerr)
 		}
 	}
+	if q.createActorImageStmt != nil {
+		if cerr := q.createActorImageStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createActorImageStmt: %w", cerr)
+		}
+	}
+	if q.createActorImageCanStmt != nil {
+		if cerr := q.createActorImageCanStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createActorImageCanStmt: %w", cerr)
+		}
+	}
+	if q.createActorImageCanBeStmt != nil {
+		if cerr := q.createActorImageCanBeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createActorImageCanBeStmt: %w", cerr)
+		}
+	}
+	if q.createActorImageContainerPropertiesStmt != nil {
+		if cerr := q.createActorImageContainerPropertiesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createActorImageContainerPropertiesStmt: %w", cerr)
+		}
+	}
+	if q.createActorImageFoodPropertiesStmt != nil {
+		if cerr := q.createActorImageFoodPropertiesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createActorImageFoodPropertiesStmt: %w", cerr)
+		}
+	}
+	if q.createActorImageFurniturePropertiesStmt != nil {
+		if cerr := q.createActorImageFurniturePropertiesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createActorImageFurniturePropertiesStmt: %w", cerr)
+		}
+	}
+	if q.createActorImageHandStmt != nil {
+		if cerr := q.createActorImageHandStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createActorImageHandStmt: %w", cerr)
+		}
+	}
+	if q.createActorImageKeywordStmt != nil {
+		if cerr := q.createActorImageKeywordStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createActorImageKeywordStmt: %w", cerr)
+		}
+	}
+	if q.createActorImagePrimaryHandStmt != nil {
+		if cerr := q.createActorImagePrimaryHandStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createActorImagePrimaryHandStmt: %w", cerr)
+		}
+	}
 	if q.createCharacterApplicationContentStmt != nil {
 		if cerr := q.createCharacterApplicationContentStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createCharacterApplicationContentStmt: %w", cerr)
@@ -349,6 +472,41 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createRoomStmt: %w", cerr)
 		}
 	}
+	if q.deleteActorImageCanStmt != nil {
+		if cerr := q.deleteActorImageCanStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteActorImageCanStmt: %w", cerr)
+		}
+	}
+	if q.deleteActorImageCanBeStmt != nil {
+		if cerr := q.deleteActorImageCanBeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteActorImageCanBeStmt: %w", cerr)
+		}
+	}
+	if q.deleteActorImageContainerPropertiesStmt != nil {
+		if cerr := q.deleteActorImageContainerPropertiesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteActorImageContainerPropertiesStmt: %w", cerr)
+		}
+	}
+	if q.deleteActorImageFoodPropertiesStmt != nil {
+		if cerr := q.deleteActorImageFoodPropertiesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteActorImageFoodPropertiesStmt: %w", cerr)
+		}
+	}
+	if q.deleteActorImageFurniturePropertiesStmt != nil {
+		if cerr := q.deleteActorImageFurniturePropertiesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteActorImageFurniturePropertiesStmt: %w", cerr)
+		}
+	}
+	if q.deleteActorImageHandStmt != nil {
+		if cerr := q.deleteActorImageHandStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteActorImageHandStmt: %w", cerr)
+		}
+	}
+	if q.deleteActorImagePrimaryHandStmt != nil {
+		if cerr := q.deleteActorImagePrimaryHandStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteActorImagePrimaryHandStmt: %w", cerr)
+		}
+	}
 	if q.deleteEmailStmt != nil {
 		if cerr := q.deleteEmailStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteEmailStmt: %w", cerr)
@@ -357,6 +515,26 @@ func (q *Queries) Close() error {
 	if q.deletePlayerPermissionStmt != nil {
 		if cerr := q.deletePlayerPermissionStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deletePlayerPermissionStmt: %w", cerr)
+		}
+	}
+	if q.getActorImageStmt != nil {
+		if cerr := q.getActorImageStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getActorImageStmt: %w", cerr)
+		}
+	}
+	if q.getActorImageContainerPropertiesStmt != nil {
+		if cerr := q.getActorImageContainerPropertiesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getActorImageContainerPropertiesStmt: %w", cerr)
+		}
+	}
+	if q.getActorImageFoodPropertiesStmt != nil {
+		if cerr := q.getActorImageFoodPropertiesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getActorImageFoodPropertiesStmt: %w", cerr)
+		}
+	}
+	if q.getActorImageFurniturePropertiesStmt != nil {
+		if cerr := q.getActorImageFurniturePropertiesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getActorImageFurniturePropertiesStmt: %w", cerr)
 		}
 	}
 	if q.getCharacterApplicationStmt != nil {
@@ -447,6 +625,36 @@ func (q *Queries) Close() error {
 	if q.incrementRequestVersionStmt != nil {
 		if cerr := q.incrementRequestVersionStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing incrementRequestVersionStmt: %w", cerr)
+		}
+	}
+	if q.listActorImageCanStmt != nil {
+		if cerr := q.listActorImageCanStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listActorImageCanStmt: %w", cerr)
+		}
+	}
+	if q.listActorImageCanBeStmt != nil {
+		if cerr := q.listActorImageCanBeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listActorImageCanBeStmt: %w", cerr)
+		}
+	}
+	if q.listActorImageKeywordsStmt != nil {
+		if cerr := q.listActorImageKeywordsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listActorImageKeywordsStmt: %w", cerr)
+		}
+	}
+	if q.listActorImagesStmt != nil {
+		if cerr := q.listActorImagesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listActorImagesStmt: %w", cerr)
+		}
+	}
+	if q.listActorImagesHandsStmt != nil {
+		if cerr := q.listActorImagesHandsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listActorImagesHandsStmt: %w", cerr)
+		}
+	}
+	if q.listActorImagesPrimaryHandsStmt != nil {
+		if cerr := q.listActorImagesPrimaryHandsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listActorImagesPrimaryHandsStmt: %w", cerr)
 		}
 	}
 	if q.listCharacterApplicationContentForPlayerStmt != nil {
@@ -712,6 +920,15 @@ type Queries struct {
 	countOpenCharacterApplicationsForPlayerStmt           *sql.Stmt
 	countOpenRequestsStmt                                 *sql.Stmt
 	countUnresolvedCommentsStmt                           *sql.Stmt
+	createActorImageStmt                                  *sql.Stmt
+	createActorImageCanStmt                               *sql.Stmt
+	createActorImageCanBeStmt                             *sql.Stmt
+	createActorImageContainerPropertiesStmt               *sql.Stmt
+	createActorImageFoodPropertiesStmt                    *sql.Stmt
+	createActorImageFurniturePropertiesStmt               *sql.Stmt
+	createActorImageHandStmt                              *sql.Stmt
+	createActorImageKeywordStmt                           *sql.Stmt
+	createActorImagePrimaryHandStmt                       *sql.Stmt
 	createCharacterApplicationContentStmt                 *sql.Stmt
 	createEmailStmt                                       *sql.Stmt
 	createHistoryForCharacterApplicationStmt              *sql.Stmt
@@ -724,8 +941,19 @@ type Queries struct {
 	createRequestStmt                                     *sql.Stmt
 	createRequestCommentStmt                              *sql.Stmt
 	createRoomStmt                                        *sql.Stmt
+	deleteActorImageCanStmt                               *sql.Stmt
+	deleteActorImageCanBeStmt                             *sql.Stmt
+	deleteActorImageContainerPropertiesStmt               *sql.Stmt
+	deleteActorImageFoodPropertiesStmt                    *sql.Stmt
+	deleteActorImageFurniturePropertiesStmt               *sql.Stmt
+	deleteActorImageHandStmt                              *sql.Stmt
+	deleteActorImagePrimaryHandStmt                       *sql.Stmt
 	deleteEmailStmt                                       *sql.Stmt
 	deletePlayerPermissionStmt                            *sql.Stmt
+	getActorImageStmt                                     *sql.Stmt
+	getActorImageContainerPropertiesStmt                  *sql.Stmt
+	getActorImageFoodPropertiesStmt                       *sql.Stmt
+	getActorImageFurniturePropertiesStmt                  *sql.Stmt
 	getCharacterApplicationStmt                           *sql.Stmt
 	getCharacterApplicationContentStmt                    *sql.Stmt
 	getCharacterApplicationContentForRequestStmt          *sql.Stmt
@@ -744,6 +972,12 @@ type Queries struct {
 	getTagsForHelpFileStmt                                *sql.Stmt
 	getVerifiedEmailByAddressStmt                         *sql.Stmt
 	incrementRequestVersionStmt                           *sql.Stmt
+	listActorImageCanStmt                                 *sql.Stmt
+	listActorImageCanBeStmt                               *sql.Stmt
+	listActorImageKeywordsStmt                            *sql.Stmt
+	listActorImagesStmt                                   *sql.Stmt
+	listActorImagesHandsStmt                              *sql.Stmt
+	listActorImagesPrimaryHandsStmt                       *sql.Stmt
 	listCharacterApplicationContentForPlayerStmt          *sql.Stmt
 	listCharacterApplicationsForPlayerStmt                *sql.Stmt
 	listCommentsForRequestStmt                            *sql.Stmt
@@ -798,6 +1032,15 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		countOpenCharacterApplicationsForPlayerStmt:           q.countOpenCharacterApplicationsForPlayerStmt,
 		countOpenRequestsStmt:                                 q.countOpenRequestsStmt,
 		countUnresolvedCommentsStmt:                           q.countUnresolvedCommentsStmt,
+		createActorImageStmt:                                  q.createActorImageStmt,
+		createActorImageCanStmt:                               q.createActorImageCanStmt,
+		createActorImageCanBeStmt:                             q.createActorImageCanBeStmt,
+		createActorImageContainerPropertiesStmt:               q.createActorImageContainerPropertiesStmt,
+		createActorImageFoodPropertiesStmt:                    q.createActorImageFoodPropertiesStmt,
+		createActorImageFurniturePropertiesStmt:               q.createActorImageFurniturePropertiesStmt,
+		createActorImageHandStmt:                              q.createActorImageHandStmt,
+		createActorImageKeywordStmt:                           q.createActorImageKeywordStmt,
+		createActorImagePrimaryHandStmt:                       q.createActorImagePrimaryHandStmt,
 		createCharacterApplicationContentStmt:                 q.createCharacterApplicationContentStmt,
 		createEmailStmt:                                       q.createEmailStmt,
 		createHistoryForCharacterApplicationStmt:              q.createHistoryForCharacterApplicationStmt,
@@ -810,8 +1053,19 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createRequestStmt:                                     q.createRequestStmt,
 		createRequestCommentStmt:                              q.createRequestCommentStmt,
 		createRoomStmt:                                        q.createRoomStmt,
+		deleteActorImageCanStmt:                               q.deleteActorImageCanStmt,
+		deleteActorImageCanBeStmt:                             q.deleteActorImageCanBeStmt,
+		deleteActorImageContainerPropertiesStmt:               q.deleteActorImageContainerPropertiesStmt,
+		deleteActorImageFoodPropertiesStmt:                    q.deleteActorImageFoodPropertiesStmt,
+		deleteActorImageFurniturePropertiesStmt:               q.deleteActorImageFurniturePropertiesStmt,
+		deleteActorImageHandStmt:                              q.deleteActorImageHandStmt,
+		deleteActorImagePrimaryHandStmt:                       q.deleteActorImagePrimaryHandStmt,
 		deleteEmailStmt:                                       q.deleteEmailStmt,
 		deletePlayerPermissionStmt:                            q.deletePlayerPermissionStmt,
+		getActorImageStmt:                                     q.getActorImageStmt,
+		getActorImageContainerPropertiesStmt:                  q.getActorImageContainerPropertiesStmt,
+		getActorImageFoodPropertiesStmt:                       q.getActorImageFoodPropertiesStmt,
+		getActorImageFurniturePropertiesStmt:                  q.getActorImageFurniturePropertiesStmt,
 		getCharacterApplicationStmt:                           q.getCharacterApplicationStmt,
 		getCharacterApplicationContentStmt:                    q.getCharacterApplicationContentStmt,
 		getCharacterApplicationContentForRequestStmt:          q.getCharacterApplicationContentForRequestStmt,
@@ -830,6 +1084,12 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getTagsForHelpFileStmt:                                q.getTagsForHelpFileStmt,
 		getVerifiedEmailByAddressStmt:                         q.getVerifiedEmailByAddressStmt,
 		incrementRequestVersionStmt:                           q.incrementRequestVersionStmt,
+		listActorImageCanStmt:                                 q.listActorImageCanStmt,
+		listActorImageCanBeStmt:                               q.listActorImageCanBeStmt,
+		listActorImageKeywordsStmt:                            q.listActorImageKeywordsStmt,
+		listActorImagesStmt:                                   q.listActorImagesStmt,
+		listActorImagesHandsStmt:                              q.listActorImagesHandsStmt,
+		listActorImagesPrimaryHandsStmt:                       q.listActorImagesPrimaryHandsStmt,
 		listCharacterApplicationContentForPlayerStmt:          q.listCharacterApplicationContentForPlayerStmt,
 		listCharacterApplicationsForPlayerStmt:                q.listCharacterApplicationsForPlayerStmt,
 		listCommentsForRequestStmt:                            q.listCommentsForRequestStmt,
