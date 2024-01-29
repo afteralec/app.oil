@@ -1,0 +1,27 @@
+{{ define "view-actor-images" }}
+<main class="flex flex-col items-center justify-center">
+  <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
+    {{ template "partial-page-header" .PageHeader }}
+    <section
+      id="create-room"
+      class="px-6 pt-4"
+      x-data="{ showCreateDialog: false }"
+    >
+      <button
+        type="button"
+        class="button-primary"
+        @click.prevent="showCreateDialog = true;"
+      >
+        New Actor Image
+      </button>
+      {{ template "partial-actor-image-dialog-create" }}
+    </section>
+    <section id="actor-images" class="pt-6">
+      <!-- prettier-ignore -->
+      {{ range .ActorImages }}
+      {{ template "partial-room-link" . }}
+      {{ end }}
+    </section>
+  </div>
+</main>
+{{ end }}

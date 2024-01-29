@@ -46,6 +46,10 @@ func nav(c *fiber.Ctx) []fiber.Map {
 	if perms.HasPermission(permissions.PlayerReviewCharacterApplicationsName) {
 		nav = append(nav, reviewMenu(c))
 	}
+	// TODO: Clean up this permissions check
+	if perms.HasPermission(permissions.PlayerViewAllActorImagesName) {
+		nav = append(nav, actorsMenu(c))
+	}
 	if perms.HasPermission(permissions.PlayerViewAllRoomsName) {
 		nav = append(nav, roomsMenu(c))
 	}
@@ -92,6 +96,29 @@ func helpLink(c *fiber.Ctx) fiber.Map {
 		"Path":   routes.Help,
 		"Text":   "Help",
 		"Active": c.Path() == routes.Help,
+	}
+}
+
+func actorsMenu(c *fiber.Ctx) fiber.Map {
+	return fiber.Map{
+		"Type": "List",
+		"Button": fiber.Map{
+			"Label": "Actors",
+		},
+		"Sections": []fiber.Map{
+			{
+				"Items": []fiber.Map{
+					{
+						"Label":  "Actor Images",
+						"Path":   routes.ActorImages,
+						"Active": c.Path() == routes.ActorImages,
+					},
+				},
+			},
+		},
+		"Path":   routes.Rooms,
+		"Text":   "Rooms",
+		"Active": strings.Contains(c.Path(), routes.Rooms),
 	}
 }
 

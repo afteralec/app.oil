@@ -301,3 +301,34 @@ func DeleteTestUnmodifiedRooms(t *testing.T, i *shared.Interfaces) {
 		t.Fatal(err)
 	}
 }
+
+type CreateTestActorImageParams struct {
+	Gender           string
+	Name             string
+	ShortDescription string
+	Description      string
+}
+
+func CreateTestActorImage(t *testing.T, i *shared.Interfaces, p CreateTestActorImageParams) int64 {
+	result, err := i.Queries.CreateActorImage(context.Background(), queries.CreateActorImageParams{
+		Gender:           p.Gender,
+		Name:             p.Name,
+		ShortDescription: p.ShortDescription,
+		Description:      p.Description,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	rid, err := result.LastInsertId()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return rid
+}
+
+func DeleteTestActorImage(t *testing.T, i *shared.Interfaces, aiid int64) {
+	_, err := i.Database.Exec("DELETE FROM actor_images WHERE id = ?;", aiid)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

@@ -106,6 +106,19 @@ body {
   padding-top: 1.5rem;
 }
 
+/* TODO: Clean this up along with the username handling, this should be a class instead of an id */
+#actor-image-reserved:not(.htmx-request) > #actor-image-reserved-indicator {
+  display: none;
+}
+
+#actor-image-reserved.htmx-request > #actor-image-reserved-status {
+  display: none;
+}
+
+#actor-image-reserved.htmx-request > #actor-image-reserved-indicator {
+  display: default;
+}
+
 #username-reserved:not(.htmx-request) > #username-reserved-indicator {
   display: none;
 }

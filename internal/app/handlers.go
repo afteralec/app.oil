@@ -36,7 +36,8 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Get(routes.Logout, handlers.LogoutPage())
 
 	app.Post(routes.Register, handlers.Register(i))
-	app.Post(routes.Reserved, handlers.Reserved(i))
+	// TODO: Should this be a GET with the search param in the URL?
+	app.Post(routes.Reserved, handlers.UsernameReserved(i))
 
 	app.Post(routes.NewEmailPath(), handlers.AddEmail(i))
 	app.Delete(routes.EmailPath(routes.ID), handlers.DeleteEmail(i))
@@ -75,6 +76,9 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Get(routes.RoomGridPathParam, handlers.RoomGrid(i))
 	app.Patch(routes.RoomExitsPathParam, handlers.EditRoomExit(i))
 	app.Delete(routes.RoomExitPathParam, handlers.ClearRoomExit(i))
+
+	app.Post(routes.ActorImageReserved, handlers.ActorImageNameReserved(i))
+	app.Get(routes.ActorImages, handlers.ActorImagesPage(i))
 
 	app.Post(routes.SearchPlayerPath(routes.Destination), handlers.SearchPlayer(i))
 

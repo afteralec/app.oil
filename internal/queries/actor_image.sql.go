@@ -31,29 +31,29 @@ func (q *Queries) CreateActorImage(ctx context.Context, arg CreateActorImagePara
 }
 
 const createActorImageCan = `-- name: CreateActorImageCan :execresult
-INSERT INTO actor_images_can (aiid, can) VALUES (?, ?)
+INSERT INTO actor_images_can (can, aiid) VALUES (?, ?)
 `
 
 type CreateActorImageCanParams struct {
-	AIID int64
 	Can  string
+	AIID int64
 }
 
 func (q *Queries) CreateActorImageCan(ctx context.Context, arg CreateActorImageCanParams) (sql.Result, error) {
-	return q.exec(ctx, q.createActorImageCanStmt, createActorImageCan, arg.AIID, arg.Can)
+	return q.exec(ctx, q.createActorImageCanStmt, createActorImageCan, arg.Can, arg.AIID)
 }
 
 const createActorImageCanBe = `-- name: CreateActorImageCanBe :execresult
-INSERT INTO actor_images_can_be (aiid, can_be) VALUES (?, ?)
+INSERT INTO actor_images_can_be (can_be, aiid) VALUES (?, ?)
 `
 
 type CreateActorImageCanBeParams struct {
-	AIID  int64
 	CanBe string
+	AIID  int64
 }
 
 func (q *Queries) CreateActorImageCanBe(ctx context.Context, arg CreateActorImageCanBeParams) (sql.Result, error) {
-	return q.exec(ctx, q.createActorImageCanBeStmt, createActorImageCanBe, arg.AIID, arg.CanBe)
+	return q.exec(ctx, q.createActorImageCanBeStmt, createActorImageCanBe, arg.CanBe, arg.AIID)
 }
 
 const createActorImageContainerProperties = `-- name: CreateActorImageContainerProperties :execresult
@@ -117,16 +117,16 @@ func (q *Queries) CreateActorImageHand(ctx context.Context, arg CreateActorImage
 }
 
 const createActorImageKeyword = `-- name: CreateActorImageKeyword :execresult
-INSERT INTO actor_images_keywords (aiid, keyword) VALUES (?, ?)
+INSERT INTO actor_images_keywords (keyword, aiid) VALUES (?, ?)
 `
 
 type CreateActorImageKeywordParams struct {
-	AIID    int64
 	Keyword string
+	AIID    int64
 }
 
 func (q *Queries) CreateActorImageKeyword(ctx context.Context, arg CreateActorImageKeywordParams) (sql.Result, error) {
-	return q.exec(ctx, q.createActorImageKeywordStmt, createActorImageKeyword, arg.AIID, arg.Keyword)
+	return q.exec(ctx, q.createActorImageKeywordStmt, createActorImageKeyword, arg.Keyword, arg.AIID)
 }
 
 const createActorImagePrimaryHand = `-- name: CreateActorImagePrimaryHand :execresult
@@ -225,8 +225,28 @@ func (q *Queries) GetActorImage(ctx context.Context, id int64) (ActorImage, erro
 	return i, err
 }
 
+const getActorImageByName = `-- name: GetActorImageByName :one
+SELECT created_at, updated_at, description, short_description, name, gender, id, uniq FROM actor_images WHERE name = ?
+`
+
+func (q *Queries) GetActorImageByName(ctx context.Context, name string) (ActorImage, error) {
+	row := q.queryRow(ctx, q.getActorImageByNameStmt, getActorImageByName, name)
+	var i ActorImage
+	err := row.Scan(
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Description,
+		&i.ShortDescription,
+		&i.Name,
+		&i.Gender,
+		&i.ID,
+		&i.Uniq,
+	)
+	return i, err
+}
+
 const getActorImageContainerProperties = `-- name: GetActorImageContainerProperties :one
-SELECT created_at, updated_at, liquid_capacity, aiid, id, is_container, is_surface_container FROM actor_images_container_properties WHERE aiid = ?
+SELECT created_at, updated_at, aiid, id, liquid_capacity, is_container, is_surface_container FROM actor_images_container_properties WHERE aiid = ?
 `
 
 func (q *Queries) GetActorImageContainerProperties(ctx context.Context, aiid int64) (ActorImagesContainerProperty, error) {
@@ -235,9 +255,9 @@ func (q *Queries) GetActorImageContainerProperties(ctx context.Context, aiid int
 	err := row.Scan(
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.LiquidCapacity,
 		&i.AIID,
 		&i.ID,
+		&i.LiquidCapacity,
 		&i.IsContainer,
 		&i.IsSurfaceContainer,
 	)

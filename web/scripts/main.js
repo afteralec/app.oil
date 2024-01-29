@@ -123,6 +123,10 @@ export function sanitizeRequestComment(c = "") {
   return c.replace(regex, "");
 }
 
+export function sanitizeActorImageName(u) {
+  return u.replace(/[^a-z-]+/gi, "").toLowerCase();
+}
+
 // TODO: Pass these lengths in as constants
 export function isUsernameValid(u) {
   if (u.length < 4) return false;
@@ -180,6 +184,14 @@ export function isRequestCommentValid(c = "") {
   if (c.length > 500) return false;
   const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
   if (regex.test(c)) return false;
+  return true;
+}
+
+export function isActorImageNameValid(n) {
+  if (n.length < 4) return false;
+  if (n.length > 50) return false;
+  const regex = new RegExp("[^a-z-]+", "g");
+  if (regex.test(n)) return false;
   return true;
 }
 
@@ -506,3 +518,5 @@ window.getRequestData = getRequestData;
 window.getPlayerPermissionsData = getPlayerPermissionsData;
 window.getRequestCommentData = getRequestCommentData;
 window.getSearchHelpIndexData = getSearchHelpIndexData;
+window.sanitizeActorImageName = sanitizeActorImageName;
+window.isActorImageNameValid = isActorImageNameValid;

@@ -1,0 +1,69 @@
+<!-- prettier-ignore -->
+{{ define "partial-actor-image-dialog-create" }}
+{{ template "partial-modal-overlay" "showCreateDialog" }}
+<div
+  class="modal"
+  @click.away="showCreateDialog = false;"
+  x-cloak
+  x-show="showCreateDialog"
+>
+  {{ template "partial-modal-close" "showCreateDialog" }}
+  <section id="edit-room-exits-link-error"></section>
+  <h3 class="pt-4 text-lg font-semibold leading-none tracking-tight">
+    New Actor Image:
+  </h3>
+  <p class="pt-2 text-base leading-none">
+    Please create a unique name for this Actor Image.
+  </p>
+  <form
+    class="space-y-2 pt-4"
+    x-data="
+      {
+        name: '',
+        eval: {
+          n: {
+            len: false
+          }
+        },
+        reserved: true
+      }
+    "
+    hx-post
+    @submit.prevent="showCreateDialog = false;"
+  >
+    <label
+      for="actor-image-create-name-input"
+      class="text-sm font-semibold leading-none"
+      >Image Name</label
+    >
+    <!-- TODO: Add sanitization, validation and helper label -->
+    <input
+      name="id"
+      id="actor-image-create-name-input"
+      class="input"
+      x-model="name"
+      @input="
+        eval.n.len = true;
+        const reservedEl = document.getElementById('actor-image-reserved');
+        reservedEl.classList.add('htmx-request');
+        usernameReserved = true;
+        document.body.addEventListener('ptrcr:actor-image-reserved', () => {
+          const el = document.getElementById('actor-image-reserved');
+          reserved = Boolean(el);
+        }, { once: true });
+        name = sanitizeActorImageName(event.target.value);
+      "
+      hx-post="/actors/images/reserved"
+      hx-params="name"
+      hx-trigger="keyup changed delay:500ms"
+      hx-target="#actor-image-reserved"
+      hx-indicator="#actor-image-reserved"
+    />
+    {{ template "partial-actor-image-reserved-default" }}
+    <footer class="flex items-center gap-2 pt-6">
+      <!-- TODO: Add disabling based on state of the input -->
+      <button type="submit" class="button-primary ml-auto">Create</button>
+    </footer>
+  </form>
+</div>
+{{ end }}

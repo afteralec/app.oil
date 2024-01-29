@@ -129,6 +129,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getActorImageStmt, err = db.PrepareContext(ctx, getActorImage); err != nil {
 		return nil, fmt.Errorf("error preparing query GetActorImage: %w", err)
 	}
+	if q.getActorImageByNameStmt, err = db.PrepareContext(ctx, getActorImageByName); err != nil {
+		return nil, fmt.Errorf("error preparing query GetActorImageByName: %w", err)
+	}
 	if q.getActorImageContainerPropertiesStmt, err = db.PrepareContext(ctx, getActorImageContainerProperties); err != nil {
 		return nil, fmt.Errorf("error preparing query GetActorImageContainerProperties: %w", err)
 	}
@@ -520,6 +523,11 @@ func (q *Queries) Close() error {
 	if q.getActorImageStmt != nil {
 		if cerr := q.getActorImageStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getActorImageStmt: %w", cerr)
+		}
+	}
+	if q.getActorImageByNameStmt != nil {
+		if cerr := q.getActorImageByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getActorImageByNameStmt: %w", cerr)
 		}
 	}
 	if q.getActorImageContainerPropertiesStmt != nil {
@@ -951,6 +959,7 @@ type Queries struct {
 	deleteEmailStmt                                       *sql.Stmt
 	deletePlayerPermissionStmt                            *sql.Stmt
 	getActorImageStmt                                     *sql.Stmt
+	getActorImageByNameStmt                               *sql.Stmt
 	getActorImageContainerPropertiesStmt                  *sql.Stmt
 	getActorImageFoodPropertiesStmt                       *sql.Stmt
 	getActorImageFurniturePropertiesStmt                  *sql.Stmt
@@ -1063,6 +1072,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		deleteEmailStmt:                                       q.deleteEmailStmt,
 		deletePlayerPermissionStmt:                            q.deletePlayerPermissionStmt,
 		getActorImageStmt:                                     q.getActorImageStmt,
+		getActorImageByNameStmt:                               q.getActorImageByNameStmt,
 		getActorImageContainerPropertiesStmt:                  q.getActorImageContainerPropertiesStmt,
 		getActorImageFoodPropertiesStmt:                       q.getActorImageFoodPropertiesStmt,
 		getActorImageFurniturePropertiesStmt:                  q.getActorImageFurniturePropertiesStmt,

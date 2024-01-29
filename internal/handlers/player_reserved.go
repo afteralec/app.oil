@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/shared"
 )
 
-func Reserved(i *shared.Interfaces) fiber.Handler {
+func UsernameReserved(i *shared.Interfaces) fiber.Handler {
 	type request struct {
 		Username string `form:"username"`
 	}

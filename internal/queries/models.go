@@ -38,9 +38,9 @@ type ActorImagesCanBe struct {
 type ActorImagesContainerProperty struct {
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
-	LiquidCapacity     int32
 	AIID               int64
 	ID                 int64
+	LiquidCapacity     int32
 	IsContainer        bool
 	IsSurfaceContainer bool
 }

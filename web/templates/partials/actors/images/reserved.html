@@ -1,0 +1,10 @@
+{{ define "partial-actor-image-reserved-default" }}
+<div id="actor-image-reserved" x-cloak x-show="isActorImageNameValid(name)">
+  <p id="actor-image-reserved-status" class="text-xs leading-none">
+    Nice! This Actor Image name is available.
+  </p>
+  <p id="actor-image-reserved-indicator" class="text-xs leading-none">
+    Checking...
+  </p>
+</div>
+{{ end }}

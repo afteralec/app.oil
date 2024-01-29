@@ -6,4 +6,5 @@ const (
 	GenderMale      = "Male"
 	GenderFemale    = "Female"
 	GenderNonBinary = "NonBinary"
+	GenderObject    = "Object"
 )

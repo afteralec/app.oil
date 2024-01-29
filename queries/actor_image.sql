@@ -1,6 +1,9 @@
 -- name: GetActorImage :one
 SELECT * FROM actor_images WHERE id = ?;
 
+-- name: GetActorImageByName :one
+SELECT * FROM actor_images WHERE name = ?;
+
 -- name: ListActorImages :many
 SELECT * FROM actor_images;
 
@@ -11,13 +14,13 @@ INSERT INTO actor_images (gender, name, short_description, description) VALUES (
 SELECT * FROM actor_images_keywords WHERE aiid = ?;
 
 -- name: CreateActorImageKeyword :execresult
-INSERT INTO actor_images_keywords (aiid, keyword) VALUES (?, ?);
+INSERT INTO actor_images_keywords (keyword, aiid) VALUES (?, ?);
 
 -- name: ListActorImageCan :many
 SELECT * FROM actor_images_can WHERE aiid = ?;
 
 -- name: CreateActorImageCan :execresult
-INSERT INTO actor_images_can (aiid, can) VALUES (?, ?);
+INSERT INTO actor_images_can (can, aiid) VALUES (?, ?);
 
 -- name: DeleteActorImageCan :exec
 DELETE FROM actor_images_can WHERE id = ?;
@@ -26,7 +29,7 @@ DELETE FROM actor_images_can WHERE id = ?;
 SELECT * FROM actor_images_can_be WHERE aiid = ?;
 
 -- name: CreateActorImageCanBe :execresult
-INSERT INTO actor_images_can_be (aiid, can_be) VALUES (?, ?);
+INSERT INTO actor_images_can_be (can_be, aiid) VALUES (?, ?);
 
 -- name: DeleteActorImageCanBe :exec
 DELETE FROM actor_images_can_be WHERE id = ?;

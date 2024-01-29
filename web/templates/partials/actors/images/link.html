@@ -1,12 +1,9 @@
-{{ define "partial-room-image-link" }}
+{{ define "partial-actor-image-link" }}
 <div class="flex w-full items-center border-b p-4">
   <header>
-    <h4 class="text-base font-semibold leading-none">{{ .RoomTitle }}</h4>
-    <div class="text-sm leading-none text-muted-fg">{{ .ImageName }}</div>
+    <h4 class="text-base font-semibold leading-none">{{ .Title }}</h4>
+    <div class="text-sm leading-none text-muted-fg">{{ .Name }}</div>
   </header>
-  <div class="pl-4 text-sm leading-none">
-    <div><span class="font-semibold">Size:</span> {{ .Size }}</div>
-  </div>
   <div class="ml-auto flex items-center justify-center gap-2">
     {{ if .EditPath }}
     <a href="{{ .EditPath }}" class="button-outline">Edit</a>
