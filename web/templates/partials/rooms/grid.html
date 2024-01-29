@@ -1,10 +1,37 @@
 {{ define "partial-room-grid" }}
 <section
   id="room-grid"
-  class="flex flex-col gap-4 pt-6"
+  class="space-y-4 pt-6"
   hx-swap-oob="outerHTML"
+  x-data="{ roomGridEditMode: false }"
 >
-  <h4 class="text-sm font-medium leading-none">Grid</h4>
+  <h4 class="flex items-center text-sm font-medium leading-none">Grid</h4>
+  <section
+    id="room-grid-controls"
+    class="flex items-center"
+    @click.prevent="roomGridEditMode = !roomGridEditMode;"
+  >
+    <div
+      class="flex cursor-pointer select-none items-center text-muted-fg hover:text-primary hover:underline"
+    >
+      <iconify-icon
+        class="icon"
+        icon="jam:padlock-open-f"
+        height="16"
+        width="16"
+        x-cloak
+        x-show="roomGridEditMode"
+      ></iconify-icon>
+      <iconify-icon
+        class="icon"
+        icon="jam:padlock-f"
+        height="16"
+        width="16"
+        x-show="!roomGridEditMode"
+      ></iconify-icon>
+      Edit
+    </div>
+  </section>
   {{ range .RoomGrid }}
   <section class="flex items-center gap-4">
     <!-- prettier-ignore -->

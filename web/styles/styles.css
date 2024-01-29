@@ -160,7 +160,7 @@ body {
 }
 
 .modal {
-  @apply fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-bg p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%];
+  @apply z-20 fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-bg p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%];
 }
 
 .notice {

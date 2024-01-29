@@ -84,18 +84,18 @@ func (n *Node) Bind() fiber.Map {
 	}
 
 	for _, dir := range DirectionsList {
+		// TODO: Change this ID name to Key
 		bindID := DirectionBindID(dir)
-		bind[bindID] = BindGridExit(n.GetExitID(dir))
+		bind[bindID] = n.BindGridExit(dir)
 	}
 
 	return bind
 }
 
-func BindGridExit(id int64) fiber.Map {
-	return fiber.Map{
-		"ID":       id,
-		"InMatrix": false,
-	}
+func (n *Node) BindGridExit(dir string) fiber.Map {
+	b := n.BindEmptyExit(dir)
+	b["ID"] = n.GetExitID(dir)
+	return b
 }
 
 func MatrixCoordinateForDirection(dir string, row, col int) (int, int) {
@@ -330,6 +330,7 @@ func (n *Node) BindExits() []fiber.Map {
 }
 
 func (n *Node) BindEmptyExit(dir string) fiber.Map {
+	// TODO: Remove elements from the main map that aren't being used
 	return fiber.Map{
 		"ID":              0,
 		"RoomID":          n.ID,
@@ -341,6 +342,17 @@ func (n *Node) BindEmptyExit(dir string) fiber.Map {
 		"RoomsPath":       routes.Rooms,
 		"RoomExitsPath":   routes.RoomExitsPath(n.ID),
 		"RoomExitPath":    routes.RoomExitPath(n.ID, dir),
+		"CreateDialog": fiber.Map{
+			"Exit":          dir,
+			"RoomID":        n.ID,
+			"RoomsPath":     routes.Rooms,
+			"EditElementID": ExitEditElementID(dir),
+		},
+		"LinkDialog": fiber.Map{
+			"Exit":          dir,
+			"RoomExitsPath": routes.RoomExitsPath(n.ID),
+			"EditElementID": ExitEditElementID(dir),
+		},
 	}
 }
 

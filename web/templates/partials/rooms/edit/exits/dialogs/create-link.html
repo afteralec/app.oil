@@ -1,0 +1,38 @@
+<!-- prettier-ignore -->
+{{ define "partial-edit-room-exits-dialog-create-link" }}
+{{ template "partial-modal-overlay" "showCreateLinkDialog" }}
+<div
+  class="modal"
+  @click.away="showCreateLinkDialog = false;"
+  x-cloak
+  x-show="showCreateLinkDialog"
+>
+  {{ template "partial-modal-close" "showCreateLinkDialog" }}
+  <section id="edit-room-exits-create-error"></section>
+  <h3 class="pt-4 text-lg font-semibold leading-none tracking-tight">
+    Create a new room or link an existing one?
+  </h3>
+  <footer class="flex items-center justify-end gap-2 pt-4">
+    <button
+      type="button"
+      class="button-outline"
+      @click.prevent="
+        showCreateLinkDialog = false;
+        showLinkDialog = true;
+      "
+    >
+      Link
+    </button>
+    <button
+      type="button"
+      class="button-primary"
+      @click.prevent="
+        showCreateLinkDialog = false;
+        showCreateDialog = true;
+      "
+    >
+      Create
+    </button>
+  </footer>
+</div>
+{{ end }}

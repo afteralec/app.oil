@@ -1,23 +1,43 @@
 <!-- prettier-ignore -->
 {{ define "partial-room-grid-exit-arrow-north" }}
 {{ if eq .ID 0 }}
-<div class="flex items-center justify-center p-0.5">
+<div
+  class="flex items-center justify-center p-0.5"
+  x-data="
+    {
+      showCreateLinkDialog: false,
+      showCreateDialog: false,
+      showLinkDialog: false
+    }
+  "
+>
   <iconify-icon
-    class="icon cursor-pointer opacity-0 hover:opacity-100"
     icon="tabler:chevron-up"
     height="20"
     width="20"
+    class="icon"
+    :class="roomGridEditMode ? 'cursor-pointer opacity-50 hover:opacity-100' : 'opacity-0'"
+    @click.prevent="
+      if (!roomGridEditMode) {
+        return;
+      }
+      showCreateLinkDialog = true;
+    "
   ></iconify-icon>
+  <!-- prettier-ignore -->
+  {{ template "partial-edit-room-exits-dialog-create-link" . }}
+  {{ template "partial-edit-room-exits-dialog-link" .LinkDialog }}
+  {{ template "partial-edit-room-exits-dialog-create" .CreateDialog }}
 </div>
 <!-- prettier-ignore -->
 {{ else }}
 {{ if .InMatrix }}
 <div class="flex items-center justify-center p-0.5">
   <iconify-icon
-    class="icon"
     icon="tabler:chevron-up"
     height="20"
     width="20"
+    class="icon"
   ></iconify-icon>
 </div>
 {{ else if .OffMatrix }}

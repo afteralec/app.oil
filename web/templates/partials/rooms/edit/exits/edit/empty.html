@@ -4,8 +4,8 @@
   x-data="{ showLinkDialog: false, showCreateDialog: false }"
 >
   <!-- prettier-ignore -->
-  {{ template "partial-edit-room-exits-dialog-link" . }}
-  {{ template "partial-edit-room-exits-dialog-create" . }}
+  {{ template "partial-edit-room-exits-dialog-link" .LinkDialog }}
+  {{ template "partial-edit-room-exits-dialog-create" .CreateDialog }}
   <button type="button" class="button-outline" @click="showLinkDialog = true;">
     Link
   </button>
