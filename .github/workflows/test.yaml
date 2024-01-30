@@ -1,5 +1,7 @@
 name: Test
-on: [workflow_call]
+on:
+  push:
+    branches: [main]
 jobs:
   test:
     name: Integration Tests
