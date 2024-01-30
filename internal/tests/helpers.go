@@ -339,3 +339,82 @@ func DeleteTestActorImageByName(t *testing.T, i *shared.Interfaces, name string)
 		t.Fatal(err)
 	}
 }
+
+type CreateTestHelpFileRelatedParams struct {
+	Title string
+	Sub   string
+	Slug  string
+}
+
+type CreateTestHelpFileTagParams struct {
+	Tag string
+}
+
+type CreateTestHelpFileParams struct {
+	Slug     string
+	Title    string
+	Sub      string
+	Category string
+	Raw      string
+	HTML     string
+	Related  []CreateTestHelpFileRelatedParams
+	Tags     []CreateTestHelpFileTagParams
+	PID      int64
+}
+
+func CreateTestHelpFile(t *testing.T, i *shared.Interfaces, p CreateTestHelpFileParams) {
+	_, err := i.Database.Exec(
+		"INSERT INTO help (slug, title, sub, category, pid, raw, html) VALUES (?, ?, ?, ?, ?, ?, ?);",
+		p.Slug,
+		p.Title,
+		p.Sub,
+		p.Category,
+		p.PID,
+		p.Raw,
+		p.HTML,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, related := range p.Related {
+		_, err := i.Database.Exec(
+			"INSERT INTO help_related (slug, related_title, related_sub, related_slug) VALUES (?, ?, ?, ?);",
+			p.Slug,
+			related.Title,
+			related.Sub,
+			related.Slug,
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	for _, tag := range p.Tags {
+		_, err := i.Database.Exec(
+			"INSERT INTO help_tags (slug, tag) VALUES (?, ?);",
+			p.Slug,
+			tag.Tag,
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func DeleteTestHelpFile(t *testing.T, i *shared.Interfaces, slug string) {
+	_, err := i.Database.Exec("DELETE FROM help WHERE slug = ?;", slug)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = i.Database.Exec("DELETE FROM help_related WHERE slug = ?;", slug)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = i.Database.Exec("DELETE FROM help_tags WHERE slug = ?;", slug)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

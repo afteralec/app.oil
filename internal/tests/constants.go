@@ -31,6 +31,18 @@ var TestActorImage CreateTestActorImageParams = CreateTestActorImageParams{
 	Description:      actors.DefaultImageDescription,
 }
 
+var TestHelpFile CreateTestHelpFileParams = CreateTestHelpFileParams{
+	Slug:     "test",
+	Title:    "Test Help File",
+	Sub:      "A test help file",
+	Category: "Test",
+	Raw:      "# Test",
+	HTML:     "<h1>Test</h1>",
+	Related:  []CreateTestHelpFileRelatedParams{},
+	Tags:     []CreateTestHelpFileTagParams{},
+	PID:      0,
+}
+
 func MakeTestURL(path string) string {
 	return fmt.Sprintf("%s%s", TestURL, path)
 }

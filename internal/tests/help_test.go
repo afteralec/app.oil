@@ -101,10 +101,15 @@ func TestHelpFilePageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
-	config := configs.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	TestHelpFile.PID = pid
+	CreateTestHelpFile(t, &i, TestHelpFile)
+	defer DeleteTestHelpFile(t, &i, TestHelpFile.Slug)
 
 	url := MakeTestURL(routes.HelpFilePath("test"))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -149,6 +154,12 @@ func TestSearchHelpSuccess(t *testing.T) {
 	a := fiber.New(config)
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	TestHelpFile.PID = pid
+	CreateTestHelpFile(t, &i, TestHelpFile)
+	defer DeleteTestHelpFile(t, &i, TestHelpFile.Slug)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
