@@ -16,13 +16,13 @@ func Recover(i *shared.Interfaces, e queries.Email) (string, error) {
 		return "", err
 	}
 
-	if os.Getenv("DISABLE_RESEND") == "true" {
-		return id, nil
-	}
-
 	u, err := i.Queries.GetPlayerUsernameById(context.Background(), e.PID)
 	if err != nil {
 		return "", err
+	}
+
+	if os.Getenv("DISABLE_SENDING_STONE") == "true" {
+		return id, nil
 	}
 
 	sender := pb.NewSenderClient(i.ClientConn)

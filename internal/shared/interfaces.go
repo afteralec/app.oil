@@ -8,7 +8,6 @@ import (
 
 	"github.com/gofiber/fiber/v2/middleware/session"
 	redis "github.com/redis/go-redis/v9"
-	resend "github.com/resend/resend-go/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -27,20 +26,24 @@ func SetupInterfaces() Interfaces {
 		log.Fatal(err)
 	}
 
-	conn, err := grpc.Dial(os.Getenv("SENDING_STONE_URL"), grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	opts := configs.Redis()
 	r := redis.NewClient(&opts)
 
 	s := session.New(configs.Session())
 
-	rc := resend.NewClient(os.Getenv("RESEND_API_KEY"))
+	ib := InterfacesBuilder().Database(db).Redis(r).Sessions(s)
 
-	i := InterfacesBuilder().Database(db).ClientConn(conn).Redis(r).Sessions(s).Resend(rc).Build()
+	if os.Getenv("DISABLE_SENDING_STONE") != "true" {
+		conn, err := grpc.Dial(os.Getenv("SENDING_STONE_URL"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			log.Fatal(err)
+		}
+		ib.ClientConn(conn)
+	}
+
+	i := ib.Build()
 	i.Ping()
+
 	return i
 }
 
@@ -49,7 +52,6 @@ type Interfaces struct {
 	Redis      *redis.Client
 	Queries    *queries.Queries
 	Sessions   *session.Store
-	Resend     *resend.Client
 	ClientConn *grpc.ClientConn
 }
 
@@ -82,11 +84,6 @@ func (b *interfacesBuilder) Sessions(s *session.Store) *interfacesBuilder {
 	return b
 }
 
-func (b *interfacesBuilder) Resend(client *resend.Client) *interfacesBuilder {
-	b.Interfaces.Resend = client
-	return b
-}
-
 func (b *interfacesBuilder) Build() Interfaces {
 	return b.Interfaces
 }
@@ -101,9 +98,15 @@ func (i *Interfaces) Ping() {
 }
 
 func (i *Interfaces) Close() {
-	i.Database.Close()
-	i.Redis.Close()
-	i.ClientConn.Close()
+	if i.Database != nil {
+		i.Database.Close()
+	}
+	if i.Redis != nil {
+		i.Redis.Close()
+	}
+	if i.ClientConn != nil {
+		i.ClientConn.Close()
+	}
 }
 
 func SetupDB(db *sql.DB) error {

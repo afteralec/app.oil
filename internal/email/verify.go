@@ -22,7 +22,7 @@ func SendVerificationEmail(i *shared.Interfaces, id int64, email string) error {
 		return err
 	}
 
-	if os.Getenv("DISABLE_RESEND") == "true" {
+	if os.Getenv("DISABLE_SENDING_STONE") == "true" {
 		return nil
 	}
 
