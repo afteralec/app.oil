@@ -327,6 +327,9 @@ type BindNoticeSectionParams struct {
 	NoticeText    []string
 	RefreshButton bool
 	NoticeIcon    bool
+	Success       bool
+	Error         bool
+	Warn          bool
 }
 
 func BindNoticeSection(p BindNoticeSectionParams) fiber.Map {
@@ -336,5 +339,8 @@ func BindNoticeSection(p BindNoticeSectionParams) fiber.Map {
 		"NoticeText":      p.NoticeText,
 		"RefreshButton":   p.RefreshButton,
 		"NoticeIcon":      p.NoticeIcon,
+		"Success":         p.Success,
+		"Error":           p.Error,
+		"Warn":            p.Warn,
 	}
 }

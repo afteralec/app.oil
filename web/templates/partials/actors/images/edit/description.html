@@ -1,0 +1,36 @@
+{{ define "partial-actor-image-edit-description" }}
+<form
+  id="edit-actor-image-description"
+  class="space-y-2 py-4 md:w-[60%]"
+  x-data="{ load: { description: `{{ .Description }}` }, description: `{{ .Description }}` }"
+  hx-patch="{{ .DescriptionPath }}"
+  hx-swap="outerHTML"
+>
+  <!-- prettier-ignore -->
+  {{ if .NoticeSection.Success }}
+    {{ template "partial-notice-section-success" .NoticeSection }}
+  {{ else if .NoticeSection.Error }}
+    {{ template "partial-notice-section-error" .NoticeSection }}
+  {{ end }}
+  <label
+    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+    for="desc"
+  >
+    Description
+  </label>
+  <textarea
+    name="desc"
+    class="input min-h-[10rem]"
+    x-model="description"
+  ></textarea>
+  <footer class="flex justify-end">
+    <button
+      type="submit"
+      class="button-primary"
+      :disabled="description === load.description"
+    >
+      Save
+    </button>
+  </footer>
+</form>
+{{ end }}

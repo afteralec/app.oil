@@ -7,6 +7,12 @@ SELECT * FROM actor_images WHERE name = ?;
 -- name: ListActorImages :many
 SELECT * FROM actor_images;
 
+-- name: UpdateActorImageShortDescription :exec
+UPDATE actor_images SET short_description = ? WHERE id = ?;
+
+-- name: UpdateActorImageDescription :exec
+UPDATE actor_images SET description = ? WHERE id = ?;
+
 -- name: CreateActorImage :execresult
 INSERT INTO actor_images (gender, name, short_description, description) VALUES (?, ?, ?, ?);
 

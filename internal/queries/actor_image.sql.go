@@ -500,3 +500,31 @@ func (q *Queries) ListActorImagesPrimaryHands(ctx context.Context, aiid int64) (
 	}
 	return items, nil
 }
+
+const updateActorImageDescription = `-- name: UpdateActorImageDescription :exec
+UPDATE actor_images SET description = ? WHERE id = ?
+`
+
+type UpdateActorImageDescriptionParams struct {
+	Description string
+	ID          int64
+}
+
+func (q *Queries) UpdateActorImageDescription(ctx context.Context, arg UpdateActorImageDescriptionParams) error {
+	_, err := q.exec(ctx, q.updateActorImageDescriptionStmt, updateActorImageDescription, arg.Description, arg.ID)
+	return err
+}
+
+const updateActorImageShortDescription = `-- name: UpdateActorImageShortDescription :exec
+UPDATE actor_images SET short_description = ? WHERE id = ?
+`
+
+type UpdateActorImageShortDescriptionParams struct {
+	ShortDescription string
+	ID               int64
+}
+
+func (q *Queries) UpdateActorImageShortDescription(ctx context.Context, arg UpdateActorImageShortDescriptionParams) error {
+	_, err := q.exec(ctx, q.updateActorImageShortDescriptionStmt, updateActorImageShortDescription, arg.ShortDescription, arg.ID)
+	return err
+}

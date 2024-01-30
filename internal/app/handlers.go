@@ -82,6 +82,8 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Get(routes.ActorImages, handlers.ActorImagesPage(i))
 	app.Get(routes.ActorImagePathParam, handlers.ActorImagePage(i))
 	app.Get(routes.EditActorImagePathParam, handlers.EditActorImagePage(i))
+	app.Patch(routes.ActorImageShortDescriptionPathParam, handlers.EditActorImageShortDescription(i))
+	app.Patch(routes.ActorImageDescriptionPathParam, handlers.EditActorImageDescription(i))
 
 	app.Post(routes.SearchPlayerPath(routes.Destination), handlers.SearchPlayer(i))
 

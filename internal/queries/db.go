@@ -285,6 +285,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.searchTagsStmt, err = db.PrepareContext(ctx, searchTags); err != nil {
 		return nil, fmt.Errorf("error preparing query SearchTags: %w", err)
 	}
+	if q.updateActorImageDescriptionStmt, err = db.PrepareContext(ctx, updateActorImageDescription); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateActorImageDescription: %w", err)
+	}
+	if q.updateActorImageShortDescriptionStmt, err = db.PrepareContext(ctx, updateActorImageShortDescription); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateActorImageShortDescription: %w", err)
+	}
 	if q.updateCharacterApplicationContentBackstoryStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentBackstory); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentBackstory: %w", err)
 	}
@@ -785,6 +791,16 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing searchTagsStmt: %w", cerr)
 		}
 	}
+	if q.updateActorImageDescriptionStmt != nil {
+		if cerr := q.updateActorImageDescriptionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateActorImageDescriptionStmt: %w", cerr)
+		}
+	}
+	if q.updateActorImageShortDescriptionStmt != nil {
+		if cerr := q.updateActorImageShortDescriptionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateActorImageShortDescriptionStmt: %w", cerr)
+		}
+	}
 	if q.updateCharacterApplicationContentBackstoryStmt != nil {
 		if cerr := q.updateCharacterApplicationContentBackstoryStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateCharacterApplicationContentBackstoryStmt: %w", cerr)
@@ -1011,6 +1027,8 @@ type Queries struct {
 	searchHelpByTitleStmt                                 *sql.Stmt
 	searchPlayersByUsernameStmt                           *sql.Stmt
 	searchTagsStmt                                        *sql.Stmt
+	updateActorImageDescriptionStmt                       *sql.Stmt
+	updateActorImageShortDescriptionStmt                  *sql.Stmt
 	updateCharacterApplicationContentBackstoryStmt        *sql.Stmt
 	updateCharacterApplicationContentDescriptionStmt      *sql.Stmt
 	updateCharacterApplicationContentGenderStmt           *sql.Stmt
@@ -1124,6 +1142,8 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		searchHelpByTitleStmt:                                 q.searchHelpByTitleStmt,
 		searchPlayersByUsernameStmt:                           q.searchPlayersByUsernameStmt,
 		searchTagsStmt:                                        q.searchTagsStmt,
+		updateActorImageDescriptionStmt:                       q.updateActorImageDescriptionStmt,
+		updateActorImageShortDescriptionStmt:                  q.updateActorImageShortDescriptionStmt,
 		updateCharacterApplicationContentBackstoryStmt:        q.updateCharacterApplicationContentBackstoryStmt,
 		updateCharacterApplicationContentDescriptionStmt:      q.updateCharacterApplicationContentDescriptionStmt,
 		updateCharacterApplicationContentGenderStmt:           q.updateCharacterApplicationContentGenderStmt,

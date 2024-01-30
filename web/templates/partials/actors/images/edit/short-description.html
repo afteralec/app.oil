@@ -1,0 +1,32 @@
+{{ define "partial-actor-image-edit-short-description" }}
+<form
+  id="edit-actor-image-short-description"
+  class="space-y-2 py-4 md:w-[60%]"
+  x-data="{ load: { sdesc: '{{ .ShortDescription }}' }, sdesc: '{{ .ShortDescription }}' }"
+  hx-patch="{{ .ShortDescriptionPath }}"
+  hx-swap="outerHTML"
+>
+  <!-- prettier-ignore -->
+  {{ if .NoticeSection.Success }}
+    {{ template "partial-notice-section-success" .NoticeSection }}
+  {{ else if .NoticeSection.Error }}
+    {{ template "partial-notice-section-error" .NoticeSection }}
+  {{ end }}
+  <label
+    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+    for="sdesc"
+  >
+    Short Description
+  </label>
+  <input name="sdesc" x-model="sdesc" class="input" />
+  <footer class="flex justify-end">
+    <button
+      type="submit"
+      class="button-primary"
+      :disabled="sdesc === load.sdesc"
+    >
+      Save
+    </button>
+  </footer>
+</form>
+{{ end }}

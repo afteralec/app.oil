@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/VividCortex/mysqlerr"
+	"github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/actors"
@@ -131,10 +133,12 @@ func EditActorImagePage(i *shared.Interfaces) fiber.Handler {
 			"Title":    actors.ImageTitleWithID(actorImage.Name, actorImage.ID),
 			"SubTitle": "Update actor properties here",
 		}
-		// TODO: Write a bind for this
+		// TODO: Write a bind function for this
 		b["Name"] = actorImage.Name
 		b["ShortDescription"] = actorImage.ShortDescription
 		b["Description"] = actorImage.Description
+		b["ShortDescriptionPath"] = routes.ActorImageShortDescriptionPath(aiid)
+		b["DescriptionPath"] = routes.ActorImageDescriptionPath(aiid)
 		return c.Render(views.EditActorImage, b)
 	}
 }
@@ -312,6 +316,21 @@ func NewActorImage(i *shared.Interfaces) fiber.Handler {
 			Gender:           actors.DefaultImageGender,
 		})
 		if err != nil {
+			if me, ok := err.(*mysql.MySQLError); ok {
+				if me.Number == mysqlerr.ER_DUP_ENTRY {
+					c.Status(fiber.StatusConflict)
+					c.Append(shared.HeaderHXAcceptable, "true")
+					c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
+					return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+						SectionID:    sectionID,
+						SectionClass: "pt-2",
+						NoticeText: []string{
+							"That Actor Image name is already in use. Please choose another.",
+						},
+						NoticeIcon: true,
+					}), layouts.None)
+				}
+			}
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(shared.HeaderHXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
@@ -361,6 +380,198 @@ func NewActorImage(i *shared.Interfaces) fiber.Handler {
 		c.Append("HX-Redirect", routes.EditActorImagePath(aiid))
 		c.Append("HX-Reswap", "none")
 		return nil
+	}
+}
+
+func EditActorImageShortDescription(i *shared.Interfaces) fiber.Handler {
+	type input struct {
+		ShortDescription string `form:"sdesc"`
+	}
+
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !actors.IsShortDescriptionValid(in.ShortDescription) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !util.IsLoggedIn(c) {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+		if !perms.HasPermission(permissions.PlayerCreateActorImageName) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		aiid, err := util.GetID(c)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		actorImage, err := qtx.GetActorImage(context.Background(), aiid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if actorImage.ShortDescription == in.ShortDescription {
+			c.Status(fiber.StatusConflict)
+			return nil
+		}
+
+		if err := qtx.UpdateActorImageShortDescription(context.Background(), queries.UpdateActorImageShortDescriptionParams{
+			ID:               actorImage.ID,
+			ShortDescription: in.ShortDescription,
+		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		actorImage, err = qtx.GetActorImage(context.Background(), aiid)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		b := fiber.Map{}
+		b["ShortDescription"] = actorImage.ShortDescription
+		b["ShortDescriptionPath"] = routes.ActorImageShortDescriptionPath(actorImage.ID)
+		b["NoticeSection"] = partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			Success:      true,
+			SectionID:    "actor-image-edit-short-description-notice",
+			SectionClass: "pb-2",
+			NoticeText: []string{
+				"Success! The short description has been updated.",
+			},
+			NoticeIcon: true,
+		})
+		return c.Render(partials.ActorImageEditShortDescription, b, layouts.None)
+	}
+}
+
+func EditActorImageDescription(i *shared.Interfaces) fiber.Handler {
+	type input struct {
+		Description string `form:"desc"`
+	}
+
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !actors.IsDescriptionValid(in.Description) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !util.IsLoggedIn(c) {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+		if !perms.HasPermission(permissions.PlayerCreateActorImageName) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		aiid, err := util.GetID(c)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		actorImage, err := qtx.GetActorImage(context.Background(), aiid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if actorImage.Description == in.Description {
+			c.Status(fiber.StatusConflict)
+			return nil
+		}
+
+		if err := qtx.UpdateActorImageDescription(context.Background(), queries.UpdateActorImageDescriptionParams{
+			ID:          actorImage.ID,
+			Description: in.Description,
+		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		actorImage, err = qtx.GetActorImage(context.Background(), actorImage.ID)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		b := fiber.Map{}
+		b["Description"] = actorImage.Description
+		b["DescriptionPath"] = routes.ActorImageDescriptionPath(actorImage.ID)
+		b["NoticeSection"] = partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			Success:      true,
+			SectionID:    "actor-image-edit-description-notice",
+			SectionClass: "pb-2",
+			NoticeText: []string{
+				"Success! The description has been updated.",
+			},
+			NoticeIcon: true,
+		})
+		return c.Render(partials.ActorImageEditDescription, b, layouts.None)
 	}
 }
 

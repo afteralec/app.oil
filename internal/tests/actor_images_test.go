@@ -2,9 +2,11 @@ package tests
 
 import (
 	"bytes"
+	"fmt"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -468,7 +470,7 @@ func TestActorImagePageForbiddenNoPermission(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestEditImagePageSuccess(t *testing.T) {
+func TestActorImagePageSuccess(t *testing.T) {
 	i := shared.SetupInterfaces()
 	defer i.Close()
 
@@ -488,6 +490,436 @@ func TestEditImagePageSuccess(t *testing.T) {
 	url := MakeTestURL(routes.ActorImagePath(aiid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestEditActorImageShortDescriptionUnauthorized(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	aiid := CreateTestActorImage(t, &i, TestActorImage)
+	defer DeleteTestActorImage(t, &i, aiid)
+
+	url := MakeTestURL(routes.ActorImageShortDescriptionPath(aiid))
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%s, with changes", TestActorImage.ShortDescription)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("sdesc", sb.String())
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestEditActorImageShortDescriptionForbiddenNoPermission(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	aiid := CreateTestActorImage(t, &i, TestActorImage)
+	defer DeleteTestActorImage(t, &i, aiid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.ActorImageShortDescriptionPath(aiid))
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%s, with changes", TestActorImage.ShortDescription)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("sdesc", sb.String())
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestEditActorImageShortDescriptionNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	aiid := CreateTestActorImage(t, &i, TestActorImage)
+	defer DeleteTestActorImage(t, &i, aiid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.ActorImageShortDescriptionPath(aiid + 1000))
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%s, with changes", TestActorImage.ShortDescription)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("sdesc", sb.String())
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestEditActorImageShortDescriptionBadRequestInvalid(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	aiid := CreateTestActorImage(t, &i, TestActorImage)
+	defer DeleteTestActorImage(t, &i, aiid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.ActorImageShortDescriptionPath(aiid))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("sdesc", "This is an invalid short description - 1234 tell_me that you love me mo4r.")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestEditActorImageShortDescriptionConflictSameAs(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	aiid := CreateTestActorImage(t, &i, TestActorImage)
+	defer DeleteTestActorImage(t, &i, aiid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.ActorImageShortDescriptionPath(aiid))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("sdesc", TestActorImage.ShortDescription)
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusConflict, res.StatusCode)
+}
+
+func TestEditActorImageShortDescriptionSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	aiid := CreateTestActorImage(t, &i, TestActorImage)
+	defer DeleteTestActorImage(t, &i, aiid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.ActorImageShortDescriptionPath(aiid))
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%s, with changes", TestActorImage.ShortDescription)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("sdesc", sb.String())
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestEditActorImageDescriptionUnauthorized(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	aiid := CreateTestActorImage(t, &i, TestActorImage)
+	defer DeleteTestActorImage(t, &i, aiid)
+
+	url := MakeTestURL(routes.ActorImageDescriptionPath(aiid))
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%s It is a test actor.", TestActorImage.Description)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("desc", sb.String())
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestEditActorImageDescriptionForbiddenNoPermission(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	aiid := CreateTestActorImage(t, &i, TestActorImage)
+	defer DeleteTestActorImage(t, &i, aiid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.ActorImageDescriptionPath(aiid))
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%s It is a test actor.", TestActorImage.Description)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("desc", sb.String())
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestEditActorImageDescriptionNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	aiid := CreateTestActorImage(t, &i, TestActorImage)
+	defer DeleteTestActorImage(t, &i, aiid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.ActorImageDescriptionPath(aiid + 1000))
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%s It is a test actor.", TestActorImage.Description)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("desc", sb.String())
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestEditActorImageDescriptionBadRequestInvalid(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	aiid := CreateTestActorImage(t, &i, TestActorImage)
+	defer DeleteTestActorImage(t, &i, aiid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.ActorImageDescriptionPath(aiid))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("desc", "This is an invalid description - 1234 tell_me that you love me mo4r.")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestEditActorImageDescriptionConflictSameAs(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	aiid := CreateTestActorImage(t, &i, TestActorImage)
+	defer DeleteTestActorImage(t, &i, aiid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.ActorImageDescriptionPath(aiid))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("desc", TestActorImage.Description)
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusConflict, res.StatusCode)
+}
+
+func TestEditActorImageDescriptionSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	aiid := CreateTestActorImage(t, &i, TestActorImage)
+	defer DeleteTestActorImage(t, &i, aiid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.ActorImageDescriptionPath(aiid))
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%s It is a test actor.", TestActorImage.Description)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("desc", sb.String())
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)
