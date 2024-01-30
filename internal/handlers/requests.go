@@ -218,7 +218,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			Request: &req,
 		})
 
-		content, err := request.GetContent(qtx, &req)
+		content, err := request.Content(qtx, &req)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -318,7 +318,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			Request: &req,
 		})
 
-		content, err := request.GetContent(qtx, &req)
+		content, err := request.Content(qtx, &req)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -363,7 +363,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				Size:        "36",
 				IncludeText: true,
 			})
-			b["RequestTitle"] = request.GetSummaryTitle(req.Type, content)
+			b["RequestTitle"] = request.SummaryTitle(req.Type, content)
 			b["SummaryFields"] = request.GetSummaryFields(request.GetSummaryFieldsParams{
 				PID:     pid,
 				Request: &req,

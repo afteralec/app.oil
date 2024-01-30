@@ -1,36 +1,31 @@
 package request
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
 
-	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/queries"
 )
 
-// TODO: Find a way to get each content extractor into the definition of the request type
-func GetContent(qtx *queries.Queries, req *queries.Request) (map[string]string, error) {
+const errInvalidType string = "invalid type"
+
+var ErrInvalidType error = errors.New(errInvalidType)
+
+func Content(q *queries.Queries, req *queries.Request) (map[string]string, error) {
 	var b []byte
 	m := map[string]string{}
 
-	switch req.Type {
-	case TypeCharacterApplication:
-		app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), req.ID)
-		if err != nil {
-			return m, err
-		}
-
-		b, err = json.Marshal(app)
-		if err != nil {
-			return m, err
-		}
-	default:
-		return m, errors.New("invalid type")
+	if !IsTypeValid(req.Type) {
+		return m, ErrInvalidType
 	}
 
+	definition := DefinitionMap[req.Type]
+	b, err := definition.ContentBytes(q, req.ID)
+	if err != nil {
+		return m, err
+	}
 	if err := json.Unmarshal(b, &m); err != nil {
 		return map[string]string{}, err
 	}
@@ -38,6 +33,7 @@ func GetContent(qtx *queries.Queries, req *queries.Request) (map[string]string, 
 	return m, nil
 }
 
+// TODO: Key this into the Field API
 func GetNextIncompleteField(t string, content map[string]string) (string, bool) {
 	fields := FieldNamesByType[t]
 	for i, field := range fields {
@@ -60,124 +56,25 @@ type UpdateFieldParams struct {
 	PID     int64
 }
 
-// TODO: Turn this into a map of updaters by field - can create an interface for the Updater
-func UpdateField(qtx *queries.Queries, p UpdateFieldParams) error {
-	switch p.Field {
-	case FieldName:
-		if !IsNameValid(p.Value) {
-			return ErrInvalidInput
-		}
-
-		if err := qtx.UpdateCharacterApplicationContentName(context.Background(), queries.UpdateCharacterApplicationContentNameParams{
-			RID:  p.Request.ID,
-			Name: p.Value,
-		}); err != nil {
-			return err
-		}
-
-	case FieldGender:
-		if !IsGenderValid(p.Value) {
-			return ErrInvalidInput
-		}
-
-		if err := qtx.UpdateCharacterApplicationContentGender(context.Background(), queries.UpdateCharacterApplicationContentGenderParams{
-			RID:    p.Request.ID,
-			Gender: p.Value,
-		}); err != nil {
-			return err
-		}
-	case FieldShortDescription:
-		if !IsShortDescriptionValid(p.Value) {
-			return ErrInvalidInput
-		}
-
-		if err := qtx.UpdateCharacterApplicationContentShortDescription(context.Background(), queries.UpdateCharacterApplicationContentShortDescriptionParams{
-			RID:              p.Request.ID,
-			ShortDescription: p.Value,
-		}); err != nil {
-			return err
-		}
-	case FieldDescription:
-		if !IsDescriptionValid(p.Value) {
-			return ErrInvalidInput
-		}
-
-		if err := qtx.UpdateCharacterApplicationContentDescription(context.Background(), queries.UpdateCharacterApplicationContentDescriptionParams{
-			RID:         p.Request.ID,
-			Description: p.Value,
-		}); err != nil {
-			return err
-		}
-	case FieldBackstory:
-		if !IsBackstoryValid(p.Value) {
-			return ErrInvalidInput
-		}
-
-		if err := qtx.UpdateCharacterApplicationContentBackstory(context.Background(), queries.UpdateCharacterApplicationContentBackstoryParams{
-			RID:       p.Request.ID,
-			Backstory: p.Value,
-		}); err != nil {
-			return err
-		}
-	default:
-		return ErrMalformedUpdateInput
+func UpdateField(q *queries.Queries, p UpdateFieldParams) error {
+	if !IsTypeValid(p.Request.Type) {
+		return ErrInvalidType
 	}
 
-	if p.Request.Type == TypeCharacterApplication {
-		app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), p.Request.ID)
-		if err != nil {
-			return err
-		}
-
-		ready := IsCharacterApplicationValid(&app)
-
-		if ready && p.Request.Status == StatusIncomplete {
-			if err := qtx.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
-				RID: p.Request.ID,
-				PID: p.PID,
-			}); err != nil {
-				return err
-			}
-
-			if err := qtx.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
-				ID:     p.Request.ID,
-				Status: StatusReady,
-			}); err != nil {
-				return err
-			}
-		} else if !ready && p.Request.Status == StatusReady {
-			if err := qtx.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
-				RID: p.Request.ID,
-				PID: p.PID,
-			}); err != nil {
-				return err
-			}
-
-			if err := qtx.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
-				ID:     p.Request.ID,
-				Status: StatusIncomplete,
-			}); err != nil {
-				return err
-			}
-		}
+	definition := DefinitionMap[p.Request.Type]
+	if err := definition.UpdateField(q, p); err != nil {
+		return err
 	}
-
 	return nil
 }
 
-// TODO: Get this built into the Definition
-func GetSummaryTitle(t string, content map[string]string) string {
-	if t == TypeCharacterApplication {
-		var sb strings.Builder
-		titleName := constants.DefaultName
-		if len(content[FieldName]) > 0 {
-			titleName = content[FieldName]
-		}
-		fmt.Fprintf(&sb, "Character Application (%s)", titleName)
-		return sb.String()
+func SummaryTitle(t string, content map[string]string) string {
+	if !IsTypeValid(t) {
+		return "Request"
 	}
 
-	return "Request"
+	definition := DefinitionMap[t]
+	return definition.SummaryTitle(content)
 }
 
 type SummaryField struct {

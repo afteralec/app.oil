@@ -7,36 +7,23 @@ import (
 	"petrichormud.com/app/internal/queries"
 )
 
-type Definition struct {
-	Type         string
-	Dialogs      DefinitionDialogs
-	FieldMap     map[string]Field
-	Fields       []Field
-	FieldNameMap map[string]bool
-	FieldNames   []string
-}
-
 type DefinitionInterface interface {
 	Type() string
 	Dialogs() DefinitionDialogs
 	Fields() []Field
-	Content(rid int64) map[string]string
-	UpdateField(q *queries.Queries, rid int64, field, value string) error
+	ContentBytes(q *queries.Queries, rid int64) ([]byte, error)
+	UpdateField(q *queries.Queries, p UpdateFieldParams) error
 	SummaryTitle(content map[string]string) string
 }
 
 type FieldsInterface interface {
 	IsFieldValid(f string) bool
 	IsValueValid(f, v string) bool
+	NextIncomplete() string
 }
 
 // TODO: Add API to a Fields struct that can take in a field and value and return if it's valid
 // Have the Fields struct be in charge of the list of fields and the map of fields by name
-
-type DefinitionUtilities interface {
-	LoadContent(qtx *queries.Queries) error
-	GetNextIncompleteField() string
-}
 
 type DefinitionDialog struct {
 	Header     string
@@ -48,30 +35,6 @@ type DefinitionDialogs struct {
 	Submit      DefinitionDialog
 	Cancel      DefinitionDialog
 	PutInReview DefinitionDialog
-}
-
-// TODO: Validate this input on instantiation
-type NewDefinitionParams struct {
-	Type    string
-	Dialogs DefinitionDialogs
-	Fields  []Field
-}
-
-func NewDefinition(p NewDefinitionParams) Definition {
-	fieldMap := MakeDefinitionFieldMap(p.Fields)
-	fieldNames := MakeDefinitionFieldNames(p.Fields)
-	fieldNameMap := MakeDefinitionFieldNameMap(p.Fields)
-
-	d := Definition{
-		Type:         p.Type,
-		Dialogs:      p.Dialogs,
-		Fields:       p.Fields,
-		FieldMap:     fieldMap,
-		FieldNames:   fieldNames,
-		FieldNameMap: fieldNameMap,
-	}
-
-	return d
 }
 
 // TODO: Change Name to Tag
@@ -136,21 +99,21 @@ func MakeDefinitionFieldNameMap(fields []Field) map[string]bool {
 	return fieldNameMap
 }
 
-func MakeDefinitionMap(definitions []Definition) map[string]Definition {
-	m := make(map[string]Definition, len(definitions))
+func MakeDefinitionMap(definitions []DefinitionInterface) map[string]DefinitionInterface {
+	m := make(map[string]DefinitionInterface, len(definitions))
 
 	for _, d := range definitions {
-		m[d.Type] = d
+		m[d.Type()] = d
 	}
 
 	return m
 }
 
-func MakeTypes(definitions []Definition) []string {
+func MakeTypes(definitions []DefinitionInterface) []string {
 	types := make([]string, len(definitions))
 
 	for i, d := range definitions {
-		types[i] = d.Type
+		types[i] = d.Type()
 	}
 
 	return types
@@ -166,41 +129,43 @@ func MakeTypeMap(types []string) map[string]bool {
 	return m
 }
 
-func MakeFieldsByType(definitions []Definition) map[string][]Field {
+func MakeFieldsByType(definitions []DefinitionInterface) map[string][]Field {
 	fieldsByType := make(map[string][]Field, len(definitions))
 
 	for _, d := range definitions {
-		fieldsByType[d.Type] = d.Fields
+		fieldsByType[d.Type()] = d.Fields()
 	}
 
 	return fieldsByType
 }
 
-func MakeFieldNamesByType(definitions []Definition) map[string][]string {
+func MakeFieldNamesByType(definitions []DefinitionInterface) map[string][]string {
 	fieldNamesByType := make(map[string][]string, len(definitions))
 
 	for _, d := range definitions {
-		fieldNamesByType[d.Type] = d.FieldNames
+		fieldNames := MakeDefinitionFieldNames(d.Fields())
+		fieldNamesByType[d.Type()] = fieldNames
 	}
 
 	return fieldNamesByType
 }
 
-func MakeFieldMapsByType(definitions []Definition) map[string]map[string]Field {
+func MakeFieldMapsByType(definitions []DefinitionInterface) map[string]map[string]Field {
 	fieldMapsByType := make(map[string]map[string]Field, len(definitions))
 
 	for _, d := range definitions {
-		fieldMapsByType[d.Type] = d.FieldMap
+		fieldMap := MakeDefinitionFieldMap(d.Fields())
+		fieldMapsByType[d.Type()] = fieldMap
 	}
 
 	return fieldMapsByType
 }
 
 var (
-	Definitions []Definition = []Definition{
-		DefinitionCharacterApplication,
+	Definitions []DefinitionInterface = []DefinitionInterface{
+		&DefinitionCharacterApplication,
 	}
-	DefinitionMap map[string]Definition = MakeDefinitionMap(Definitions)
+	DefinitionMap map[string]DefinitionInterface = MakeDefinitionMap(Definitions)
 )
 
 var (

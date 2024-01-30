@@ -2,14 +2,158 @@ package request
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"html/template"
 	"regexp"
+	"strings"
 
 	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/views"
 )
+
+type CharacterApplication struct{}
+
+// Implement the DefinitionInterface for CharacterApplication
+func (app *CharacterApplication) Type() string {
+	return TypeCharacterApplication
+}
+
+func (app *CharacterApplication) Dialogs() DefinitionDialogs {
+	return DialogsCharacterApplication
+}
+
+func (app *CharacterApplication) Fields() []Field {
+	return FieldsCharacterApplication
+}
+
+func (app *CharacterApplication) ContentBytes(q *queries.Queries, rid int64) ([]byte, error) {
+	content, err := q.GetCharacterApplicationContentForRequest(context.Background(), rid)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	b, err := json.Marshal(content)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return b, nil
+}
+
+func (app *CharacterApplication) UpdateField(q *queries.Queries, p UpdateFieldParams) error {
+	switch p.Field {
+	case FieldName:
+		if !IsNameValid(p.Value) {
+			return ErrInvalidInput
+		}
+
+		if err := q.UpdateCharacterApplicationContentName(context.Background(), queries.UpdateCharacterApplicationContentNameParams{
+			RID:  p.Request.ID,
+			Name: p.Value,
+		}); err != nil {
+			return err
+		}
+
+	case FieldGender:
+		if !IsGenderValid(p.Value) {
+			return ErrInvalidInput
+		}
+
+		if err := q.UpdateCharacterApplicationContentGender(context.Background(), queries.UpdateCharacterApplicationContentGenderParams{
+			RID:    p.Request.ID,
+			Gender: p.Value,
+		}); err != nil {
+			return err
+		}
+	case FieldShortDescription:
+		if !IsShortDescriptionValid(p.Value) {
+			return ErrInvalidInput
+		}
+
+		if err := q.UpdateCharacterApplicationContentShortDescription(context.Background(), queries.UpdateCharacterApplicationContentShortDescriptionParams{
+			RID:              p.Request.ID,
+			ShortDescription: p.Value,
+		}); err != nil {
+			return err
+		}
+	case FieldDescription:
+		if !IsDescriptionValid(p.Value) {
+			return ErrInvalidInput
+		}
+
+		if err := q.UpdateCharacterApplicationContentDescription(context.Background(), queries.UpdateCharacterApplicationContentDescriptionParams{
+			RID:         p.Request.ID,
+			Description: p.Value,
+		}); err != nil {
+			return err
+		}
+	case FieldBackstory:
+		if !IsBackstoryValid(p.Value) {
+			return ErrInvalidInput
+		}
+
+		if err := q.UpdateCharacterApplicationContentBackstory(context.Background(), queries.UpdateCharacterApplicationContentBackstoryParams{
+			RID:       p.Request.ID,
+			Backstory: p.Value,
+		}); err != nil {
+			return err
+		}
+	default:
+		return ErrMalformedUpdateInput
+	}
+
+	content, err := q.GetCharacterApplicationContentForRequest(context.Background(), p.Request.ID)
+	if err != nil {
+		return err
+	}
+
+	ready := IsCharacterApplicationValid(&content)
+
+	if ready && p.Request.Status == StatusIncomplete {
+		if err := q.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
+			RID: p.Request.ID,
+			PID: p.PID,
+		}); err != nil {
+			return err
+		}
+
+		if err := q.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
+			ID:     p.Request.ID,
+			Status: StatusReady,
+		}); err != nil {
+			return err
+		}
+	} else if !ready && p.Request.Status == StatusReady {
+		if err := q.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
+			RID: p.Request.ID,
+			PID: p.PID,
+		}); err != nil {
+			return err
+		}
+
+		if err := q.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
+			ID:     p.Request.ID,
+			Status: StatusIncomplete,
+		}); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (app *CharacterApplication) SummaryTitle(content map[string]string) string {
+	var sb strings.Builder
+	titleName := constants.DefaultName
+	if len(content[FieldName]) > 0 {
+		titleName = content[FieldName]
+	}
+	fmt.Fprintf(&sb, "Character Application (%s)", titleName)
+	return sb.String()
+}
 
 var FieldCharacterApplicationName Field = Field{
 	Name:        "name",
@@ -97,32 +241,10 @@ var DialogsCharacterApplication DefinitionDialogs = DefinitionDialogs{
 	},
 }
 
-type UtilitiesCharacterApplication struct {
-	Content queries.CharacterApplicationContent
-	RID     int64
-}
+// var DefinitionCharacterApplication Definition = NewDefinition(NewDefinitionParams{
+// 	Type:    TypeCharacterApplication,
+// 	Fields:  FieldsCharacterApplication,
+// 	Dialogs: DialogsCharacterApplication,
+// })
 
-func (u *UtilitiesCharacterApplication) LoadContent(qtx *queries.Queries) error {
-	app, err := qtx.GetCharacterApplicationContentForRequest(context.Background(), u.RID)
-	if err != nil {
-		return err
-	}
-	u.Content = app
-	return nil
-}
-
-func (u *UtilitiesCharacterApplication) IsFieldValueValid(f, v string) bool {
-	return false
-}
-
-func (u *UtilitiesCharacterApplication) GetNextIncompleteField() string {
-	for range FieldsCharacterApplication {
-	}
-	return ""
-}
-
-var DefinitionCharacterApplication Definition = NewDefinition(NewDefinitionParams{
-	Type:    TypeCharacterApplication,
-	Fields:  FieldsCharacterApplication,
-	Dialogs: DialogsCharacterApplication,
-})
+var DefinitionCharacterApplication CharacterApplication = CharacterApplication{}
