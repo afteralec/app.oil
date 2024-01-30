@@ -2,6 +2,31 @@
 <main class="flex flex-col items-center justify-center">
   <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
     {{ template "partial-page-header" .PageHeader }}
+
+    <section id="actor-image-short-description" class="pt-6">
+      <header>
+        <h3 class="pb-2 text-lg font-semibold leading-none tracking-tight">
+          Short Description
+        </h3>
+      </header>
+      <p class="text-base leading-none">{{ .ShortDescription }}</p>
+    </section>
+    <section id="actor-image-name" class="pt-6">
+      <header>
+        <h3 class="pb-2 text-lg font-semibold leading-none tracking-tight">
+          Image Name
+        </h3>
+      </header>
+      <p class="text-base leading-none">{{ .Name }}</p>
+    </section>
+    <section id="actor-image-description" class="pt-6">
+      <header>
+        <h3 class="pb-2 text-lg font-semibold leading-none tracking-tight">
+          Description
+        </h3>
+      </header>
+      <p class="text-wrap pr-16 text-base leading-none">{{ .Description }}</p>
+    </section>
   </div>
 </main>
 {{ end }}

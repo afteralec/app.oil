@@ -2,7 +2,57 @@
 <main class="flex flex-col items-center justify-center">
   <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
     {{ template "partial-page-header" .PageHeader }}
+
     <section id="edit-actor-image-error"></section>
+
+    <form
+      id="edit-actor-image-short-description"
+      class="space-y-2 py-4 md:w-[60%]"
+      x-data="{ load: { sdesc: '{{ .ShortDescription }}' }, sdesc: '{{ .ShortDescription }}' }"
+    >
+      <label
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        for="sdesc"
+      >
+        Short Description
+      </label>
+      <input name="sdesc" x-model="sdesc" class="input" />
+      <footer class="flex justify-end">
+        <button
+          type="submit"
+          class="button-primary"
+          :disabled="sdesc=== load.sdesc"
+        >
+          Save
+        </button>
+      </footer>
+    </form>
+    <form
+      id="edit-actor-image-description"
+      class="space-y-2 py-4 md:w-[60%]"
+      x-data="{ load: { description: `{{ .Description }}` }, description: `{{ .Description }}` }"
+    >
+      <label
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        for="description"
+      >
+        Description
+      </label>
+      <textarea
+        name="description"
+        class="input min-h-[10rem]"
+        x-model="description"
+      ></textarea>
+      <footer class="flex justify-end">
+        <button
+          type="submit"
+          class="button-primary"
+          :disabled="description === load.description"
+        >
+          Save
+        </button>
+      </footer>
+    </form>
   </div>
 </main>
 {{ end }}

@@ -131,6 +131,10 @@ func EditActorImagePage(i *shared.Interfaces) fiber.Handler {
 			"Title":    actors.ImageTitleWithID(actorImage.Name, actorImage.ID),
 			"SubTitle": "Update actor properties here",
 		}
+		// TODO: Write a bind for this
+		b["Name"] = actorImage.Name
+		b["ShortDescription"] = actorImage.ShortDescription
+		b["Description"] = actorImage.Description
 		return c.Render(views.EditActorImage, b)
 	}
 }
@@ -192,6 +196,9 @@ func ActorImagePage(i *shared.Interfaces) fiber.Handler {
 		b["PageHeader"] = fiber.Map{
 			"Title": actors.ImageTitleWithID(actorImage.Name, actorImage.ID),
 		}
+		b["Name"] = actorImage.Name
+		b["ShortDescription"] = actorImage.ShortDescription
+		b["Description"] = actorImage.Description
 		return c.Render(views.ActorImage, b)
 	}
 }
