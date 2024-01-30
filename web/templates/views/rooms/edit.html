@@ -8,26 +8,8 @@
     <!-- prettier-ignore -->
     {{ template "partial-room-edit-title" . }}
     {{ template "partial-room-edit-description" . }}
-    <form
-      id="edit-room-size"
-      class="space-y-2 py-4 md:w-[60%]"
-      x-data="{ load: { size: '{{ .Size }}' }, size: '{{ .Size }}' }"
-    >
-      <label
-        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >Size</label
-      >
-      {{ template "partial-form-radio-group" .SizeRadioGroup }}
-      <footer class="flex justify-end">
-        <button
-          type="submit"
-          class="button-primary"
-          :disabled="size === load.size"
-        >
-          Save
-        </button>
-      </footer>
-    </form>
+    {{ template "partial-room-edit-size" . }}
+
     <!-- prettier-ignore -->
     {{ template "partial-edit-room-exits" . }}
     {{ template "partial-room-grid" . }}

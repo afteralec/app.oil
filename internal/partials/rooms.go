@@ -10,4 +10,5 @@ const (
 const (
 	RoomEditTitle       string = "partial-room-edit-title"
 	RoomEditDescription string = "partial-room-edit-description"
+	RoomEditSize        string = "partial-room-edit-size"
 )

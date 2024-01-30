@@ -15,6 +15,7 @@ const (
 	RoomExitsPathParam       string = "/rooms/:id/exits"
 	RoomTitlePathParam       string = "/rooms/:id/title"
 	RoomDescriptionPathParam string = "/rooms/:id/description"
+	RoomSizePathParam        string = "/rooms/:id/size"
 )
 
 func RoomPath(id int64) string {
@@ -50,5 +51,11 @@ func RoomTitlePath(id int64) string {
 func RoomDescriptionPath(id int64) string {
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s/%d/description", Rooms, id)
+	return sb.String()
+}
+
+func RoomSizePath(id int64) string {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%s/%d/size", Rooms, id)
 	return sb.String()
 }

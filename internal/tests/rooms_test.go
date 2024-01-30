@@ -1317,3 +1317,174 @@ func TestEditRoomDescriptionSuccess(t *testing.T) {
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
+
+func TestEditRoomSizeUnauthorized(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	rid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rid)
+
+	url := MakeTestURL(routes.RoomSizePath(rid))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("size", "3")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestEditRoomSizeForbiddenNoPermission(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	rid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomSizePath(rid))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("size", "3")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestEditRoomSizeNotFound(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	rid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomSizePath(rid + 1000))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("size", "3")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestEditRoomSizeBadRequestInvalid(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	rid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomSizePath(rid))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("size", "5")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestEditRoomSizeSuccess(t *testing.T) {
+	i := shared.SetupInterfaces()
+	defer i.Close()
+
+	a := fiber.New(configs.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	rid := CreateTestRoom(t, &i, TestRoom)
+	defer DeleteTestRoom(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(routes.RoomSizePath(rid))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("size", "3")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}

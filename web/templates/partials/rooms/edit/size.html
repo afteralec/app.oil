@@ -1,9 +1,9 @@
-{{ define "partial-room-edit-title" }}
+{{ define "partial-room-edit-size" }}
 <form
-  id="edit-room-title"
+  id="edit-room-size"
   class="space-y-2 py-4 md:w-[60%]"
-  x-data="{ load: { title: `{{ .Title }}` }, title: `{{ .Title }}` }"
-  hx-patch="{{ .TitlePath }}"
+  x-data="{ load: { size: '{{ .Size }}' }, size: '{{ .Size }}' }"
+  hx-patch="{{ .SizePath }}"
   hx-swap="outerHTML"
 >
   <!-- prettier-ignore -->
@@ -15,17 +15,11 @@
 
   <label
     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-    for="title"
+    >Size</label
   >
-    Room Title
-  </label>
-  <input name="title" x-model="title" class="input" />
+  {{ template "partial-form-radio-group" .SizeRadioGroup }}
   <footer class="flex justify-end">
-    <button
-      type="submit"
-      class="button-primary"
-      :disabled="title === load.title"
-    >
+    <button type="submit" class="button-primary" :disabled="size === load.size">
       Save
     </button>
   </footer>

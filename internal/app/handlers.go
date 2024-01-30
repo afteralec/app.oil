@@ -78,6 +78,7 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 	app.Delete(routes.RoomExitPathParam, handlers.ClearRoomExit(i))
 	app.Patch(routes.RoomTitlePathParam, handlers.EditRoomTitle(i))
 	app.Patch(routes.RoomDescriptionPathParam, handlers.EditRoomDescription(i))
+	app.Patch(routes.RoomSizePathParam, handlers.EditRoomSize(i))
 
 	app.Post(routes.ActorImageReserved, handlers.ActorImageNameReserved(i))
 	app.Post(routes.ActorImages, handlers.NewActorImage(i))

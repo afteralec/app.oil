@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -557,49 +558,8 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		b["Description"] = room.Description
 		b["DescriptionPath"] = routes.RoomDescriptionPath(room.ID)
 		b["Size"] = room.Size
-		// TODO: Put this in a helper function
-		b["SizeRadioGroup"] = []fiber.Map{
-			{
-				"ID":       "edit-room-image-size-tiny",
-				"Name":     "size",
-				"Variable": "size",
-				"Value":    "0",
-				"Active":   room.Size == 0,
-				"Label":    "Tiny",
-			},
-			{
-				"ID":       "edit-room-image-size-small",
-				"Name":     "size",
-				"Variable": "size",
-				"Value":    "1",
-				"Active":   room.Size == 1,
-				"Label":    "Small",
-			},
-			{
-				"ID":       "edit-room-image-size-medium",
-				"Name":     "size",
-				"Variable": "size",
-				"Value":    "2",
-				"Active":   room.Size == 2,
-				"Label":    "Medium",
-			},
-			{
-				"ID":       "edit-room-image-size-large",
-				"Name":     "size",
-				"Variable": "size",
-				"Value":    "3",
-				"Active":   room.Size == 3,
-				"Label":    "Large",
-			},
-			{
-				"ID":       "edit-room-image-size-huge",
-				"Name":     "size",
-				"Variable": "size",
-				"Value":    "4",
-				"Active":   room.Size == 4,
-				"Label":    "Huge",
-			},
-		}
+		b["SizePath"] = routes.RoomSizePath(room.ID)
+		b = rooms.BindSizeRadioGroup(b, &room)
 		// TODO: I don't think these individual dirs are needed
 		b["North"] = room.North
 		b["Northeast"] = room.Northeast
@@ -1336,5 +1296,108 @@ func EditRoomDescription(i *shared.Interfaces) fiber.Handler {
 			NoticeIcon: true,
 		})
 		return c.Render(partials.RoomEditDescription, b, layouts.None)
+	}
+}
+
+func EditRoomSize(i *shared.Interfaces) fiber.Handler {
+	type input struct {
+		Size int32 `form:"size"`
+	}
+
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !rooms.IsSizeValid(in.Size) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !util.IsLoggedIn(c) {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		rmid, err := util.GetID(c)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			log.Println(err)
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		room, err := qtx.GetRoom(context.Background(), rmid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			log.Println(err)
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		// TODO: Add Conflict tests for edit room title, description and size
+		if room.Size == in.Size {
+			c.Status(fiber.StatusConflict)
+			return nil
+		}
+
+		if err := qtx.UpdateRoomSize(context.Background(), queries.UpdateRoomSizeParams{
+			ID:   room.ID,
+			Size: in.Size,
+		}); err != nil {
+			log.Println(err)
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		room, err = qtx.GetRoom(context.Background(), rmid)
+		if err != nil {
+			log.Println(err)
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err := tx.Commit(); err != nil {
+			log.Println(err)
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		b := fiber.Map{}
+		b["Size"] = room.Size
+		b["SizePath"] = routes.RoomSizePath(rmid)
+		b = rooms.BindSizeRadioGroup(b, &room)
+		b["NoticeSection"] = partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			Success:      true,
+			SectionID:    "room-edit-title-notice",
+			SectionClass: "pb-2",
+			NoticeText: []string{
+				"Success! The room size has been updated.",
+			},
+			NoticeIcon: true,
+		})
+		return c.Render(partials.RoomEditSize, b, layouts.None)
 	}
 }
