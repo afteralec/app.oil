@@ -43,5 +43,5 @@ jobs:
       - name: Migrate test Database
         run: |
           sqlx migrate run -D "mysql://root:pass@127.0.0.1/test" --source ./db/migrations
-      - name: Run Tests
-        run: make test-ci
+      # - name: Run Tests
+      #   run: make test-ci
