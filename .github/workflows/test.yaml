@@ -46,4 +46,6 @@ jobs:
         run: |
           sqlx migrate run -D "mysql://root:pass@127.0.0.1/test" --source ./db/migrations
       - name: Run Tests
+        env:
+          DATABASE_URL: root:pass@/test?parseTime=true
         run: make test-ci
