@@ -3,11 +3,11 @@ build:
 
 test:
 	SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true SENDING_STONE_URL=localhost:8010 REDIS_ADDR=127.0.0.1:6379 PETRICHOR_PLAY_URL=http://localhost:5173 DISABLE_SENDING_STONE=true DISABLE_CSRF=true DISABLE_LOGGING=true go test -v ./...
-	bun test
+	npm test
 
 test-ci:
 	SERVER_READ_TIMEOUT=10  REDIS_ADDR=127.0.0.1:6379 DISABLE_SENDING_STONE=true DISABLE_CSRF=true DISABLE_LOGGING=true go test -v ./...
-	bun test
+	npm test
 
 dev:
 	BASE_URL=http://localhost:8008 PETRICHOR_PLAY_URL=http://localhost:5173 SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true SENDING_STONE_URL=localhost:8010 REDIS_ADDR=127.0.0.1:6379 DISABLE_SENDING_STONE=false go run main.go run
