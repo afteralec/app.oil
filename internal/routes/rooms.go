@@ -6,14 +6,15 @@ import (
 )
 
 const (
-	Rooms              string = "/rooms"
-	RoomPathParam      string = "/rooms/:id"
-	NewRoom            string = "/rooms/new"
-	EditRoomPathParam  string = "/rooms/:id/edit"
-	RoomGridPathParam  string = "/rooms/:id/grid/:selected"
-	RoomExitPathParam  string = "/rooms/:id/:exit"
-	RoomExitsPathParam string = "/rooms/:id/exits"
-	RoomTitlePathParam string = "/rooms/:id/title"
+	Rooms                    string = "/rooms"
+	RoomPathParam            string = "/rooms/:id"
+	NewRoom                  string = "/rooms/new"
+	EditRoomPathParam        string = "/rooms/:id/edit"
+	RoomGridPathParam        string = "/rooms/:id/grid/:selected"
+	RoomExitPathParam        string = "/rooms/:id/:exit"
+	RoomExitsPathParam       string = "/rooms/:id/exits"
+	RoomTitlePathParam       string = "/rooms/:id/title"
+	RoomDescriptionPathParam string = "/rooms/:id/description"
 )
 
 func RoomPath(id int64) string {
@@ -43,5 +44,11 @@ func RoomExitsPath(id int64) string {
 func RoomTitlePath(id int64) string {
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s/%d/title", Rooms, id)
+	return sb.String()
+}
+
+func RoomDescriptionPath(id int64) string {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%s/%d/description", Rooms, id)
 	return sb.String()
 }

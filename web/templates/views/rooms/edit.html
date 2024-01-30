@@ -7,32 +7,7 @@
 
     <!-- prettier-ignore -->
     {{ template "partial-room-edit-title" . }}
-    <form
-      id="edit-room-description"
-      class="space-y-2 py-4 md:w-[60%]"
-      x-data="{ load: { description: '{{ .Description }}' }, description: '{{ .Description }}' }"
-    >
-      <label
-        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        for="description"
-      >
-        Room Description
-      </label>
-      <textarea
-        name="description"
-        x-model="description"
-        class="input min-h-[10rem]"
-      ></textarea>
-      <footer class="flex justify-end">
-        <button
-          type="submit"
-          class="button-primary"
-          :disabled="description === load.description"
-        >
-          Save
-        </button>
-      </footer>
-    </form>
+    {{ template "partial-room-edit-description" . }}
     <form
       id="edit-room-size"
       class="space-y-2 py-4 md:w-[60%]"

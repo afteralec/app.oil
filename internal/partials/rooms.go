@@ -7,4 +7,7 @@ const (
 	EditRoomExitSelect string = "partial-edit-room-exits-select"
 )
 
-const RoomEditTitle string = "partial-room-edit-title"
+const (
+	RoomEditTitle       string = "partial-room-edit-title"
+	RoomEditDescription string = "partial-room-edit-description"
+)
