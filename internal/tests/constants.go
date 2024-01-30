@@ -3,6 +3,7 @@ package tests
 import (
 	"fmt"
 
+	"petrichormud.com/app/internal/actors"
 	"petrichormud.com/app/internal/constants"
 )
 
@@ -14,6 +15,7 @@ const (
 	TestPassword        = "T3sted_tested"
 	TestEmailAddress    = "testify@test.com"
 	TestEmailAddressTwo = "testify2@test.com"
+	TestActorImageName  = "test-actor-image"
 )
 
 var TestRoom CreateTestRoomParams = CreateTestRoomParams{
@@ -24,9 +26,9 @@ var TestRoom CreateTestRoomParams = CreateTestRoomParams{
 
 var TestActorImage CreateTestActorImageParams = CreateTestActorImageParams{
 	Gender:           constants.GenderObject,
-	Name:             "test-actor-image",
-	ShortDescription: "glistening handful of pure potential, studded with eyes",
-	Description:      "Mucus clings to the subtly-twitching bumps and pocks of this handful of pure potential. Where it runnels into a tear duct or beneath a rubbery eyelid, the eye there blinks - one of many, each with a distinct color and construction. In places it's warm to the touch and others, sickly cold.",
+	Name:             TestActorImageName,
+	ShortDescription: actors.DefaultImageShortDescription,
+	Description:      actors.DefaultImageDescription,
 }
 
 func MakeTestURL(path string) string {

@@ -332,3 +332,10 @@ func DeleteTestActorImage(t *testing.T, i *shared.Interfaces, aiid int64) {
 		t.Fatal(err)
 	}
 }
+
+func DeleteTestActorImageByName(t *testing.T, i *shared.Interfaces, name string) {
+	_, err := i.Database.Exec("DELETE FROM actor_images WHERE name = ?;", name)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

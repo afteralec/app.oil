@@ -8,7 +8,7 @@
   x-show="showCreateDialog"
 >
   {{ template "partial-modal-close" "showCreateDialog" }}
-  <section id="edit-room-exits-link-error"></section>
+  <section id="actor-image-create-error"></section>
   <h3 class="pt-4 text-lg font-semibold leading-none tracking-tight">
     New Actor Image:
   </h3>
@@ -41,8 +41,8 @@
     >
     <!-- TODO: Add sanitization, validation and helper label -->
     <input
-      name="id"
-      id="actor-image-create-name-input"
+      name="name"
+      id="create-actor-image-name-input"
       class="input"
       x-model="name"
       @input="

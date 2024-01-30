@@ -1,7 +1,9 @@
 {{ define "view-actor-images" }}
 <main class="flex flex-col items-center justify-center">
   <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
+    <!-- prettier-ignore -->
     {{ template "partial-page-header" .PageHeader }}
+    {{ if .CreatePermission }}
     <section
       id="create-room"
       class="px-6 pt-4"
@@ -16,6 +18,7 @@
       </button>
       {{ template "partial-actor-image-dialog-create" }}
     </section>
+    {{ end }}
     <section id="actor-images" class="pt-6">
       <!-- prettier-ignore -->
       {{ range .ActorImages }}
