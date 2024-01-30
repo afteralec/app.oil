@@ -371,6 +371,20 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			})
 
 			return c.Render(views.RequestSummaryFields, b, layouts.RequestSummary)
+		case request.StatusSubmitted:
+			b["HeaderStatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
+				Status:      req.Status,
+				Size:        "36",
+				IncludeText: true,
+			})
+			b["RequestTitle"] = request.SummaryTitle(req.Type, content)
+			b["SummaryFields"] = request.GetSummaryFields(request.GetSummaryFieldsParams{
+				PID:     pid,
+				Request: &req,
+				Content: content,
+			})
+
+			return c.Render(views.RequestSummaryFields, b, layouts.RequestSummary)
 		}
 
 		// TODO: This means that this request has an invalid status
