@@ -6,7 +6,7 @@ test:
 	bun test
 
 test-ci:
-	SERVER_READ_TIMEOUT=10 DATABASE_URL=mysql://root:pass@127.0.0.1/test?parseTime=true REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=true DISABLE_CSRF=true DISABLE_LOGGING=true go test -v ./...
+	SERVER_READ_TIMEOUT=10 DATABASE_URL=mysql://root:pass@tcp(127.0.0.1/test)?parseTime=true REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=true DISABLE_CSRF=true DISABLE_LOGGING=true go test -v ./...
 
 dev:
 	BASE_URL=http://localhost:8008 PETRICHOR_PLAY_URL=http://localhost:5173 SERVER_READ_TIMEOUT=10 DATABASE_URL=root:pass@/test?parseTime=true SENDING_STONE_URL=localhost:8010 REDIS_ADDR=127.0.0.1:6379 DISABLE_RESEND=false go run main.go run
