@@ -1,5 +1,5 @@
 {{ define "partial-page-header" }}
-<header class="pt-2">
+<header id="page-header" class="pt-2" hx-swap-oob="outerHTML">
   <h1 class="text-3xl font-extrabold tracking-tight lg:text-4xl">
     {{ .Title }}
   </h1>

@@ -1,8 +1,9 @@
 package layouts
 
 const (
-	None       = ""
-	Main       = "layout-main"
-	Standalone = "layout-standalone"
-	CSRF       = "layout-csrf"
+	None       string = ""
+	Main       string = "layout-main"
+	Standalone string = "layout-standalone"
+	CSRF       string = "layout-csrf"
+	PageHeader string = "layout-page-header"
 )

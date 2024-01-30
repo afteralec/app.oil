@@ -1,0 +1,32 @@
+{{ define "partial-room-edit-title" }}
+<form
+  id="edit-room-title"
+  class="space-y-2 py-4 md:w-[60%]"
+  x-data="{ load: { title: `{{ .Title }}` }, title: `{{ .Title }}` }"
+  hx-patch="{{ .TitlePath }}"
+  hx-swap="outerHTML"
+>
+  <!-- prettier-ignore -->
+  {{ if .NoticeSection.Success }}
+    {{ template "partial-notice-section-success" .NoticeSection }}
+  {{ else if .NoticeSection.Error }}
+    {{ template "partial-notice-section-error" .NoticeSection }}
+  {{ end }}
+  <label
+    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+    for="title"
+  >
+    Room Title
+  </label>
+  <input name="title" x-model="title" class="input" />
+  <footer class="flex justify-end">
+    <button
+      type="submit"
+      class="button-primary"
+      :disabled="title === load.title"
+    >
+      Save
+    </button>
+  </footer>
+</form>
+{{ end }}

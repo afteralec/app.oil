@@ -553,6 +553,7 @@ func EditRoomPage(i *shared.Interfaces) fiber.Handler {
 		}
 		b["RoomGrid"] = grid
 		b["Title"] = room.Title
+		b["TitlePath"] = routes.RoomTitlePath(room.ID)
 		b["Description"] = room.Description
 		b["Size"] = room.Size
 		// TODO: Put this in a helper function
@@ -1137,5 +1138,105 @@ func ClearRoomExit(i *shared.Interfaces) fiber.Handler {
 		b["Exits"] = graph.BindExits()
 		b["RoomGrid"] = grid
 		return c.Render(partials.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
+	}
+}
+
+func EditRoomTitle(i *shared.Interfaces) fiber.Handler {
+	type input struct {
+		Title string `form:"title"`
+	}
+
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !rooms.IsTitleValid(in.Title) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !util.IsLoggedIn(c) {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		rmid, err := util.GetID(c)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		room, err := qtx.GetRoom(context.Background(), rmid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if room.Title == in.Title {
+			c.Status(fiber.StatusConflict)
+			return nil
+		}
+
+		if err := qtx.UpdateRoomTitle(context.Background(), queries.UpdateRoomTitleParams{
+			ID:    room.ID,
+			Title: in.Title,
+		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		room, err = qtx.GetRoom(context.Background(), rmid)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		b := fiber.Map{}
+		b["PageHeader"] = fiber.Map{
+			"Title":    rooms.TitleWithID(room.Title, room.ID),
+			"SubTitle": "Update room properties here",
+		}
+		b["Title"] = room.Title
+		b["TitlePath"] = routes.RoomTitlePath(rmid)
+		b["NoticeSection"] = partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			Success:      true,
+			SectionID:    "room-edit-title-notice",
+			SectionClass: "pb-2",
+			NoticeText: []string{
+				"Success! The room title has been updated.",
+			},
+			NoticeIcon: true,
+		})
+		return c.Render(partials.RoomEditTitle, b, layouts.PageHeader)
 	}
 }

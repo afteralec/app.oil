@@ -2,29 +2,11 @@
 <main class="flex flex-col items-center justify-center">
   <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
     {{ template "partial-page-header" .PageHeader }}
+
     <section id="edit-room-error"></section>
-    <form
-      id="edit-room-title"
-      class="space-y-2 py-4 md:w-[60%]"
-      x-data="{ load: { title: '{{ .Title }}' }, title: '{{ .Title }}' }"
-    >
-      <label
-        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        for="title"
-      >
-        Room Title
-      </label>
-      <input name="title" x-model="title" class="input" />
-      <footer class="flex justify-end">
-        <button
-          type="submit"
-          class="button-primary"
-          :disabled="title === load.title"
-        >
-          Save
-        </button>
-      </footer>
-    </form>
+
+    <!-- prettier-ignore -->
+    {{ template "partial-room-edit-title" . }}
     <form
       id="edit-room-description"
       class="space-y-2 py-4 md:w-[60%]"
