@@ -104,7 +104,7 @@ func ActorImageNameReserved(i *shared.Interfaces) fiber.Handler {
 				"CSRF": c.Locals("csrf"),
 			}, layouts.CSRF)
 		} else {
-			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
+			c.Append("HX-Trigger-After-Swap", "ptrcr:actor-image-reserved")
 			return c.Render(partials.ActorImageFree, fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, layouts.CSRF)

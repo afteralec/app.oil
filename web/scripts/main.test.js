@@ -109,3 +109,39 @@ describe("setStrengths", () => {
     });
   });
 });
+
+describe("isActorImageNameValid", () => {
+  describe("Invalid if", () => {
+    test("Actor Image name is too short", () => {
+      const name = "tes";
+      expect(isActorImageNameValid(name)).toBeFalse();
+    });
+    test("Actor Image name is too long", () => {
+      const name =
+        "actor-image-name-of-incredible-proportions-far-exceeding-any-reasonable-character-limit";
+      expect(isActorImageNameValid(name)).toBeFalse();
+    });
+    test("Actor Image name contains invalid characters", () => {
+      const nameOne = "Test";
+      expect(isActorImageNameValid(nameOne)).toBeFalse();
+      const nameTwo = "test^";
+      expect(isActorImageNameValid(nameTwo)).toBeFalse();
+      const nameThree = "test&*#";
+      expect(isActorImageNameValid(nameThree)).toBeFalse();
+      const nameFour = "test4";
+      expect(isActorImageNameValid(nameFour)).toBeFalse();
+      const nameFive = "test_actor_image";
+      expect(isActorImageNameValid(nameFive)).toBeFalse();
+    });
+  });
+  describe("Valid if", () => {
+    test("Actor Image name is the correct length", () => {
+      const name = "test";
+      expect(isActorImageNameValid(name)).toBeTrue();
+    });
+    test("Actor Image name contains dashes", () => {
+      const name = "test-actor-image";
+      expect(isActorImageNameValid(name)).toBeTrue();
+    });
+  });
+});

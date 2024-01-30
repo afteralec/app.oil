@@ -29,7 +29,10 @@
       }
     "
     hx-post
-    @submit.prevent="showCreateDialog = false;"
+    @submit.prevent="
+      showCreateDialog = false;
+      name = '';
+    "
   >
     <label
       for="actor-image-create-name-input"
@@ -48,8 +51,9 @@
         reservedEl.classList.add('htmx-request');
         usernameReserved = true;
         document.body.addEventListener('ptrcr:actor-image-reserved', () => {
-          const el = document.getElementById('actor-image-reserved');
+          const el = document.getElementById('actor-image-reserved-reserved');
           reserved = Boolean(el);
+          console.log(reserved);
         }, { once: true });
         name = sanitizeActorImageName(event.target.value);
       "
@@ -59,10 +63,16 @@
       hx-target="#actor-image-reserved"
       hx-indicator="#actor-image-reserved"
     />
-    {{ template "partial-actor-image-reserved-default" }}
+    {{ template "partial-actor-image-reserved-container" }}
     <footer class="flex items-center gap-2 pt-6">
       <!-- TODO: Add disabling based on state of the input -->
-      <button type="submit" class="button-primary ml-auto">Create</button>
+      <button
+        type="submit"
+        class="button-primary ml-auto"
+        :disabled="reserved || !isActorImageNameValid(name)"
+      >
+        Create
+      </button>
     </footer>
   </form>
 </div>

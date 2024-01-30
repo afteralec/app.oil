@@ -36,6 +36,7 @@ func TestActorImageNameReservedConflict(t *testing.T) {
 	writer.Close()
 
 	url := MakeTestURL(routes.ActorImageReserved)
+
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
@@ -169,8 +170,10 @@ func TestActorImagesPageSuccess(t *testing.T) {
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	url := MakeTestURL(routes.ActorImages)
+
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
