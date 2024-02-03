@@ -194,15 +194,14 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 		content, err := request.Content(qtx, &req)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		// TODO: Reviewer path
 		if req.PID != pid {
 			perms, err := util.GetPermissions(c)
 			if err != nil {
@@ -211,11 +210,8 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			}
 			if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
-				return nil
+				return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 			}
-
-			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 		}
 
 		if req.Status == request.StatusIncomplete {
@@ -301,12 +297,16 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		// TODO: Reviewer path
-		// If it's a non-owner viewing, just show a summary
 		if req.PID != pid {
-			c.Status(fiber.StatusForbidden)
-			// TODO: 403 view
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			perms, err := util.GetPermissions(c)
+			if err != nil {
+				c.Status(fiber.StatusForbidden)
+				return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			}
+			if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
+				c.Status(fiber.StatusForbidden)
+				return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			}
 		}
 
 		// TODO: Plan for the requests/:id handler (PLAYER)
@@ -331,7 +331,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 		content, err := request.Content(qtx, &req)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
 		if req.Status == request.StatusIncomplete {
@@ -365,12 +365,13 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				b["GenderIsMale"] = content["Gender"] == character.GenderMale
 			}
 
-			return c.Render(view, b, layouts.Standalone)
+			return c.Render(view, b, layouts.RequestFieldStandalone)
 		}
 
 		b["PageHeader"] = fiber.Map{
 			"Title": request.SummaryTitle(req.Type, content),
 		}
+		// TODO: Look at re-implementing this in the view?
 		// b["HeaderStatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
 		// 	Status:      req.Status,
 		// 	Size:        "36",
