@@ -19,7 +19,7 @@ func Handlers(app *fiber.App, i *shared.Interfaces) {
 
 	app.Post(routes.Requests, handlers.NewRequest(i))
 	app.Get(routes.RequestFieldPathParam, handlers.RequestFieldPage(i))
-	app.Patch(routes.RequestFieldPathParam, handlers.UpdateRequestFieldNew(i))
+	app.Patch(routes.RequestFieldPathParam, handlers.UpdateRequestField(i))
 	app.Get(routes.RequestPathParam, handlers.RequestPage(i))
 	app.Post(routes.RequestStatusPathParam, handlers.UpdateRequestStatus(i))
 
