@@ -365,22 +365,24 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 				b["GenderIsMale"] = content["Gender"] == character.GenderMale
 			}
 
-			return c.Render(view, b, layouts.RequestFieldStandalone)
+			return c.Render(view, b, layouts.Standalone)
 		}
 
-		b["HeaderStatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
-			Status:      req.Status,
-			Size:        "36",
-			IncludeText: true,
-		})
-		b["RequestTitle"] = request.SummaryTitle(req.Type, content)
+		b["PageHeader"] = fiber.Map{
+			"Title": request.SummaryTitle(req.Type, content),
+		}
+		// b["HeaderStatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
+		// 	Status:      req.Status,
+		// 	Size:        "36",
+		// 	IncludeText: true,
+		// })
 		b["SummaryFields"] = request.GetSummaryFields(request.GetSummaryFieldsParams{
 			PID:     pid,
 			Request: &req,
 			Content: content,
 		})
 
-		return c.Render(views.RequestSummaryFields, b, layouts.RequestSummary)
+		return c.Render(views.RequestSummaryFields, b, layouts.Page)
 	}
 }
 

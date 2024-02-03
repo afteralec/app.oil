@@ -5,5 +5,6 @@ const (
 	Main       string = "layout-main"
 	Standalone string = "layout-standalone"
 	CSRF       string = "layout-csrf"
+	Page       string = "layout-page"
 	PageHeader string = "layout-page-header"
 )

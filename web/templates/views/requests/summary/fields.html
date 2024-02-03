@@ -1,5 +1,5 @@
 {{ define "view-request-summary-fields" }}
-<section class="request-summary-fields flow flex flex-col justify-center">
+<section class="flex flex-col justify-center space-y-2">
   <!-- prettier-ignore -->
   {{ range .SummaryFields }}
     {{ template "partial-requests-summary-field" . }}

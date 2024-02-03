@@ -1,0 +1,18 @@
+{{ define "layout-page" }}
+<!doctype html>
+<html lang="en">
+  {{ template "partial-head" . }}
+  <body class="{{ .Theme }}">
+    <!-- prettier-ignore -->
+    {{ template "partial-header" . }}
+    <main class="flex flex-col items-center justify-center">
+      <div class="w-full text-fg md:w-[750px] md:px-4 lg:w-[1000px]">
+        <!-- prettier-ignore -->
+        {{ template "partial-page-header" .PageHeader }}
+        {{ embed }}
+      </div>
+    </main>
+    {{ template "partial-footer" . }}
+  </body>
+</html>
+{{ end }}

@@ -106,6 +106,10 @@ body {
   padding-top: 1.5rem;
 }
 
+.header-4 {
+  @apply text-sm font-medium leading-none tracking-tight;
+}
+
 /* TODO: Clean this up along with the username handling, this should be a class instead of an id */
 #actor-image-reserved:not(.htmx-request) > #actor-image-reserved-indicator {
   display: none;
@@ -167,10 +171,10 @@ body {
   display: block;
 }
 
-.request-summary-fields:hover > .request-summary-field:not(:hover) {
-  transition: opacity 250ms;
-  opacity: 0.5;
-}
+/* .request-summary-fields:hover > .request-summary-field:not(:hover) { */
+/*   transition: opacity 250ms; */
+/*   opacity: 0.5; */
+/* } */
 
 .modal {
   @apply z-20 fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-bg p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%];
@@ -220,6 +224,7 @@ body {
   @apply text-success-hl;
 }
 
+/* TODO: Rename to button-nav */
 .nav-button {
   @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-bg leading-none px-4 py-2 text-sm font-medium transition-colors select-none;
 }
