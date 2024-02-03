@@ -223,6 +223,71 @@ var FieldsCharacterApplication []Field = []Field{
 	FieldCharacterApplicationBackstory,
 }
 
+// TODO: Get this built into the Definition
+func (app *CharacterApplication) GetSummaryFields(p GetSummaryFieldsParams) []SummaryField {
+	if p.Request.Type == TypeCharacterApplication {
+		var basePathSB strings.Builder
+		fmt.Fprintf(&basePathSB, "/requests/%d", p.Request.ID)
+		basePath := basePathSB.String()
+
+		var namePathSB strings.Builder
+		fmt.Fprintf(&namePathSB, "%s/%s", basePath, FieldName)
+
+		var genderPathSB strings.Builder
+		fmt.Fprintf(&genderPathSB, "%s/%s", basePath, FieldGender)
+
+		var shortDescriptionPathSB strings.Builder
+		fmt.Fprintf(&shortDescriptionPathSB, "%s/%s", basePath, FieldShortDescription)
+
+		var descriptionPathSB strings.Builder
+		fmt.Fprintf(&descriptionPathSB, "%s/%s", basePath, FieldDescription)
+
+		var backstoryPathSB strings.Builder
+		fmt.Fprintf(&backstoryPathSB, "%s/%s", basePath, FieldBackstory)
+
+		// TODO: Build a utility for this
+		allowEdit := p.Request.PID == p.PID
+		if p.Request.Status != StatusIncomplete && p.Request.Status != StatusReady {
+			allowEdit = false
+		}
+
+		return []SummaryField{
+			{
+				Label:     "Name",
+				Content:   p.Content[FieldName],
+				AllowEdit: allowEdit,
+				Path:      namePathSB.String(),
+			},
+			{
+				Label:     "Gender",
+				Content:   p.Content[FieldGender],
+				AllowEdit: allowEdit,
+				Path:      genderPathSB.String(),
+			},
+			{
+				Label:     "Short Description",
+				Content:   p.Content[FieldShortDescription],
+				AllowEdit: allowEdit,
+				Path:      shortDescriptionPathSB.String(),
+			},
+			{
+				Label:     "Description",
+				Content:   p.Content[FieldDescription],
+				AllowEdit: allowEdit,
+				Path:      descriptionPathSB.String(),
+			},
+			{
+				Label:     "Backstory",
+				Content:   p.Content[FieldBackstory],
+				AllowEdit: allowEdit,
+				Path:      backstoryPathSB.String(),
+			},
+		}
+	}
+
+	return []SummaryField{}
+}
+
 var DialogsCharacterApplication DefinitionDialogs = DefinitionDialogs{
 	Submit: DefinitionDialog{
 		Header:     "Submit This Application?",
@@ -240,11 +305,5 @@ var DialogsCharacterApplication DefinitionDialogs = DefinitionDialogs{
 		ButtonText: "I'm Ready to Review This Application",
 	},
 }
-
-// var DefinitionCharacterApplication Definition = NewDefinition(NewDefinitionParams{
-// 	Type:    TypeCharacterApplication,
-// 	Fields:  FieldsCharacterApplication,
-// 	Dialogs: DialogsCharacterApplication,
-// })
 
 var DefinitionCharacterApplication CharacterApplication = CharacterApplication{}

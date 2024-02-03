@@ -179,6 +179,7 @@ var (
 	FieldMapsByType  map[string]map[string]Field = MakeFieldMapsByType(Definitions)
 )
 
+// TODO: Change this to just View
 func GetView(t, f string) string {
 	fields := FieldMapsByType[t]
 	field := fields[f]
@@ -189,4 +190,20 @@ func GetFieldLabelAndDescription(t, f string) (string, string) {
 	fields := FieldMapsByType[t]
 	field := fields[f]
 	return field.Label, field.Description
+}
+
+type GetSummaryFieldsParams struct {
+	Request *queries.Request
+	Content map[string]string
+	PID     int64
+}
+
+// TODO: Rename to SummaryFields
+func GetSummaryFields(p GetSummaryFieldsParams) []SummaryField {
+	switch p.Request.Type {
+	case TypeCharacterApplication:
+		return DefinitionCharacterApplication.GetSummaryFields(p)
+	default:
+		return []SummaryField{}
+	}
 }

@@ -1,7 +1,7 @@
 package views
 
 const (
-	RequestSummaryFields string = "request-summary-fields"
+	RequestSummaryFields string = "view-request-summary-fields"
 )
 
 const (

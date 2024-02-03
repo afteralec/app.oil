@@ -185,6 +185,23 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
+		if !request.IsFieldValid(req.Type, field) {
+			c.Status(fiber.StatusBadRequest)
+			// TODO: 400 view
+			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+		}
+
+		content, err := request.Content(qtx, &req)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
 		// TODO: Reviewer path
 		if req.PID != pid {
 			perms, err := util.GetPermissions(c)
@@ -192,7 +209,6 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusForbidden)
 				return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
 			}
-
 			if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
 				return nil
@@ -217,12 +233,6 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 		b = request.BindDialogs(b, request.BindDialogsParams{
 			Request: &req,
 		})
-
-		content, err := request.Content(qtx, &req)
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
 
 		label, description := request.GetFieldLabelAndDescription(req.Type, field)
 		b["FieldLabel"] = label
@@ -324,8 +334,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		switch req.Status {
-		case request.StatusIncomplete:
+		if req.Status == request.StatusIncomplete {
 			field, last := request.GetNextIncompleteField(req.Type, content)
 			view := request.GetView(req.Type, field)
 
@@ -357,39 +366,21 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 			}
 
 			return c.Render(view, b, layouts.RequestFieldStandalone)
-		case request.StatusReady:
-			b["HeaderStatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
-				Status:      req.Status,
-				Size:        "36",
-				IncludeText: true,
-			})
-			b["RequestTitle"] = request.SummaryTitle(req.Type, content)
-			b["SummaryFields"] = request.GetSummaryFields(request.GetSummaryFieldsParams{
-				PID:     pid,
-				Request: &req,
-				Content: content,
-			})
-
-			return c.Render(views.RequestSummaryFields, b, layouts.RequestSummary)
-		case request.StatusSubmitted:
-			b["HeaderStatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
-				Status:      req.Status,
-				Size:        "36",
-				IncludeText: true,
-			})
-			b["RequestTitle"] = request.SummaryTitle(req.Type, content)
-			b["SummaryFields"] = request.GetSummaryFields(request.GetSummaryFieldsParams{
-				PID:     pid,
-				Request: &req,
-				Content: content,
-			})
-
-			return c.Render(views.RequestSummaryFields, b, layouts.RequestSummary)
 		}
 
-		// TODO: This means that this request has an invalid status
-		c.Status(fiber.StatusInternalServerError)
-		return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+		b["HeaderStatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
+			Status:      req.Status,
+			Size:        "36",
+			IncludeText: true,
+		})
+		b["RequestTitle"] = request.SummaryTitle(req.Type, content)
+		b["SummaryFields"] = request.GetSummaryFields(request.GetSummaryFieldsParams{
+			PID:     pid,
+			Request: &req,
+			Content: content,
+		})
+
+		return c.Render(views.RequestSummaryFields, b, layouts.RequestSummary)
 	}
 }
 
