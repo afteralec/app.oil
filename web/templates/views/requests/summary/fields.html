@@ -1,8 +1,14 @@
 {{ define "view-request-summary-fields" }}
-<section class="flex flex-col justify-center space-y-2">
+<div
+  class="flex flex-col justify-center space-y-2 md:w-[60%]"
+  x-data="getRequestData()"
+>
   <!-- prettier-ignore -->
+  {{ template "partial-request-summary-actions" . }}
   {{ range .SummaryFields }}
     {{ template "partial-requests-summary-field" . }}
   {{ end }}
-</section>
+  {{ template "partial-request-summary-actions" . }}
+  {{ template "partial-request-dialogs" . }}
+</div>
 {{ end }}

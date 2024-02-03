@@ -1,5 +1,5 @@
-{{ define "partial-request-summary-footer" }}
-<footer x-show="!commentOpen" class="flex justify-end gap-2 pt-4">
+{{ define "partial-request-summary-actions" }}
+<section x-show="!commentOpen" class="flex items-center gap-2 pt-4">
   {{ if and .ViewedByReviewer .StatusInReview }}
   <button
     @click.prevent="commentOpen = true;"
@@ -27,5 +27,5 @@
     Submit
   </button>
   {{ end }}
-</footer>
+</section>
 {{ end }}

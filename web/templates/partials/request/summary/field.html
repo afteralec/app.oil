@@ -1,29 +1,28 @@
 {{ define "partial-requests-summary-field" }}
-<section class="pt-6" x-data="{ helpOpen: false }">
+<section class="space-y-2 pt-6" x-data="{ helpOpen: false }">
   <header>
-    <h3 class="pb-2 text-lg font-semibold leading-none tracking-tight">
-      {{ .Label }}
-    </h3>
+    <h3 class="header-4">{{ .Label }}</h3>
   </header>
   <p class="whitespace-pre-wrap text-base leading-none">{{ .Content }}</p>
+
+  <footer class="flex items-center gap-2 pt-2">
+    <button
+      type="button"
+      class="button-outline"
+      @click.prevent="helpOpen = !helpOpen"
+      x-text="helpOpen ? 'Close Help' : 'Help'"
+    >
+      Help
+    </button>
+
+    {{ if .AllowEdit }}
+    <a href="{{ .Path }}" class="button-outline">Edit</a>
+    {{ end }}
+  </footer>
+
   <div x-cloak x-show="helpOpen" class="pt-2">
     <!-- TODO: This needs to be general, include the help from insert -->
     {{ template "partial-character-application-summary-field-help" .Label }}
   </div>
-
-  <!-- <footer class="flex items-center justify-end gap-2 pr-3"> -->
-  <!--   <button -->
-  <!--     type="button" -->
-  <!--     class="button-outline" -->
-  <!--     @click.prevent="helpOpen = !helpOpen" -->
-  <!--     x-text="helpOpen ? 'Close Help' : 'Help'" -->
-  <!--   > -->
-  <!--     Help -->
-  <!--   </button> -->
-  <!---->
-  <!--   {{ if .AllowEdit }} -->
-  <!--   <a href="{{ .Path }}" class="button-outline">Edit</a> -->
-  <!--   {{ end }} -->
-  <!-- </footer> -->
 </section>
 {{ end }}
