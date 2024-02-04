@@ -11,3 +11,5 @@ const (
 	CharacterApplicationDescription      string = "request-character-application-desc"
 	CharacterApplicationBackstory        string = "request-character-application-backstory"
 )
+
+const CharacterApplicationQueue string = "view-character-application-queue"

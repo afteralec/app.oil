@@ -21,6 +21,4 @@ const Characters string = "characters"
 
 const PlayerPermissionsDetail string = "player-permissions-detail"
 
-const CharacterApplicationQueue string = "character-application-queue"
-
 const VerifyEmail = "verify-email"
