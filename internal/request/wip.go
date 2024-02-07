@@ -11,6 +11,8 @@ const errInvalidType string = "invalid type"
 
 var ErrInvalidType error = errors.New(errInvalidType)
 
+// TODO: Make this map a comprehensive type with methods on it?
+// For example, it could have a Type field, or an IsMember method, etc
 func Content(q *queries.Queries, req *queries.Request) (map[string]string, error) {
 	var b []byte
 	m := map[string]string{}
