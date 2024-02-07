@@ -10,7 +10,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/headers"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
@@ -141,7 +141,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		in := new(input)
 		if err := c.BodyParser(in); err != nil {
-			c.Append(constants.HeaderHXAcceptable, "true")
+			c.Append(headers.HXAcceptable, "true")
 			c.Append("HX-Retarget", "search-help-error")
 			c.Status(fiber.StatusBadRequest)
 			b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
@@ -157,7 +157,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 		}
 
 		if len(in.Search) == 0 {
-			c.Append(constants.HeaderHXAcceptable, "true")
+			c.Append(headers.HXAcceptable, "true")
 			c.Append("HX-Retarget", "search-help-error")
 			c.Status(fiber.StatusBadRequest)
 			b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
@@ -174,7 +174,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 
 		tx, err := i.Database.Begin()
 		if err != nil {
-			c.Append(constants.HeaderHXAcceptable, "true")
+			c.Append(headers.HXAcceptable, "true")
 			c.Append("HX-Retarget", "search-help-error")
 			c.Status(fiber.StatusInternalServerError)
 			b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
@@ -203,7 +203,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				Title: search,
 			})
 			if err != nil {
-				c.Append(constants.HeaderHXAcceptable, "true")
+				c.Append(headers.HXAcceptable, "true")
 				c.Append("HX-Retarget", "search-help-error")
 				c.Status(fiber.StatusInternalServerError)
 				b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
@@ -222,7 +222,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 			for _, header := range byTitle {
 				tags, err := qtx.GetTagsForHelpFile(context.Background(), header.Slug)
 				if err != nil {
-					c.Append(constants.HeaderHXAcceptable, "true")
+					c.Append(headers.HXAcceptable, "true")
 					c.Append("HX-Retarget", "search-help-error")
 					c.Status(fiber.StatusInternalServerError)
 					b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
@@ -265,7 +265,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				Raw: search,
 			})
 			if err != nil {
-				c.Append(constants.HeaderHXAcceptable, "true")
+				c.Append(headers.HXAcceptable, "true")
 				c.Append("HX-Retarget", "search-help-error")
 				c.Status(fiber.StatusInternalServerError)
 				b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
@@ -284,7 +284,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 			for _, header := range byContent {
 				tags, err := qtx.GetTagsForHelpFile(context.Background(), header.Slug)
 				if err != nil {
-					c.Append(constants.HeaderHXAcceptable, "true")
+					c.Append(headers.HXAcceptable, "true")
 					c.Append("HX-Retarget", "search-help-error")
 					c.Status(fiber.StatusInternalServerError)
 					b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
@@ -324,7 +324,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 		if in.Category {
 			byCategory, err := qtx.SearchHelpByCategory(context.Background(), search)
 			if err != nil {
-				c.Append(constants.HeaderHXAcceptable, "true")
+				c.Append(headers.HXAcceptable, "true")
 				c.Append("HX-Retarget", "search-help-error")
 				c.Status(fiber.StatusInternalServerError)
 				b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
@@ -343,7 +343,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 			for _, header := range byCategory {
 				tags, err := qtx.GetTagsForHelpFile(context.Background(), header.Slug)
 				if err != nil {
-					c.Append(constants.HeaderHXAcceptable, "true")
+					c.Append(headers.HXAcceptable, "true")
 					c.Append("HX-Retarget", "search-help-error")
 					c.Status(fiber.StatusInternalServerError)
 					b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
@@ -383,7 +383,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 		if in.Tags {
 			byTags, err := qtx.SearchHelpByTags(context.Background(), search)
 			if err != nil {
-				c.Append(constants.HeaderHXAcceptable, "true")
+				c.Append(headers.HXAcceptable, "true")
 				c.Append("HX-Retarget", "search-help-error")
 				c.Status(fiber.StatusInternalServerError)
 				b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
@@ -402,7 +402,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 			for _, header := range byTags {
 				tags, err := qtx.GetTagsForHelpFile(context.Background(), header.Slug)
 				if err != nil {
-					c.Append(constants.HeaderHXAcceptable, "true")
+					c.Append(headers.HXAcceptable, "true")
 					c.Append("HX-Retarget", "search-help-error")
 					c.Status(fiber.StatusInternalServerError)
 					b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
@@ -441,7 +441,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 		}
 
 		if err := tx.Commit(); err != nil {
-			c.Append(constants.HeaderHXAcceptable, "true")
+			c.Append(headers.HXAcceptable, "true")
 			c.Append("HX-Retarget", "search-help-error")
 			c.Status(fiber.StatusInternalServerError)
 			b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
@@ -459,7 +459,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 		if len(results) == 0 {
 			b := views.Bind(c)
 			b["Search"] = in.Search
-			c.Append(constants.HeaderHXAcceptable, "true")
+			c.Append(headers.HXAcceptable, "true")
 			c.Append("HX-Retarget", "search-help-error")
 			c.Status(fiber.StatusNotFound)
 			return c.Render(partials.HelpIndexSearchNoResults, b, layouts.None)

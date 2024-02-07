@@ -1,7 +1,6 @@
 package constants
 
 const (
-	HeaderHXAcceptable = "X-HX-Acceptable"
 	// TODO: Clean up these token keys
 	VerifyEmailTokenKey                = "ve"
 	UsernameTokenKey                   = "un"
