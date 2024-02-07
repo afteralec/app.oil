@@ -12,12 +12,12 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 )
 
 func TestHelpPageFatal(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 
 	config := configs.Fiber()
 	a := fiber.New(config)
@@ -38,7 +38,7 @@ func TestHelpPageFatal(t *testing.T) {
 }
 
 func TestHelpPageSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	config := configs.Fiber()
@@ -58,7 +58,7 @@ func TestHelpPageSuccess(t *testing.T) {
 
 // TODO: Need to figure out seeding help data during a test run
 func TestHelpFilePageNotFound(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	config := configs.Fiber()
@@ -77,7 +77,7 @@ func TestHelpFilePageNotFound(t *testing.T) {
 }
 
 func TestHelpFilePageFatal(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 
 	config := configs.Fiber()
 	a := fiber.New(config)
@@ -98,7 +98,7 @@ func TestHelpFilePageFatal(t *testing.T) {
 }
 
 func TestHelpFilePageSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -122,7 +122,7 @@ func TestHelpFilePageSuccess(t *testing.T) {
 }
 
 func TestSearchHelpNotFound(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	config := configs.Fiber()
@@ -147,7 +147,7 @@ func TestSearchHelpNotFound(t *testing.T) {
 }
 
 func TestSearchHelpSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	config := configs.Fiber()

@@ -6,13 +6,13 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
-	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/views"
 )
 
-func SearchPlayer(i *shared.Interfaces) fiber.Handler {
+func SearchPlayer(i *interfaces.Shared) fiber.Handler {
 	type input struct {
 		Search string `form:"search"`
 	}

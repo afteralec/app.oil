@@ -9,13 +9,14 @@ import (
 	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
 
+	"petrichormud.com/app/internal/interfaces"
 	pb "petrichormud.com/app/internal/proto/sending"
 	"petrichormud.com/app/internal/shared"
 )
 
 const ThirtyMinutesInNanoseconds = 30 * 60 * 1000 * 1000 * 1000
 
-func SetupRecovery(i *shared.Interfaces, pid int64, email string) error {
+func SetupRecovery(i *interfaces.Shared, pid int64, email string) error {
 	id := uuid.NewString()
 	key := RecoveryKey(id)
 
@@ -52,7 +53,7 @@ func Cache(r *redis.Client, key string, pid int64) error {
 	return r.Set(context.Background(), key, pid, ThirtyMinutesInNanoseconds).Err()
 }
 
-func SetupRecoverySuccess(i *shared.Interfaces, email string) (string, error) {
+func SetupRecoverySuccess(i *interfaces.Shared, email string) (string, error) {
 	id := uuid.NewString()
 	key := RecoverySuccessKey(id)
 

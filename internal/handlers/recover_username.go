@@ -8,6 +8,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/routes"
@@ -22,7 +23,7 @@ func RecoverUsernamePage() fiber.Handler {
 	}
 }
 
-func RecoverUsernameSuccessPage(i *shared.Interfaces) fiber.Handler {
+func RecoverUsernameSuccessPage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		t := c.Query("t")
 		if len(t) == 0 {
@@ -41,7 +42,7 @@ func RecoverUsernameSuccessPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func RecoverUsername(i *shared.Interfaces) fiber.Handler {
+func RecoverUsername(i *interfaces.Shared) fiber.Handler {
 	type request struct {
 		Email string `form:"email"`
 	}

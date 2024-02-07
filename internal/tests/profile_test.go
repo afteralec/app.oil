@@ -10,12 +10,12 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 )
 
 func TestProfilePageUnauthorizedNotLoggedIn(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -34,7 +34,7 @@ func TestProfilePageUnauthorizedNotLoggedIn(t *testing.T) {
 }
 
 func TestProfilePageSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())

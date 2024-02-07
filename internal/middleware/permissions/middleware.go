@@ -5,11 +5,11 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/shared"
 )
 
-func New(i *shared.Interfaces) fiber.Handler {
+func New(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {

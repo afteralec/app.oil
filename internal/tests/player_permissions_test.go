@@ -11,13 +11,13 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 )
 
 func TestPlayerPermissionsPageUnauthorized(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -35,7 +35,7 @@ func TestPlayerPermissionsPageUnauthorized(t *testing.T) {
 }
 
 func TestPlayerPermissionsPageForbiddenNoPermission(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -61,7 +61,7 @@ func TestPlayerPermissionsPageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestPlayerPermissionsPageSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -87,7 +87,7 @@ func TestPlayerPermissionsPageSuccess(t *testing.T) {
 }
 
 func TestPlayerPermissionsDetailPageUnauthorized(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -108,7 +108,7 @@ func TestPlayerPermissionsDetailPageUnauthorized(t *testing.T) {
 }
 
 func TestPlayerPermissionsDetailPageForbiddenNoPermission(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -137,7 +137,7 @@ func TestPlayerPermissionsDetailPageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestPlayerPermissionsDetailPageSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())

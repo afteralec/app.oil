@@ -11,6 +11,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 	redis "github.com/redis/go-redis/v9"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/password"
@@ -26,7 +27,7 @@ func RecoverPasswordPage() fiber.Handler {
 	}
 }
 
-func RecoverPasswordSuccessPage(i *shared.Interfaces) fiber.Handler {
+func RecoverPasswordSuccessPage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tid := c.Query("t")
 		key := password.RecoverySuccessKey(tid)
@@ -46,7 +47,7 @@ func RecoverPasswordSuccessPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func RecoverPassword(i *shared.Interfaces) fiber.Handler {
+func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 	type request struct {
 		Username string `form:"username"`
 		Email    string `form:"email"`

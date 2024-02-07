@@ -7,6 +7,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/password"
@@ -37,7 +38,7 @@ func ResetPasswordSuccessPage() fiber.Handler {
 	}
 }
 
-func ResetPassword(i *shared.Interfaces) fiber.Handler {
+func ResetPassword(i *interfaces.Shared) fiber.Handler {
 	type request struct {
 		Username        string `form:"username"`
 		Password        string `form:"password"`

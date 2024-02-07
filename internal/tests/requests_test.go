@@ -13,13 +13,13 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/requests"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 )
 
 func TestCreateRequestUnauthorizedNotLoggedIn(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -46,7 +46,7 @@ func TestCreateRequestUnauthorizedNotLoggedIn(t *testing.T) {
 }
 
 func TestCreateRequestFatal(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 
 	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
@@ -71,7 +71,7 @@ func TestCreateRequestFatal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	i = shared.SetupInterfaces()
+	i = interfaces.SetupShared()
 	defer i.Close()
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
@@ -79,7 +79,7 @@ func TestCreateRequestFatal(t *testing.T) {
 }
 
 func TestCreateRequestBadRequestMissingBody(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -102,7 +102,7 @@ func TestCreateRequestBadRequestMissingBody(t *testing.T) {
 }
 
 func TestCreateRequestBadRequestInvalidType(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -130,7 +130,7 @@ func TestCreateRequestBadRequestInvalidType(t *testing.T) {
 }
 
 func TestCreateRequestSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -159,7 +159,7 @@ func TestCreateRequestSuccess(t *testing.T) {
 }
 
 func TestCreateCharacterApplicationUnauthorizedNotLoggedIn(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -185,7 +185,7 @@ func TestCreateCharacterApplicationUnauthorizedNotLoggedIn(t *testing.T) {
 }
 
 func TestCreateCharacterApplicationFatal(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 
 	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
@@ -204,7 +204,7 @@ func TestCreateCharacterApplicationFatal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	i = shared.SetupInterfaces()
+	i = interfaces.SetupShared()
 	defer i.Close()
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
@@ -212,7 +212,7 @@ func TestCreateCharacterApplicationFatal(t *testing.T) {
 }
 
 func TestCreateCharacterApplicationSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -235,7 +235,7 @@ func TestCreateCharacterApplicationSuccess(t *testing.T) {
 }
 
 func TestRequestFieldPageUnauthorizedNotLoggedIn(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -258,7 +258,7 @@ func TestRequestFieldPageUnauthorizedNotLoggedIn(t *testing.T) {
 }
 
 func TestRequestFieldPageUnowned(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -289,7 +289,7 @@ func TestRequestFieldPageUnowned(t *testing.T) {
 }
 
 func TestRequestFieldPageSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -322,7 +322,7 @@ func TestRequestFieldPageSuccess(t *testing.T) {
 }
 
 func TestRequestFieldPageNotFound(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -350,7 +350,7 @@ func TestRequestFieldPageNotFound(t *testing.T) {
 }
 
 func TestRequestFieldPageFatal(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 
 	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
@@ -372,7 +372,7 @@ func TestRequestFieldPageFatal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	i = shared.SetupInterfaces()
+	i = interfaces.SetupShared()
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
@@ -380,7 +380,7 @@ func TestRequestFieldPageFatal(t *testing.T) {
 }
 
 func TestRequestPageUnauthorizedNotLoggedIn(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -403,7 +403,7 @@ func TestRequestPageUnauthorizedNotLoggedIn(t *testing.T) {
 }
 
 func TestRequestFieldPageForbiddenUnowned(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -433,7 +433,7 @@ func TestRequestFieldPageForbiddenUnowned(t *testing.T) {
 }
 
 func TestRequestPageSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -461,7 +461,7 @@ func TestRequestPageSuccess(t *testing.T) {
 }
 
 func TestRequestPageNotFound(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -489,7 +489,7 @@ func TestRequestPageNotFound(t *testing.T) {
 }
 
 func TestRequestPageFatal(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 
 	a := fiber.New(configs.Fiber())
 	app.Middleware(a, &i)
@@ -511,7 +511,7 @@ func TestRequestPageFatal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	i = shared.SetupInterfaces()
+	i = interfaces.SetupShared()
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 

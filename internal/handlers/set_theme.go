@@ -6,6 +6,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/queries"
@@ -14,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/util"
 )
 
-func SetTheme(i *shared.Interfaces) fiber.Handler {
+func SetTheme(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		theme := c.Params("theme")
 		if len(theme) == 0 {

@@ -8,6 +8,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/password"
@@ -16,7 +17,7 @@ import (
 	"petrichormud.com/app/internal/username"
 )
 
-func Register(i *shared.Interfaces) fiber.Handler {
+func Register(i *interfaces.Shared) fiber.Handler {
 	type Player struct {
 		Username        string `form:"username"`
 		Password        string `form:"password"`

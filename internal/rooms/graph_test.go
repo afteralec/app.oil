@@ -6,12 +6,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/tests"
 )
 
 func TestGraph(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	testRIDs := []int64{}
@@ -116,7 +116,7 @@ func TestGraph(t *testing.T) {
 }
 
 func TestNodeGetExit(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	rid := tests.CreateTestRoom(t, &i, tests.TestRoom)
@@ -168,7 +168,7 @@ func TestNodeGetExit(t *testing.T) {
 }
 
 func TestNodeIsExitEmpty(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	rid := tests.CreateTestRoom(t, &i, tests.TestRoom)

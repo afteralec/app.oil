@@ -6,16 +6,16 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/password"
-	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/util"
 )
 
 // TODO: This and the markup allow entering your current password
 // This should be a failure case
-func ChangePassword(i *shared.Interfaces) fiber.Handler {
+func ChangePassword(i *interfaces.Shared) fiber.Handler {
 	type input struct {
 		Current         string `form:"current"`
 		Password        string `form:"password"`

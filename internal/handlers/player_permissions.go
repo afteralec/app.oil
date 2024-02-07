@@ -7,15 +7,15 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/views"
 )
 
-func PlayerPermissionsPage(i *shared.Interfaces) fiber.Handler {
+func PlayerPermissionsPage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -45,7 +45,7 @@ func PlayerPermissionsPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
+func PlayerPermissionsDetailPage(i *interfaces.Shared) fiber.Handler {
 	type playerPermissionDetail struct {
 		Permission string
 		About      string
@@ -142,7 +142,7 @@ func PlayerPermissionsDetailPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func TogglePlayerPermission(i *shared.Interfaces) fiber.Handler {
+func TogglePlayerPermission(i *interfaces.Shared) fiber.Handler {
 	type input struct {
 		Grant bool `form:"issued"`
 	}

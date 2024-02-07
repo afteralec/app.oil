@@ -9,6 +9,7 @@ import (
 	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/email"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/routes"
@@ -17,7 +18,7 @@ import (
 	"petrichormud.com/app/internal/views"
 )
 
-func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
+func VerifyEmailPage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {
@@ -111,7 +112,7 @@ func VerifyEmailPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func VerifyEmail(i *shared.Interfaces) fiber.Handler {
+func VerifyEmail(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {

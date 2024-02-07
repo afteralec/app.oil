@@ -10,13 +10,14 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/email"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/shared"
 )
 
-func AddEmail(i *shared.Interfaces) fiber.Handler {
+func AddEmail(i *interfaces.Shared) fiber.Handler {
 	type request struct {
 		Email string `form:"email"`
 	}

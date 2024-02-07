@@ -7,14 +7,14 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/requests"
-	"petrichormud.com/app/internal/shared"
 )
 
-func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
+func CreateRequestComment(i *interfaces.Shared) fiber.Handler {
 	type input struct {
 		Comment string `form:"comment"`
 	}

@@ -13,12 +13,12 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 )
 
 func TestResendVerificationEmailUnauthorized(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -40,7 +40,7 @@ func TestResendVerificationEmailUnauthorized(t *testing.T) {
 }
 
 func TestResendVerificationEmailFatal(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -63,7 +63,7 @@ func TestResendVerificationEmailFatal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	i = shared.SetupInterfaces()
+	i = interfaces.SetupShared()
 	defer i.Close()
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
@@ -71,7 +71,7 @@ func TestResendVerificationEmailFatal(t *testing.T) {
 }
 
 func TestResendVerificationEmailBadRequestUnowned(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -100,7 +100,7 @@ func TestResendVerificationEmailBadRequestUnowned(t *testing.T) {
 }
 
 func TestResendEmailVerificationBadRequestInvalidID(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -135,7 +135,7 @@ func TestResendEmailVerificationBadRequestInvalidID(t *testing.T) {
 }
 
 func TestResendEmailVerificationNotFound(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -176,7 +176,7 @@ func TestResendEmailVerificationNotFound(t *testing.T) {
 }
 
 func TestResendEmailVerificationSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())

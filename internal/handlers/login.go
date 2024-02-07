@@ -6,6 +6,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/password"
@@ -16,7 +17,7 @@ import (
 	"petrichormud.com/app/internal/views"
 )
 
-func Login(i *shared.Interfaces) fiber.Handler {
+func Login(i *interfaces.Shared) fiber.Handler {
 	type input struct {
 		Username string `form:"username"`
 		Password string `form:"password"`

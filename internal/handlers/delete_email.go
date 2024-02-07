@@ -7,12 +7,13 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/shared"
 )
 
-func DeleteEmail(i *shared.Interfaces) fiber.Handler {
+func DeleteEmail(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {

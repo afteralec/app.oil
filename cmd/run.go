@@ -12,7 +12,7 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
-	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/interfaces"
 )
 
 var runCmd = &cobra.Command{
@@ -20,7 +20,7 @@ var runCmd = &cobra.Command{
 	Short: "Run the application",
 	Long:  `Run the application`,
 	Run: func(_ *cobra.Command, _ []string) {
-		i := shared.SetupInterfaces()
+		i := interfaces.SetupShared()
 		defer i.Close()
 
 		a := fiber.New(configs.Fiber())

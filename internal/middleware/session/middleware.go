@@ -4,12 +4,12 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/constants"
-	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/interfaces"
 )
 
 const TwoHoursInSeconds = 120 * 60
 
-func New(i *shared.Interfaces) fiber.Handler {
+func New(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		sess, err := i.Sessions.Get(c)
 		if err != nil {

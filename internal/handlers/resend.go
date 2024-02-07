@@ -7,13 +7,14 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/email"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/util"
 )
 
-func ResendEmailVerification(i *shared.Interfaces) fiber.Handler {
+func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := util.GetID(c)
 		if err != nil {

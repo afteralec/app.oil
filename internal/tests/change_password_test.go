@@ -14,12 +14,12 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 )
 
 func TestChangePasswordMissingBody(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -43,7 +43,7 @@ func TestChangePasswordMissingBody(t *testing.T) {
 }
 
 func TestChangePasswordMalformedBody(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -74,7 +74,7 @@ func TestChangePasswordMalformedBody(t *testing.T) {
 }
 
 func TestChangePasswordNotLoggedIn(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -108,7 +108,7 @@ func TestChangePasswordNotLoggedIn(t *testing.T) {
 }
 
 func TestChangePasswordWrongCurrentPassword(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -144,7 +144,7 @@ func TestChangePasswordWrongCurrentPassword(t *testing.T) {
 }
 
 func TestChangePasswordInvalidPassword(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -176,7 +176,7 @@ func TestChangePasswordInvalidPassword(t *testing.T) {
 }
 
 func TestChangePasswordInvalidConfirmPassword(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -212,7 +212,7 @@ func TestChangePasswordInvalidConfirmPassword(t *testing.T) {
 }
 
 func TestChangePasswordSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())

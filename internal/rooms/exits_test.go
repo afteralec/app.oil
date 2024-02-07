@@ -6,12 +6,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/tests"
 )
 
 func TestIsExitTwoWayFalseUnlinked(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	ridOne := tests.CreateTestRoom(t, &i, tests.TestRoom)
@@ -31,7 +31,7 @@ func TestIsExitTwoWayFalseUnlinked(t *testing.T) {
 }
 
 func TestIsExitTwoWayFalseOneWay(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	ridOne := tests.CreateTestRoom(t, &i, tests.TestRoom)
@@ -61,7 +61,7 @@ func TestIsExitTwoWayFalseOneWay(t *testing.T) {
 }
 
 func TestIsExitTwoWayFalseOneWayOpposite(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	ridOne := tests.CreateTestRoom(t, &i, tests.TestRoom)
@@ -91,7 +91,7 @@ func TestIsExitTwoWayFalseOneWayOpposite(t *testing.T) {
 }
 
 func TestIsExitTwoWayTrue(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	ridOne := tests.CreateTestRoom(t, &i, tests.TestRoom)

@@ -13,12 +13,12 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 )
 
 func TestAddEmailSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -41,7 +41,7 @@ func TestAddEmailSuccess(t *testing.T) {
 }
 
 func TestAddEmailUnauthorized(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	config := configs.Fiber()
@@ -63,7 +63,7 @@ func TestAddEmailUnauthorized(t *testing.T) {
 }
 
 func TestAddEmailInvalidAddress(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	config := configs.Fiber()
@@ -87,7 +87,7 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 }
 
 func TestAddEmailFatal(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	config := configs.Fiber()
@@ -108,14 +108,14 @@ func TestAddEmailFatal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	i = shared.SetupInterfaces()
+	i = interfaces.SetupShared()
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
 func TestAddEmailMalformedInput(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	config := configs.Fiber()

@@ -6,12 +6,13 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/shared"
 )
 
-func UsernameReserved(i *shared.Interfaces) fiber.Handler {
+func UsernameReserved(i *interfaces.Shared) fiber.Handler {
 	type request struct {
 		Username string `form:"username"`
 	}

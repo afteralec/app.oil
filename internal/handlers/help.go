@@ -10,6 +10,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/queries"
@@ -18,7 +19,7 @@ import (
 	"petrichormud.com/app/internal/views"
 )
 
-func HelpPage(i *shared.Interfaces) fiber.Handler {
+func HelpPage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tx, err := i.Database.Begin()
 		if err != nil {
@@ -57,7 +58,7 @@ func HelpPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func HelpFilePage(i *shared.Interfaces) fiber.Handler {
+func HelpFilePage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tx, err := i.Database.Begin()
 		if err != nil {
@@ -129,7 +130,7 @@ func HelpFilePage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func SearchHelp(i *shared.Interfaces) fiber.Handler {
+func SearchHelp(i *interfaces.Shared) fiber.Handler {
 	type input struct {
 		Search   string `form:"search"`
 		Title    bool   `form:"title"`

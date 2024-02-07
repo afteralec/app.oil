@@ -6,17 +6,17 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/requests"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/views"
 )
 
-func NewRequest(i *shared.Interfaces) fiber.Handler {
+func NewRequest(i *interfaces.Shared) fiber.Handler {
 	type input struct {
 		Type string `form:"type"`
 	}
@@ -86,7 +86,7 @@ func NewRequest(i *shared.Interfaces) fiber.Handler {
 }
 
 // TODO: Combine this functionality with the above so it's consistent
-func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
+func NewCharacterApplication(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {
@@ -134,7 +134,7 @@ func NewCharacterApplication(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
+func RequestFieldPage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {
@@ -253,7 +253,7 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func RequestPage(i *shared.Interfaces) fiber.Handler {
+func RequestPage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {
@@ -385,7 +385,7 @@ func RequestPage(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
+func UpdateRequestField(i *interfaces.Shared) fiber.Handler {
 	type input struct {
 		Value string `form:"value"`
 	}
@@ -489,7 +489,7 @@ func UpdateRequestField(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func UpdateRequestStatus(i *shared.Interfaces) fiber.Handler {
+func UpdateRequestStatus(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {
@@ -607,7 +607,7 @@ func UpdateRequestStatus(i *shared.Interfaces) fiber.Handler {
 	}
 }
 
-func DeleteRequest(i *shared.Interfaces) fiber.Handler {
+func DeleteRequest(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {

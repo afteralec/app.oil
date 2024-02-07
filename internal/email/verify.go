@@ -9,13 +9,14 @@ import (
 	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
 
+	"petrichormud.com/app/internal/interfaces"
 	pb "petrichormud.com/app/internal/proto/sending"
 	"petrichormud.com/app/internal/shared"
 )
 
 const ThirtyMinutesInNanoseconds = 30 * 60 * 1000 * 1000 * 1000
 
-func SendVerificationEmail(i *shared.Interfaces, id int64, email string) error {
+func SendVerificationEmail(i *interfaces.Shared, id int64, email string) error {
 	token := uuid.NewString()
 	key := VerificationKey(token)
 	if err := Cache(i.Redis, key, id); err != nil {

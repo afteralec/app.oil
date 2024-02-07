@@ -15,13 +15,13 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 )
 
 func TestRecoverPasswordPageSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -40,7 +40,7 @@ func TestRecoverPasswordPageSuccess(t *testing.T) {
 }
 
 func TestRecoverPasswordSuccessPageSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -66,7 +66,7 @@ func TestRecoverPasswordSuccessPageSuccess(t *testing.T) {
 }
 
 func TestRecoverPasswordBadRequestMissingBody(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -85,7 +85,7 @@ func TestRecoverPasswordBadRequestMissingBody(t *testing.T) {
 }
 
 func TestRecoverPasswordBadRequestMalformedBody(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
@@ -110,7 +110,7 @@ func TestRecoverPasswordBadRequestMalformedBody(t *testing.T) {
 }
 
 func TestRecoverPasswordSuccess(t *testing.T) {
-	i := shared.SetupInterfaces()
+	i := interfaces.SetupShared()
 	defer i.Close()
 
 	a := fiber.New(configs.Fiber())
