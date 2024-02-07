@@ -2,7 +2,7 @@ package character
 
 import (
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/request"
+	"petrichormud.com/app/internal/requests"
 	"petrichormud.com/app/internal/routes"
 )
 
@@ -18,35 +18,35 @@ func MakeApplicationNav(current string, app *queries.CharacterApplicationContent
 
 	result = append(result, ApplicationNav{
 		Label:   "Name",
-		Link:    routes.RequestFieldPath(app.RID, request.FieldName),
+		Link:    routes.RequestFieldPath(app.RID, requests.FieldName),
 		Current: current == "name",
 		Ready:   IsNameValid(app.Name),
 	})
 
 	result = append(result, ApplicationNav{
 		Label:   "Gender",
-		Link:    routes.RequestFieldPath(app.RID, request.FieldGender),
+		Link:    routes.RequestFieldPath(app.RID, requests.FieldGender),
 		Current: current == "gender",
 		Ready:   IsGenderValid(app.Gender),
 	})
 
 	result = append(result, ApplicationNav{
 		Label:   "Short Description",
-		Link:    routes.RequestFieldPath(app.RID, request.FieldShortDescription),
+		Link:    routes.RequestFieldPath(app.RID, requests.FieldShortDescription),
 		Current: current == "sdesc",
 		Ready:   IsShortDescriptionValid(app.ShortDescription),
 	})
 
 	result = append(result, ApplicationNav{
 		Label:   "Description",
-		Link:    routes.RequestFieldPath(app.RID, request.FieldDescription),
+		Link:    routes.RequestFieldPath(app.RID, requests.FieldDescription),
 		Current: current == "description",
 		Ready:   IsDescriptionValid(app.Description),
 	})
 
 	result = append(result, ApplicationNav{
 		Label:   "Backstory",
-		Link:    routes.RequestFieldPath(app.RID, request.FieldBackstory),
+		Link:    routes.RequestFieldPath(app.RID, requests.FieldBackstory),
 		Current: current == "backstory",
 		Ready:   IsBackstoryValid(app.Backstory),
 	})

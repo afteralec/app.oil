@@ -11,11 +11,12 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/require"
+
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/configs"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/request"
+	"petrichormud.com/app/internal/requests"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/shared"
 )
@@ -39,7 +40,7 @@ func TestCreateRequestCommentUnauthorized(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
 	// TODO: Make a map of valid Character Application fields
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), requests.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -84,7 +85,7 @@ func TestCreateRequestCommentMissingBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), requests.FieldName))
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -125,7 +126,7 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
 	sessionCookie := res.Cookies()[0]
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), requests.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -218,7 +219,7 @@ func TestCreateRequestCommentNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid+1, 10), request.FieldName))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid+1, 10), requests.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -259,7 +260,7 @@ func TestCreateRequestCommentForbiddenOwnRequest(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), requests.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -298,7 +299,7 @@ func TestCreateRequestCommentNotInReview(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), requests.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -349,7 +350,7 @@ func TestCreateRequestCommentNotReviewer(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), requests.FieldName))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -398,7 +399,7 @@ func TestCreateRequestCommentNoPermission(t *testing.T) {
 	writer.WriteField("comment", "This name is fantastic.")
 	writer.Close()
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), requests.FieldName))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.AddCookie(sessionCookie)
@@ -444,7 +445,7 @@ func TestCreateRequestCommentSuccess(t *testing.T) {
 	writer.WriteField("comment", "This name is fantastic.")
 	writer.Close()
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldName))
+	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(rid, 10), requests.FieldName))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())

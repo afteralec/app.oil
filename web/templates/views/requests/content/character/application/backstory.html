@@ -1,10 +1,11 @@
 <!-- prettier-ignore -->
 {{ define "request-character-application-backstory" }}
-{{ template "partial-request-character-application-backstory-help" . }}
-{{ template "partial-request-divider" . }}
-{{ if and .ViewedByPlayer (or .StatusIsReady .StatusIsIncomplete) }}
-  {{ template "requests-character-application-backstory-form" . }}
-{{ else }}
-  {{ template "requests-character-application-backstory-data" . }}
-{{ end }}
+  {{ template "partial-request-character-application-backstory-help" . }}
+  {{ template "partial-request-divider" . }}
+
+  {{ if and .ViewedByPlayer (or .StatusIsReady .StatusIsIncomplete) }}
+    {{ template "requests-character-application-backstory-form" . }}
+  {{ else }}
+    {{ template "requests-character-application-backstory-data" . }}
+  {{ end }}
 {{ end }}

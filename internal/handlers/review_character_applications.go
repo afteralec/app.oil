@@ -7,7 +7,7 @@ import (
 
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/request"
+	"petrichormud.com/app/internal/requests"
 	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/views"
 )
@@ -51,7 +51,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 			return c.Render(views.InternalServerError, views.Bind(c))
 		}
 
-		summaries := []request.ApplicationSummary{}
+		summaries := []requests.ApplicationSummary{}
 		for _, app := range apps {
 			reviewer := ""
 			if app.Request.RPID > 0 {
@@ -66,7 +66,7 @@ func CharacterApplicationsQueuePage(i *shared.Interfaces) fiber.Handler {
 				}
 				reviewer = p.Username
 			}
-			summaries = append(summaries, request.NewSummaryFromApplication(&app.Player, reviewer, &app.Request, &app.CharacterApplicationContent))
+			summaries = append(summaries, requests.NewSummaryFromApplication(&app.Player, reviewer, &app.Request, &app.CharacterApplicationContent))
 		}
 
 		if err = tx.Commit(); err != nil {

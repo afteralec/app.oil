@@ -10,7 +10,7 @@ import (
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/request"
+	"petrichormud.com/app/internal/requests"
 	"petrichormud.com/app/internal/shared"
 )
 
@@ -25,8 +25,8 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		text := request.SanitizeComment(r.Comment)
-		if !request.IsCommentValid(text) {
+		text := requests.SanitizeComment(r.Comment)
+		if !requests.IsCommentValid(text) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -88,7 +88,7 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		fieldMapByType, ok := request.FieldMapsByType[req.Type]
+		fieldMapByType, ok := requests.FieldMapsByType[req.Type]
 		if !ok {
 			c.Status(fiber.StatusBadRequest)
 			return nil
@@ -103,7 +103,7 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		if req.Status != request.StatusInReview {
+		if req.Status != requests.StatusInReview {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -140,7 +140,7 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 		}
 
 		// TODO: Move this type to the bind package
-		comment := request.Comment{
+		comment := requests.Comment{
 			Current:        true,
 			ID:             row.RequestComment.ID,
 			VID:            row.RequestComment.VID,
@@ -149,7 +149,7 @@ func CreateRequestComment(i *shared.Interfaces) fiber.Handler {
 			AvatarLink:     "https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50.jpeg?f=y&r=m&s=256&d=retro",
 			CreatedAt:      row.RequestComment.CreatedAt.Unix(),
 			ViewedByAuthor: true,
-			Replies:        []request.Comment{},
+			Replies:        []requests.Comment{},
 		}
 		return c.Render(partials.RequestCommentCurrent, comment.Bind(), "")
 	}
