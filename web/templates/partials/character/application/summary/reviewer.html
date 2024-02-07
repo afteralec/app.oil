@@ -42,15 +42,14 @@
       View
     </a>
     {{ if .StatusSubmitted -}}
-    <button
-      type="button"
-      class="htmx-trade-indicator-out button-primary"
-      @click.prevent="{{ .ReviewDialog.Variable }} = true"
-    >
-      Put In Review
-    </button>
+    <!-- <button -->
+    <!--   type="button" -->
+    <!--   class="htmx-trade-indicator-out button-primary" -->
+    <!--   @click.prevent="{{ .ReviewDialog.Variable }} = true" -->
+    <!-- > -->
+    <!--   Put In Review -->
+    <!-- </button> -->
     {{ end -}}
   </div>
-  {{ template "partial-request-put-in-review-dialog" .PutInReviewDialog }}
 </div>
 {{ end }}

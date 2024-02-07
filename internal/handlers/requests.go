@@ -245,16 +245,10 @@ func RequestFieldPage(i *shared.Interfaces) fiber.Handler {
 		// TODO: Validate this? i.e., make sure that the content map actually has this in there
 		b["FieldValue"] = content[field]
 
-		// TODO: Get bind exceptions into their own extractor
-		if field == request.FieldGender && req.Type == request.TypeCharacterApplication {
-			b["GenderNonBinary"] = character.GenderNonBinary
-			b["GenderFemale"] = character.GenderFemale
-			b["GenderMale"] = character.GenderMale
-
-			b["GenderIsNonBinary"] = content["Gender"] == character.GenderNonBinary
-			b["GenderIsFemale"] = content["Gender"] == character.GenderFemale
-			b["GenderIsMale"] = content["Gender"] == character.GenderMale
-		}
+		b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
+			Content: content,
+			Name:    "value",
+		})
 
 		return c.Render(view, b, layouts.RequestFieldStandalone)
 	}

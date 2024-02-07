@@ -3,8 +3,45 @@ package request
 import (
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/queries"
 )
+
+type BindGenderRadioGroupParams struct {
+	Content map[string]string
+	Name    string
+}
+
+// TODO: Put this behind a Character Applications, Characters or Actors package instead?
+func BindGenderRadioGroup(b fiber.Map, p BindGenderRadioGroupParams) fiber.Map {
+	b["GenderRadioGroup"] = []fiber.Map{
+		{
+			"ID":       "edit-request-character-application-gender-non-binary",
+			"Name":     p.Name,
+			"Variable": "gender",
+			"Value":    constants.GenderNonBinary,
+			"Active":   p.Content["Gender"] == constants.GenderNonBinary,
+			"Label":    "Non Binary",
+		},
+		{
+			"ID":       "edit-request-character-application-gender-female",
+			"Name":     p.Name,
+			"Variable": "gender",
+			"Value":    constants.GenderFemale,
+			"Active":   p.Content["Gender"] == constants.GenderFemale,
+			"Label":    "Female",
+		},
+		{
+			"ID":       "edit-request-character-application-gender-male",
+			"Name":     p.Name,
+			"Variable": "gender",
+			"Value":    constants.GenderMale,
+			"Active":   p.Content["Gender"] == constants.GenderMale,
+			"Label":    "Male",
+		},
+	}
+	return b
+}
 
 type BindViewedByParams struct {
 	Request *queries.Request
