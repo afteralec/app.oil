@@ -9,9 +9,9 @@ import (
 	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
 
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/interfaces"
 	pb "petrichormud.com/app/internal/proto/sending"
-	"petrichormud.com/app/internal/shared"
 )
 
 const ThirtyMinutesInNanoseconds = 30 * 60 * 1000 * 1000 * 1000
@@ -45,7 +45,7 @@ func SendVerificationEmail(i *interfaces.Shared, id int64, email string) error {
 }
 
 func VerificationKey(id string) string {
-	return fmt.Sprintf("%s:%s", shared.VerifyEmailTokenKey, id)
+	return fmt.Sprintf("%s:%s", constants.VerifyEmailTokenKey, id)
 }
 
 func Cache(r *redis.Client, key string, id int64) error {

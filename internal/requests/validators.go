@@ -3,7 +3,6 @@ package requests
 import (
 	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/shared"
 )
 
 func IsCharacterApplicationValid(app *queries.CharacterApplicationContent) bool {
@@ -31,11 +30,11 @@ func IsCharacterApplicationValid(app *queries.CharacterApplicationContent) bool 
 }
 
 func IsNameValid(n string) bool {
-	if len(n) < shared.MinCharacterNameLength {
+	if len(n) < constants.MinCharacterNameLength {
 		return false
 	}
 
-	if len(n) > shared.MaxCharacterNameLength {
+	if len(n) > constants.MaxCharacterNameLength {
 		return false
 	}
 
@@ -59,11 +58,11 @@ func IsGenderValid(gender string) bool {
 }
 
 func IsShortDescriptionValid(sdesc string) bool {
-	if len(sdesc) < shared.MinCharacterShortDescriptionLength {
+	if len(sdesc) < constants.MinCharacterShortDescriptionLength {
 		return false
 	}
 
-	if len(sdesc) > shared.MaxCharacterShortDescriptionLength {
+	if len(sdesc) > constants.MaxCharacterShortDescriptionLength {
 		return false
 	}
 
@@ -71,11 +70,11 @@ func IsShortDescriptionValid(sdesc string) bool {
 }
 
 func IsDescriptionValid(description string) bool {
-	if len(description) < shared.MinCharacterDescriptionLength {
+	if len(description) < constants.MinCharacterDescriptionLength {
 		return false
 	}
 
-	if len(description) > shared.MaxCharacterDescriptionLength {
+	if len(description) > constants.MaxCharacterDescriptionLength {
 		return false
 	}
 
@@ -83,11 +82,11 @@ func IsDescriptionValid(description string) bool {
 }
 
 func IsBackstoryValid(backstory string) bool {
-	if len(backstory) < shared.MinCharacterBackstoryLength {
+	if len(backstory) < constants.MinCharacterBackstoryLength {
 		return false
 	}
 
-	if len(backstory) > shared.MaxCharacterBackstoryLength {
+	if len(backstory) > constants.MaxCharacterBackstoryLength {
 		return false
 	}
 

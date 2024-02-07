@@ -1,7 +1,6 @@
-package shared
+package constants
 
 const (
-	MaxEmailCount      = 3
 	HeaderHXAcceptable = "X-HX-Acceptable"
 	// TODO: Clean up these token keys
 	VerifyEmailTokenKey                = "ve"
@@ -18,5 +17,4 @@ const (
 	MaxCharacterDescriptionLength      = 2000
 	MinCharacterBackstoryLength        = 500
 	MaxCharacterBackstoryLength        = 10000
-	AppEnv                             = "PETRICHOR_APP_ENV"
 )

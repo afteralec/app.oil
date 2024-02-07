@@ -3,7 +3,7 @@ package character
 import (
 	"regexp"
 
-	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/constants"
 )
 
 func SanitizeDescription(description string) string {
@@ -14,11 +14,11 @@ func SanitizeDescription(description string) string {
 }
 
 func IsDescriptionValid(description string) bool {
-	if len(description) < shared.MinCharacterDescriptionLength {
+	if len(description) < constants.MinCharacterDescriptionLength {
 		return false
 	}
 
-	if len(description) > shared.MaxCharacterDescriptionLength {
+	if len(description) > constants.MaxCharacterDescriptionLength {
 		return false
 	}
 

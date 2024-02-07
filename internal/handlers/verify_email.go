@@ -8,12 +8,12 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 	redis "github.com/redis/go-redis/v9"
 
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/username"
 	"petrichormud.com/app/internal/views"
 )
@@ -117,7 +117,7 @@ func VerifyEmail(i *interfaces.Shared) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Append("HX-Refresh", "true")
 			return nil
 		}

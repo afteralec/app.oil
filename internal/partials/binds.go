@@ -6,8 +6,7 @@ import (
 	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
-
-	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/email"
 )
 
 var BindLoginErr = fiber.Map{
@@ -149,7 +148,7 @@ var BindProfileAddEmailErrInvalid = fiber.Map{
 
 func BindProfileAddEmailErrTooMany() fiber.Map {
 	var sb strings.Builder
-	fmt.Fprintf(&sb, "You've already added the maximum %d emails.", shared.MaxEmailCount)
+	fmt.Fprintf(&sb, "You've already added the maximum %d emails.", email.MaxCount)
 	return fiber.Map{
 		"NoticeSectionID": "add-email-error",
 		"SectionClass":    "pt-2 w-[60%]",

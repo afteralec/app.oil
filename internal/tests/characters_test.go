@@ -16,9 +16,9 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 )
 
 func TestCharactersPageUnauthorized(t *testing.T) {
@@ -212,7 +212,7 @@ func MakeTestCharacterApplicationDescriptionBody() (*bytes.Buffer, *multipart.Wr
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	description := ""
-	for len(description) < shared.MinCharacterDescriptionLength {
+	for len(description) < constants.MinCharacterDescriptionLength {
 		description = description + "This is a test actor."
 	}
 	writer.WriteField("description", description)
@@ -232,7 +232,7 @@ func MakeTestCharacterApplicationBackstoryBody() (*bytes.Buffer, *multipart.Writ
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	backstory := ""
-	for len(backstory) < shared.MinCharacterBackstoryLength {
+	for len(backstory) < constants.MinCharacterBackstoryLength {
 		backstory = backstory + "This is a tragic backstory."
 	}
 	writer.WriteField("backstory", backstory)

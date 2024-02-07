@@ -9,12 +9,12 @@ import (
 	"github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/shared"
 )
 
 func AddEmail(i *interfaces.Shared) fiber.Handler {
@@ -27,7 +27,7 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 		if pid == nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrUnauthorized, layouts.None)
 		}
@@ -36,7 +36,7 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrInternal, layouts.None)
 		}
@@ -48,15 +48,15 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrInternal, layouts.None)
 		}
 
-		if ec >= shared.MaxEmailCount {
+		if ec >= email.MaxCount {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
 			return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrTooMany(), layouts.None)
 		}
@@ -65,7 +65,7 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 		if err := c.BodyParser(r); err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrInvalid, layouts.None)
 		}
@@ -74,7 +74,7 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrInvalid, layouts.None)
 		}
@@ -83,14 +83,14 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 		if err != nil && err != sql.ErrNoRows {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrInternal, layouts.None)
 		}
 		if err == nil && ve.Verified {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusConflict)
 			return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrConflict(e.Address), layouts.None)
 		}
@@ -104,14 +104,14 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 				if me.Number == mysqlerr.ER_DUP_ENTRY {
 					c.Append("HX-Retarget", "#add-email-error")
 					c.Append("HX-Reswap", "outerHTML")
-					c.Append(shared.HeaderHXAcceptable, "true")
+					c.Append(constants.HeaderHXAcceptable, "true")
 					c.Status(fiber.StatusConflict)
 					return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrConflict(e.Address), layouts.None)
 				}
 			}
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrInternal, layouts.None)
 		}
@@ -120,7 +120,7 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrInternal, layouts.None)
 		}
@@ -128,7 +128,7 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 		if err = tx.Commit(); err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrInternal, layouts.None)
 		}
@@ -136,7 +136,7 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 		if err = email.SendVerificationEmail(i, id, e.Address); err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(shared.HeaderHXAcceptable, "true")
+			c.Append(constants.HeaderHXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(partials.NoticeSectionError, partials.BindProfileAddEmailErrInternal, layouts.None)
 		}

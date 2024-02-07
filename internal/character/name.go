@@ -3,7 +3,7 @@ package character
 import (
 	"regexp"
 
-	"petrichormud.com/app/internal/shared"
+	"petrichormud.com/app/internal/constants"
 )
 
 func SanitizeName(n string) string {
@@ -14,11 +14,11 @@ func SanitizeName(n string) string {
 }
 
 func IsNameValid(n string) bool {
-	if len(n) < shared.MinCharacterNameLength {
+	if len(n) < constants.MinCharacterNameLength {
 		return false
 	}
 
-	if len(n) > shared.MaxCharacterNameLength {
+	if len(n) > constants.MaxCharacterNameLength {
 		return false
 	}
 

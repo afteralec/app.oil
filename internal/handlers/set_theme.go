@@ -11,7 +11,6 @@ import (
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
-	"petrichormud.com/app/internal/shared"
 	"petrichormud.com/app/internal/util"
 )
 
@@ -65,7 +64,7 @@ func SetTheme(i *interfaces.Shared) fiber.Handler {
 				PID:   pid,
 				Theme: theme,
 			}); err != nil {
-				c.Append(shared.HeaderHXAcceptable, "true")
+				c.Append(constants.HeaderHXAcceptable, "true")
 				c.Status(fiber.StatusInternalServerError)
 			}
 		}

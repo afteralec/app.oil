@@ -8,8 +8,8 @@ import (
 	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
 
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/shared"
 )
 
 const (
@@ -60,9 +60,9 @@ func CacheRecoverySuccessEmail(r *redis.Client, address string) (string, error) 
 }
 
 func Key(pid int64) string {
-	return fmt.Sprintf("%s:%d", shared.UsernameTokenKey, pid)
+	return fmt.Sprintf("%s:%d", constants.UsernameTokenKey, pid)
 }
 
 func RecoverySuccessKey(id string) string {
-	return fmt.Sprintf("%s:%s", shared.UsernameRecoverySuccessTokenKey, id)
+	return fmt.Sprintf("%s:%s", constants.UsernameRecoverySuccessTokenKey, id)
 }

@@ -9,9 +9,9 @@ import (
 	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
 
+	"petrichormud.com/app/internal/constants"
 	"petrichormud.com/app/internal/interfaces"
 	pb "petrichormud.com/app/internal/proto/sending"
-	"petrichormud.com/app/internal/shared"
 )
 
 const ThirtyMinutesInNanoseconds = 30 * 60 * 1000 * 1000 * 1000
@@ -46,7 +46,7 @@ func SetupRecovery(i *interfaces.Shared, pid int64, email string) error {
 }
 
 func RecoveryKey(key string) string {
-	return fmt.Sprintf("%s:%s", shared.RecoverPasswordTokenKey, key)
+	return fmt.Sprintf("%s:%s", constants.RecoverPasswordTokenKey, key)
 }
 
 func Cache(r *redis.Client, key string, pid int64) error {
@@ -70,5 +70,5 @@ func CacheEmail(r *redis.Client, key, email string) error {
 }
 
 func RecoverySuccessKey(key string) string {
-	return fmt.Sprintf("%s:%s", shared.RecoverPasswordSuccessTokenKey, key)
+	return fmt.Sprintf("%s:%s", constants.RecoverPasswordSuccessTokenKey, key)
 }
