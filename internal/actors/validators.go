@@ -3,11 +3,8 @@ package actors
 import "regexp"
 
 const (
-	MinimumImageNameLength int = 4
-	MaximumImageNameLength int = 50
-)
-
-const (
+	MinimumImageNameLength        int = 4
+	MaximumImageNameLength        int = 50
 	MinimumShortDescriptionLength int = 8
 	MaximumShortDescriptionLength int = 300
 	MinimumDescriptionLength      int = 32
@@ -25,6 +22,22 @@ func IsImageNameValid(name string) bool {
 
 	re := regexp.MustCompile("[^a-z-]+")
 	return !re.MatchString(name)
+}
+
+func IsGenderValid(gender string) bool {
+	if gender == GenderNonBinary {
+		return true
+	}
+
+	if gender == GenderFemale {
+		return true
+	}
+
+	if gender == GenderMale {
+		return true
+	}
+
+	return false
 }
 
 func IsShortDescriptionValid(sdesc string) bool {
