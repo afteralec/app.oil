@@ -6,7 +6,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/constant"
-	"petrichormud.com/app/internal/headers"
+	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
@@ -65,7 +65,7 @@ func SetTheme(i *interfaces.Shared) fiber.Handler {
 				PID:   pid,
 				Theme: theme,
 			}); err != nil {
-				c.Append(headers.HXAcceptable, "true")
+				c.Append(header.HXAcceptable, "true")
 				c.Status(fiber.StatusInternalServerError)
 			}
 		}

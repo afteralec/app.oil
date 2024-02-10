@@ -7,7 +7,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/email"
-	"petrichormud.com/app/internal/headers"
+	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
@@ -18,7 +18,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := util.GetID(c)
 		if err != nil {
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(
 				partials.NoticeSectionError,
@@ -29,7 +29,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 
 		pid, err := util.GetPID(c)
 		if err != nil {
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(
 				partials.NoticeSectionError,
@@ -40,7 +40,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 
 		tx, err := i.Database.Begin()
 		if err != nil {
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(
 				partials.NoticeSectionError,
@@ -54,7 +54,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 		e, err := qtx.GetEmail(context.Background(), id)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				c.Append(headers.HXAcceptable, "true")
+				c.Append(header.HXAcceptable, "true")
 				c.Status(fiber.StatusNotFound)
 				return c.Render(
 					partials.NoticeSectionError,
@@ -62,7 +62,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 					layouts.None,
 				)
 			}
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(
 				partials.NoticeSectionError,
@@ -72,7 +72,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 		}
 
 		if e.Verified {
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusConflict)
 			return c.Render(
 				partials.NoticeSectionError,
@@ -81,7 +81,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			)
 		}
 		if e.PID != pid {
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
 			return c.Render(
 				partials.NoticeSectionError,
@@ -92,7 +92,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 
 		ve, err := qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
 		if err != nil && err != sql.ErrNoRows {
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(
 				partials.NoticeSectionError,
@@ -101,7 +101,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			)
 		}
 		if err == nil && ve.Verified {
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
 			return c.Render(
 				partials.NoticeSectionError,
@@ -111,7 +111,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 		}
 
 		if err = tx.Commit(); err != nil {
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(
 				partials.NoticeSectionError,
@@ -121,7 +121,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 		}
 
 		if err = email.SendVerificationEmail(i, id, e.Address); err != nil {
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(
 				partials.NoticeSectionError,

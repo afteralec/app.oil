@@ -6,7 +6,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/headers"
+	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
@@ -32,7 +32,7 @@ func UsernameReserved(i *interfaces.Shared) fiber.Handler {
 				}, layouts.CSRF)
 			}
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(partials.PlayerReservedErr, fiber.Map{
 				"CSRF": c.Locals("csrf"),
@@ -41,7 +41,7 @@ func UsernameReserved(i *interfaces.Shared) fiber.Handler {
 
 		if r.Username == p.Username {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusConflict)
 			return c.Render(partials.PlayerReserved, fiber.Map{
 				"CSRF": c.Locals("csrf"),

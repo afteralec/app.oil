@@ -11,7 +11,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/actors"
-	"petrichormud.com/app/internal/headers"
+	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
@@ -219,7 +219,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 		in := new(input)
 		if err := c.BodyParser(in); err != nil {
 			c.Status(fiber.StatusBadRequest)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
 				SectionID:    sectionID,
@@ -234,7 +234,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 
 		if !actors.IsImageNameValid(in.Name) {
 			c.Status(fiber.StatusBadRequest)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
 				SectionID:    sectionID,
@@ -248,7 +248,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
 				SectionID:    sectionID,
@@ -264,7 +264,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
 				SectionID:    sectionID,
@@ -279,7 +279,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 
 		if !perms.HasPermission(permissions.PlayerCreateActorImageName) {
 			c.Status(fiber.StatusForbidden)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
 				SectionID:    sectionID,
@@ -295,7 +295,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
 				SectionID:    sectionID,
@@ -320,7 +320,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 			if me, ok := err.(*mysql.MySQLError); ok {
 				if me.Number == mysqlerr.ER_DUP_ENTRY {
 					c.Status(fiber.StatusConflict)
-					c.Append(headers.HXAcceptable, "true")
+					c.Append(header.HXAcceptable, "true")
 					c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 					return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
 						SectionID:    sectionID,
@@ -333,7 +333,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 				}
 			}
 			c.Status(fiber.StatusInternalServerError)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
 				SectionID:    sectionID,
@@ -349,7 +349,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 		aiid, err := result.LastInsertId()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
 				SectionID:    sectionID,
@@ -364,7 +364,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
 				SectionID:    sectionID,
@@ -597,7 +597,7 @@ func ActorImageNameReserved(i *interfaces.Shared) fiber.Handler {
 				}, layouts.CSRF)
 			}
 			c.Append("HX-Trigger-After-Swap", "ptrcr:actor-image-reserved")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(partials.ActorImageReservedErr, fiber.Map{
 				"CSRF": c.Locals("csrf"),
@@ -606,7 +606,7 @@ func ActorImageNameReserved(i *interfaces.Shared) fiber.Handler {
 
 		if in.Name == actorImage.Name {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:actor-image-reserved")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusConflict)
 			return c.Render(partials.ActorImageReserved, fiber.Map{
 				"CSRF": c.Locals("csrf"),

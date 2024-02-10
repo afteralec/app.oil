@@ -370,7 +370,7 @@ func RequestPage(i *interfaces.Shared) fiber.Handler {
 			"Title": requests.SummaryTitle(req.Type, content),
 		}
 		// TODO: Look at re-implementing this in the view?
-		// b["HeaderStatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
+		// b["headertatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
 		// 	Status:      req.Status,
 		// 	Size:        "36",
 		// 	IncludeText: true,

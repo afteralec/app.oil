@@ -8,7 +8,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/headers"
+	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
@@ -51,14 +51,14 @@ func RecoverUsername(i *interfaces.Shared) fiber.Handler {
 		r := new(request)
 		if err := c.BodyParser(r); err != nil {
 			c.Status(fiber.StatusUnauthorized)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInvalid, layouts.None)
 		}
 
 		e, err := mail.ParseAddress(r.Email)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInvalid, layouts.None)
 		}
 
@@ -68,7 +68,7 @@ func RecoverUsername(i *interfaces.Shared) fiber.Handler {
 				rusid, err := username.CacheRecoverySuccessEmail(i.Redis, e.Address)
 				if err != nil {
 					c.Status(fiber.StatusUnauthorized)
-					c.Append(headers.HXAcceptable, "true")
+					c.Append(header.HXAcceptable, "true")
 					return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInternal, layouts.None)
 				}
 
@@ -77,14 +77,14 @@ func RecoverUsername(i *interfaces.Shared) fiber.Handler {
 				return nil
 			}
 			c.Status(fiber.StatusUnauthorized)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInternal, layouts.None)
 		}
 
 		rusid, err := username.Recover(i, ve)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInternal, layouts.None)
 		}
 

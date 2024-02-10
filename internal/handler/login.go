@@ -6,7 +6,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/headers"
+	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/partials"
@@ -28,7 +28,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 		if err := c.BodyParser(in); err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
@@ -37,7 +37,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
@@ -48,7 +48,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
@@ -57,14 +57,14 @@ func Login(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
 		if !v {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
@@ -74,7 +74,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
@@ -86,14 +86,14 @@ func Login(i *interfaces.Shared) fiber.Handler {
 				c.Status(fiber.StatusInternalServerError)
 				c.Append("HX-Retarget", "#login-error")
 				c.Append("HX-Reswap", "outerHTML")
-				c.Append(headers.HXAcceptable, "true")
+				c.Append(header.HXAcceptable, "true")
 				c.Status(fiber.StatusUnauthorized)
 				return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 			}
 			c.Status(fiber.StatusInternalServerError)
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
@@ -102,7 +102,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
@@ -116,7 +116,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 			}); err != nil {
 				c.Append("HX-Retarget", "#login-error")
 				c.Append("HX-Reswap", "outerHTML")
-				c.Append(headers.HXAcceptable, "true")
+				c.Append(header.HXAcceptable, "true")
 				c.Status(fiber.StatusUnauthorized)
 				return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 			}
@@ -126,7 +126,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 		if err = sess.Save(); err != nil {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
@@ -135,7 +135,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
-			c.Append(headers.HXAcceptable, "true")
+			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(partials.NoticeSectionError, partials.BindLoginErr, layouts.None)
 		}
