@@ -1,4 +1,4 @@
-package constants
+package constant
 
 const (
 	// TODO: Clean up these token keys

@@ -16,7 +16,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/routes"
 )
@@ -212,7 +212,7 @@ func MakeTestCharacterApplicationDescriptionBody() (*bytes.Buffer, *multipart.Wr
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	description := ""
-	for len(description) < constants.MinCharacterDescriptionLength {
+	for len(description) < constant.MinCharacterDescriptionLength {
 		description = description + "This is a test actor."
 	}
 	writer.WriteField("description", description)
@@ -232,7 +232,7 @@ func MakeTestCharacterApplicationBackstoryBody() (*bytes.Buffer, *multipart.Writ
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	backstory := ""
-	for len(backstory) < constants.MinCharacterBackstoryLength {
+	for len(backstory) < constant.MinCharacterBackstoryLength {
 		backstory = backstory + "This is a tragic backstory."
 	}
 	writer.WriteField("backstory", backstory)

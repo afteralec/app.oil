@@ -1,7 +1,7 @@
 package requests
 
 import (
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/queries"
 )
 
@@ -30,11 +30,11 @@ func IsCharacterApplicationValid(app *queries.CharacterApplicationContent) bool 
 }
 
 func IsNameValid(n string) bool {
-	if len(n) < constants.MinCharacterNameLength {
+	if len(n) < constant.MinCharacterNameLength {
 		return false
 	}
 
-	if len(n) > constants.MaxCharacterNameLength {
+	if len(n) > constant.MaxCharacterNameLength {
 		return false
 	}
 
@@ -42,15 +42,15 @@ func IsNameValid(n string) bool {
 }
 
 func IsGenderValid(gender string) bool {
-	if gender == constants.GenderNonBinary {
+	if gender == constant.GenderNonBinary {
 		return true
 	}
 
-	if gender == constants.GenderFemale {
+	if gender == constant.GenderFemale {
 		return true
 	}
 
-	if gender == constants.GenderMale {
+	if gender == constant.GenderMale {
 		return true
 	}
 
@@ -58,11 +58,11 @@ func IsGenderValid(gender string) bool {
 }
 
 func IsShortDescriptionValid(sdesc string) bool {
-	if len(sdesc) < constants.MinCharacterShortDescriptionLength {
+	if len(sdesc) < constant.MinCharacterShortDescriptionLength {
 		return false
 	}
 
-	if len(sdesc) > constants.MaxCharacterShortDescriptionLength {
+	if len(sdesc) > constant.MaxCharacterShortDescriptionLength {
 		return false
 	}
 
@@ -70,11 +70,11 @@ func IsShortDescriptionValid(sdesc string) bool {
 }
 
 func IsDescriptionValid(description string) bool {
-	if len(description) < constants.MinCharacterDescriptionLength {
+	if len(description) < constant.MinCharacterDescriptionLength {
 		return false
 	}
 
-	if len(description) > constants.MaxCharacterDescriptionLength {
+	if len(description) > constant.MaxCharacterDescriptionLength {
 		return false
 	}
 
@@ -82,11 +82,11 @@ func IsDescriptionValid(description string) bool {
 }
 
 func IsBackstoryValid(backstory string) bool {
-	if len(backstory) < constants.MinCharacterBackstoryLength {
+	if len(backstory) < constant.MinCharacterBackstoryLength {
 		return false
 	}
 
-	if len(backstory) > constants.MaxCharacterBackstoryLength {
+	if len(backstory) > constant.MaxCharacterBackstoryLength {
 		return false
 	}
 

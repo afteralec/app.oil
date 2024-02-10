@@ -3,7 +3,7 @@ package session
 import (
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/interfaces"
 )
 
@@ -23,7 +23,7 @@ func New(i *interfaces.Shared) fiber.Handler {
 
 		theme := sess.Get("theme")
 		if theme == nil {
-			c.Locals("theme", constants.ThemeDefault)
+			c.Locals("theme", constant.ThemeDefault)
 		} else {
 			c.Locals("theme", theme)
 		}

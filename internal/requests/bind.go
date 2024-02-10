@@ -4,7 +4,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/bind"
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/queries"
 )
 
@@ -20,25 +20,25 @@ func BindGenderRadioGroup(b fiber.Map, p BindGenderRadioGroupParams) fiber.Map {
 			ID:       "edit-request-character-application-gender-non-binary",
 			Name:     p.Name,
 			Variable: "gender",
-			Value:    constants.GenderNonBinary,
+			Value:    constant.GenderNonBinary,
 			Label:    "Non-Binary",
-			Active:   p.Content["Gender"] == constants.GenderNonBinary,
+			Active:   p.Content["Gender"] == constant.GenderNonBinary,
 		},
 		{
 			ID:       "edit-request-character-application-gender-female",
 			Name:     p.Name,
 			Variable: "gender",
-			Value:    constants.GenderFemale,
+			Value:    constant.GenderFemale,
 			Label:    "Female",
-			Active:   p.Content["Gender"] == constants.GenderFemale,
+			Active:   p.Content["Gender"] == constant.GenderFemale,
 		},
 		{
 			ID:       "edit-request-character-application-gender-male",
 			Name:     p.Name,
 			Variable: "gender",
-			Value:    constants.GenderMale,
+			Value:    constant.GenderMale,
 			Label:    "Male",
-			Active:   p.Content["Gender"] == constants.GenderMale,
+			Active:   p.Content["Gender"] == constant.GenderMale,
 		},
 	}
 	return b

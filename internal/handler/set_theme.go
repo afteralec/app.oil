@@ -5,7 +5,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/headers"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
@@ -23,7 +23,7 @@ func SetTheme(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if theme != constants.ThemeLight && theme != constants.ThemeDark {
+		if theme != constant.ThemeLight && theme != constant.ThemeDark {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -40,14 +40,14 @@ func SetTheme(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		toggleTheme := constants.ThemeDark
-		if theme == constants.ThemeDark {
-			toggleTheme = constants.ThemeLight
+		toggleTheme := constant.ThemeDark
+		if theme == constant.ThemeDark {
+			toggleTheme = constant.ThemeLight
 		} else {
-			toggleTheme = constants.ThemeDark
+			toggleTheme = constant.ThemeDark
 		}
 		themeText := "Light"
-		if theme == constants.ThemeDark {
+		if theme == constant.ThemeDark {
 			themeText = "Dark"
 		}
 

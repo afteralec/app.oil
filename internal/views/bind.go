@@ -7,7 +7,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/util"
@@ -73,12 +73,12 @@ func playButton() fiber.Map {
 
 func themeButton(c *fiber.Ctx) fiber.Map {
 	theme := c.Locals("theme")
-	toggleTheme := constants.ThemeDark
-	if theme == constants.ThemeDark {
-		toggleTheme = constants.ThemeLight
+	toggleTheme := constant.ThemeDark
+	if theme == constant.ThemeDark {
+		toggleTheme = constant.ThemeLight
 	}
 	themeText := "Light"
-	if theme == constants.ThemeDark {
+	if theme == constant.ThemeDark {
 		themeText = "Dark"
 	}
 

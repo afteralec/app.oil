@@ -903,7 +903,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 }
 
 func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
-	// TODO: Get constants for common section IDs
+	// TODO: Get constant for common section IDs
 	const sectionID string = "edit-room-exits-edit-error"
 
 	internalServerErrorNoticeParams := partials.BindNoticeSectionParams{

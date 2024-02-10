@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"petrichormud.com/app/internal/actors"
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 )
 
 const (
@@ -25,7 +25,7 @@ var TestRoom CreateTestRoomParams = CreateTestRoomParams{
 }
 
 var TestActorImage CreateTestActorImageParams = CreateTestActorImageParams{
-	Gender:           constants.GenderObject,
+	Gender:           constant.GenderObject,
 	Name:             TestActorImageName,
 	ShortDescription: actors.DefaultImageShortDescription,
 	Description:      actors.DefaultImageDescription,

@@ -3,7 +3,7 @@ package requests
 import (
 	"fmt"
 
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 )
@@ -42,7 +42,7 @@ type ApplicationSummary struct {
 func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.Request, app *queries.CharacterApplicationContent) ApplicationSummary {
 	name := app.Name
 	if len(app.Name) == 0 {
-		name = constants.DefaultName
+		name = constant.DefaultName
 	}
 
 	reviewed := len(reviewer) > 0

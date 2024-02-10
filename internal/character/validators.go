@@ -3,7 +3,7 @@ package character
 import (
 	"regexp"
 
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 )
 
 func SanitizeName(n string) string {
@@ -14,11 +14,11 @@ func SanitizeName(n string) string {
 }
 
 func IsNameValid(n string) bool {
-	if len(n) < constants.MinCharacterNameLength {
+	if len(n) < constant.MinCharacterNameLength {
 		return false
 	}
 
-	if len(n) > constants.MaxCharacterNameLength {
+	if len(n) > constant.MaxCharacterNameLength {
 		return false
 	}
 
@@ -62,11 +62,11 @@ func SanitizeShortDescription(sdesc string) string {
 }
 
 func IsShortDescriptionValid(sdesc string) bool {
-	if len(sdesc) < constants.MinCharacterShortDescriptionLength {
+	if len(sdesc) < constant.MinCharacterShortDescriptionLength {
 		return false
 	}
 
-	if len(sdesc) > constants.MaxCharacterShortDescriptionLength {
+	if len(sdesc) > constant.MaxCharacterShortDescriptionLength {
 		return false
 	}
 
@@ -81,11 +81,11 @@ func SanitizeDescription(description string) string {
 }
 
 func IsDescriptionValid(description string) bool {
-	if len(description) < constants.MinCharacterDescriptionLength {
+	if len(description) < constant.MinCharacterDescriptionLength {
 		return false
 	}
 
-	if len(description) > constants.MaxCharacterDescriptionLength {
+	if len(description) > constant.MaxCharacterDescriptionLength {
 		return false
 	}
 
@@ -100,11 +100,11 @@ func SanitizeBackstory(backstory string) string {
 }
 
 func IsBackstoryValid(backstory string) bool {
-	if len(backstory) < constants.MinCharacterBackstoryLength {
+	if len(backstory) < constant.MinCharacterBackstoryLength {
 		return false
 	}
 
-	if len(backstory) > constants.MaxCharacterBackstoryLength {
+	if len(backstory) > constant.MaxCharacterBackstoryLength {
 		return false
 	}
 

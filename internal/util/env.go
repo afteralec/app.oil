@@ -3,9 +3,9 @@ package util
 import (
 	"os"
 
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 )
 
 func IsProd() bool {
-	return os.Getenv(constants.AppEnv) == "true"
+	return os.Getenv(constant.AppEnv) == "true"
 }

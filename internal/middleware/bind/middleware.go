@@ -3,7 +3,7 @@ package bind
 import (
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 )
 
 func New() fiber.Handler {
@@ -11,7 +11,7 @@ func New() fiber.Handler {
 		b := fiber.Map{
 			"PID": c.Locals("pid"),
 		}
-		c.Locals(constants.BindName, b)
+		c.Locals(constant.BindName, b)
 		return c.Next()
 	}
 }

@@ -10,7 +10,7 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/routes"
 )
@@ -42,7 +42,7 @@ func TestSetThemeSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.ThemePath(constants.ThemeLight))
+	url := MakeTestURL(routes.ThemePath(constant.ThemeLight))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := a.Test(req)

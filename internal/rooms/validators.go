@@ -2,7 +2,7 @@ package rooms
 
 import "regexp"
 
-// TODO: Get these lengths in constants
+// TODO: Get these lengths in constant
 // Also, precompile these regular expressions
 // Split these regexes up to provide feedback on exactly which characters don't pass validation?
 

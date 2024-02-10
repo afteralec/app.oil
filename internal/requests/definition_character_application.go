@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	"petrichormud.com/app/internal/constants"
+	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/views"
@@ -147,7 +147,7 @@ func (app *CharacterApplication) UpdateField(q *queries.Queries, p UpdateFieldPa
 
 func (app *CharacterApplication) SummaryTitle(content map[string]string) string {
 	var sb strings.Builder
-	titleName := constants.DefaultName
+	titleName := constant.DefaultName
 	if len(content[FieldName]) > 0 {
 		titleName = content[FieldName]
 	}
@@ -171,10 +171,10 @@ var FieldCharacterApplicationGender Field = Field{
 	Name:        "gender",
 	Label:       "Gender",
 	Description: "Your character's gender determines the pronouns used by third-person descriptions in the game",
-	Min:         util.MinLengthOfStrings([]string{constants.GenderNonBinary, constants.GenderFemale, constants.GenderMale}),
-	Max:         util.MaxLengthOfStrings([]string{constants.GenderNonBinary, constants.GenderFemale, constants.GenderMale}),
+	Min:         util.MinLengthOfStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
+	Max:         util.MaxLengthOfStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
 	Regexes: []*regexp.Regexp{
-		util.RegexForExactMatchStrings([]string{constants.GenderNonBinary, constants.GenderFemale, constants.GenderMale}),
+		util.RegexForExactMatchStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
 	},
 	View: views.CharacterApplicationGender,
 }
