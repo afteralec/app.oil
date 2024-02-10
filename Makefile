@@ -50,7 +50,7 @@ js:
 	make mainjs
 
 css:
-	bunx postcss web/styles/styles.css -o web/static/styles.min.css
+	npx postcss web/styles/styles.css -o web/static/styles.min.css
 
 redis:
 	docker run --name app-redis -p 6379:6379 -d --rm redis
