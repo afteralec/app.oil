@@ -8,7 +8,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/partials"
+	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/requests"
@@ -151,6 +151,6 @@ func CreateRequestComment(i *interfaces.Shared) fiber.Handler {
 			ViewedByAuthor: true,
 			Replies:        []requests.Comment{},
 		}
-		return c.Render(partials.RequestCommentCurrent, comment.Bind(), "")
+		return c.Render(partial.RequestCommentCurrent, comment.Bind(), "")
 	}
 }

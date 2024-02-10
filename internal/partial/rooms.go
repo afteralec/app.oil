@@ -1,4 +1,4 @@
-package partials
+package partial
 
 const RoomGrid string = "partial-room-grid"
 

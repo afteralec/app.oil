@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
-	"petrichormud.com/app/internal/partials"
+	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/username"
 	"petrichormud.com/app/internal/views"
@@ -52,14 +52,14 @@ func RecoverUsername(i *interfaces.Shared) fiber.Handler {
 		if err := c.BodyParser(r); err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInvalid, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInvalid, layouts.None)
 		}
 
 		e, err := mail.ParseAddress(r.Email)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInvalid, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInvalid, layouts.None)
 		}
 
 		ve, err := i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
@@ -69,7 +69,7 @@ func RecoverUsername(i *interfaces.Shared) fiber.Handler {
 				if err != nil {
 					c.Status(fiber.StatusUnauthorized)
 					c.Append(header.HXAcceptable, "true")
-					return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInternal, layouts.None)
+					return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInternal, layouts.None)
 				}
 
 				path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)
@@ -78,14 +78,14 @@ func RecoverUsername(i *interfaces.Shared) fiber.Handler {
 			}
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInternal, layouts.None)
 		}
 
 		rusid, err := username.Recover(i, ve)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partials.NoticeSectionError, partials.BindRecoverUsernameErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInternal, layouts.None)
 		}
 
 		path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)

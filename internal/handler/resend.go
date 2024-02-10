@@ -10,7 +10,7 @@ import (
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
-	"petrichormud.com/app/internal/partials"
+	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/util"
 )
 
@@ -21,8 +21,8 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(
-				partials.NoticeSectionError,
-				partials.BindProfileEmailResendVerificationErrNoID,
+				partial.NoticeSectionError,
+				partial.BindProfileEmailResendVerificationErrNoID,
 				layouts.None,
 			)
 		}
@@ -32,8 +32,8 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(
-				partials.NoticeSectionError,
-				partials.BindProfileEmailResendVerificationErrInternal(id),
+				partial.NoticeSectionError,
+				partial.BindProfileEmailResendVerificationErrInternal(id),
 				layouts.None,
 			)
 		}
@@ -43,8 +43,8 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(
-				partials.NoticeSectionError,
-				partials.BindProfileEmailResendVerificationErrInternal(id),
+				partial.NoticeSectionError,
+				partial.BindProfileEmailResendVerificationErrInternal(id),
 				layouts.None,
 			)
 		}
@@ -57,16 +57,16 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 				c.Append(header.HXAcceptable, "true")
 				c.Status(fiber.StatusNotFound)
 				return c.Render(
-					partials.NoticeSectionError,
-					partials.BindProfileEmailResendVerificationErrInternal(id),
+					partial.NoticeSectionError,
+					partial.BindProfileEmailResendVerificationErrInternal(id),
 					layouts.None,
 				)
 			}
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(
-				partials.NoticeSectionError,
-				partials.BindProfileEmailResendVerificationErrInternal(id),
+				partial.NoticeSectionError,
+				partial.BindProfileEmailResendVerificationErrInternal(id),
 				layouts.None,
 			)
 		}
@@ -75,8 +75,8 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusConflict)
 			return c.Render(
-				partials.NoticeSectionError,
-				partials.BindProfileEmailResendVerificationInfoConflict(id),
+				partial.NoticeSectionError,
+				partial.BindProfileEmailResendVerificationInfoConflict(id),
 				layouts.None,
 			)
 		}
@@ -84,8 +84,8 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
 			return c.Render(
-				partials.NoticeSectionError,
-				partials.BindProfileEmailResendVerificationErrInternal(id),
+				partial.NoticeSectionError,
+				partial.BindProfileEmailResendVerificationErrInternal(id),
 				layouts.None,
 			)
 		}
@@ -95,8 +95,8 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(
-				partials.NoticeSectionError,
-				partials.BindProfileEmailResendVerificationErrInternal(id),
+				partial.NoticeSectionError,
+				partial.BindProfileEmailResendVerificationErrInternal(id),
 				layouts.None,
 			)
 		}
@@ -104,8 +104,8 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusForbidden)
 			return c.Render(
-				partials.NoticeSectionError,
-				partials.BindProfileEmailResendVerificationErrForbiddenAlreadyVerified(id),
+				partial.NoticeSectionError,
+				partial.BindProfileEmailResendVerificationErrForbiddenAlreadyVerified(id),
 				layouts.None,
 			)
 		}
@@ -114,8 +114,8 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(
-				partials.NoticeSectionError,
-				partials.BindProfileEmailResendVerificationErrInternal(id),
+				partial.NoticeSectionError,
+				partial.BindProfileEmailResendVerificationErrInternal(id),
 				layouts.None,
 			)
 		}
@@ -124,15 +124,15 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(
-				partials.NoticeSectionError,
-				partials.BindProfileEmailResendVerificationErrInternal(id),
+				partial.NoticeSectionError,
+				partial.BindProfileEmailResendVerificationErrInternal(id),
 				layouts.None,
 			)
 		}
 
 		return c.Render(
-			partials.NoticeSectionSuccess,
-			partials.BindProfileEmailResendVerificationSuccess(id),
+			partial.NoticeSectionSuccess,
+			partial.BindProfileEmailResendVerificationSuccess(id),
 			layouts.None,
 		)
 	}

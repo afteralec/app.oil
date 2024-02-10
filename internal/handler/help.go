@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
-	"petrichormud.com/app/internal/partials"
+	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/views"
@@ -144,7 +144,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", "search-help-error")
 			c.Status(fiber.StatusBadRequest)
-			b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			b := partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    "search-help-error",
 				SectionClass: "py-4 px-6 w-[60%]",
 				NoticeText: []string{
@@ -153,14 +153,14 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				RefreshButton: true,
 				NoticeIcon:    true,
 			})
-			return c.Render(partials.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layouts.None)
 		}
 
 		if len(in.Search) == 0 {
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", "search-help-error")
 			c.Status(fiber.StatusBadRequest)
-			b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			b := partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    "search-help-error",
 				SectionClass: "py-4 px-6 w-[60%]",
 				NoticeText: []string{
@@ -169,7 +169,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				RefreshButton: true,
 				NoticeIcon:    true,
 			})
-			return c.Render(partials.NoticeSectionWarn, b, layouts.None)
+			return c.Render(partial.NoticeSectionWarn, b, layouts.None)
 		}
 
 		tx, err := i.Database.Begin()
@@ -177,7 +177,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", "search-help-error")
 			c.Status(fiber.StatusInternalServerError)
-			b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			b := partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    "search-help-error",
 				SectionClass: "py-4 px-6 w-[60%]",
 				NoticeText: []string{
@@ -186,7 +186,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				RefreshButton: true,
 				NoticeIcon:    true,
 			})
-			return c.Render(partials.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layouts.None)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -206,7 +206,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				c.Append(header.HXAcceptable, "true")
 				c.Append("HX-Retarget", "search-help-error")
 				c.Status(fiber.StatusInternalServerError)
-				b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				b := partial.BindNoticeSection(partial.BindNoticeSectionParams{
 					SectionID:    "search-help-error",
 					SectionClass: "py-4 px-6 w-[60%]",
 					NoticeText: []string{
@@ -215,7 +215,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					RefreshButton: true,
 					NoticeIcon:    true,
 				})
-				return c.Render(partials.NoticeSectionError, b, layouts.None)
+				return c.Render(partial.NoticeSectionError, b, layouts.None)
 			}
 
 			foundByTitle := []fiber.Map{}
@@ -225,7 +225,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					c.Append(header.HXAcceptable, "true")
 					c.Append("HX-Retarget", "search-help-error")
 					c.Status(fiber.StatusInternalServerError)
-					b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					b := partial.BindNoticeSection(partial.BindNoticeSectionParams{
 						SectionID:    "search-help-error",
 						SectionClass: "py-4 px-6 w-[60%]",
 						NoticeText: []string{
@@ -234,7 +234,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 						RefreshButton: true,
 						NoticeIcon:    true,
 					})
-					return c.Render(partials.NoticeSectionError, b, layouts.None)
+					return c.Render(partial.NoticeSectionError, b, layouts.None)
 				}
 
 				foundByTitle = append(foundByTitle, fiber.Map{
@@ -268,7 +268,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				c.Append(header.HXAcceptable, "true")
 				c.Append("HX-Retarget", "search-help-error")
 				c.Status(fiber.StatusInternalServerError)
-				b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				b := partial.BindNoticeSection(partial.BindNoticeSectionParams{
 					SectionID:    "search-help-error",
 					SectionClass: "py-4 px-6 w-[60%]",
 					NoticeText: []string{
@@ -277,7 +277,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					RefreshButton: true,
 					NoticeIcon:    true,
 				})
-				return c.Render(partials.NoticeSectionError, b, layouts.None)
+				return c.Render(partial.NoticeSectionError, b, layouts.None)
 			}
 
 			foundByContent := []fiber.Map{}
@@ -287,7 +287,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					c.Append(header.HXAcceptable, "true")
 					c.Append("HX-Retarget", "search-help-error")
 					c.Status(fiber.StatusInternalServerError)
-					b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					b := partial.BindNoticeSection(partial.BindNoticeSectionParams{
 						SectionID:    "search-help-error",
 						SectionClass: "py-4 px-6 w-[60%]",
 						NoticeText: []string{
@@ -296,7 +296,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 						RefreshButton: true,
 						NoticeIcon:    true,
 					})
-					return c.Render(partials.NoticeSectionError, b, layouts.None)
+					return c.Render(partial.NoticeSectionError, b, layouts.None)
 				}
 
 				foundByContent = append(foundByContent, fiber.Map{
@@ -327,7 +327,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				c.Append(header.HXAcceptable, "true")
 				c.Append("HX-Retarget", "search-help-error")
 				c.Status(fiber.StatusInternalServerError)
-				b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				b := partial.BindNoticeSection(partial.BindNoticeSectionParams{
 					SectionID:    "search-help-error",
 					SectionClass: "py-4 px-6 w-[60%]",
 					NoticeText: []string{
@@ -336,7 +336,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					RefreshButton: true,
 					NoticeIcon:    true,
 				})
-				return c.Render(partials.NoticeSectionError, b, layouts.None)
+				return c.Render(partial.NoticeSectionError, b, layouts.None)
 			}
 
 			foundByCategory := []fiber.Map{}
@@ -346,7 +346,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					c.Append(header.HXAcceptable, "true")
 					c.Append("HX-Retarget", "search-help-error")
 					c.Status(fiber.StatusInternalServerError)
-					b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					b := partial.BindNoticeSection(partial.BindNoticeSectionParams{
 						SectionID:    "search-help-error",
 						SectionClass: "py-4 px-6 w-[60%]",
 						NoticeText: []string{
@@ -355,7 +355,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 						RefreshButton: true,
 						NoticeIcon:    true,
 					})
-					return c.Render(partials.NoticeSectionError, b, layouts.None)
+					return c.Render(partial.NoticeSectionError, b, layouts.None)
 				}
 
 				foundByCategory = append(foundByCategory, fiber.Map{
@@ -386,7 +386,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				c.Append(header.HXAcceptable, "true")
 				c.Append("HX-Retarget", "search-help-error")
 				c.Status(fiber.StatusInternalServerError)
-				b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
+				b := partial.BindNoticeSection(partial.BindNoticeSectionParams{
 					SectionID:    "search-help-error",
 					SectionClass: "py-4 px-6 w-[60%]",
 					NoticeText: []string{
@@ -395,7 +395,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					RefreshButton: true,
 					NoticeIcon:    true,
 				})
-				return c.Render(partials.NoticeSectionError, b, layouts.None)
+				return c.Render(partial.NoticeSectionError, b, layouts.None)
 			}
 
 			foundByTags := []fiber.Map{}
@@ -405,7 +405,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					c.Append(header.HXAcceptable, "true")
 					c.Append("HX-Retarget", "search-help-error")
 					c.Status(fiber.StatusInternalServerError)
-					b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					b := partial.BindNoticeSection(partial.BindNoticeSectionParams{
 						SectionID:    "search-help-error",
 						SectionClass: "py-4 px-6 w-[60%]",
 						NoticeText: []string{
@@ -414,7 +414,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 						RefreshButton: true,
 						NoticeIcon:    true,
 					})
-					return c.Render(partials.NoticeSectionError, b, layouts.None)
+					return c.Render(partial.NoticeSectionError, b, layouts.None)
 				}
 
 				foundByTags = append(foundByTags, fiber.Map{
@@ -444,7 +444,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", "search-help-error")
 			c.Status(fiber.StatusInternalServerError)
-			b := partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			b := partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    "search-help-error",
 				SectionClass: "py-4 px-6 w-[60%]",
 				NoticeText: []string{
@@ -453,7 +453,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				RefreshButton: true,
 				NoticeIcon:    true,
 			})
-			return c.Render(partials.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layouts.None)
 		}
 
 		if len(results) == 0 {
@@ -462,11 +462,11 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", "search-help-error")
 			c.Status(fiber.StatusNotFound)
-			return c.Render(partials.HelpIndexSearchNoResults, b, layouts.None)
+			return c.Render(partial.HelpIndexSearchNoResults, b, layouts.None)
 		}
 
 		b := views.Bind(c)
 		b["Results"] = results
-		return c.Render(partials.HelpIndexSearchResults, b, layouts.None)
+		return c.Render(partial.HelpIndexSearchResults, b, layouts.None)
 	}
 }

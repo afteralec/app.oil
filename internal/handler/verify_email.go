@@ -12,7 +12,7 @@ import (
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
-	"petrichormud.com/app/internal/partials"
+	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/username"
 	"petrichormud.com/app/internal/views"
@@ -177,6 +177,6 @@ func VerifyEmail(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		return c.Render(partials.VerifyEmailSuccess, &fiber.Map{}, "")
+		return c.Render(partial.VerifyEmailSuccess, &fiber.Map{}, "")
 	}
 }

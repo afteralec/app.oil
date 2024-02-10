@@ -1,4 +1,4 @@
-package partials
+package partial
 
 const (
 	ActorImageFree        string = "partial-actor-image-free"

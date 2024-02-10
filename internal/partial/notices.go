@@ -1,4 +1,4 @@
-package partials
+package partial
 
 const (
 	NoticeSectionError   string = "partial-notice-section-error"

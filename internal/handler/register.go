@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
-	"petrichormud.com/app/internal/partials"
+	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/username"
@@ -32,7 +32,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInternal, layouts.None)
 		}
 
 		u := username.Sanitize(p.Username)
@@ -42,7 +42,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInvalidUsername, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInvalidUsername, layouts.None)
 		}
 
 		if !password.IsValid(p.Password) {
@@ -50,7 +50,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInvalidPassword, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInvalidPassword, layouts.None)
 		}
 
 		if p.Password != p.ConfirmPassword {
@@ -58,7 +58,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)
-			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInvalidConfirmPassword, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInvalidConfirmPassword, layouts.None)
 		}
 
 		pwHash, err := password.Hash(p.Password)
@@ -67,7 +67,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInternal, layouts.None)
 		}
 
 		tx, err := i.Database.Begin()
@@ -76,7 +76,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInternal, layouts.None)
 
 		}
 		defer tx.Rollback()
@@ -96,20 +96,20 @@ func Register(i *interfaces.Shared) fiber.Handler {
 				c.Append("HX-Reswap", "outerHTML")
 				c.Append(header.HXAcceptable, "true")
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInternal, layouts.None)
 			}
 			if me.Number == mysqlerr.ER_DUP_ENTRY {
 				c.Append("HX-Retarget", "#register-error")
 				c.Append("HX-Reswap", "outerHTML")
 				c.Append(header.HXAcceptable, "true")
 				c.Status(fiber.StatusConflict)
-				return c.Render(partials.NoticeSectionError, partials.BindRegisterErrConflict, layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindRegisterErrConflict, layouts.None)
 			}
 			c.Append("HX-Retarget", "#register-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInternal, layouts.None)
 		}
 
 		pid, err := result.LastInsertId()
@@ -118,7 +118,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInternal, layouts.None)
 		}
 
 		if err := qtx.CreatePlayerSettings(context.Background(), queries.CreatePlayerSettingsParams{
@@ -129,7 +129,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInternal, layouts.None)
 		}
 
 		sess, err := i.Sessions.Get(c)
@@ -138,7 +138,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInternal, layouts.None)
 		}
 
 		theme := sess.Get("theme")
@@ -151,7 +151,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 				c.Append("HX-Reswap", "outerHTML")
 				c.Append(header.HXAcceptable, "true")
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInternal, layouts.None)
 			}
 		}
 
@@ -161,7 +161,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInternal, layouts.None)
 		}
 
 		sess.Set("pid", pid)
@@ -170,7 +170,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.NoticeSectionError, partials.BindRegisterErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInternal, layouts.None)
 		}
 
 		username.Cache(i.Redis, pid, p.Username)

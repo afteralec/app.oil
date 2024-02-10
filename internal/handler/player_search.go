@@ -8,7 +8,7 @@ import (
 
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
-	"petrichormud.com/app/internal/partials"
+	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/views"
 )
 
@@ -47,7 +47,7 @@ func SearchPlayer(i *interfaces.Shared) fiber.Handler {
 			b := views.Bind(c)
 			b["Players"] = players
 			c.Status(fiber.StatusOK)
-			return c.Render(partials.PlayerPermissionsSearchResults, b, layouts.None)
+			return c.Render(partial.PlayerPermissionsSearchResults, b, layouts.None)
 		}
 
 		c.Status(fiber.StatusBadRequest)

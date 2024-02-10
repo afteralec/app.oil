@@ -1,4 +1,4 @@
-package partials
+package partial
 
 import (
 	"fmt"

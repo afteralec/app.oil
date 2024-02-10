@@ -14,7 +14,7 @@ import (
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
-	"petrichormud.com/app/internal/partials"
+	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
@@ -221,7 +221,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
@@ -236,7 +236,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
@@ -250,7 +250,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
@@ -266,7 +266,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
@@ -281,7 +281,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
@@ -297,7 +297,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
@@ -322,7 +322,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 					c.Status(fiber.StatusConflict)
 					c.Append(header.HXAcceptable, "true")
 					c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-					return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+					return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(partial.BindNoticeSectionParams{
 						SectionID:    sectionID,
 						SectionClass: "pt-2",
 						NoticeText: []string{
@@ -335,7 +335,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
@@ -351,7 +351,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
@@ -366,7 +366,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(partials.BindNoticeSectionParams{
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(partial.BindNoticeSectionParams{
 				SectionID:    sectionID,
 				SectionClass: "pt-2",
 				NoticeText: []string{
@@ -467,7 +467,7 @@ func EditActorImageShortDescription(i *interfaces.Shared) fiber.Handler {
 		b := fiber.Map{}
 		b["ShortDescription"] = actorImage.ShortDescription
 		b["ShortDescriptionPath"] = routes.ActorImageShortDescriptionPath(actorImage.ID)
-		b["NoticeSection"] = partials.BindNoticeSection(partials.BindNoticeSectionParams{
+		b["NoticeSection"] = partial.BindNoticeSection(partial.BindNoticeSectionParams{
 			Success:      true,
 			SectionID:    "actor-image-edit-short-description-notice",
 			SectionClass: "pb-2",
@@ -476,7 +476,7 @@ func EditActorImageShortDescription(i *interfaces.Shared) fiber.Handler {
 			},
 			NoticeIcon: true,
 		})
-		return c.Render(partials.ActorImageEditShortDescription, b, layouts.None)
+		return c.Render(partial.ActorImageEditShortDescription, b, layouts.None)
 	}
 }
 
@@ -563,7 +563,7 @@ func EditActorImageDescription(i *interfaces.Shared) fiber.Handler {
 		b := fiber.Map{}
 		b["Description"] = actorImage.Description
 		b["DescriptionPath"] = routes.ActorImageDescriptionPath(actorImage.ID)
-		b["NoticeSection"] = partials.BindNoticeSection(partials.BindNoticeSectionParams{
+		b["NoticeSection"] = partial.BindNoticeSection(partial.BindNoticeSectionParams{
 			Success:      true,
 			SectionID:    "actor-image-edit-description-notice",
 			SectionClass: "pb-2",
@@ -572,7 +572,7 @@ func EditActorImageDescription(i *interfaces.Shared) fiber.Handler {
 			},
 			NoticeIcon: true,
 		})
-		return c.Render(partials.ActorImageEditDescription, b, layouts.None)
+		return c.Render(partial.ActorImageEditDescription, b, layouts.None)
 	}
 }
 
@@ -592,14 +592,14 @@ func ActorImageNameReserved(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Append("HX-Trigger-After-Swap", "ptrcr:actor-image-reserved")
-				return c.Render(partials.ActorImageFree, fiber.Map{
+				return c.Render(partial.ActorImageFree, fiber.Map{
 					"CSRF": c.Locals("csrf"),
 				}, layouts.CSRF)
 			}
 			c.Append("HX-Trigger-After-Swap", "ptrcr:actor-image-reserved")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.ActorImageReservedErr, fiber.Map{
+			return c.Render(partial.ActorImageReservedErr, fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, layouts.CSRF)
 		}
@@ -608,12 +608,12 @@ func ActorImageNameReserved(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:actor-image-reserved")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusConflict)
-			return c.Render(partials.ActorImageReserved, fiber.Map{
+			return c.Render(partial.ActorImageReserved, fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, layouts.CSRF)
 		} else {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:actor-image-reserved")
-			return c.Render(partials.ActorImageFree, fiber.Map{
+			return c.Render(partial.ActorImageFree, fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, layouts.CSRF)
 		}

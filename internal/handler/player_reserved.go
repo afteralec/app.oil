@@ -9,7 +9,7 @@ import (
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
-	"petrichormud.com/app/internal/partials"
+	"petrichormud.com/app/internal/partial"
 )
 
 func UsernameReserved(i *interfaces.Shared) fiber.Handler {
@@ -27,14 +27,14 @@ func UsernameReserved(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
-				return c.Render(partials.PlayerFree, fiber.Map{
+				return c.Render(partial.PlayerFree, fiber.Map{
 					"CSRF": c.Locals("csrf"),
 				}, layouts.CSRF)
 			}
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(partials.PlayerReservedErr, fiber.Map{
+			return c.Render(partial.PlayerReservedErr, fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, layouts.CSRF)
 		}
@@ -43,12 +43,12 @@ func UsernameReserved(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusConflict)
-			return c.Render(partials.PlayerReserved, fiber.Map{
+			return c.Render(partial.PlayerReserved, fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, layouts.CSRF)
 		} else {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
-			return c.Render(partials.PlayerFree, fiber.Map{
+			return c.Render(partial.PlayerFree, fiber.Map{
 				"CSRF": c.Locals("csrf"),
 			}, layouts.CSRF)
 		}

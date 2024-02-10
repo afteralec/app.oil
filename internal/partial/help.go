@@ -1,4 +1,4 @@
-package partials
+package partial
 
 const (
 	HelpIndexSearchResults   string = "partial-help-index-search-results"
