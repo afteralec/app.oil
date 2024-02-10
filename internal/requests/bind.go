@@ -13,7 +13,7 @@ type BindGenderRadioGroupParams struct {
 	Name    string
 }
 
-// TODO: Put this behind a Character Applications, Characters or Actors package instead?
+// TODO: Put this behind a Character Applications, Characters or actor package instead?
 func BindGenderRadioGroup(b fiber.Map, p BindGenderRadioGroupParams) fiber.Map {
 	b["GenderRadioGroup"] = []bind.Radio{
 		{

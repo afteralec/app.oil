@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	ActorImages                         string = "/actors/images"
-	ActorImageReserved                  string = "/actors/images/reserved"
-	ActorImagePathParam                 string = "/actors/images/:id"
-	EditActorImagePathParam             string = "/actors/images/:id/edit"
-	ActorImageShortDescriptionPathParam string = "/actors/images/:id/sdesc"
-	ActorImageDescriptionPathParam      string = "/actors/images/:id/desc"
+	ActorImages                         string = "/actor/images"
+	ActorImageReserved                  string = "/actor/images/reserved"
+	ActorImagePathParam                 string = "/actor/images/:id"
+	EditActorImagePathParam             string = "/actor/images/:id/edit"
+	ActorImageShortDescriptionPathParam string = "/actor/images/:id/sdesc"
+	ActorImageDescriptionPathParam      string = "/actor/images/:id/desc"
 )
 
 func ActorImagePath(id int64) string {

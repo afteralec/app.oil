@@ -44,7 +44,7 @@ const (
 	PlayerViewAllRoomsAbout                string = "The permission to view (but not edit) all room data."
 	PlayerCreateRoomAbout                  string = "Create a new room, but not connect it to the grid."
 	PlayerViewAllActorImagesAbout          string = "View all Actor Images, i.e. in the main Actor Images list."
-	PlayerCreateActorImageAbout            string = "Create new Actors via creating new Actor Images"
+	PlayerCreateActorImageAbout            string = "Create new actor via creating new Actor Images"
 )
 
 var PlayerGrantAllPermissions Player = Player{

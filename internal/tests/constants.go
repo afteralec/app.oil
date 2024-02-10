@@ -3,7 +3,7 @@ package tests
 import (
 	"fmt"
 
-	"petrichormud.com/app/internal/actors"
+	"petrichormud.com/app/internal/actor"
 	"petrichormud.com/app/internal/constant"
 )
 
@@ -27,8 +27,8 @@ var TestRoom CreateTestRoomParams = CreateTestRoomParams{
 var TestActorImage CreateTestActorImageParams = CreateTestActorImageParams{
 	Gender:           constant.GenderObject,
 	Name:             TestActorImageName,
-	ShortDescription: actors.DefaultImageShortDescription,
-	Description:      actors.DefaultImageDescription,
+	ShortDescription: actor.DefaultImageShortDescription,
+	Description:      actor.DefaultImageDescription,
 }
 
 var TestHelpFile CreateTestHelpFileParams = CreateTestHelpFileParams{

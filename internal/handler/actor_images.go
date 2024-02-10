@@ -10,7 +10,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/actors"
+	"petrichormud.com/app/internal/actor"
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
@@ -131,7 +131,7 @@ func EditActorImagePage(i *interfaces.Shared) fiber.Handler {
 		}
 		// TODO: Get a bind function for this too
 		b["PageHeader"] = fiber.Map{
-			"Title":    actors.ImageTitleWithID(actorImage.Name, actorImage.ID),
+			"Title":    actor.ImageTitleWithID(actorImage.Name, actorImage.ID),
 			"SubTitle": "Update actor properties here",
 		}
 		// TODO: Write a bind function for this
@@ -199,7 +199,7 @@ func ActorImagePage(i *interfaces.Shared) fiber.Handler {
 		}
 		// TODO: Get a bind function for this too
 		b["PageHeader"] = fiber.Map{
-			"Title": actors.ImageTitleWithID(actorImage.Name, actorImage.ID),
+			"Title": actor.ImageTitleWithID(actorImage.Name, actorImage.ID),
 		}
 		b["Name"] = actorImage.Name
 		b["ShortDescription"] = actorImage.ShortDescription
@@ -232,7 +232,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 			}), layouts.None)
 		}
 
-		if !actors.IsImageNameValid(in.Name) {
+		if !actor.IsImageNameValid(in.Name) {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
@@ -312,9 +312,9 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 
 		result, err := qtx.CreateActorImage(context.Background(), queries.CreateActorImageParams{
 			Name:             in.Name,
-			ShortDescription: actors.DefaultImageShortDescription,
-			Description:      actors.DefaultImageDescription,
-			Gender:           actors.DefaultImageGender,
+			ShortDescription: actor.DefaultImageShortDescription,
+			Description:      actor.DefaultImageDescription,
+			Gender:           actor.DefaultImageGender,
 		})
 		if err != nil {
 			if me, ok := err.(*mysql.MySQLError); ok {
@@ -396,7 +396,7 @@ func EditActorImageShortDescription(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if !actors.IsShortDescriptionValid(in.ShortDescription) {
+		if !actor.IsShortDescriptionValid(in.ShortDescription) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -492,7 +492,7 @@ func EditActorImageDescription(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if !actors.IsDescriptionValid(in.Description) {
+		if !actor.IsDescriptionValid(in.Description) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
