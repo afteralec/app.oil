@@ -1,5 +1,7 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import type { Config } from "tailwindcss";
+import Forms from "@tailwindcss/forms";
+
+export default {
   content: ["./web/templates/*.html", "./web/templates/**/*.html"],
   safelist: [
     "light",
@@ -85,5 +87,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("@tailwindcss/forms")],
-};
+  plugins: [Forms],
+} satisfies Config;
