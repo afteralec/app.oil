@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
-	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/routes"
 )
@@ -22,7 +22,7 @@ func TestEditEmailUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -43,7 +43,7 @@ func TestEditEmailMissingBody(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -65,7 +65,7 @@ func TestEditEmailMalformedInput(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -97,7 +97,7 @@ func TestEditEmailMalformedInput(t *testing.T) {
 func TestEditEmailFatal(t *testing.T) {
 	i := interfaces.SetupShared()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -127,7 +127,7 @@ func TestEditEmailUnowned(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -155,7 +155,7 @@ func TestEditEmailInvalidID(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -190,7 +190,7 @@ func TestEditEmailNotFound(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -228,7 +228,7 @@ func TestEditEmailForbiddenUnverified(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -253,7 +253,7 @@ func TestEditEmailConflictAlreadyVerified(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -288,7 +288,7 @@ func TestEditEmailSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
-	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/routes"
@@ -24,7 +24,7 @@ func TestRecoverPasswordPageSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -43,7 +43,7 @@ func TestRecoverPasswordSuccessPageSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -69,7 +69,7 @@ func TestRecoverPasswordBadRequestMissingBody(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -88,7 +88,7 @@ func TestRecoverPasswordBadRequestMalformedBody(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -113,7 +113,7 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

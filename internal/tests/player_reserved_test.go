@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
-	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/routes"
 )
@@ -20,7 +20,7 @@ func TestReservedConflict(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -47,7 +47,7 @@ func TestReservedConflict(t *testing.T) {
 func TestReservedFatal(t *testing.T) {
 	i := interfaces.SetupShared()
 
-	config := configs.Fiber()
+	config := config.Fiber()
 	a := fiber.New(config)
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
@@ -81,7 +81,7 @@ func TestReservedOK(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	config := configs.Fiber()
+	config := config.Fiber()
 	a := fiber.New(config)
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)

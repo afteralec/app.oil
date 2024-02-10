@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
-	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/rooms"
@@ -25,7 +25,7 @@ func TestRoomsPageUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -44,7 +44,7 @@ func TestRoomsPageForbiddenNoPermission(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -70,7 +70,7 @@ func TestRoomsPageSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -96,7 +96,7 @@ func TestRoomPageUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -123,7 +123,7 @@ func TestRoomPageForbiddenNoPermission(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -151,7 +151,7 @@ func TestRoomPageNotFound(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -181,7 +181,7 @@ func TestRoomPageSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -211,7 +211,7 @@ func TestNewRoomUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -232,7 +232,7 @@ func TestNewRoomForbiddenNoPermission(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -259,7 +259,7 @@ func TestNewRoomSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -287,7 +287,7 @@ func TestNewRoomWithLinkUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -318,7 +318,7 @@ func TestNewRoomWithLinkForbiddenNoPermission(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -355,7 +355,7 @@ func TestNewRoomWithLinkNotFoundInvalidRID(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -396,7 +396,7 @@ func TestNewRoomWithLinkBadRequestInvalidDirection(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -434,7 +434,7 @@ func TestNewRoomWithLinkSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -471,7 +471,7 @@ func TestEditRoomPageUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -494,7 +494,7 @@ func TestEditRoomPageForbiddenNoPermission(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -522,7 +522,7 @@ func TestEditRoomPageSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -552,7 +552,7 @@ func TestEditRoomExitUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -586,7 +586,7 @@ func TestEditRoomExitForbiddenNoPermission(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -624,7 +624,7 @@ func TestEditRoomExitRoomNotFound(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -662,7 +662,7 @@ func TestEditRoomExitBadRequestLinkToSelf(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -700,7 +700,7 @@ func TestEditRoomExitBadRequestInvalidID(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -738,7 +738,7 @@ func TestEditRoomExitBadRequestEmptyID(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -776,7 +776,7 @@ func TestEditRoomExitBadRequestInvalidTwoWay(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -814,7 +814,7 @@ func TestEditRoomExitSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -854,7 +854,7 @@ func TestClearRoomExitUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -890,7 +890,7 @@ func TestClearRoomExitForbiddenNoPermission(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -930,7 +930,7 @@ func TestClearRoomExitSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -972,7 +972,7 @@ func TestEditRoomTitleUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1001,7 +1001,7 @@ func TestEditRoomTitleForbiddenNoPermission(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1035,7 +1035,7 @@ func TestEditRoomTitleNotFound(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1071,7 +1071,7 @@ func TestEditRoomTitleBadRequestInvalid(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1107,7 +1107,7 @@ func TestEditRoomTitleSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1143,7 +1143,7 @@ func TestEditRoomDescriptionUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1174,7 +1174,7 @@ func TestEditRoomDescriptionForbiddenNoPermission(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1210,7 +1210,7 @@ func TestEditRoomDescriptionNotFound(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1248,7 +1248,7 @@ func TestEditRoomDescriptionBadRequestInvalid(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1284,7 +1284,7 @@ func TestEditRoomDescriptionSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1322,7 +1322,7 @@ func TestEditRoomSizeUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1351,7 +1351,7 @@ func TestEditRoomSizeForbiddenNoPermission(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1385,7 +1385,7 @@ func TestEditRoomSizeNotFound(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1421,7 +1421,7 @@ func TestEditRoomSizeBadRequestInvalid(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1457,7 +1457,7 @@ func TestEditRoomSizeSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

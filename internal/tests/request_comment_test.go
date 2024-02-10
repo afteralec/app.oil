@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
-	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
@@ -25,7 +25,7 @@ func TestCreateRequestCommentUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -62,7 +62,7 @@ func TestCreateRequestCommentMissingBody(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -102,7 +102,7 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -149,7 +149,7 @@ func TestCreateRequestCommentBadField(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -196,7 +196,7 @@ func TestCreateRequestCommentNotFound(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -242,7 +242,7 @@ func TestCreateRequestCommentForbiddenOwnRequest(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -283,7 +283,7 @@ func TestCreateRequestCommentNotInReview(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -322,7 +322,7 @@ func TestCreateRequestCommentNotReviewer(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -373,7 +373,7 @@ func TestCreateRequestCommentNoPermission(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -417,7 +417,7 @@ func TestCreateRequestCommentSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

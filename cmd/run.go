@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"petrichormud.com/app/internal/app"
-	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 )
 
@@ -23,7 +23,7 @@ var runCmd = &cobra.Command{
 		i := interfaces.SetupShared()
 		defer i.Close()
 
-		a := fiber.New(configs.Fiber())
+		a := fiber.New(config.Fiber())
 
 		app.Middleware(a, &i)
 		app.Handlers(a, &i)

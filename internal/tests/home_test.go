@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
-	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/routes"
 )
@@ -18,7 +18,7 @@ func TestHomePage(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	config := configs.Fiber()
+	config := config.Fiber()
 	a := fiber.New(config)
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)

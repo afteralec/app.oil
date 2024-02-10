@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/queries"
 )
 
@@ -26,10 +26,10 @@ func SetupShared() Shared {
 		log.Fatal(err)
 	}
 
-	opts := configs.Redis()
+	opts := config.Redis()
 	r := redis.NewClient(&opts)
 
-	s := session.New(configs.Session())
+	s := session.New(config.Session())
 
 	ib := InterfacesBuilder().Database(db).Redis(r).Sessions(s)
 

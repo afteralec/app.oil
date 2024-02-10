@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/app"
-	"petrichormud.com/app/internal/configs"
+	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/routes"
 )
@@ -21,7 +21,7 @@ func TestAddEmailSuccess(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	a := fiber.New(configs.Fiber())
+	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -44,7 +44,7 @@ func TestAddEmailUnauthorized(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	config := configs.Fiber()
+	config := config.Fiber()
 	a := fiber.New(config)
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
@@ -66,7 +66,7 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	config := configs.Fiber()
+	config := config.Fiber()
 	a := fiber.New(config)
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
@@ -90,7 +90,7 @@ func TestAddEmailFatal(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	config := configs.Fiber()
+	config := config.Fiber()
 	a := fiber.New(config)
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
@@ -118,7 +118,7 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	config := configs.Fiber()
+	config := config.Fiber()
 	a := fiber.New(config)
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
