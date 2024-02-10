@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -15,7 +14,7 @@ import (
 	"petrichormud.com/app/internal/partials"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/rooms"
+	"petrichormud.com/app/internal/room"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/views"
@@ -52,7 +51,7 @@ func RoomsPage(i *interfaces.Shared) fiber.Handler {
 			pageRoom := fiber.Map{
 				"Title":      sb.String(),
 				"Size":       record.Size,
-				"SizeString": rooms.SizeToString(record.Size),
+				"SizeString": room.SizeToString(record.Size),
 				"Path":       routes.RoomPath(record.ID),
 			}
 
@@ -114,12 +113,12 @@ func RoomPage(i *interfaces.Shared) fiber.Handler {
 			"Label": "Back to Rooms",
 		}
 		b["PageHeader"] = fiber.Map{
-			"Title":    rooms.TitleWithID(record.Title, record.ID),
+			"Title":    room.TitleWithID(record.Title, record.ID),
 			"SubTitle": "Room",
 		}
 		b["Name"] = "ImageName"
 		b["Title"] = record.Title
-		b["Size"] = rooms.SizeToString(record.Size)
+		b["Size"] = room.SizeToString(record.Size)
 		b["Description"] = record.Description
 		return c.Render(views.Room, b, layouts.Main)
 	}
@@ -201,9 +200,9 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 		qtx := i.Queries.WithTx(tx)
 
 		result, err := qtx.CreateRoom(context.Background(), queries.CreateRoomParams{
-			Title:       rooms.DefaultTitle,
-			Description: rooms.DefaultDescription,
-			Size:        rooms.DefaultSize,
+			Title:       room.DefaultTitle,
+			Description: room.DefaultDescription,
+			Size:        room.DefaultSize,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -258,7 +257,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 			// 2. There isn't a setpiece that leads to the proposed destination room
 			// etc
 
-			room, err := qtx.GetRoom(context.Background(), in.LinkID)
+			rm, err := qtx.GetRoom(context.Background(), in.LinkID)
 			if err != nil {
 				if err == sql.ErrNoRows {
 					c.Status(fiber.StatusNotFound)
@@ -288,7 +287,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				}), layouts.None)
 			}
 
-			exitRoom, err := qtx.GetRoom(context.Background(), rid)
+			exitrm, err := qtx.GetRoom(context.Background(), rid)
 			if err != nil {
 				if err == sql.ErrNoRows {
 					c.Status(fiber.StatusNotFound)
@@ -318,7 +317,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				}), layouts.None)
 			}
 
-			if !rooms.IsDirectionValid(in.Direction) {
+			if !room.IsDirectionValid(in.Direction) {
 				c.Status(fiber.StatusBadRequest)
 				c.Append(header.HXAcceptable, "true")
 				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
@@ -333,7 +332,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				}), layouts.None)
 			}
 
-			if err := rooms.Link(rooms.LinkParams{
+			if err := room.Link(room.LinkParams{
 				Queries:   qtx,
 				ID:        in.LinkID,
 				To:        rid,
@@ -354,7 +353,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				}), layouts.None)
 			}
 
-			room, err = qtx.GetRoom(context.Background(), room.ID)
+			rm, err = qtx.GetRoom(context.Background(), rm.ID)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(header.HXAcceptable, "true")
@@ -369,7 +368,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 					NoticeIcon:    true,
 				}), layouts.None)
 			}
-			exitRoom, err = qtx.GetRoom(context.Background(), exitRoom.ID)
+			exitrm, err = qtx.GetRoom(context.Background(), exitrm.ID)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(header.HXAcceptable, "true")
@@ -385,9 +384,9 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				}), layouts.None)
 			}
 
-			exitGraph, err := rooms.BuildGraph(rooms.BuildGraphParams{
+			exitGraph, err := room.BuildGraph(room.BuildGraphParams{
 				Queries:  qtx,
-				Room:     &room,
+				Room:     &rm,
 				MaxDepth: 1,
 			})
 			if err != nil {
@@ -405,9 +404,9 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				}), layouts.None)
 			}
 
-			gridGraph, err := rooms.BuildGraph(rooms.BuildGraphParams{
+			gridGraph, err := room.BuildGraph(room.BuildGraphParams{
 				Queries: qtx,
-				Room:    &room,
+				Room:    &rm,
 			})
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
@@ -439,13 +438,13 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				}), layouts.None)
 			}
 
-			grid := gridGraph.BindMatrix(rooms.BindMatrixParams{
-				Matrix:  rooms.EmptyBindMatrix(5),
+			grid := gridGraph.BindMatrix(room.BindMatrixParams{
+				Matrix:  room.EmptyBindMatrix(5),
 				Row:     2,
 				Col:     2,
 				Shallow: false,
 			})
-			grid = rooms.AnnotateMatrixExits(grid)
+			grid = room.AnnotateMatrixExits(grid)
 
 			c.Status(fiber.StatusCreated)
 			b := exitGraph.BindExit(in.Direction)
@@ -509,7 +508,7 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		room, err := qtx.GetRoom(context.Background(), rmid)
+		rm, err := qtx.GetRoom(context.Background(), rmid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -519,9 +518,9 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
+		graph, err := room.BuildGraph(room.BuildGraphParams{
 			Queries: qtx,
-			Room:    &room,
+			Room:    &rm,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -533,13 +532,13 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		grid := graph.BindMatrix(rooms.BindMatrixParams{
-			Matrix:  rooms.EmptyBindMatrix(5),
+		grid := graph.BindMatrix(room.BindMatrixParams{
+			Matrix:  room.EmptyBindMatrix(5),
 			Row:     2,
 			Col:     2,
 			Shallow: false,
 		})
-		grid = rooms.AnnotateMatrixExits(grid)
+		grid = room.AnnotateMatrixExits(grid)
 		exits := graph.BindExits()
 
 		b := views.Bind(c)
@@ -550,26 +549,26 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 		}
 		// TODO: Get a bind function for this too
 		b["PageHeader"] = fiber.Map{
-			"Title":    rooms.TitleWithID(room.Title, room.ID),
+			"Title":    room.TitleWithID(rm.Title, rm.ID),
 			"SubTitle": "Update room properties here",
 		}
 		b["RoomGrid"] = grid
-		b["Title"] = room.Title
-		b["TitlePath"] = routes.RoomTitlePath(room.ID)
-		b["Description"] = room.Description
-		b["DescriptionPath"] = routes.RoomDescriptionPath(room.ID)
-		b["Size"] = room.Size
-		b["SizePath"] = routes.RoomSizePath(room.ID)
-		b = rooms.BindSizeRadioGroup(b, &room)
+		b["Title"] = rm.Title
+		b["TitlePath"] = routes.RoomTitlePath(rm.ID)
+		b["Description"] = rm.Description
+		b["DescriptionPath"] = routes.RoomDescriptionPath(rm.ID)
+		b["Size"] = rm.Size
+		b["SizePath"] = routes.RoomSizePath(rm.ID)
+		b = room.BindSizeRadioGroup(b, &rm)
 		// TODO: I don't think these individual dirs are needed
-		b["North"] = room.North
-		b["Northeast"] = room.Northeast
-		b["East"] = room.East
-		b["Southeast"] = room.Southeast
-		b["South"] = room.South
-		b["Southwest"] = room.Southwest
-		b["West"] = room.West
-		b["Northwest"] = room.Northwest
+		b["North"] = rm.North
+		b["Northeast"] = rm.Northeast
+		b["East"] = rm.East
+		b["Southeast"] = rm.Southeast
+		b["South"] = rm.South
+		b["Southwest"] = rm.Southwest
+		b["West"] = rm.West
+		b["Northwest"] = rm.Northwest
 		b["Exits"] = exits
 		return c.Render(views.EditRoom, b)
 	}
@@ -606,7 +605,7 @@ func RoomGrid(i *interfaces.Shared) fiber.Handler {
 		}
 		qtx := i.Queries.WithTx(tx)
 
-		room, err := qtx.GetRoom(context.Background(), rid)
+		rm, err := qtx.GetRoom(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -616,22 +615,22 @@ func RoomGrid(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
+		graph, err := room.BuildGraph(room.BuildGraphParams{
 			Queries: qtx,
-			Room:    &room,
+			Room:    &rm,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		grid := graph.BindMatrix(rooms.BindMatrixParams{
-			Matrix:  rooms.EmptyBindMatrix(5),
+		grid := graph.BindMatrix(room.BindMatrixParams{
+			Matrix:  room.EmptyBindMatrix(5),
 			Row:     2,
 			Col:     2,
 			Shallow: false,
 		})
-		grid = rooms.AnnotateMatrixExits(grid)
+		grid = room.AnnotateMatrixExits(grid)
 
 		b := fiber.Map{}
 		b["RoomGrid"] = grid
@@ -698,7 +697,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
 		}
 
-		if !rooms.IsDirectionValid(in.Direction) {
+		if !room.IsDirectionValid(in.Direction) {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
@@ -753,7 +752,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		room, err := qtx.GetRoom(context.Background(), rid)
+		rm, err := qtx.GetRoom(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -764,7 +763,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
 		}
-		exitRoom, err := qtx.GetRoom(context.Background(), in.LinkID)
+		exitrm, err := qtx.GetRoom(context.Background(), in.LinkID)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -778,14 +777,14 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
 		}
 
-		if err := rooms.Link(rooms.LinkParams{
+		if err := room.Link(room.LinkParams{
 			Queries:   qtx,
 			ID:        rid,
 			To:        in.LinkID,
 			Direction: in.Direction,
 			TwoWay:    in.TwoWay,
 		}); err != nil {
-			if err == rooms.ErrLinkSelf {
+			if err == room.ErrLinkSelf {
 				c.Status(fiber.StatusBadRequest)
 				return nil
 			}
@@ -793,7 +792,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		room, err = qtx.GetRoom(context.Background(), room.ID)
+		rm, err = qtx.GetRoom(context.Background(), rm.ID)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -822,7 +821,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 				NoticeIcon:    true,
 			}), layouts.None)
 		}
-		exitRoom, err = qtx.GetRoom(context.Background(), exitRoom.ID)
+		exitrm, err = qtx.GetRoom(context.Background(), exitrm.ID)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -852,9 +851,9 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			}), layouts.None)
 		}
 
-		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
+		graph, err := room.BuildGraph(room.BuildGraphParams{
 			Queries: qtx,
-			Room:    &room,
+			Room:    &rm,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -886,13 +885,13 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			}), layouts.None)
 		}
 
-		grid := graph.BindMatrix(rooms.BindMatrixParams{
-			Matrix:  rooms.EmptyBindMatrix(5),
+		grid := graph.BindMatrix(room.BindMatrixParams{
+			Matrix:  room.EmptyBindMatrix(5),
 			Row:     2,
 			Col:     2,
 			Shallow: false,
 		})
-		grid = rooms.AnnotateMatrixExits(grid)
+		grid = room.AnnotateMatrixExits(grid)
 
 		c.Status(fiber.StatusOK)
 		b := graph.BindExit(in.Direction)
@@ -964,7 +963,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 		}
 
 		dir := c.Params("exit")
-		if !rooms.IsDirectionValid(dir) {
+		if !room.IsDirectionValid(dir) {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
@@ -996,7 +995,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		room, err := qtx.GetRoom(context.Background(), rid)
+		rm, err := qtx.GetRoom(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -1008,8 +1007,8 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
 		}
 
-		exitID := rooms.ExitID(&room, dir)
-		exitRoom, err := qtx.GetRoom(context.Background(), exitID)
+		exitID := room.ExitID(&rm, dir)
+		exitrm, err := qtx.GetRoom(context.Background(), exitID)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -1022,15 +1021,15 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
 		}
-		exitDir, err := rooms.ExitDirection(&exitRoom, rid)
-		if err != nil && err != rooms.ErrExitIDNotFound {
+		exitDir, err := room.ExitDirection(&exitrm, rid)
+		if err != nil && err != room.ErrExitIDNotFound {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
 			return c.Render(partials.NoticeSectionError, partials.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
 		}
-		if err != rooms.ErrExitIDNotFound {
-			if err := rooms.Unlink(rooms.UnlinkParams{
+		if err != room.ErrExitIDNotFound {
+			if err := room.Unlink(room.UnlinkParams{
 				Queries:   qtx,
 				ID:        exitID,
 				Direction: exitDir,
@@ -1042,7 +1041,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			}
 		}
 
-		if err := rooms.Unlink(rooms.UnlinkParams{
+		if err := room.Unlink(room.UnlinkParams{
 			Queries:   qtx,
 			ID:        rid,
 			Direction: dir,
@@ -1051,7 +1050,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		room, err = qtx.GetRoom(context.Background(), rid)
+		rm, err = qtx.GetRoom(context.Background(), rid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -1061,9 +1060,9 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			}
 		}
 
-		graph, err := rooms.BuildGraph(rooms.BuildGraphParams{
+		graph, err := room.BuildGraph(room.BuildGraphParams{
 			Queries: qtx,
-			Room:    &room,
+			Room:    &rm,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -1087,13 +1086,13 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			}), layouts.None)
 		}
 
-		grid := graph.BindMatrix(rooms.BindMatrixParams{
-			Matrix:  rooms.EmptyBindMatrix(5),
+		grid := graph.BindMatrix(room.BindMatrixParams{
+			Matrix:  room.EmptyBindMatrix(5),
 			Row:     2,
 			Col:     2,
 			Shallow: false,
 		})
-		grid = rooms.AnnotateMatrixExits(grid)
+		grid = room.AnnotateMatrixExits(grid)
 
 		c.Status(fiber.StatusOK)
 		b := graph.BindEmptyExit(dir)
@@ -1115,7 +1114,7 @@ func EditRoomTitle(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if !rooms.IsTitleValid(in.Title) {
+		if !room.IsTitleValid(in.Title) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -1149,7 +1148,7 @@ func EditRoomTitle(i *interfaces.Shared) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		room, err := qtx.GetRoom(context.Background(), rmid)
+		rm, err := qtx.GetRoom(context.Background(), rmid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -1159,20 +1158,20 @@ func EditRoomTitle(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if room.Title == in.Title {
+		if rm.Title == in.Title {
 			c.Status(fiber.StatusConflict)
 			return nil
 		}
 
 		if err := qtx.UpdateRoomTitle(context.Background(), queries.UpdateRoomTitleParams{
-			ID:    room.ID,
+			ID:    rm.ID,
 			Title: in.Title,
 		}); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		room, err = qtx.GetRoom(context.Background(), rmid)
+		rm, err = qtx.GetRoom(context.Background(), rmid)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -1185,10 +1184,10 @@ func EditRoomTitle(i *interfaces.Shared) fiber.Handler {
 
 		b := fiber.Map{}
 		b["PageHeader"] = fiber.Map{
-			"Title":    rooms.TitleWithID(room.Title, room.ID),
+			"Title":    room.TitleWithID(rm.Title, rm.ID),
 			"SubTitle": "Update room properties here",
 		}
-		b["Title"] = room.Title
+		b["Title"] = rm.Title
 		b["TitlePath"] = routes.RoomTitlePath(rmid)
 		b["NoticeSection"] = partials.BindNoticeSection(partials.BindNoticeSectionParams{
 			Success:      true,
@@ -1215,7 +1214,7 @@ func EditRoomDescription(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if !rooms.IsDescriptionValid(in.Description) {
+		if !room.IsDescriptionValid(in.Description) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -1249,7 +1248,7 @@ func EditRoomDescription(i *interfaces.Shared) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		room, err := qtx.GetRoom(context.Background(), rmid)
+		rm, err := qtx.GetRoom(context.Background(), rmid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
@@ -1260,20 +1259,20 @@ func EditRoomDescription(i *interfaces.Shared) fiber.Handler {
 		}
 
 		// TODO: Add Conflict tests for edit room title, description and size
-		if room.Description == in.Description {
+		if rm.Description == in.Description {
 			c.Status(fiber.StatusConflict)
 			return nil
 		}
 
 		if err := qtx.UpdateRoomDescription(context.Background(), queries.UpdateRoomDescriptionParams{
-			ID:          room.ID,
+			ID:          rm.ID,
 			Description: in.Description,
 		}); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		room, err = qtx.GetRoom(context.Background(), rmid)
+		rm, err = qtx.GetRoom(context.Background(), rmid)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -1285,7 +1284,7 @@ func EditRoomDescription(i *interfaces.Shared) fiber.Handler {
 		}
 
 		b := fiber.Map{}
-		b["Description"] = room.Description
+		b["Description"] = rm.Description
 		b["DescriptionPath"] = routes.RoomDescriptionPath(rmid)
 		b["NoticeSection"] = partials.BindNoticeSection(partials.BindNoticeSectionParams{
 			Success:      true,
@@ -1312,7 +1311,7 @@ func EditRoomSize(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if !rooms.IsSizeValid(in.Size) {
+		if !room.IsSizeValid(in.Size) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -1340,56 +1339,51 @@ func EditRoomSize(i *interfaces.Shared) fiber.Handler {
 
 		tx, err := i.Database.Begin()
 		if err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		room, err := qtx.GetRoom(context.Background(), rmid)
+		rm, err := qtx.GetRoom(context.Background(), rmid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
-			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
 		// TODO: Add Conflict tests for edit room title, description and size
-		if room.Size == in.Size {
+		if rm.Size == in.Size {
 			c.Status(fiber.StatusConflict)
 			return nil
 		}
 
 		if err := qtx.UpdateRoomSize(context.Background(), queries.UpdateRoomSizeParams{
-			ID:   room.ID,
+			ID:   rm.ID,
 			Size: in.Size,
 		}); err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		room, err = qtx.GetRoom(context.Background(), rmid)
+		rm, err = qtx.GetRoom(context.Background(), rmid)
 		if err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
 		if err := tx.Commit(); err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
 		b := fiber.Map{}
-		b["Size"] = room.Size
+		b["Size"] = rm.Size
 		b["SizePath"] = routes.RoomSizePath(rmid)
-		b = rooms.BindSizeRadioGroup(b, &room)
+		b = room.BindSizeRadioGroup(b, &rm)
 		b["NoticeSection"] = partials.BindNoticeSection(partials.BindNoticeSectionParams{
 			Success:      true,
 			SectionID:    "room-edit-title-notice",

@@ -1,4 +1,4 @@
-package rooms
+package room
 
 import "petrichormud.com/app/internal/queries"
 

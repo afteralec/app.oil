@@ -1,4 +1,4 @@
-package rooms
+package room
 
 import (
 	"context"
@@ -88,14 +88,14 @@ func TestGraph(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	room, err := i.Queries.GetRoom(context.Background(), testRIDs[0])
+	rm, err := i.Queries.GetRoom(context.Background(), testRIDs[0])
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	graph, err := BuildGraph(BuildGraphParams{
 		Queries: i.Queries,
-		Room:    &room,
+		Room:    &rm,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -121,14 +121,14 @@ func TestNodeGetExit(t *testing.T) {
 
 	rid := tests.CreateTestRoom(t, &i, tests.TestRoom)
 	defer tests.DeleteTestRoom(t, &i, rid)
-	room, err := i.Queries.GetRoom(context.Background(), rid)
+	rm, err := i.Queries.GetRoom(context.Background(), rid)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	node, err := BuildGraph(BuildGraphParams{
 		Queries: i.Queries,
-		Room:    &room,
+		Room:    &rm,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -151,14 +151,14 @@ func TestNodeGetExit(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	room, err = i.Queries.GetRoom(context.Background(), rid)
+	rm, err = i.Queries.GetRoom(context.Background(), rid)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	node, err = BuildGraph(BuildGraphParams{
 		Queries: i.Queries,
-		Room:    &room,
+		Room:    &rm,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -173,14 +173,14 @@ func TestNodeIsExitEmpty(t *testing.T) {
 
 	rid := tests.CreateTestRoom(t, &i, tests.TestRoom)
 	defer tests.DeleteTestRoom(t, &i, rid)
-	room, err := i.Queries.GetRoom(context.Background(), rid)
+	rm, err := i.Queries.GetRoom(context.Background(), rid)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	node, err := BuildGraph(BuildGraphParams{
 		Queries: i.Queries,
-		Room:    &room,
+		Room:    &rm,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -203,14 +203,14 @@ func TestNodeIsExitEmpty(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	room, err = i.Queries.GetRoom(context.Background(), rid)
+	rm, err = i.Queries.GetRoom(context.Background(), rid)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	node, err = BuildGraph(BuildGraphParams{
 		Queries: i.Queries,
-		Room:    &room,
+		Room:    &rm,
 	})
 	if err != nil {
 		t.Fatal(err)

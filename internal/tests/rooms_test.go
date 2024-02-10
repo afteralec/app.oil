@@ -17,7 +17,7 @@ import (
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/rooms"
+	"petrichormud.com/app/internal/room"
 	"petrichormud.com/app/internal/routes"
 )
 
@@ -299,7 +299,7 @@ func TestNewRoomWithLinkUnauthorized(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("id", strconv.FormatInt(rid, 10))
-	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("direction", room.DirectionNorth)
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
@@ -335,7 +335,7 @@ func TestNewRoomWithLinkForbiddenNoPermission(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("id", strconv.FormatInt(rid, 10))
-	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("direction", room.DirectionNorth)
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
@@ -376,7 +376,7 @@ func TestNewRoomWithLinkNotFoundInvalidRID(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("id", sb.String())
-	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("direction", room.DirectionNorth)
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
@@ -452,7 +452,7 @@ func TestNewRoomWithLinkSuccess(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("id", strconv.FormatInt(rid, 10))
-	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("direction", room.DirectionNorth)
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
@@ -566,7 +566,7 @@ func TestEditRoomExitUnauthorized(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("id", strconv.FormatInt(ridTwo, 10))
-	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("direction", room.DirectionNorth)
 	writer.WriteField("two-way", "true")
 	writer.Close()
 
@@ -604,7 +604,7 @@ func TestEditRoomExitForbiddenNoPermission(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("id", strconv.FormatInt(ridTwo, 10))
-	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("direction", room.DirectionNorth)
 	writer.WriteField("two-way", "true")
 	writer.Close()
 
@@ -642,7 +642,7 @@ func TestEditRoomExitRoomNotFound(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("id", strconv.FormatInt(rid+1000, 10))
-	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("direction", room.DirectionNorth)
 	writer.WriteField("two-way", "true")
 	writer.Close()
 
@@ -680,7 +680,7 @@ func TestEditRoomExitBadRequestLinkToSelf(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("id", strconv.FormatInt(rid, 10))
-	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("direction", room.DirectionNorth)
 	writer.WriteField("two-way", "true")
 	writer.Close()
 
@@ -718,7 +718,7 @@ func TestEditRoomExitBadRequestInvalidID(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("id", "notanid")
-	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("direction", room.DirectionNorth)
 	writer.WriteField("two-way", "true")
 	writer.Close()
 
@@ -756,7 +756,7 @@ func TestEditRoomExitBadRequestEmptyID(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("id", "0")
-	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("direction", room.DirectionNorth)
 	writer.WriteField("two-way", "true")
 	writer.Close()
 
@@ -794,7 +794,7 @@ func TestEditRoomExitBadRequestInvalidTwoWay(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("id", strconv.FormatInt(rid+1000, 10))
-	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("direction", room.DirectionNorth)
 	writer.WriteField("two-way", "notaboolean")
 	writer.Close()
 
@@ -834,7 +834,7 @@ func TestEditRoomExitSuccess(t *testing.T) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("id", strconv.FormatInt(ridTwo, 10))
-	writer.WriteField("direction", rooms.DirectionNorth)
+	writer.WriteField("direction", room.DirectionNorth)
 	writer.WriteField("two-way", "true")
 	writer.Close()
 
@@ -863,17 +863,17 @@ func TestClearRoomExitUnauthorized(t *testing.T) {
 	ridTwo := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, ridTwo)
 
-	if err := rooms.Link(rooms.LinkParams{
+	if err := room.Link(room.LinkParams{
 		Queries:   i.Queries,
 		ID:        ridOne,
 		To:        ridTwo,
-		Direction: rooms.DirectionNorth,
+		Direction: room.DirectionNorth,
 		TwoWay:    true,
 	}); err != nil {
 		t.Fatal(err)
 	}
 
-	url := MakeTestURL(routes.RoomExitPath(ridOne, rooms.DirectionNorth))
+	url := MakeTestURL(routes.RoomExitPath(ridOne, room.DirectionNorth))
 
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 
@@ -901,11 +901,11 @@ func TestClearRoomExitForbiddenNoPermission(t *testing.T) {
 	ridTwo := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, ridTwo)
 
-	if err := rooms.Link(rooms.LinkParams{
+	if err := room.Link(room.LinkParams{
 		Queries:   i.Queries,
 		ID:        ridOne,
 		To:        ridTwo,
-		Direction: rooms.DirectionNorth,
+		Direction: room.DirectionNorth,
 		TwoWay:    true,
 	}); err != nil {
 		t.Fatal(err)
@@ -913,7 +913,7 @@ func TestClearRoomExitForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomExitPath(ridOne, rooms.DirectionNorth))
+	url := MakeTestURL(routes.RoomExitPath(ridOne, room.DirectionNorth))
 
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
@@ -943,11 +943,11 @@ func TestClearRoomExitSuccess(t *testing.T) {
 	ridTwo := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, ridTwo)
 
-	if err := rooms.Link(rooms.LinkParams{
+	if err := room.Link(room.LinkParams{
 		Queries:   i.Queries,
 		ID:        ridOne,
 		To:        ridTwo,
-		Direction: rooms.DirectionNorth,
+		Direction: room.DirectionNorth,
 		TwoWay:    true,
 	}); err != nil {
 		t.Fatal(err)
@@ -955,7 +955,7 @@ func TestClearRoomExitSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomExitPath(ridOne, rooms.DirectionNorth))
+	url := MakeTestURL(routes.RoomExitPath(ridOne, room.DirectionNorth))
 
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)

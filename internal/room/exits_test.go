@@ -1,4 +1,4 @@
-package rooms
+package room
 
 import (
 	"context"
@@ -17,17 +17,17 @@ func TestIsExitTwoWayFalseUnlinked(t *testing.T) {
 	ridOne := tests.CreateTestRoom(t, &i, tests.TestRoom)
 	ridTwo := tests.CreateTestRoom(t, &i, tests.TestRoom)
 
-	room, err := i.Queries.GetRoom(context.Background(), ridOne)
+	rm, err := i.Queries.GetRoom(context.Background(), ridOne)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	exitRoom, err := i.Queries.GetRoom(context.Background(), ridTwo)
+	exitrm, err := i.Queries.GetRoom(context.Background(), ridTwo)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	require.False(t, IsExitTwoWay(&room, &exitRoom, DirectionNorth))
+	require.False(t, IsExitTwoWay(&rm, &exitrm, DirectionNorth))
 }
 
 func TestIsExitTwoWayFalseOneWay(t *testing.T) {
@@ -47,17 +47,17 @@ func TestIsExitTwoWayFalseOneWay(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	room, err := i.Queries.GetRoom(context.Background(), ridOne)
+	rm, err := i.Queries.GetRoom(context.Background(), ridOne)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	exitRoom, err := i.Queries.GetRoom(context.Background(), ridTwo)
+	exitrm, err := i.Queries.GetRoom(context.Background(), ridTwo)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	require.False(t, IsExitTwoWay(&room, &exitRoom, DirectionNorth))
+	require.False(t, IsExitTwoWay(&rm, &exitrm, DirectionNorth))
 }
 
 func TestIsExitTwoWayFalseOneWayOpposite(t *testing.T) {
@@ -77,17 +77,17 @@ func TestIsExitTwoWayFalseOneWayOpposite(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	room, err := i.Queries.GetRoom(context.Background(), ridOne)
+	rm, err := i.Queries.GetRoom(context.Background(), ridOne)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	exitRoom, err := i.Queries.GetRoom(context.Background(), ridTwo)
+	exitrm, err := i.Queries.GetRoom(context.Background(), ridTwo)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	require.False(t, IsExitTwoWay(&room, &exitRoom, DirectionNorth))
+	require.False(t, IsExitTwoWay(&rm, &exitrm, DirectionNorth))
 }
 
 func TestIsExitTwoWayTrue(t *testing.T) {
@@ -107,15 +107,15 @@ func TestIsExitTwoWayTrue(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	room, err := i.Queries.GetRoom(context.Background(), ridOne)
+	rm, err := i.Queries.GetRoom(context.Background(), ridOne)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	exitRoom, err := i.Queries.GetRoom(context.Background(), ridTwo)
+	exitrm, err := i.Queries.GetRoom(context.Background(), ridTwo)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	require.True(t, IsExitTwoWay(&room, &exitRoom, DirectionNorth))
+	require.True(t, IsExitTwoWay(&rm, &exitrm, DirectionNorth))
 }

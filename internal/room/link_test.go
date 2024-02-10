@@ -1,4 +1,4 @@
-package rooms
+package room
 
 import (
 	"context"
@@ -35,12 +35,12 @@ func TestLinkTwoWay(t *testing.T) {
 			TwoWay:    true,
 		})
 
-		roomOne, err := qtx.GetRoom(context.Background(), ridOne)
+		rmOne, err := qtx.GetRoom(context.Background(), ridOne)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		roomTwo, err := qtx.GetRoom(context.Background(), ridTwo)
+		rmTwo, err := qtx.GetRoom(context.Background(), ridTwo)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -49,8 +49,8 @@ func TestLinkTwoWay(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		require.Equal(t, ridTwo, ExitID(&roomOne, dir), ridTwo)
-		require.Equal(t, ridOne, ExitID(&roomTwo, DirectionOpposite(dir)))
+		require.Equal(t, ridTwo, ExitID(&rmOne, dir), ridTwo)
+		require.Equal(t, ridOne, ExitID(&rmTwo, DirectionOpposite(dir)))
 	}
 }
 
@@ -79,12 +79,12 @@ func TestLinkOneWay(t *testing.T) {
 			TwoWay:    false,
 		})
 
-		roomOne, err := qtx.GetRoom(context.Background(), ridOne)
+		rmOne, err := qtx.GetRoom(context.Background(), ridOne)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		roomTwo, err := qtx.GetRoom(context.Background(), ridTwo)
+		rmTwo, err := qtx.GetRoom(context.Background(), ridTwo)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -93,8 +93,8 @@ func TestLinkOneWay(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		require.Equal(t, ridTwo, ExitID(&roomOne, dir), ridTwo)
-		require.Equal(t, int64(0), ExitID(&roomTwo, DirectionOpposite(dir)))
+		require.Equal(t, ridTwo, ExitID(&rmOne, dir), ridTwo)
+		require.Equal(t, int64(0), ExitID(&rmTwo, DirectionOpposite(dir)))
 	}
 }
 
@@ -129,12 +129,12 @@ func TestUnlink(t *testing.T) {
 			Direction: dir,
 		})
 
-		roomOne, err := qtx.GetRoom(context.Background(), ridOne)
+		rmOne, err := qtx.GetRoom(context.Background(), ridOne)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		roomTwo, err := qtx.GetRoom(context.Background(), ridTwo)
+		rmTwo, err := qtx.GetRoom(context.Background(), ridTwo)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -143,7 +143,7 @@ func TestUnlink(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		require.Equal(t, int64(0), ExitID(&roomOne, dir))
-		require.Equal(t, ridOne, ExitID(&roomTwo, DirectionOpposite(dir)))
+		require.Equal(t, int64(0), ExitID(&rmOne, dir))
+		require.Equal(t, ridOne, ExitID(&rmTwo, DirectionOpposite(dir)))
 	}
 }
