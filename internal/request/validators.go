@@ -1,4 +1,4 @@
-package requests
+package request
 
 import (
 	"petrichormud.com/app/internal/constant"

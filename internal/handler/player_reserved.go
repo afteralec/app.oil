@@ -13,17 +13,17 @@ import (
 )
 
 func UsernameReserved(i *interfaces.Shared) fiber.Handler {
-	type request struct {
+	type input struct {
 		Username string `form:"username"`
 	}
 
 	return func(c *fiber.Ctx) error {
-		r := new(request)
-		if err := c.BodyParser(r); err != nil {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
 			return err
 		}
 
-		p, err := i.Queries.GetPlayerByUsername(context.Background(), r.Username)
+		p, err := i.Queries.GetPlayerByUsername(context.Background(), in.Username)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
@@ -39,7 +39,7 @@ func UsernameReserved(i *interfaces.Shared) fiber.Handler {
 			}, layouts.CSRF)
 		}
 
-		if r.Username == p.Username {
+		if in.Username == p.Username {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusConflict)

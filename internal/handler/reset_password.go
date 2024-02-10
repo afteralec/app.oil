@@ -39,34 +39,34 @@ func ResetPasswordSuccessPage() fiber.Handler {
 }
 
 func ResetPassword(i *interfaces.Shared) fiber.Handler {
-	type request struct {
+	type input struct {
 		Username        string `form:"username"`
 		Password        string `form:"password"`
 		ConfirmPassword string `form:"confirmPassword"`
 	}
 
 	return func(c *fiber.Ctx) error {
-		r := new(request)
-		if err := c.BodyParser(r); err != nil {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
 			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
 		}
 
-		vu := username.IsValid(r.Username)
+		vu := username.IsValid(in.Username)
 		if !vu {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
 			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
 		}
 
-		if r.Password != r.ConfirmPassword {
+		if in.Password != in.ConfirmPassword {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
 			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
 		}
 
-		vp := password.IsValid(r.Password)
+		vp := password.IsValid(in.Password)
 		if !vp {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
@@ -107,13 +107,13 @@ func ResetPassword(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
 		}
 
-		if p.Username != r.Username {
+		if p.Username != in.Username {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
 			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
 		}
 
-		pwHash, err := password.Hash(r.Password)
+		pwHash, err := password.Hash(in.Password)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")

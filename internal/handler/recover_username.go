@@ -43,19 +43,19 @@ func RecoverUsernameSuccessPage(i *interfaces.Shared) fiber.Handler {
 }
 
 func RecoverUsername(i *interfaces.Shared) fiber.Handler {
-	type request struct {
+	type input struct {
 		Email string `form:"email"`
 	}
 
 	return func(c *fiber.Ctx) error {
-		r := new(request)
-		if err := c.BodyParser(r); err != nil {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
 			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInvalid, layouts.None)
 		}
 
-		e, err := mail.ParseAddress(r.Email)
+		e, err := mail.ParseAddress(in.Email)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")

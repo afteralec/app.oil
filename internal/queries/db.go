@@ -228,8 +228,8 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
 	}
-	if q.listHelpheaderStmt, err = db.PrepareContext(ctx, listHelpheader); err != nil {
-		return nil, fmt.Errorf("error preparing query ListHelpheader: %w", err)
+	if q.listHelpHeadersStmt, err = db.PrepareContext(ctx, listHelpHeaders); err != nil {
+		return nil, fmt.Errorf("error preparing query ListHelpHeaders: %w", err)
 	}
 	if q.listHelpSlugsStmt, err = db.PrepareContext(ctx, listHelpSlugs); err != nil {
 		return nil, fmt.Errorf("error preparing query ListHelpSlugs: %w", err)
@@ -696,9 +696,9 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listEmailsStmt: %w", cerr)
 		}
 	}
-	if q.listHelpheaderStmt != nil {
-		if cerr := q.listHelpheaderStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listHelpheaderStmt: %w", cerr)
+	if q.listHelpHeadersStmt != nil {
+		if cerr := q.listHelpHeadersStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listHelpHeadersStmt: %w", cerr)
 		}
 	}
 	if q.listHelpSlugsStmt != nil {
@@ -1008,7 +1008,7 @@ type Queries struct {
 	listCommentsForRequestStmt                            *sql.Stmt
 	listCommentsForRequestWithAuthorStmt                  *sql.Stmt
 	listEmailsStmt                                        *sql.Stmt
-	listHelpheaderStmt                                   *sql.Stmt
+	listHelpHeadersStmt                                   *sql.Stmt
 	listHelpSlugsStmt                                     *sql.Stmt
 	listOpenCharacterApplicationsStmt                     *sql.Stmt
 	listPlayerPermissionsStmt                             *sql.Stmt
@@ -1123,7 +1123,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listCommentsForRequestStmt:                            q.listCommentsForRequestStmt,
 		listCommentsForRequestWithAuthorStmt:                  q.listCommentsForRequestWithAuthorStmt,
 		listEmailsStmt:                                        q.listEmailsStmt,
-		listHelpheaderStmt:                                   q.listHelpheaderStmt,
+		listHelpHeadersStmt:                                   q.listHelpHeadersStmt,
 		listHelpSlugsStmt:                                     q.listHelpSlugsStmt,
 		listOpenCharacterApplicationsStmt:                     q.listOpenCharacterApplicationsStmt,
 		listPlayerPermissionsStmt:                             q.listPlayerPermissionsStmt,

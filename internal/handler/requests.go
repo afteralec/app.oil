@@ -10,7 +10,7 @@ import (
 	"petrichormud.com/app/internal/layouts"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/requests"
+	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/views"
@@ -28,7 +28,7 @@ func NewRequest(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if !requests.IsTypeValid(in.Type) {
+		if !request.IsTypeValid(in.Type) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -64,7 +64,7 @@ func NewRequest(i *interfaces.Shared) fiber.Handler {
 		}
 
 		// TODO: Rework this so there can't be a missing case
-		if in.Type == requests.TypeCharacterApplication {
+		if in.Type == request.TypeCharacterApplication {
 			if err = qtx.CreateCharacterApplicationContent(context.Background(), rid); err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return nil
@@ -106,7 +106,7 @@ func NewCharacterApplication(i *interfaces.Shared) fiber.Handler {
 
 		result, err := qtx.CreateRequest(context.Background(), queries.CreateRequestParams{
 			PID:  pid,
-			Type: requests.TypeCharacterApplication,
+			Type: request.TypeCharacterApplication,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -178,19 +178,19 @@ func RequestFieldPage(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if !requests.IsTypeValid(req.Type) {
+		if !request.IsTypeValid(req.Type) {
 			// TODO: This means that there's a request with an invalid type in the system
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		if !requests.IsFieldValid(req.Type, field) {
+		if !request.IsFieldValid(req.Type, field) {
 			c.Status(fiber.StatusBadRequest)
 			// TODO: 400 view
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		content, err := requests.Content(qtx, &req)
+		content, err := request.Content(qtx, &req)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
@@ -213,27 +213,27 @@ func RequestFieldPage(i *interfaces.Shared) fiber.Handler {
 			}
 		}
 
-		if req.Status == requests.StatusIncomplete {
+		if req.Status == request.StatusIncomplete {
 			return c.Redirect(routes.RequestPath(rid))
 		}
 
-		view := requests.GetView(req.Type, field)
+		view := request.GetView(req.Type, field)
 
 		b := views.Bind(c)
-		b = requests.BindStatus(b, &req)
-		b = requests.BindViewedBy(b, requests.BindViewedByParams{
+		b = request.BindStatus(b, &req)
+		b = request.BindViewedBy(b, request.BindViewedByParams{
 			Request: &req,
 			PID:     pid,
 		})
-		b = requests.BindDialogs(b, requests.BindDialogsParams{
+		b = request.BindDialogs(b, request.BindDialogsParams{
 			Request: &req,
 		})
 
-		label, description := requests.GetFieldLabelAndDescription(req.Type, field)
+		label, description := request.GetFieldLabelAndDescription(req.Type, field)
 		b["FieldLabel"] = label
 		b["FieldDescription"] = description
 
-		b["RequestFormID"] = requests.FormID
+		b["RequestFormID"] = request.FormID
 
 		b["UpdateButtonText"] = "Update"
 		b["BackLink"] = routes.RequestPath(rid)
@@ -244,7 +244,7 @@ func RequestFieldPage(i *interfaces.Shared) fiber.Handler {
 		// TODO: Validate this? i.e., make sure that the content map actually has this in there
 		b["FieldValue"] = content[field]
 
-		b = requests.BindGenderRadioGroup(b, requests.BindGenderRadioGroupParams{
+		b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
 			Content: content,
 			Name:    "value",
 		})
@@ -312,30 +312,30 @@ func RequestPage(i *interfaces.Shared) fiber.Handler {
 
 		// TODO: Finish new bind pattern
 		b := views.Bind(c)
-		b = requests.BindStatus(b, &req)
-		b = requests.BindViewedBy(b, requests.BindViewedByParams{
+		b = request.BindStatus(b, &req)
+		b = request.BindViewedBy(b, request.BindViewedByParams{
 			Request: &req,
 			PID:     pid,
 		})
-		b = requests.BindDialogs(b, requests.BindDialogsParams{
+		b = request.BindDialogs(b, request.BindDialogsParams{
 			Request: &req,
 		})
 
-		content, err := requests.Content(qtx, &req)
+		content, err := request.Content(qtx, &req)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
 		}
 
-		if req.Status == requests.StatusIncomplete {
-			field, last := requests.GetNextIncompleteField(req.Type, content)
-			view := requests.GetView(req.Type, field)
+		if req.Status == request.StatusIncomplete {
+			field, last := request.GetNextIncompleteField(req.Type, content)
+			view := request.GetView(req.Type, field)
 
-			label, description := requests.GetFieldLabelAndDescription(req.Type, field)
+			label, description := request.GetFieldLabelAndDescription(req.Type, field)
 			b["FieldLabel"] = label
 			b["FieldDescription"] = description
 
-			b["RequestFormID"] = requests.FormID
+			b["RequestFormID"] = request.FormID
 
 			if last {
 				b["UpdateButtonText"] = "Finish"
@@ -347,13 +347,13 @@ func RequestPage(i *interfaces.Shared) fiber.Handler {
 			b["Field"] = field
 			b["FieldValue"] = ""
 
-			b = requests.BindGenderRadioGroup(b, requests.BindGenderRadioGroupParams{
+			b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
 				Content: content,
 				Name:    "value",
 			})
 
 			// TODO: Get bind exceptions into their own extractor
-			// if field == requests.FieldGender && req.Type == requests.TypeCharacterApplication {
+			// if field == request.FieldGender && req.Type == request.TypeCharacterApplication {
 			// 	b["GenderNonBinary"] = character.GenderNonBinary
 			// 	b["GenderFemale"] = character.GenderFemale
 			// 	b["GenderMale"] = character.GenderMale
@@ -367,7 +367,7 @@ func RequestPage(i *interfaces.Shared) fiber.Handler {
 		}
 
 		b["PageHeader"] = fiber.Map{
-			"Title": requests.SummaryTitle(req.Type, content),
+			"Title": request.SummaryTitle(req.Type, content),
 		}
 		// TODO: Look at re-implementing this in the view?
 		// b["headertatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
@@ -375,7 +375,7 @@ func RequestPage(i *interfaces.Shared) fiber.Handler {
 		// 	Size:        "36",
 		// 	IncludeText: true,
 		// })
-		b["SummaryFields"] = requests.GetSummaryFields(requests.GetSummaryFieldsParams{
+		b["SummaryFields"] = request.GetSummaryFields(request.GetSummaryFieldsParams{
 			PID:     pid,
 			Request: &req,
 			Content: content,
@@ -441,7 +441,7 @@ func UpdateRequestField(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if !requests.IsFieldValid(req.Type, field) {
+		if !request.IsFieldValid(req.Type, field) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -450,22 +450,22 @@ func UpdateRequestField(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		if !requests.IsFieldValid(req.Type, field) {
+		if !request.IsFieldValid(req.Type, field) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
-		if !requests.IsEditable(&req) {
+		if !request.IsEditable(&req) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
-		if err = requests.UpdateField(qtx, requests.UpdateFieldParams{
+		if err = request.UpdateField(qtx, request.UpdateFieldParams{
 			PID:     pid,
 			Request: &req,
 			Field:   field,
 			Value:   in.Value,
 		}); err != nil {
-			if err == requests.ErrInvalidInput {
+			if err == request.ErrInvalidInput {
 				c.Status(fiber.StatusBadRequest)
 				return nil
 			}
@@ -478,7 +478,7 @@ func UpdateRequestField(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if req.Status == requests.StatusIncomplete {
+		if req.Status == request.StatusIncomplete {
 			// TODO: Boost this using the same handler logic for the request page?
 			c.Append("HX-Refresh", "true")
 		} else {
@@ -532,21 +532,21 @@ func UpdateRequestStatus(i *interfaces.Shared) fiber.Handler {
 
 		var status string
 		switch req.Status {
-		case requests.StatusReady:
+		case request.StatusReady:
 			if req.PID != pid {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
 
-			status = requests.StatusSubmitted
-		case requests.StatusSubmitted:
+			status = request.StatusSubmitted
+		case request.StatusSubmitted:
 			if req.PID == pid {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
 
-			status = requests.StatusInReview
-		case requests.StatusInReview:
+			status = request.StatusInReview
+		case request.StatusInReview:
 			if req.PID == pid {
 				c.Status(fiber.StatusForbidden)
 				return nil
@@ -559,37 +559,37 @@ func UpdateRequestStatus(i *interfaces.Shared) fiber.Handler {
 			}
 
 			if count > 0 {
-				status = requests.StatusReviewed
+				status = request.StatusReviewed
 			} else {
-				status = requests.StatusApproved
+				status = request.StatusApproved
 			}
-		case requests.StatusReviewed:
+		case request.StatusReviewed:
 			if req.PID != pid {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
 
-			status = requests.StatusReady
-		case requests.StatusApproved:
+			status = request.StatusReady
+		case request.StatusApproved:
 			if req.PID != pid {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
 
 			// TODO: Figure out resolving an approved request
-		case requests.StatusRejected:
+		case request.StatusRejected:
 			if req.PID != pid {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
 
-			status = requests.StatusArchived
+			status = request.StatusArchived
 		default:
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
-		if err = requests.UpdateStatus(qtx, requests.UpdateStatusParams{
+		if err = request.UpdateStatus(qtx, request.UpdateStatusParams{
 			RID:    rid,
 			PID:    pid,
 			Status: status,
@@ -650,23 +650,23 @@ func DeleteRequest(i *interfaces.Shared) fiber.Handler {
 		var status string
 
 		if req.PID != pid {
-			if req.Status != requests.StatusSubmitted {
+			if req.Status != request.StatusSubmitted {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
 
-			status = requests.StatusRejected
+			status = request.StatusRejected
 		} else {
-			if req.Status == requests.StatusArchived || req.Status == requests.StatusCanceled {
+			if req.Status == request.StatusArchived || req.Status == request.StatusCanceled {
 				// TODO: Figure out deleting an archived or canceled request
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
 
-			status = requests.StatusCanceled
+			status = request.StatusCanceled
 		}
 
-		if err = requests.UpdateStatus(qtx, requests.UpdateStatusParams{
+		if err = request.UpdateStatus(qtx, request.UpdateStatusParams{
 			RID:    rid,
 			PID:    pid,
 			Status: status,

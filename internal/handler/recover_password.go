@@ -48,26 +48,26 @@ func RecoverPasswordSuccessPage(i *interfaces.Shared) fiber.Handler {
 }
 
 func RecoverPassword(i *interfaces.Shared) fiber.Handler {
-	type request struct {
+	type input struct {
 		Username string `form:"username"`
 		Email    string `form:"email"`
 	}
 	return func(c *fiber.Ctx) error {
-		r := new(request)
-		if err := c.BodyParser(r); err != nil {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
 		}
 
-		v := username.IsValid(r.Username)
+		v := username.IsValid(in.Username)
 		if !v {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInvalidUsername, layouts.None)
 		}
 
-		_, err := mail.ParseAddress(r.Email)
+		_, err := mail.ParseAddress(in.Email)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
@@ -83,10 +83,10 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		p, err := qtx.GetPlayerByUsername(context.Background(), r.Username)
+		p, err := qtx.GetPlayerByUsername(context.Background(), in.Username)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				id, err := password.SetupRecoverySuccess(i, r.Email)
+				id, err := password.SetupRecoverySuccess(i, in.Email)
 				if err != nil {
 					c.Status(fiber.StatusInternalServerError)
 					c.Append(header.HXAcceptable, "true")
@@ -110,7 +110,7 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
 		}
 		if len(emails) == 0 {
-			id, err := password.SetupRecoverySuccess(i, r.Email)
+			id, err := password.SetupRecoverySuccess(i, in.Email)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(header.HXAcceptable, "true")
@@ -135,8 +135,8 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 			emailAddresses = append(emailAddresses, email.Address)
 		}
 
-		if !slices.Contains(emailAddresses, r.Email) {
-			id, err := password.SetupRecoverySuccess(i, r.Email)
+		if !slices.Contains(emailAddresses, in.Email) {
+			id, err := password.SetupRecoverySuccess(i, in.Email)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(header.HXAcceptable, "true")
@@ -149,14 +149,14 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		err = password.SetupRecovery(i, p.ID, r.Email)
+		err = password.SetupRecovery(i, p.ID, in.Email)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
 			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
 		}
 
-		id, err := password.SetupRecoverySuccess(i, r.Email)
+		id, err := password.SetupRecoverySuccess(i, in.Email)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")

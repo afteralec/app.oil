@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/requests"
+	"petrichormud.com/app/internal/request"
 )
 
 func CreateRequestComment(i *interfaces.Shared) fiber.Handler {
@@ -19,14 +19,14 @@ func CreateRequestComment(i *interfaces.Shared) fiber.Handler {
 		Comment string `form:"comment"`
 	}
 	return func(c *fiber.Ctx) error {
-		r := new(input)
-		if err := c.BodyParser(r); err != nil {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
 
-		text := requests.SanitizeComment(r.Comment)
-		if !requests.IsCommentValid(text) {
+		text := request.SanitizeComment(in.Comment)
+		if !request.IsCommentValid(text) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -88,7 +88,7 @@ func CreateRequestComment(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		fieldMapByType, ok := requests.FieldMapsByType[req.Type]
+		fieldMapByType, ok := request.FieldMapsByType[req.Type]
 		if !ok {
 			c.Status(fiber.StatusBadRequest)
 			return nil
@@ -103,7 +103,7 @@ func CreateRequestComment(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		if req.Status != requests.StatusInReview {
+		if req.Status != request.StatusInReview {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -140,7 +140,7 @@ func CreateRequestComment(i *interfaces.Shared) fiber.Handler {
 		}
 
 		// TODO: Move this type to the bind package
-		comment := requests.Comment{
+		comment := request.Comment{
 			Current:        true,
 			ID:             row.RequestComment.ID,
 			VID:            row.RequestComment.VID,
@@ -149,7 +149,7 @@ func CreateRequestComment(i *interfaces.Shared) fiber.Handler {
 			AvatarLink:     "https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50.jpeg?f=y&r=m&s=256&d=retro",
 			CreatedAt:      row.RequestComment.CreatedAt.Unix(),
 			ViewedByAuthor: true,
-			Replies:        []requests.Comment{},
+			Replies:        []request.Comment{},
 		}
 		return c.Render(partial.RequestCommentCurrent, comment.Bind(), "")
 	}

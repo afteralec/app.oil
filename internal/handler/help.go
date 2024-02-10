@@ -29,7 +29,7 @@ func HelpPage(i *interfaces.Shared) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		header, err := qtx.ListHelpheader(context.Background())
+		header, err := qtx.ListHelpHeaders(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)

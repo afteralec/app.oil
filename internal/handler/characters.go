@@ -7,7 +7,7 @@ import (
 
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layouts"
-	"petrichormud.com/app/internal/requests"
+	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/views"
 )
@@ -36,7 +36,7 @@ func CharactersPage(i *interfaces.Shared) fiber.Handler {
 		}
 
 		// TODO: Get this into a standard API on the request package
-		summaries := []requests.ApplicationSummary{}
+		summaries := []request.ApplicationSummary{}
 		for _, app := range apps {
 			reviewer := ""
 			if app.Request.RPID > 0 {
@@ -51,7 +51,7 @@ func CharactersPage(i *interfaces.Shared) fiber.Handler {
 				}
 				reviewer = p.Username
 			}
-			summaries = append(summaries, requests.NewSummaryFromApplication(&app.Player, reviewer, &app.Request, &app.CharacterApplicationContent))
+			summaries = append(summaries, request.NewSummaryFromApplication(&app.Player, reviewer, &app.Request, &app.CharacterApplicationContent))
 		}
 
 		if err = tx.Commit(); err != nil {

@@ -89,26 +89,26 @@ func (q *Queries) GetTagsForHelpFile(ctx context.Context, slug string) ([]string
 	return items, nil
 }
 
-const listHelpheader = `-- name: ListHelpheader :many
+const listHelpHeaders = `-- name: ListHelpHeaders :many
 SELECT slug, title, sub, category FROM help ORDER BY slug
 `
 
-type ListHelpheaderRow struct {
+type ListHelpHeadersRow struct {
 	Slug     string
 	Title    string
 	Sub      string
 	Category string
 }
 
-func (q *Queries) ListHelpheader(ctx context.Context) ([]ListHelpheaderRow, error) {
-	rows, err := q.query(ctx, q.listHelpheaderStmt, listHelpheader)
+func (q *Queries) ListHelpHeaders(ctx context.Context) ([]ListHelpHeadersRow, error) {
+	rows, err := q.query(ctx, q.listHelpHeadersStmt, listHelpHeaders)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ListHelpheaderRow
+	var items []ListHelpHeadersRow
 	for rows.Next() {
-		var i ListHelpheaderRow
+		var i ListHelpHeadersRow
 		if err := rows.Scan(
 			&i.Slug,
 			&i.Title,

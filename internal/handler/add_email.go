@@ -18,7 +18,7 @@ import (
 )
 
 func AddEmail(i *interfaces.Shared) fiber.Handler {
-	type request struct {
+	type input struct {
 		Email string `form:"email"`
 	}
 	return func(c *fiber.Ctx) error {
@@ -61,8 +61,8 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindProfileAddEmailErrTooMany(), layouts.None)
 		}
 
-		r := new(request)
-		if err := c.BodyParser(r); err != nil {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
@@ -70,7 +70,7 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindProfileAddEmailErrInvalid, layouts.None)
 		}
 
-		e, err := mail.ParseAddress(r.Email)
+		e, err := mail.ParseAddress(in.Email)
 		if err != nil {
 			c.Append("HX-Retarget", "#add-email-error")
 			c.Append("HX-Reswap", "outerHTML")

@@ -1,4 +1,4 @@
-package requests
+package request
 
 const (
 	TypeCharacterApplication string = "CharacterApplication"
