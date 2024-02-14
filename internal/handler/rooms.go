@@ -17,31 +17,31 @@ import (
 	"petrichormud.com/app/internal/room"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 func RoomsPage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layout.Standalone)
+			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerViewAllRoomsName) {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		records, err := i.Queries.ListRooms(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		pageRooms := []fiber.Map{}
@@ -62,13 +62,13 @@ func RoomsPage(i *interfaces.Shared) fiber.Handler {
 			pageRooms = append(pageRooms, pageRoom)
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		b["Rooms"] = pageRooms
 		b["PageHeader"] = fiber.Map{
 			"Title":    "Rooms",
 			"SubTitle": "Individual rooms, where their exits and individual properties are assigned",
 		}
-		return c.Render(views.Rooms, b)
+		return c.Render(view.Rooms, b)
 	}
 }
 
@@ -77,37 +77,37 @@ func RoomPage(i *interfaces.Shared) fiber.Handler {
 		_, err := util.GetPID(c)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layout.Standalone)
+			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerViewAllRoomsName) {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		rmid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		record, err := i.Queries.GetRoom(context.Background(), rmid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
+				return c.Render(view.NotFound, view.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		b["NavBack"] = fiber.Map{
 			"Path":  route.Rooms,
 			"Label": "Back to Rooms",
@@ -120,7 +120,7 @@ func RoomPage(i *interfaces.Shared) fiber.Handler {
 		b["Title"] = record.Title
 		b["Size"] = room.SizeToString(record.Size)
 		b["Description"] = record.Description
-		return c.Render(views.Room, b, layout.Main)
+		return c.Render(view.Room, b, layout.Main)
 	}
 }
 
@@ -480,30 +480,30 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 		_, err := util.GetPID(c)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layout.Standalone)
+			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
 		rmid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -512,10 +512,10 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
+				return c.Render(view.NotFound, view.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		graph, err := room.BuildGraph(room.BuildGraphParams{
@@ -524,12 +524,12 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		grid := graph.BindMatrix(room.BindMatrixParams{
@@ -541,7 +541,7 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 		grid = room.AnnotateMatrixExits(grid)
 		exits := graph.BindExits()
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		// TODO: Get a bind function for this
 		b["NavBack"] = fiber.Map{
 			"Path":  route.Rooms,
@@ -570,7 +570,7 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 		b["West"] = rm.West
 		b["Northwest"] = rm.Northwest
 		b["Exits"] = exits
-		return c.Render(views.EditRoom, b)
+		return c.Render(view.EditRoom, b)
 	}
 }
 

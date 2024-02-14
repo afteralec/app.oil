@@ -18,12 +18,12 @@ import (
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/username"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 func RecoverPasswordPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.RecoverPassword, views.Bind(c), layout.Standalone)
+		return c.Render(view.RecoverPassword, view.Bind(c), layout.Standalone)
 	}
 }
 
@@ -35,15 +35,15 @@ func RecoverPasswordSuccessPage(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			if err == redis.Nil {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
+				return c.Render(view.NotFound, view.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		b["EmailAddress"] = email
-		return c.Render(views.RecoverPasswordSuccess, b, layout.Standalone)
+		return c.Render(view.RecoverPasswordSuccess, b, layout.Standalone)
 	}
 }
 

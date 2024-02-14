@@ -19,31 +19,31 @@ import (
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 func ActorImagesPage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layout.Standalone)
+			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerViewAllActorImagesName) {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		actorImages, err := i.Queries.ListActorImages(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		pageActorImages := []fiber.Map{}
@@ -63,7 +63,7 @@ func ActorImagesPage(i *interfaces.Shared) fiber.Handler {
 			pageActorImages = append(pageActorImages, pageActorImage)
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		if perms.HasPermission(permissions.PlayerCreateActorImageName) {
 			b["CreatePermission"] = true
 		}
@@ -72,7 +72,7 @@ func ActorImagesPage(i *interfaces.Shared) fiber.Handler {
 			"Title":    "Actor Images",
 			"SubTitle": "Actor images are where the primary properties for an actor are defined, like a template",
 		}
-		return c.Render(views.ActorImages, b)
+		return c.Render(view.ActorImages, b)
 	}
 }
 
@@ -80,30 +80,30 @@ func EditActorImagePage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layout.Standalone)
+			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
 		aiid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerCreateActorImageName) {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -112,18 +112,18 @@ func EditActorImagePage(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
+				return c.Render(view.NotFound, view.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		// TODO: Get a bind function for this
 		b["NavBack"] = fiber.Map{
 			"Path":  route.ActorImages,
@@ -140,7 +140,7 @@ func EditActorImagePage(i *interfaces.Shared) fiber.Handler {
 		b["Description"] = actorImage.Description
 		b["ShortDescriptionPath"] = route.ActorImageShortDescriptionPath(aiid)
 		b["DescriptionPath"] = route.ActorImageDescriptionPath(aiid)
-		return c.Render(views.EditActorImage, b)
+		return c.Render(view.EditActorImage, b)
 	}
 }
 
@@ -148,30 +148,30 @@ func ActorImagePage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layout.Standalone)
+			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
 		aiid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerViewAllActorImagesName) {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
+			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -180,18 +180,18 @@ func ActorImagePage(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
+				return c.Render(view.NotFound, view.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		// TODO: Get a bind function for this
 		b["NavBack"] = fiber.Map{
 			"Path":  route.ActorImages,
@@ -204,7 +204,7 @@ func ActorImagePage(i *interfaces.Shared) fiber.Handler {
 		b["Name"] = actorImage.Name
 		b["ShortDescription"] = actorImage.ShortDescription
 		b["Description"] = actorImage.Description
-		return c.Render(views.ActorImage, b)
+		return c.Render(view.ActorImage, b)
 	}
 }
 

@@ -3,7 +3,7 @@ package request
 import (
 	"errors"
 
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 // Request fields
@@ -25,11 +25,11 @@ var ErrNoIncompleteFields error = errors.New("no incomplete fields")
 
 var ViewsByFieldAndType map[string]map[string]string = map[string]map[string]string{
 	TypeCharacterApplication: {
-		FieldName:             views.CharacterApplicationName,
-		FieldGender:           views.CharacterApplicationGender,
-		FieldShortDescription: views.CharacterApplicationShortDescription,
-		FieldDescription:      views.CharacterApplicationDescription,
-		FieldBackstory:        views.CharacterApplicationBackstory,
+		FieldName:             view.CharacterApplicationName,
+		FieldGender:           view.CharacterApplicationGender,
+		FieldShortDescription: view.CharacterApplicationShortDescription,
+		FieldDescription:      view.CharacterApplicationDescription,
+		FieldBackstory:        view.CharacterApplicationBackstory,
 	},
 }
 

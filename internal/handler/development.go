@@ -4,11 +4,11 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/layout"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 func DesignDictionaryPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.DesignDictionary, views.Bind(c), layout.Main)
+		return c.Render(view.DesignDictionary, view.Bind(c), layout.Main)
 	}
 }

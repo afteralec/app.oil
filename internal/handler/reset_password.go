@@ -15,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/username"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 func ResetPasswordPage() fiber.Handler {
@@ -25,16 +25,16 @@ func ResetPasswordPage() fiber.Handler {
 			return c.Redirect("/")
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		b["ResetPasswordToken"] = tid
 
-		return c.Render(views.ResetPassword, b, layout.Standalone)
+		return c.Render(view.ResetPassword, b, layout.Standalone)
 	}
 }
 
 func ResetPasswordSuccessPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.ResetPasswordSuccess, views.Bind(c), layout.Standalone)
+		return c.Render(view.ResetPasswordSuccess, view.Bind(c), layout.Standalone)
 	}
 }
 

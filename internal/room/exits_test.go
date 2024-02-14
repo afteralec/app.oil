@@ -7,15 +7,15 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/tests"
+	"petrichormud.com/app/internal/test"
 )
 
 func TestIsExitTwoWayFalseUnlinked(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	ridOne := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	ridTwo := tests.CreateTestRoom(t, &i, tests.TestRoom)
+	ridOne := test.CreateTestRoom(t, &i, test.TestRoom)
+	ridTwo := test.CreateTestRoom(t, &i, test.TestRoom)
 
 	rm, err := i.Queries.GetRoom(context.Background(), ridOne)
 	if err != nil {
@@ -34,8 +34,8 @@ func TestIsExitTwoWayFalseOneWay(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	ridOne := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	ridTwo := tests.CreateTestRoom(t, &i, tests.TestRoom)
+	ridOne := test.CreateTestRoom(t, &i, test.TestRoom)
+	ridTwo := test.CreateTestRoom(t, &i, test.TestRoom)
 
 	if err := Link(LinkParams{
 		Queries:   i.Queries,
@@ -64,8 +64,8 @@ func TestIsExitTwoWayFalseOneWayOpposite(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	ridOne := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	ridTwo := tests.CreateTestRoom(t, &i, tests.TestRoom)
+	ridOne := test.CreateTestRoom(t, &i, test.TestRoom)
+	ridTwo := test.CreateTestRoom(t, &i, test.TestRoom)
 
 	if err := Link(LinkParams{
 		Queries:   i.Queries,
@@ -94,8 +94,8 @@ func TestIsExitTwoWayTrue(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	ridOne := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	ridTwo := tests.CreateTestRoom(t, &i, tests.TestRoom)
+	ridOne := test.CreateTestRoom(t, &i, test.TestRoom)
+	ridTwo := test.CreateTestRoom(t, &i, test.TestRoom)
 
 	if err := Link(LinkParams{
 		Queries:   i.Queries,

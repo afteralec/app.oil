@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/util"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 type CharacterApplication struct{}
@@ -164,7 +164,7 @@ var FieldCharacterApplicationName Field = Field{
 	Regexes: []*regexp.Regexp{
 		regexp.MustCompile("[^a-zA-Z'-]+"),
 	},
-	View: views.CharacterApplicationName,
+	View: view.CharacterApplicationName,
 }
 
 var FieldCharacterApplicationGender Field = Field{
@@ -176,7 +176,7 @@ var FieldCharacterApplicationGender Field = Field{
 	Regexes: []*regexp.Regexp{
 		util.RegexForExactMatchStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
 	},
-	View: views.CharacterApplicationGender,
+	View: view.CharacterApplicationGender,
 }
 
 var FieldCharacterApplicationShortDescription Field = Field{
@@ -188,7 +188,7 @@ var FieldCharacterApplicationShortDescription Field = Field{
 	Regexes: []*regexp.Regexp{
 		regexp.MustCompile("[^a-zA-Z, -]+"),
 	},
-	View: views.CharacterApplicationShortDescription,
+	View: view.CharacterApplicationShortDescription,
 }
 
 var FieldCharacterApplicationDescription Field = Field{
@@ -200,7 +200,7 @@ var FieldCharacterApplicationDescription Field = Field{
 	Regexes: []*regexp.Regexp{
 		regexp.MustCompile("[^a-zA-Z, '-.!()]+"),
 	},
-	View: views.CharacterApplicationDescription,
+	View: view.CharacterApplicationDescription,
 }
 
 var FieldCharacterApplicationBackstory Field = Field{
@@ -212,7 +212,7 @@ var FieldCharacterApplicationBackstory Field = Field{
 	Regexes: []*regexp.Regexp{
 		regexp.MustCompile("[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+"),
 	},
-	View: views.CharacterApplicationBackstory,
+	View: view.CharacterApplicationBackstory,
 }
 
 var FieldsCharacterApplication []Field = []Field{

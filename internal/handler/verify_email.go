@@ -15,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/username"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 func VerifyEmailPage(i *interfaces.Shared) fiber.Handler {
@@ -23,7 +23,7 @@ func VerifyEmailPage(i *interfaces.Shared) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layout.Standalone)
+			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
 		token := c.Query("t")
@@ -32,30 +32,30 @@ func VerifyEmailPage(i *interfaces.Shared) fiber.Handler {
 		exists, err := i.Redis.Exists(context.Background(), key).Result()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 		if exists != 1 {
 			c.Status(fiber.StatusNotFound)
-			b := views.Bind(c)
+			b := view.Bind(c)
 			b["NotFoundMessage"] = "Sorry, it looks like this link has expired."
 			b["NotFoundButtonLink"] = route.Profile
 			b["NotFoundButtonText"] = "Return to Profile"
-			return c.Render(views.NotFound, b, layout.Standalone)
+			return c.Render(view.NotFound, b, layout.Standalone)
 		}
 
 		eid, err := i.Redis.Get(context.Background(), key).Result()
 		if err != nil {
 			if err == redis.Nil {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
+				return c.Render(view.NotFound, view.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 		id, err := strconv.ParseInt(eid, 10, 64)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		tx, err := i.Database.Begin()
@@ -70,10 +70,10 @@ func VerifyEmailPage(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
+				return c.Render(view.NotFound, view.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		if e.PID != pid {
@@ -84,13 +84,13 @@ func VerifyEmailPage(i *interfaces.Shared) fiber.Handler {
 		ve, err := qtx.GetVerifiedEmailByAddress(context.Background(), e.Address)
 		if err != nil && err != sql.ErrNoRows {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 		if err == nil && ve.Verified {
 			c.Status(fiber.StatusConflict)
-			b := views.Bind(c)
+			b := view.Bind(c)
 			b["ErrMessageConflict"] = "That email has already been verified."
-			return c.Render(views.Conflict, b, layout.Standalone)
+			return c.Render(view.Conflict, b, layout.Standalone)
 		}
 
 		if err = tx.Commit(); err != nil {
@@ -101,14 +101,14 @@ func VerifyEmailPage(i *interfaces.Shared) fiber.Handler {
 		un, err := username.Get(i, pid.(int64))
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		b["VerifyToken"] = c.Query("t")
 		b["Address"] = e.Address
 		b["Username"] = un
-		return c.Render(views.VerifyEmail, b, layout.Standalone)
+		return c.Render(view.VerifyEmail, b, layout.Standalone)
 	}
 }
 

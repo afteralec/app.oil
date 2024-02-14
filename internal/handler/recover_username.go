@@ -14,12 +14,12 @@ import (
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/username"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 func RecoverUsernamePage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.RecoverUsername, views.Bind(c), layout.Standalone)
+		return c.Render(view.RecoverUsername, view.Bind(c), layout.Standalone)
 	}
 }
 
@@ -36,9 +36,9 @@ func RecoverUsernameSuccessPage(i *interfaces.Shared) fiber.Handler {
 			c.Redirect(route.Home)
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		b["EmailAddress"] = address
-		return c.Render(views.RecoverUsernameSuccess, b, layout.Standalone)
+		return c.Render(view.RecoverUsernameSuccess, b, layout.Standalone)
 	}
 }
 

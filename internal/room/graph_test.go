@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/tests"
+	"petrichormud.com/app/internal/test"
 )
 
 func TestGraph(t *testing.T) {
@@ -16,9 +16,9 @@ func TestGraph(t *testing.T) {
 
 	testRIDs := []int64{}
 	for n := 0; n < 15; n++ {
-		rid := tests.CreateTestRoom(t, &i, tests.TestRoom)
+		rid := test.CreateTestRoom(t, &i, test.TestRoom)
 		testRIDs = append(testRIDs, rid)
-		defer tests.DeleteTestRoom(t, &i, rid)
+		defer test.DeleteTestRoom(t, &i, rid)
 	}
 
 	if err := Link(LinkParams{
@@ -119,8 +119,8 @@ func TestNodeGetExit(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	rid := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	defer tests.DeleteTestRoom(t, &i, rid)
+	rid := test.CreateTestRoom(t, &i, test.TestRoom)
+	defer test.DeleteTestRoom(t, &i, rid)
 	rm, err := i.Queries.GetRoom(context.Background(), rid)
 	if err != nil {
 		t.Fatal(err)
@@ -138,8 +138,8 @@ func TestNodeGetExit(t *testing.T) {
 		require.Equal(t, int64(0), node.Exit(dir).ID)
 	}
 
-	ridTwo := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	defer tests.DeleteTestRoom(t, &i, ridTwo)
+	ridTwo := test.CreateTestRoom(t, &i, test.TestRoom)
+	defer test.DeleteTestRoom(t, &i, ridTwo)
 
 	if err := Link(LinkParams{
 		Queries:   i.Queries,
@@ -171,8 +171,8 @@ func TestNodeIsExitEmpty(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	rid := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	defer tests.DeleteTestRoom(t, &i, rid)
+	rid := test.CreateTestRoom(t, &i, test.TestRoom)
+	defer test.DeleteTestRoom(t, &i, rid)
 	rm, err := i.Queries.GetRoom(context.Background(), rid)
 	if err != nil {
 		t.Fatal(err)
@@ -190,8 +190,8 @@ func TestNodeIsExitEmpty(t *testing.T) {
 		require.True(t, node.IsExitEmpty(dir))
 	}
 
-	ridTwo := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	defer tests.DeleteTestRoom(t, &i, ridTwo)
+	ridTwo := test.CreateTestRoom(t, &i, test.TestRoom)
+	defer test.DeleteTestRoom(t, &i, ridTwo)
 
 	if err := Link(LinkParams{
 		Queries:   i.Queries,

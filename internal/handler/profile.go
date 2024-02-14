@@ -10,7 +10,7 @@ import (
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 // TODO: Add the Avatar section back into the profile with just Gravatar
@@ -20,21 +20,21 @@ func ProfilePage(i *interfaces.Shared) fiber.Handler {
 		pid, err := util.GetPID(c)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layout.Standalone)
+			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
 		emails, err := i.Queries.ListEmails(context.Background(), pid)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		b["Emails"] = emails
 		b["VerifiedEmails"] = email.Verified(emails)
 		b["GravatarEmail"] = "othertest@quack.ninja"
 		b["GravatarHash"] = email.GravatarHash("after.alec@gmail.com")
 		b["ChangePasswordPath"] = route.PlayerPasswordPath(pid)
-		return c.Render(views.Profile, b, layout.Main)
+		return c.Render(view.Profile, b, layout.Main)
 	}
 }

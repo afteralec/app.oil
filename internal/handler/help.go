@@ -16,7 +16,7 @@ import (
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/route"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 func HelpPage(i *interfaces.Shared) fiber.Handler {
@@ -24,7 +24,7 @@ func HelpPage(i *interfaces.Shared) fiber.Handler {
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -32,7 +32,7 @@ func HelpPage(i *interfaces.Shared) fiber.Handler {
 		header, err := qtx.ListHelpHeaders(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		help := []fiber.Map{}
@@ -40,7 +40,7 @@ func HelpPage(i *interfaces.Shared) fiber.Handler {
 			tags, err := qtx.GetTagsForHelpFile(context.Background(), header.Slug)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
 
 			help = append(help, fiber.Map{
@@ -52,9 +52,9 @@ func HelpPage(i *interfaces.Shared) fiber.Handler {
 			})
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		b["Help"] = help
-		return c.Render(views.Help, b, layout.Main)
+		return c.Render(view.Help, b, layout.Main)
 	}
 }
 
@@ -63,7 +63,7 @@ func HelpFilePage(i *interfaces.Shared) fiber.Handler {
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -71,40 +71,40 @@ func HelpFilePage(i *interfaces.Shared) fiber.Handler {
 		slugs, err := qtx.ListHelpSlugs(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		slug := c.Params("slug")
 		if !slices.Contains(slugs, slug) {
 			c.Status(fiber.StatusNotFound)
-			return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
+			return c.Render(view.NotFound, view.Bind(c), layout.Standalone)
 		}
 
 		help, err := qtx.GetHelp(context.Background(), slug)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
+				return c.Render(view.NotFound, view.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		relatedRecords, err := qtx.GetHelpRelated(context.Background(), slug)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		tags, err := qtx.GetTagsForHelpFile(context.Background(), slug)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		related := []fiber.Map{}
@@ -117,7 +117,7 @@ func HelpFilePage(i *interfaces.Shared) fiber.Handler {
 		}
 
 		html := template.HTML(help.HTML)
-		b := views.Bind(c)
+		b := view.Bind(c)
 		b["Content"] = html
 		b["Related"] = related
 		// TODO: Once the help path can take a query string, save the last state of the session's help path
@@ -126,7 +126,7 @@ func HelpFilePage(i *interfaces.Shared) fiber.Handler {
 		b["Sub"] = help.Sub
 		b["Category"] = help.Category
 		b["Tags"] = tags
-		return c.Render(views.HelpFile, b, layout.Main)
+		return c.Render(view.HelpFile, b, layout.Main)
 	}
 }
 
@@ -457,7 +457,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 		}
 
 		if len(results) == 0 {
-			b := views.Bind(c)
+			b := view.Bind(c)
 			b["Search"] = in.Search
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", "search-help-error")
@@ -465,7 +465,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.HelpIndexSearchNoResults, b, layout.None)
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		b["Results"] = results
 		return c.Render(partial.HelpIndexSearchResults, b, layout.None)
 	}

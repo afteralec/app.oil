@@ -9,7 +9,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 func SearchPlayer(i *interfaces.Shared) fiber.Handler {
@@ -20,7 +20,7 @@ func SearchPlayer(i *interfaces.Shared) fiber.Handler {
 		pid := c.Locals("pid")
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layout.Standalone)
+			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
 		r := new(input)
@@ -44,7 +44,7 @@ func SearchPlayer(i *interfaces.Shared) fiber.Handler {
 
 		if dest == "player-permissions" {
 			// TODO: Move this to a constant and inject it
-			b := views.Bind(c)
+			b := view.Bind(c)
 			b["Players"] = players
 			c.Status(fiber.StatusOK)
 			return c.Render(partial.PlayerPermissionsSearchResults, b, layout.None)

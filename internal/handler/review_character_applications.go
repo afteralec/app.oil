@@ -9,7 +9,7 @@ import (
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/request"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 func CharacterApplicationsQueuePage(i *interfaces.Shared) fiber.Handler {
@@ -18,7 +18,7 @@ func CharacterApplicationsQueuePage(i *interfaces.Shared) fiber.Handler {
 
 		if pid == nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layout.Standalone)
+			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
 		lperms := c.Locals("perms")
@@ -29,7 +29,7 @@ func CharacterApplicationsQueuePage(i *interfaces.Shared) fiber.Handler {
 		perms, ok := lperms.(permissions.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 		_, ok = perms.Permissions[permissions.PlayerReviewCharacterApplicationsName]
 		if !ok {
@@ -48,7 +48,7 @@ func CharacterApplicationsQueuePage(i *interfaces.Shared) fiber.Handler {
 		apps, err := qtx.ListOpenCharacterApplications(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c))
+			return c.Render(view.InternalServerError, view.Bind(c))
 		}
 
 		summaries := []request.ApplicationSummary{}
@@ -62,7 +62,7 @@ func CharacterApplicationsQueuePage(i *interfaces.Shared) fiber.Handler {
 					// TODO: Log this error here, this means we need to reset the reviewer and status on the request
 					// }
 					c.Status(fiber.StatusInternalServerError)
-					return c.Render(views.InternalServerError, views.Bind(c))
+					return c.Render(view.InternalServerError, view.Bind(c))
 				}
 				reviewer = p.Username
 			}
@@ -74,9 +74,9 @@ func CharacterApplicationsQueuePage(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		b := views.Bind(c)
+		b := view.Bind(c)
 		b["ThereAreCharacterApplications"] = len(summaries) > 0
 		b["CharacterApplicationSummaries"] = summaries
-		return c.Render(views.CharacterApplicationQueue, b)
+		return c.Render(view.CharacterApplicationQueue, b)
 	}
 }

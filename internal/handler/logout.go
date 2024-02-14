@@ -6,7 +6,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/route"
-	"petrichormud.com/app/internal/views"
+	"petrichormud.com/app/internal/view"
 )
 
 func Logout(i *interfaces.Shared) fiber.Handler {
@@ -25,6 +25,6 @@ func Logout(i *interfaces.Shared) fiber.Handler {
 
 func LogoutPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.Logout, views.Bind(c), layout.Standalone)
+		return c.Render(view.Logout, view.Bind(c), layout.Standalone)
 	}
 }

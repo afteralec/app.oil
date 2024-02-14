@@ -7,17 +7,17 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/tests"
+	"petrichormud.com/app/internal/test"
 )
 
 func TestLinkTwoWay(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	ridOne := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	defer tests.DeleteTestRoom(t, &i, ridOne)
-	ridTwo := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	defer tests.DeleteTestRoom(t, &i, ridTwo)
+	ridOne := test.CreateTestRoom(t, &i, test.TestRoom)
+	defer test.DeleteTestRoom(t, &i, ridOne)
+	ridTwo := test.CreateTestRoom(t, &i, test.TestRoom)
+	defer test.DeleteTestRoom(t, &i, ridTwo)
 
 	for _, dir := range DirectionsList {
 		tx, err := i.Database.Begin()
@@ -58,10 +58,10 @@ func TestLinkOneWay(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	ridOne := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	defer tests.DeleteTestRoom(t, &i, ridOne)
-	ridTwo := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	defer tests.DeleteTestRoom(t, &i, ridTwo)
+	ridOne := test.CreateTestRoom(t, &i, test.TestRoom)
+	defer test.DeleteTestRoom(t, &i, ridOne)
+	ridTwo := test.CreateTestRoom(t, &i, test.TestRoom)
+	defer test.DeleteTestRoom(t, &i, ridTwo)
 
 	for _, dir := range DirectionsList {
 		tx, err := i.Database.Begin()
@@ -102,10 +102,10 @@ func TestUnlink(t *testing.T) {
 	i := interfaces.SetupShared()
 	defer i.Close()
 
-	ridOne := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	defer tests.DeleteTestRoom(t, &i, ridOne)
-	ridTwo := tests.CreateTestRoom(t, &i, tests.TestRoom)
-	defer tests.DeleteTestRoom(t, &i, ridTwo)
+	ridOne := test.CreateTestRoom(t, &i, test.TestRoom)
+	defer test.DeleteTestRoom(t, &i, ridOne)
+	ridTwo := test.CreateTestRoom(t, &i, test.TestRoom)
+	defer test.DeleteTestRoom(t, &i, ridTwo)
 
 	for _, dir := range DirectionsList {
 		tx, err := i.Database.Begin()
