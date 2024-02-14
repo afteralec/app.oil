@@ -11,10 +11,10 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	"petrichormud.com/app/internal/password"
+	"petrichormud.com/app/internal/player/password"
+	"petrichormud.com/app/internal/player/username"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
-	"petrichormud.com/app/internal/username"
 	"petrichormud.com/app/internal/view"
 )
 

@@ -16,7 +16,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/password"
+	"petrichormud.com/app/internal/player/password"
 	"petrichormud.com/app/internal/route"
 )
 

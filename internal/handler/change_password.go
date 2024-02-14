@@ -9,7 +9,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	"petrichormud.com/app/internal/password"
+	"petrichormud.com/app/internal/player/password"
 	"petrichormud.com/app/internal/util"
 )
 

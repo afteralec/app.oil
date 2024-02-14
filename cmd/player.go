@@ -12,10 +12,10 @@ import (
 
 	"github.com/spf13/cobra"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/permissions"
+	"petrichormud.com/app/internal/player/password"
+	"petrichormud.com/app/internal/player/username"
 	"petrichormud.com/app/internal/query"
-	"petrichormud.com/app/internal/username"
 )
 
 var playerCmd = &cobra.Command{

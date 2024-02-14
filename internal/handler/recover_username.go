@@ -12,8 +12,8 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
+	"petrichormud.com/app/internal/player/username"
 	"petrichormud.com/app/internal/route"
-	"petrichormud.com/app/internal/username"
 	"petrichormud.com/app/internal/view"
 )
 
