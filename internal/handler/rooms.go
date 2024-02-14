@@ -12,7 +12,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	"petrichormud.com/app/internal/permissions"
+	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/room"
 	"petrichormud.com/app/internal/route"
@@ -33,7 +33,7 @@ func RoomsPage(i *interfaces.Shared) fiber.Handler {
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
-		if !perms.HasPermission(permissions.PlayerViewAllRoomsName) {
+		if !perms.HasPermission(playerpermission.PlayerViewAllRoomsName) {
 			c.Status(fiber.StatusForbidden)
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
@@ -55,7 +55,7 @@ func RoomsPage(i *interfaces.Shared) fiber.Handler {
 				"Path":       route.RoomPath(record.ID),
 			}
 
-			if perms.HasPermission(permissions.PlayerCreateRoomName) {
+			if perms.HasPermission(playerpermission.PlayerCreateRoomName) {
 				pageRoom["EditPath"] = route.EditRoomPath(record.ID)
 			}
 
@@ -86,7 +86,7 @@ func RoomPage(i *interfaces.Shared) fiber.Handler {
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
-		if !perms.HasPermission(permissions.PlayerViewAllRoomsName) {
+		if !perms.HasPermission(playerpermission.PlayerViewAllRoomsName) {
 			c.Status(fiber.StatusForbidden)
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
@@ -166,7 +166,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 			}), layout.None)
 		}
 
-		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+		if !perms.HasPermission(playerpermission.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
@@ -495,7 +495,7 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
-		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+		if !perms.HasPermission(playerpermission.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
@@ -587,7 +587,7 @@ func RoomGrid(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+		if !perms.HasPermission(playerpermission.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -735,7 +735,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
-		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+		if !perms.HasPermission(playerpermission.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
@@ -978,7 +978,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
-		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+		if !perms.HasPermission(playerpermission.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
@@ -1129,7 +1129,7 @@ func EditRoomTitle(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+		if !perms.HasPermission(playerpermission.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -1229,7 +1229,7 @@ func EditRoomDescription(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+		if !perms.HasPermission(playerpermission.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -1326,7 +1326,7 @@ func EditRoomSize(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
+		if !perms.HasPermission(playerpermission.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}

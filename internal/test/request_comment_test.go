@@ -15,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/permissions"
+	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/route"
@@ -36,7 +36,7 @@ func TestCreateRequestCommentUnauthorized(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
 	// TODO: Make a map of valid Character Application fields
@@ -73,7 +73,7 @@ func TestCreateRequestCommentMissingBody(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
 	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
@@ -113,7 +113,7 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
 	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
@@ -160,7 +160,7 @@ func TestCreateRequestCommentBadField(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
 	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
@@ -207,7 +207,7 @@ func TestCreateRequestCommentNotFound(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
 	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
@@ -294,7 +294,7 @@ func TestCreateRequestCommentNotInReview(t *testing.T) {
 
 	CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
@@ -333,12 +333,12 @@ func TestCreateRequestCommentNotReviewer(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
 	pid = CreateTestPlayer(t, &i, a, TestUsernameThree, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameThree)
-	permissionID = CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	permissionID = CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
 	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
@@ -428,7 +428,7 @@ func TestCreateRequestCommentSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
 	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{

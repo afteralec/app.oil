@@ -15,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/permissions"
+	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/route"
 )
 
@@ -166,7 +166,7 @@ func TestActorImagesPageSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllActorImagesName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerViewAllActorImagesName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
@@ -313,7 +313,7 @@ func TestNewActorImageSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateActorImageName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -398,7 +398,7 @@ func TestEditActorImagePageSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateActorImageName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
@@ -479,7 +479,7 @@ func TestActorImagePageSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllActorImagesName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerViewAllActorImagesName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
@@ -576,7 +576,7 @@ func TestEditActorImageShortDescriptionNotFound(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateActorImageName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
@@ -614,7 +614,7 @@ func TestEditActorImageShortDescriptionBadRequestInvalid(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateActorImageName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
@@ -650,7 +650,7 @@ func TestEditActorImageShortDescriptionConflictSameAs(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateActorImageName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
@@ -686,7 +686,7 @@ func TestEditActorImageShortDescriptionSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateActorImageName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
@@ -791,7 +791,7 @@ func TestEditActorImageDescriptionNotFound(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateActorImageName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
@@ -829,7 +829,7 @@ func TestEditActorImageDescriptionBadRequestInvalid(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateActorImageName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
@@ -865,7 +865,7 @@ func TestEditActorImageDescriptionConflictSameAs(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateActorImageName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
@@ -901,7 +901,7 @@ func TestEditActorImageDescriptionSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateActorImageName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateActorImageName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)

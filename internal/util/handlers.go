@@ -7,7 +7,8 @@ import (
 	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
-	"petrichormud.com/app/internal/permissions"
+
+	playerpermission "petrichormud.com/app/internal/player/permission"
 )
 
 var (
@@ -65,15 +66,15 @@ func GetParamID(c *fiber.Ctx, key string) (int64, error) {
 
 var ErrNoPermissions error = errors.New("no permissions found")
 
-func GetPermissions(c *fiber.Ctx) (permissions.PlayerGranted, error) {
+func GetPermissions(c *fiber.Ctx) (playerpermission.PlayerGranted, error) {
 	// TODO: Get this locals key into a constant
 	lperms := c.Locals("perms")
 	if lperms == nil {
-		return permissions.PlayerGranted{}, nil
+		return playerpermission.PlayerGranted{}, nil
 	}
-	perms, ok := lperms.(permissions.PlayerGranted)
+	perms, ok := lperms.(playerpermission.PlayerGranted)
 	if !ok {
-		return permissions.PlayerGranted{}, nil
+		return playerpermission.PlayerGranted{}, nil
 	}
 	return perms, nil
 }

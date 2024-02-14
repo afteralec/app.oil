@@ -8,7 +8,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/constant"
-	"petrichormud.com/app/internal/permissions"
+	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
 )
@@ -43,17 +43,17 @@ func nav(c *fiber.Ctx) []fiber.Map {
 	if err != nil {
 		return nav
 	}
-	if perms.HasPermission(permissions.PlayerReviewCharacterApplicationsName) {
+	if perms.HasPermission(playerpermission.PlayerReviewCharacterApplicationsName) {
 		nav = append(nav, reviewMenu(c))
 	}
 	// TODO: Clean up this permissions check
-	if perms.HasPermission(permissions.PlayerViewAllActorImagesName) {
+	if perms.HasPermission(playerpermission.PlayerViewAllActorImagesName) {
 		nav = append(nav, actorMenu(c))
 	}
-	if perms.HasPermission(permissions.PlayerViewAllRoomsName) {
+	if perms.HasPermission(playerpermission.PlayerViewAllRoomsName) {
 		nav = append(nav, roomsMenu(c))
 	}
-	if perms.HasPermission(permissions.PlayerGrantAllPermissionsName) {
+	if perms.HasPermission(playerpermission.PlayerGrantAllPermissionsName) {
 		nav = append(nav, permissionsMenu(c))
 	}
 

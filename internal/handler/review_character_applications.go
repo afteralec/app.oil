@@ -7,7 +7,7 @@ import (
 
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
-	"petrichormud.com/app/internal/permissions"
+	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/view"
 )
@@ -26,12 +26,12 @@ func CharacterApplicationsQueuePage(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		perms, ok := lperms.(permissions.PlayerGranted)
+		perms, ok := lperms.(playerpermission.PlayerGranted)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
-		_, ok = perms.Permissions[permissions.PlayerReviewCharacterApplicationsName]
+		_, ok = perms.Permissions[playerpermission.PlayerReviewCharacterApplicationsName]
 		if !ok {
 			c.Status(fiber.StatusForbidden)
 			return nil

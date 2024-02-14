@@ -15,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	"petrichormud.com/app/internal/permissions"
+	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
@@ -35,7 +35,7 @@ func ActorImagesPage(i *interfaces.Shared) fiber.Handler {
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
-		if !perms.HasPermission(permissions.PlayerViewAllActorImagesName) {
+		if !perms.HasPermission(playerpermission.PlayerViewAllActorImagesName) {
 			c.Status(fiber.StatusForbidden)
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
@@ -56,7 +56,7 @@ func ActorImagesPage(i *interfaces.Shared) fiber.Handler {
 				"Path":  route.ActorImagePath(actorImage.ID),
 			}
 
-			if perms.HasPermission(permissions.PlayerCreateActorImageName) {
+			if perms.HasPermission(playerpermission.PlayerCreateActorImageName) {
 				pageActorImage["EditPath"] = route.EditActorImagePath(actorImage.ID)
 			}
 
@@ -64,7 +64,7 @@ func ActorImagesPage(i *interfaces.Shared) fiber.Handler {
 		}
 
 		b := view.Bind(c)
-		if perms.HasPermission(permissions.PlayerCreateActorImageName) {
+		if perms.HasPermission(playerpermission.PlayerCreateActorImageName) {
 			b["CreatePermission"] = true
 		}
 		b["ActorImages"] = pageActorImages
@@ -95,7 +95,7 @@ func EditActorImagePage(i *interfaces.Shared) fiber.Handler {
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
-		if !perms.HasPermission(permissions.PlayerCreateActorImageName) {
+		if !perms.HasPermission(playerpermission.PlayerCreateActorImageName) {
 			c.Status(fiber.StatusForbidden)
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
@@ -163,7 +163,7 @@ func ActorImagePage(i *interfaces.Shared) fiber.Handler {
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
-		if !perms.HasPermission(permissions.PlayerViewAllActorImagesName) {
+		if !perms.HasPermission(playerpermission.PlayerViewAllActorImagesName) {
 			c.Status(fiber.StatusForbidden)
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
@@ -277,7 +277,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 			}), layout.None)
 		}
 
-		if !perms.HasPermission(permissions.PlayerCreateActorImageName) {
+		if !perms.HasPermission(playerpermission.PlayerCreateActorImageName) {
 			c.Status(fiber.StatusForbidden)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
@@ -411,7 +411,7 @@ func EditActorImageShortDescription(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		if !perms.HasPermission(permissions.PlayerCreateActorImageName) {
+		if !perms.HasPermission(playerpermission.PlayerCreateActorImageName) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -507,7 +507,7 @@ func EditActorImageDescription(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		if !perms.HasPermission(permissions.PlayerCreateActorImageName) {
+		if !perms.HasPermission(playerpermission.PlayerCreateActorImageName) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}

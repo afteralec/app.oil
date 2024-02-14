@@ -6,7 +6,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/permissions"
+	playerpermission "petrichormud.com/app/internal/player/permission"
 )
 
 func New(i *interfaces.Shared) fiber.Handler {
@@ -29,7 +29,7 @@ func New(i *interfaces.Shared) fiber.Handler {
 			return c.Next()
 		}
 
-		perms := permissions.MakePlayerGranted(pid.(int64), ps)
+		perms := playerpermission.MakePlayerGranted(pid.(int64), ps)
 		c.Locals("perms", perms)
 		return c.Next()
 	}

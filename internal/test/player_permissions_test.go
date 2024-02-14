@@ -12,7 +12,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/permissions"
+	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/route"
 )
 
@@ -70,7 +70,7 @@ func TestPlayerPermissionsPageSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerGrantAllPermissionsName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerGrantAllPermissionsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
@@ -146,7 +146,7 @@ func TestPlayerPermissionsDetailPageSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerGrantAllPermissionsName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerGrantAllPermissionsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)

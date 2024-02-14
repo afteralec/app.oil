@@ -8,7 +8,7 @@ import (
 
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
-	"petrichormud.com/app/internal/permissions"
+	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/route"
@@ -207,7 +207,7 @@ func RequestFieldPage(i *interfaces.Shared) fiber.Handler {
 				c.Status(fiber.StatusForbidden)
 				return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 			}
-			if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
+			if !perms.Permissions[playerpermission.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
 				return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 			}
@@ -296,7 +296,7 @@ func RequestPage(i *interfaces.Shared) fiber.Handler {
 				c.Status(fiber.StatusForbidden)
 				return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 			}
-			if !perms.Permissions[permissions.PlayerReviewCharacterApplicationsName] {
+			if !perms.Permissions[playerpermission.PlayerReviewCharacterApplicationsName] {
 				c.Status(fiber.StatusForbidden)
 				return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 			}

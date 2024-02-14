@@ -16,7 +16,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/permissions"
+	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/room"
 	"petrichormud.com/app/internal/route"
 )
@@ -76,7 +76,7 @@ func TestRoomsPageSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomsName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerViewAllRoomsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
@@ -104,7 +104,7 @@ func TestRoomPageUnauthorized(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	rmid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rmid)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomsName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerViewAllRoomsName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 
 	url := MakeTestURL(route.RoomPath(rmid))
@@ -159,7 +159,7 @@ func TestRoomPageNotFound(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	rmid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rmid)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomsName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerViewAllRoomsName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
@@ -190,7 +190,7 @@ func TestRoomPageSuccess(t *testing.T) {
 	rmid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rmid)
 
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomsName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerViewAllRoomsName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
@@ -265,7 +265,7 @@ func TestNewRoomSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -364,7 +364,7 @@ func TestNewRoomWithLinkNotFoundInvalidRID(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -405,7 +405,7 @@ func TestNewRoomWithLinkBadRequestInvalidDirection(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -443,7 +443,7 @@ func TestNewRoomWithLinkSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -528,7 +528,7 @@ func TestEditRoomPageSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
@@ -630,7 +630,7 @@ func TestEditRoomExitRoomNotFound(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
@@ -668,7 +668,7 @@ func TestEditRoomExitBadRequestLinkToSelf(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
@@ -706,7 +706,7 @@ func TestEditRoomExitBadRequestInvalidID(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	ridOne := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, ridOne)
@@ -744,7 +744,7 @@ func TestEditRoomExitBadRequestEmptyID(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	ridOne := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, ridOne)
@@ -782,7 +782,7 @@ func TestEditRoomExitBadRequestInvalidTwoWay(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
@@ -820,7 +820,7 @@ func TestEditRoomExitSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	ridOne := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, ridOne)
@@ -936,7 +936,7 @@ func TestClearRoomExitSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	ridOne := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, ridOne)
@@ -1041,7 +1041,7 @@ func TestEditRoomTitleNotFound(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
@@ -1077,7 +1077,7 @@ func TestEditRoomTitleBadRequestInvalid(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
@@ -1113,7 +1113,7 @@ func TestEditRoomTitleSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
@@ -1216,7 +1216,7 @@ func TestEditRoomDescriptionNotFound(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
@@ -1254,7 +1254,7 @@ func TestEditRoomDescriptionBadRequestInvalid(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
@@ -1290,7 +1290,7 @@ func TestEditRoomDescriptionSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
@@ -1391,7 +1391,7 @@ func TestEditRoomSizeNotFound(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
@@ -1427,7 +1427,7 @@ func TestEditRoomSizeBadRequestInvalid(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
@@ -1463,7 +1463,7 @@ func TestEditRoomSizeSuccess(t *testing.T) {
 
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerCreateRoomName)
+	prid := CreateTestPlayerPermission(t, &i, pid, playerpermission.PlayerCreateRoomName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
