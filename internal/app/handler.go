@@ -4,11 +4,11 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/handler"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
-func Handlers(app *fiber.App, i *interfaces.Shared) {
+func Handlers(app *fiber.App, i *service.Interfaces) {
 	app.Get(route.Home, handler.HomePage())
 
 	app.Post(route.ThemePathParam, handler.SetTheme(i))

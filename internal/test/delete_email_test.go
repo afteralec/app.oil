@@ -11,12 +11,12 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestDeleteEmailUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -40,7 +40,7 @@ func TestDeleteEmailUnauthorized(t *testing.T) {
 }
 
 func TestDeleteEmailFatal(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -64,7 +64,7 @@ func TestDeleteEmailFatal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	i = interfaces.SetupShared()
+	i = service.NewInterfaces()
 	defer i.Close()
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
@@ -72,7 +72,7 @@ func TestDeleteEmailFatal(t *testing.T) {
 }
 
 func TestDeleteEmailUnowned(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -102,7 +102,7 @@ func TestDeleteEmailUnowned(t *testing.T) {
 }
 
 func TestDeleteEmailInvalidID(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -129,7 +129,7 @@ func TestDeleteEmailInvalidID(t *testing.T) {
 }
 
 func TestDeleteEmailNotFound(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -155,7 +155,7 @@ func TestDeleteEmailNotFound(t *testing.T) {
 }
 
 func TestDeleteEmailSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())

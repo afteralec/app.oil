@@ -17,12 +17,12 @@ import (
 	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/constant"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestCharactersPageUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -40,7 +40,7 @@ func TestCharactersPageUnauthorized(t *testing.T) {
 }
 
 func TestCharactersPageSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -66,7 +66,7 @@ func TestCharactersPageSuccess(t *testing.T) {
 }
 
 func TestCharactersPageFatal(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 
 	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
@@ -91,7 +91,7 @@ func TestCharactersPageFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
-func SetupTestCharacters(t *testing.T, i *interfaces.Shared, u string) {
+func SetupTestCharacters(t *testing.T, i *service.Interfaces, u string) {
 	p, err := i.Queries.GetPlayerByUsername(context.Background(), TestUsername)
 	if err != nil && err != sql.ErrNoRows {
 		t.Fatal(err)
@@ -130,7 +130,7 @@ func SetupTestCharacters(t *testing.T, i *interfaces.Shared, u string) {
 	}
 }
 
-func CreateTestPlayerAndCharacterApplication(t *testing.T, i *interfaces.Shared, app *fiber.App) (int64, *http.Cookie) {
+func CreateTestPlayerAndCharacterApplication(t *testing.T, i *service.Interfaces, app *fiber.App) (int64, *http.Cookie) {
 	SetupTestCharacters(t, i, TestUsername)
 	CallRegister(t, app, TestUsername, TestPassword)
 	res := CallLogin(t, app, TestUsername, TestPassword)

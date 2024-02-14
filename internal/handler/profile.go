@@ -6,15 +6,15 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/email"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/view"
 )
 
 // TODO: Add the Avatar section back into the profile with just Gravatar
-func ProfilePage(i *interfaces.Shared) fiber.Handler {
+func ProfilePage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {

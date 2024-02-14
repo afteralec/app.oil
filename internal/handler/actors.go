@@ -12,17 +12,17 @@ import (
 
 	"petrichormud.com/app/internal/actor"
 	"petrichormud.com/app/internal/header"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/view"
 )
 
-func ActorImagesPage(i *interfaces.Shared) fiber.Handler {
+func ActorImagesPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
@@ -76,7 +76,7 @@ func ActorImagesPage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func EditActorImagePage(i *interfaces.Shared) fiber.Handler {
+func EditActorImagePage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
@@ -144,7 +144,7 @@ func EditActorImagePage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func ActorImagePage(i *interfaces.Shared) fiber.Handler {
+func ActorImagePage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
@@ -208,7 +208,7 @@ func ActorImagePage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func NewActorImage(i *interfaces.Shared) fiber.Handler {
+func NewActorImage(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Name string `form:"name"`
 	}
@@ -384,7 +384,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func EditActorImageShortDescription(i *interfaces.Shared) fiber.Handler {
+func EditActorImageShortDescription(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		ShortDescription string `form:"sdesc"`
 	}
@@ -480,7 +480,7 @@ func EditActorImageShortDescription(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func EditActorImageDescription(i *interfaces.Shared) fiber.Handler {
+func EditActorImageDescription(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Description string `form:"desc"`
 	}
@@ -576,7 +576,7 @@ func EditActorImageDescription(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func ActorImageNameReserved(i *interfaces.Shared) fiber.Handler {
+func ActorImageNameReserved(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Name string `form:"name"`
 	}

@@ -7,17 +7,17 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/header"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/player/password"
 	"petrichormud.com/app/internal/player/username"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/view"
 )
 
-func Login(i *interfaces.Shared) fiber.Handler {
+func Login(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Username string `form:"username"`
 		Password string `form:"password"`

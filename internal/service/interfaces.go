@@ -1,4 +1,4 @@
-package interfaces
+package service
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/query"
 )
 
-func SetupShared() Shared {
+func NewInterfaces() Interfaces {
 	db, err := sql.Open("mysql", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
@@ -47,7 +47,7 @@ func SetupShared() Shared {
 	return i
 }
 
-type Shared struct {
+type Interfaces struct {
 	Database   *sql.DB
 	Redis      *redis.Client
 	Queries    *query.Queries
@@ -55,40 +55,40 @@ type Shared struct {
 	ClientConn *grpc.ClientConn
 }
 
-type sharedInterfacesBuilder struct {
-	Interfaces Shared
+type interfacesBuilder struct {
+	Interfaces Interfaces
 }
 
-func InterfacesBuilder() *sharedInterfacesBuilder {
-	return new(sharedInterfacesBuilder)
+func InterfacesBuilder() *interfacesBuilder {
+	return new(interfacesBuilder)
 }
 
-func (b *sharedInterfacesBuilder) Database(db *sql.DB) *sharedInterfacesBuilder {
+func (b *interfacesBuilder) Database(db *sql.DB) *interfacesBuilder {
 	b.Interfaces.Database = db
 	b.Interfaces.Queries = query.New(db)
 	return b
 }
 
-func (b *sharedInterfacesBuilder) ClientConn(conn *grpc.ClientConn) *sharedInterfacesBuilder {
+func (b *interfacesBuilder) ClientConn(conn *grpc.ClientConn) *interfacesBuilder {
 	b.Interfaces.ClientConn = conn
 	return b
 }
 
-func (b *sharedInterfacesBuilder) Redis(r *redis.Client) *sharedInterfacesBuilder {
+func (b *interfacesBuilder) Redis(r *redis.Client) *interfacesBuilder {
 	b.Interfaces.Redis = r
 	return b
 }
 
-func (b *sharedInterfacesBuilder) Sessions(s *session.Store) *sharedInterfacesBuilder {
+func (b *interfacesBuilder) Sessions(s *session.Store) *interfacesBuilder {
 	b.Interfaces.Sessions = s
 	return b
 }
 
-func (b *sharedInterfacesBuilder) Build() Shared {
+func (b *interfacesBuilder) Build() Interfaces {
 	return b.Interfaces
 }
 
-func (i *Shared) Ping() {
+func (i *Interfaces) Ping() {
 	if err := i.Database.Ping(); err != nil {
 		log.Fatal(err)
 	}
@@ -97,7 +97,7 @@ func (i *Shared) Ping() {
 	}
 }
 
-func (i *Shared) Close() {
+func (i *Interfaces) Close() {
 	if i.Database != nil {
 		i.Database.Close()
 	}

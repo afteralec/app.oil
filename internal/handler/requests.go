@@ -7,18 +7,18 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/view"
 )
 
-func NewRequest(i *interfaces.Shared) fiber.Handler {
+func NewRequest(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Type string `form:"type"`
 	}
@@ -88,7 +88,7 @@ func NewRequest(i *interfaces.Shared) fiber.Handler {
 }
 
 // TODO: Combine this functionality with the above so it's consistent
-func NewCharacterApplication(i *interfaces.Shared) fiber.Handler {
+func NewCharacterApplication(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {
@@ -136,7 +136,7 @@ func NewCharacterApplication(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func RequestFieldPage(i *interfaces.Shared) fiber.Handler {
+func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {
@@ -255,7 +255,7 @@ func RequestFieldPage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func RequestPage(i *interfaces.Shared) fiber.Handler {
+func RequestPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {
@@ -387,7 +387,7 @@ func RequestPage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func UpdateRequestField(i *interfaces.Shared) fiber.Handler {
+func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Value string `form:"value"`
 	}
@@ -491,7 +491,7 @@ func UpdateRequestField(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func UpdateRequestStatus(i *interfaces.Shared) fiber.Handler {
+func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {
@@ -609,7 +609,7 @@ func UpdateRequestStatus(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func DeleteRequest(i *interfaces.Shared) fiber.Handler {
+func DeleteRequest(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {
@@ -686,7 +686,7 @@ func DeleteRequest(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func CreateRequestComment(i *interfaces.Shared) fiber.Handler {
+func CreateRequestComment(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Comment string `form:"comment"`
 	}

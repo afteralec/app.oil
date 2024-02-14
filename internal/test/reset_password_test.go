@@ -15,12 +15,12 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestResetPasswordPage(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -39,7 +39,7 @@ func TestResetPasswordPage(t *testing.T) {
 }
 
 func TestResetPasswordSuccessPageSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -57,7 +57,7 @@ func TestResetPasswordSuccessPageSuccess(t *testing.T) {
 }
 
 func TestResetPasswordMissingBody(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -76,7 +76,7 @@ func TestResetPasswordMissingBody(t *testing.T) {
 }
 
 func TestResetPasswordMalformedBody(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -103,7 +103,7 @@ func TestResetPasswordMalformedBody(t *testing.T) {
 
 func TestResetPasswordSuccess(t *testing.T) {
 	t.Skip()
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())

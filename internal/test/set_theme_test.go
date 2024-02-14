@@ -11,12 +11,12 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/constant"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestSetThemeInvalid(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -35,7 +35,7 @@ func TestSetThemeInvalid(t *testing.T) {
 }
 
 func TestSetThemeSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())

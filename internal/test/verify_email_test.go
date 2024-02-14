@@ -13,12 +13,12 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/email"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestVerifyEmailPageUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -47,7 +47,7 @@ func TestVerifyEmailPageUnauthorized(t *testing.T) {
 }
 
 func TestVerifyEmailPageSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -79,7 +79,7 @@ func TestVerifyEmailPageSuccess(t *testing.T) {
 }
 
 func TestVerifyEmailPageForbiddenUnowned(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -115,7 +115,7 @@ func TestVerifyEmailPageForbiddenUnowned(t *testing.T) {
 }
 
 func TestVerifyPageExpiredToken(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -152,7 +152,7 @@ func TestVerifyPageExpiredToken(t *testing.T) {
 }
 
 func TestVerifyEmailUnauthorizedNotLoggedIn(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -181,7 +181,7 @@ func TestVerifyEmailUnauthorizedNotLoggedIn(t *testing.T) {
 }
 
 func TestVerifyEmailBadRequestMissingToken(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -208,7 +208,7 @@ func TestVerifyEmailBadRequestMissingToken(t *testing.T) {
 }
 
 func TestVerifyEmailNotFoundExpiredToken(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -245,7 +245,7 @@ func TestVerifyEmailNotFoundExpiredToken(t *testing.T) {
 }
 
 func TestVerifyEmailSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())

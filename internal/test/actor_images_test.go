@@ -14,13 +14,13 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/interfaces"
 	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestActorImageNameReservedConflict(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -51,7 +51,7 @@ func TestActorImageNameReservedConflict(t *testing.T) {
 }
 
 func TestActorImageNameReservedFatal(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 
 	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
@@ -76,7 +76,7 @@ func TestActorImageNameReservedFatal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	i = interfaces.SetupShared()
+	i = service.NewInterfaces()
 	defer i.Close()
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
@@ -84,7 +84,7 @@ func TestActorImageNameReservedFatal(t *testing.T) {
 }
 
 func TestActorImageNameReservedOK(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	config := config.Fiber()
@@ -111,7 +111,7 @@ func TestActorImageNameReservedOK(t *testing.T) {
 }
 
 func TestActorImagesPageUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -131,7 +131,7 @@ func TestActorImagesPageUnauthorized(t *testing.T) {
 }
 
 func TestActorImagesPageForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -157,7 +157,7 @@ func TestActorImagesPageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestActorImagesPageSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -185,7 +185,7 @@ func TestActorImagesPageSuccess(t *testing.T) {
 }
 
 func TestNewActorImageUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -212,7 +212,7 @@ func TestNewActorImageUnauthorized(t *testing.T) {
 }
 
 func TestNewActorImageForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -245,7 +245,7 @@ func TestNewActorImageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestNewActorImageBadRequestMissingBody(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -272,7 +272,7 @@ func TestNewActorImageBadRequestMissingBody(t *testing.T) {
 }
 
 func TestNewActorImageBadRequestInvalidName(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -304,7 +304,7 @@ func TestNewActorImageBadRequestInvalidName(t *testing.T) {
 }
 
 func TestNewActorImageSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -338,7 +338,7 @@ func TestNewActorImageSuccess(t *testing.T) {
 }
 
 func TestEditActorImagePageUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -361,7 +361,7 @@ func TestEditActorImagePageUnauthorized(t *testing.T) {
 }
 
 func TestEditActorImagePageForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -389,7 +389,7 @@ func TestEditActorImagePageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestEditActorImagePageSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -419,7 +419,7 @@ func TestEditActorImagePageSuccess(t *testing.T) {
 }
 
 func TestActorImagePageUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -442,7 +442,7 @@ func TestActorImagePageUnauthorized(t *testing.T) {
 }
 
 func TestActorImagePageForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -470,7 +470,7 @@ func TestActorImagePageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestActorImagePageSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -500,7 +500,7 @@ func TestActorImagePageSuccess(t *testing.T) {
 }
 
 func TestEditActorImageShortDescriptionUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -531,7 +531,7 @@ func TestEditActorImageShortDescriptionUnauthorized(t *testing.T) {
 }
 
 func TestEditActorImageShortDescriptionForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -567,7 +567,7 @@ func TestEditActorImageShortDescriptionForbiddenNoPermission(t *testing.T) {
 }
 
 func TestEditActorImageShortDescriptionNotFound(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -605,7 +605,7 @@ func TestEditActorImageShortDescriptionNotFound(t *testing.T) {
 }
 
 func TestEditActorImageShortDescriptionBadRequestInvalid(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -641,7 +641,7 @@ func TestEditActorImageShortDescriptionBadRequestInvalid(t *testing.T) {
 }
 
 func TestEditActorImageShortDescriptionConflictSameAs(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -677,7 +677,7 @@ func TestEditActorImageShortDescriptionConflictSameAs(t *testing.T) {
 }
 
 func TestEditActorImageShortDescriptionSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -715,7 +715,7 @@ func TestEditActorImageShortDescriptionSuccess(t *testing.T) {
 }
 
 func TestEditActorImageDescriptionUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -746,7 +746,7 @@ func TestEditActorImageDescriptionUnauthorized(t *testing.T) {
 }
 
 func TestEditActorImageDescriptionForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -782,7 +782,7 @@ func TestEditActorImageDescriptionForbiddenNoPermission(t *testing.T) {
 }
 
 func TestEditActorImageDescriptionNotFound(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -820,7 +820,7 @@ func TestEditActorImageDescriptionNotFound(t *testing.T) {
 }
 
 func TestEditActorImageDescriptionBadRequestInvalid(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -856,7 +856,7 @@ func TestEditActorImageDescriptionBadRequestInvalid(t *testing.T) {
 }
 
 func TestEditActorImageDescriptionConflictSameAs(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -892,7 +892,7 @@ func TestEditActorImageDescriptionConflictSameAs(t *testing.T) {
 }
 
 func TestEditActorImageDescriptionSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())

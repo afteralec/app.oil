@@ -8,12 +8,12 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/view"
 )
 
@@ -23,7 +23,7 @@ func RecoverPage() fiber.Handler {
 	}
 }
 
-func SearchPlayer(i *interfaces.Shared) fiber.Handler {
+func SearchPlayer(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Search string `form:"search"`
 	}
@@ -66,7 +66,7 @@ func SearchPlayer(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func PlayerPermissionsPage(i *interfaces.Shared) fiber.Handler {
+func PlayerPermissionsPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 
@@ -96,7 +96,7 @@ func PlayerPermissionsPage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func PlayerPermissionsDetailPage(i *interfaces.Shared) fiber.Handler {
+func PlayerPermissionsDetailPage(i *service.Interfaces) fiber.Handler {
 	type playerPermissionDetail struct {
 		Permission string
 		About      string
@@ -193,7 +193,7 @@ func PlayerPermissionsDetailPage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func TogglePlayerPermission(i *interfaces.Shared) fiber.Handler {
+func TogglePlayerPermission(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Grant bool `form:"issued"`
 	}

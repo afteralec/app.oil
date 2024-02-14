@@ -3,13 +3,13 @@ package handler
 import (
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/view"
 )
 
-func Logout(i *interfaces.Shared) fiber.Handler {
+func Logout(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		sess, err := i.Sessions.Get(c)
 		if err != nil {

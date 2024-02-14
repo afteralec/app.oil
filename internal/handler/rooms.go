@@ -9,18 +9,18 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/header"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/room"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/view"
 )
 
-func RoomsPage(i *interfaces.Shared) fiber.Handler {
+func RoomsPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
@@ -72,7 +72,7 @@ func RoomsPage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func RoomPage(i *interfaces.Shared) fiber.Handler {
+func RoomPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		_, err := util.GetPID(c)
 		if err != nil {
@@ -124,7 +124,7 @@ func RoomPage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func NewRoom(i *interfaces.Shared) fiber.Handler {
+func NewRoom(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Direction string `form:"direction"`
 		LinkID    int64  `form:"id"`
@@ -475,7 +475,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func EditRoomPage(i *interfaces.Shared) fiber.Handler {
+func EditRoomPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		_, err := util.GetPID(c)
 		if err != nil {
@@ -574,7 +574,7 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func RoomGrid(i *interfaces.Shared) fiber.Handler {
+func RoomGrid(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
@@ -638,7 +638,7 @@ func RoomGrid(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func EditRoomExit(i *interfaces.Shared) fiber.Handler {
+func EditRoomExit(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Direction string `form:"direction"`
 		LinkID    int64  `form:"id"`
@@ -901,7 +901,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
+func ClearRoomExit(i *service.Interfaces) fiber.Handler {
 	// TODO: Get constant for common section IDs
 	const sectionID string = "edit-room-exits-edit-error"
 
@@ -1102,7 +1102,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func EditRoomTitle(i *interfaces.Shared) fiber.Handler {
+func EditRoomTitle(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Title string `form:"title"`
 	}
@@ -1202,7 +1202,7 @@ func EditRoomTitle(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func EditRoomDescription(i *interfaces.Shared) fiber.Handler {
+func EditRoomDescription(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Description string `form:"desc"`
 	}
@@ -1299,7 +1299,7 @@ func EditRoomDescription(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func EditRoomSize(i *interfaces.Shared) fiber.Handler {
+func EditRoomSize(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Size int32 `form:"size"`
 	}

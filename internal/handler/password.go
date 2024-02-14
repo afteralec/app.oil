@@ -13,20 +13,20 @@ import (
 	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/header"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/player/password"
 	"petrichormud.com/app/internal/player/username"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/view"
 )
 
 // TODO: This and the markup allow entering your current password
 // This should be a failure case
-func ChangePassword(i *interfaces.Shared) fiber.Handler {
+func ChangePassword(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Current         string `form:"current"`
 		Password        string `form:"password"`
@@ -183,7 +183,7 @@ func RecoverPasswordPage() fiber.Handler {
 	}
 }
 
-func RecoverPasswordSuccessPage(i *interfaces.Shared) fiber.Handler {
+func RecoverPasswordSuccessPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tid := c.Query("t")
 		key := password.RecoverySuccessKey(tid)
@@ -203,7 +203,7 @@ func RecoverPasswordSuccessPage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func RecoverPassword(i *interfaces.Shared) fiber.Handler {
+func RecoverPassword(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Username string `form:"username"`
 		Email    string `form:"email"`
@@ -346,7 +346,7 @@ func ResetPasswordSuccessPage() fiber.Handler {
 	}
 }
 
-func ResetPassword(i *interfaces.Shared) fiber.Handler {
+func ResetPassword(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Username        string `form:"username"`
 		Password        string `form:"password"`

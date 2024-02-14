@@ -13,9 +13,9 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 // TODO: Create queries to delete records for use during these test.
@@ -27,7 +27,7 @@ import (
 // TODO: Add a function to clean up resources starting with the test usernames -
 // pretty much everything can be traced up to a PID - and call it from the CLI
 
-func CreateTestPlayer(t *testing.T, i *interfaces.Shared, a *fiber.App, u, pw string) int64 {
+func CreateTestPlayer(t *testing.T, i *service.Interfaces, a *fiber.App, u, pw string) int64 {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	writer.WriteField("username", u)
@@ -50,7 +50,7 @@ func CreateTestPlayer(t *testing.T, i *interfaces.Shared, a *fiber.App, u, pw st
 	return p.ID
 }
 
-func DeleteTestPlayer(t *testing.T, i *interfaces.Shared, u string) {
+func DeleteTestPlayer(t *testing.T, i *service.Interfaces, u string) {
 	p, err := i.Queries.GetPlayerByUsername(context.Background(), u)
 	if err != nil {
 		return
@@ -93,7 +93,7 @@ func LoginTestPlayer(t *testing.T, a *fiber.App, u string, pw string) *http.Cook
 	return res.Cookies()[0]
 }
 
-func CreateTestEmail(t *testing.T, i *interfaces.Shared, a *fiber.App, e, u, pw string) int64 {
+func CreateTestEmail(t *testing.T, i *service.Interfaces, a *fiber.App, e, u, pw string) int64 {
 	sessionCookie := LoginTestPlayer(t, a, u, pw)
 
 	body := new(bytes.Buffer)
@@ -129,7 +129,7 @@ func CreateTestEmail(t *testing.T, i *interfaces.Shared, a *fiber.App, e, u, pw 
 }
 
 // TODO: Rework this to use endpoints on the app instead of interfaces directly
-func CreateTestPlayerPermission(t *testing.T, i *interfaces.Shared, pid int64, permission string) int64 {
+func CreateTestPlayerPermission(t *testing.T, i *service.Interfaces, pid int64, permission string) int64 {
 	permissionResult, err := i.Queries.CreatePlayerPermission(context.Background(), query.CreatePlayerPermissionParams{
 		PID:        pid,
 		IPID:       pid,
@@ -145,7 +145,7 @@ func CreateTestPlayerPermission(t *testing.T, i *interfaces.Shared, pid int64, p
 	return permissionID
 }
 
-func DeleteTestPlayerPermission(t *testing.T, i *interfaces.Shared, id int64) {
+func DeleteTestPlayerPermission(t *testing.T, i *service.Interfaces, id int64) {
 	query := fmt.Sprintf("DELETE FROM player_permissions WHERE id = %d;", id)
 	_, err := i.Database.Exec(query)
 	if err != nil {
@@ -153,7 +153,7 @@ func DeleteTestPlayerPermission(t *testing.T, i *interfaces.Shared, id int64) {
 	}
 }
 
-func CreateTestCharacterApplication(t *testing.T, i *interfaces.Shared, a *fiber.App, u, pw string) int64 {
+func CreateTestCharacterApplication(t *testing.T, i *service.Interfaces, a *fiber.App, u, pw string) int64 {
 	sessionCookie := LoginTestPlayer(t, a, u, pw)
 
 	url := MakeTestURL(route.Characters)
@@ -179,7 +179,7 @@ func CreateTestCharacterApplication(t *testing.T, i *interfaces.Shared, a *fiber
 	return apps[0].Request.ID
 }
 
-func DeleteTestCharacterApplication(t *testing.T, i *interfaces.Shared, rid int64) {
+func DeleteTestCharacterApplication(t *testing.T, i *service.Interfaces, rid int64) {
 	DeleteTestRequest(t, i, rid)
 
 	_, err := i.Database.Exec("DELETE FROM character_application_content WHERE id = ?;", rid)
@@ -193,7 +193,7 @@ func DeleteTestCharacterApplication(t *testing.T, i *interfaces.Shared, rid int6
 	}
 }
 
-func DeleteTestRequest(t *testing.T, i *interfaces.Shared, rid int64) {
+func DeleteTestRequest(t *testing.T, i *service.Interfaces, rid int64) {
 	_, err := i.Database.Exec("DELETE FROM requests WHERE id = ?;", rid)
 	if err != nil && err != sql.ErrNoRows {
 		t.Fatal(err)
@@ -217,7 +217,7 @@ func DeleteTestRequest(t *testing.T, i *interfaces.Shared, rid int64) {
 
 type CreateTestRequestCommentParams struct {
 	T        *testing.T
-	I        *interfaces.Shared
+	I        *service.Interfaces
 	A        *fiber.App
 	Username string
 	Password string
@@ -245,13 +245,13 @@ func CreateTestRequestComment(params CreateTestRequestCommentParams) {
 	}
 }
 
-func FlushTestRedis(t *testing.T, i *interfaces.Shared) {
+func FlushTestRedis(t *testing.T, i *service.Interfaces) {
 	if err := i.Redis.FlushAll(context.Background()).Err(); err != nil {
 		t.Fatal(err)
 	}
 }
 
-func ListEmailsForPlayer(t *testing.T, i *interfaces.Shared, username string) []query.Email {
+func ListEmailsForPlayer(t *testing.T, i *service.Interfaces, username string) []query.Email {
 	p, err := i.Queries.GetPlayerByUsername(context.Background(), username)
 	if err != nil {
 		t.Fatal(err)
@@ -269,7 +269,7 @@ type CreateTestRoomParams struct {
 	Size        int32
 }
 
-func CreateTestRoom(t *testing.T, i *interfaces.Shared, p CreateTestRoomParams) int64 {
+func CreateTestRoom(t *testing.T, i *service.Interfaces, p CreateTestRoomParams) int64 {
 	result, err := i.Queries.CreateRoom(context.Background(), query.CreateRoomParams{
 		Title:       p.Title,
 		Description: p.Description,
@@ -287,14 +287,14 @@ func CreateTestRoom(t *testing.T, i *interfaces.Shared, p CreateTestRoomParams) 
 	return rid
 }
 
-func DeleteTestRoom(t *testing.T, i *interfaces.Shared, id int64) {
+func DeleteTestRoom(t *testing.T, i *service.Interfaces, id int64) {
 	_, err := i.Database.Exec("DELETE FROM rooms WHERE id = ?;", id)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func DeleteTestUnmodifiedRooms(t *testing.T, i *interfaces.Shared) {
+func DeleteTestUnmodifiedRooms(t *testing.T, i *service.Interfaces) {
 	// TODO: Get a helper to delete rooms that are orphaned, off-grid, closely resemble the base room, etc
 	_, err := i.Database.Exec("DELETE FROM rooms WHERE unmodified = true;")
 	if err != nil {
@@ -309,7 +309,7 @@ type CreateTestActorImageParams struct {
 	Description      string
 }
 
-func CreateTestActorImage(t *testing.T, i *interfaces.Shared, p CreateTestActorImageParams) int64 {
+func CreateTestActorImage(t *testing.T, i *service.Interfaces, p CreateTestActorImageParams) int64 {
 	result, err := i.Queries.CreateActorImage(context.Background(), query.CreateActorImageParams{
 		Gender:           p.Gender,
 		Name:             p.Name,
@@ -326,14 +326,14 @@ func CreateTestActorImage(t *testing.T, i *interfaces.Shared, p CreateTestActorI
 	return rid
 }
 
-func DeleteTestActorImage(t *testing.T, i *interfaces.Shared, aiid int64) {
+func DeleteTestActorImage(t *testing.T, i *service.Interfaces, aiid int64) {
 	_, err := i.Database.Exec("DELETE FROM actor_images WHERE id = ?;", aiid)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func DeleteTestActorImageByName(t *testing.T, i *interfaces.Shared, name string) {
+func DeleteTestActorImageByName(t *testing.T, i *service.Interfaces, name string) {
 	_, err := i.Database.Exec("DELETE FROM actor_images WHERE name = ?;", name)
 	if err != nil {
 		t.Fatal(err)
@@ -362,7 +362,7 @@ type CreateTestHelpFileParams struct {
 	PID      int64
 }
 
-func CreateTestHelpFile(t *testing.T, i *interfaces.Shared, p CreateTestHelpFileParams) {
+func CreateTestHelpFile(t *testing.T, i *service.Interfaces, p CreateTestHelpFileParams) {
 	_, err := i.Database.Exec(
 		"INSERT INTO help (slug, title, sub, category, pid, raw, html) VALUES (?, ?, ?, ?, ?, ?, ?);",
 		p.Slug,
@@ -402,7 +402,7 @@ func CreateTestHelpFile(t *testing.T, i *interfaces.Shared, p CreateTestHelpFile
 	}
 }
 
-func DeleteTestHelpFile(t *testing.T, i *interfaces.Shared, slug string) {
+func DeleteTestHelpFile(t *testing.T, i *service.Interfaces, slug string) {
 	_, err := i.Database.Exec("DELETE FROM help WHERE slug = ?;", slug)
 	if err != nil {
 		t.Fatal(err)

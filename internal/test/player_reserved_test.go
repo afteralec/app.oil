@@ -12,12 +12,12 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestReservedConflict(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -45,7 +45,7 @@ func TestReservedConflict(t *testing.T) {
 }
 
 func TestReservedFatal(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 
 	config := config.Fiber()
 	a := fiber.New(config)
@@ -70,7 +70,7 @@ func TestReservedFatal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	i = interfaces.SetupShared()
+	i = service.NewInterfaces()
 	defer i.Close()
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
@@ -78,7 +78,7 @@ func TestReservedFatal(t *testing.T) {
 }
 
 func TestReservedOK(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	config := config.Fiber()

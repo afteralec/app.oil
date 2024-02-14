@@ -9,15 +9,15 @@ import (
 
 	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/header"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/player/password"
 	"petrichormud.com/app/internal/player/username"
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/service"
 )
 
-func Register(i *interfaces.Shared) fiber.Handler {
+func Register(i *service.Interfaces) fiber.Handler {
 	type Player struct {
 		Username        string `form:"username"`
 		Password        string `form:"password"`

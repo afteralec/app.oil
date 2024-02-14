@@ -15,14 +15,14 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/interfaces"
 	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/room"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestRoomsPageUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -41,7 +41,7 @@ func TestRoomsPageUnauthorized(t *testing.T) {
 }
 
 func TestRoomsPageForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -67,7 +67,7 @@ func TestRoomsPageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestRoomsPageSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -93,7 +93,7 @@ func TestRoomsPageSuccess(t *testing.T) {
 }
 
 func TestRoomPageUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -120,7 +120,7 @@ func TestRoomPageUnauthorized(t *testing.T) {
 }
 
 func TestRoomPageForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -148,7 +148,7 @@ func TestRoomPageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestRoomPageNotFound(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -178,7 +178,7 @@ func TestRoomPageNotFound(t *testing.T) {
 }
 
 func TestRoomPageSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -208,7 +208,7 @@ func TestRoomPageSuccess(t *testing.T) {
 }
 
 func TestNewRoomUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -229,7 +229,7 @@ func TestNewRoomUnauthorized(t *testing.T) {
 }
 
 func TestNewRoomForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -256,7 +256,7 @@ func TestNewRoomForbiddenNoPermission(t *testing.T) {
 }
 
 func TestNewRoomSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -284,7 +284,7 @@ func TestNewRoomSuccess(t *testing.T) {
 }
 
 func TestNewRoomWithLinkUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -315,7 +315,7 @@ func TestNewRoomWithLinkUnauthorized(t *testing.T) {
 }
 
 func TestNewRoomWithLinkForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -352,7 +352,7 @@ func TestNewRoomWithLinkForbiddenNoPermission(t *testing.T) {
 }
 
 func TestNewRoomWithLinkNotFoundInvalidRID(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -393,7 +393,7 @@ func TestNewRoomWithLinkNotFoundInvalidRID(t *testing.T) {
 }
 
 func TestNewRoomWithLinkBadRequestInvalidDirection(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -431,7 +431,7 @@ func TestNewRoomWithLinkBadRequestInvalidDirection(t *testing.T) {
 }
 
 func TestNewRoomWithLinkSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -468,7 +468,7 @@ func TestNewRoomWithLinkSuccess(t *testing.T) {
 }
 
 func TestEditRoomPageUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -491,7 +491,7 @@ func TestEditRoomPageUnauthorized(t *testing.T) {
 }
 
 func TestEditRoomPageForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -519,7 +519,7 @@ func TestEditRoomPageForbiddenNoPermission(t *testing.T) {
 }
 
 func TestEditRoomPageSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -549,7 +549,7 @@ func TestEditRoomPageSuccess(t *testing.T) {
 }
 
 func TestEditRoomExitUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -583,7 +583,7 @@ func TestEditRoomExitUnauthorized(t *testing.T) {
 }
 
 func TestEditRoomExitForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -621,7 +621,7 @@ func TestEditRoomExitForbiddenNoPermission(t *testing.T) {
 }
 
 func TestEditRoomExitRoomNotFound(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -659,7 +659,7 @@ func TestEditRoomExitRoomNotFound(t *testing.T) {
 }
 
 func TestEditRoomExitBadRequestLinkToSelf(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -697,7 +697,7 @@ func TestEditRoomExitBadRequestLinkToSelf(t *testing.T) {
 }
 
 func TestEditRoomExitBadRequestInvalidID(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -735,7 +735,7 @@ func TestEditRoomExitBadRequestInvalidID(t *testing.T) {
 }
 
 func TestEditRoomExitBadRequestEmptyID(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -773,7 +773,7 @@ func TestEditRoomExitBadRequestEmptyID(t *testing.T) {
 }
 
 func TestEditRoomExitBadRequestInvalidTwoWay(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -811,7 +811,7 @@ func TestEditRoomExitBadRequestInvalidTwoWay(t *testing.T) {
 }
 
 func TestEditRoomExitSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -851,7 +851,7 @@ func TestEditRoomExitSuccess(t *testing.T) {
 }
 
 func TestClearRoomExitUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -887,7 +887,7 @@ func TestClearRoomExitUnauthorized(t *testing.T) {
 }
 
 func TestClearRoomExitForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -927,7 +927,7 @@ func TestClearRoomExitForbiddenNoPermission(t *testing.T) {
 }
 
 func TestClearRoomExitSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -969,7 +969,7 @@ func TestClearRoomExitSuccess(t *testing.T) {
 }
 
 func TestEditRoomTitleUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -998,7 +998,7 @@ func TestEditRoomTitleUnauthorized(t *testing.T) {
 }
 
 func TestEditRoomTitleForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1032,7 +1032,7 @@ func TestEditRoomTitleForbiddenNoPermission(t *testing.T) {
 }
 
 func TestEditRoomTitleNotFound(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1068,7 +1068,7 @@ func TestEditRoomTitleNotFound(t *testing.T) {
 }
 
 func TestEditRoomTitleBadRequestInvalid(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1104,7 +1104,7 @@ func TestEditRoomTitleBadRequestInvalid(t *testing.T) {
 }
 
 func TestEditRoomTitleSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1140,7 +1140,7 @@ func TestEditRoomTitleSuccess(t *testing.T) {
 }
 
 func TestEditRoomDescriptionUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1171,7 +1171,7 @@ func TestEditRoomDescriptionUnauthorized(t *testing.T) {
 }
 
 func TestEditRoomDescriptionForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1207,7 +1207,7 @@ func TestEditRoomDescriptionForbiddenNoPermission(t *testing.T) {
 }
 
 func TestEditRoomDescriptionNotFound(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1245,7 +1245,7 @@ func TestEditRoomDescriptionNotFound(t *testing.T) {
 }
 
 func TestEditRoomDescriptionBadRequestInvalid(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1281,7 +1281,7 @@ func TestEditRoomDescriptionBadRequestInvalid(t *testing.T) {
 }
 
 func TestEditRoomDescriptionSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1319,7 +1319,7 @@ func TestEditRoomDescriptionSuccess(t *testing.T) {
 }
 
 func TestEditRoomSizeUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1348,7 +1348,7 @@ func TestEditRoomSizeUnauthorized(t *testing.T) {
 }
 
 func TestEditRoomSizeForbiddenNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1382,7 +1382,7 @@ func TestEditRoomSizeForbiddenNoPermission(t *testing.T) {
 }
 
 func TestEditRoomSizeNotFound(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1418,7 +1418,7 @@ func TestEditRoomSizeNotFound(t *testing.T) {
 }
 
 func TestEditRoomSizeBadRequestInvalid(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -1454,7 +1454,7 @@ func TestEditRoomSizeBadRequestInvalid(t *testing.T) {
 }
 
 func TestEditRoomSizeSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())

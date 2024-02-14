@@ -6,12 +6,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"petrichormud.com/app/internal/interfaces"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/test"
 )
 
 func TestLinkTwoWay(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	ridOne := test.CreateTestRoom(t, &i, test.TestRoom)
@@ -55,7 +55,7 @@ func TestLinkTwoWay(t *testing.T) {
 }
 
 func TestLinkOneWay(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	ridOne := test.CreateTestRoom(t, &i, test.TestRoom)
@@ -99,7 +99,7 @@ func TestLinkOneWay(t *testing.T) {
 }
 
 func TestUnlink(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	ridOne := test.CreateTestRoom(t, &i, test.TestRoom)

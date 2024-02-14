@@ -12,12 +12,12 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestRecoverUsernamePageSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -36,7 +36,7 @@ func TestRecoverUsernamePageSuccess(t *testing.T) {
 }
 
 func TestRecoverUsernameSuccessPageFoundNoToken(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -55,7 +55,7 @@ func TestRecoverUsernameSuccessPageFoundNoToken(t *testing.T) {
 }
 
 func TestRecoverUsernameBadRequestMissingBody(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -74,7 +74,7 @@ func TestRecoverUsernameBadRequestMissingBody(t *testing.T) {
 }
 
 func TestRecoverUsernameBadRequestMalformedBody(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -100,7 +100,7 @@ func TestRecoverUsernameBadRequestMalformedBody(t *testing.T) {
 }
 
 func TestRecoverUsernameSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())

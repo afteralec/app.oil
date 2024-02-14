@@ -14,12 +14,12 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestEditEmailUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -40,7 +40,7 @@ func TestEditEmailUnauthorized(t *testing.T) {
 }
 
 func TestEditEmailMissingBody(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -62,7 +62,7 @@ func TestEditEmailMissingBody(t *testing.T) {
 }
 
 func TestEditEmailMalformedInput(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -95,7 +95,7 @@ func TestEditEmailMalformedInput(t *testing.T) {
 }
 
 func TestEditEmailFatal(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 
 	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
@@ -116,7 +116,7 @@ func TestEditEmailFatal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	i = interfaces.SetupShared()
+	i = service.NewInterfaces()
 	defer i.Close()
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
@@ -124,7 +124,7 @@ func TestEditEmailFatal(t *testing.T) {
 }
 
 func TestEditEmailUnowned(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -152,7 +152,7 @@ func TestEditEmailUnowned(t *testing.T) {
 }
 
 func TestEditEmailInvalidID(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -187,7 +187,7 @@ func TestEditEmailInvalidID(t *testing.T) {
 }
 
 func TestEditEmailNotFound(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -225,7 +225,7 @@ func TestEditEmailNotFound(t *testing.T) {
 }
 
 func TestEditEmailForbiddenUnverified(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -250,7 +250,7 @@ func TestEditEmailForbiddenUnverified(t *testing.T) {
 }
 
 func TestEditEmailConflictAlreadyVerified(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -285,7 +285,7 @@ func TestEditEmailConflictAlreadyVerified(t *testing.T) {
 }
 
 func TestEditEmailSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())

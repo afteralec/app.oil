@@ -10,13 +10,13 @@ import (
 	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/constant"
-	"petrichormud.com/app/internal/interfaces"
 	pb "petrichormud.com/app/internal/proto/sending"
+	"petrichormud.com/app/internal/service"
 )
 
 const ThirtyMinutesInNanoseconds = 30 * 60 * 1000 * 1000 * 1000
 
-func SendVerificationEmail(i *interfaces.Shared, id int64, email string) error {
+func SendVerificationEmail(i *service.Interfaces, id int64, email string) error {
 	token := uuid.NewString()
 	key := VerificationKey(token)
 	if err := Cache(i.Redis, key, id); err != nil {

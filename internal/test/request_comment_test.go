@@ -14,15 +14,15 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/interfaces"
 	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestCreateRequestCommentUnauthorized(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -59,7 +59,7 @@ func TestCreateRequestCommentUnauthorized(t *testing.T) {
 }
 
 func TestCreateRequestCommentMissingBody(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -99,7 +99,7 @@ func TestCreateRequestCommentMissingBody(t *testing.T) {
 }
 
 func TestCreateRequestCommentInvalidText(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -146,7 +146,7 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 }
 
 func TestCreateRequestCommentBadField(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -193,7 +193,7 @@ func TestCreateRequestCommentBadField(t *testing.T) {
 }
 
 func TestCreateRequestCommentNotFound(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -239,7 +239,7 @@ func TestCreateRequestCommentNotFound(t *testing.T) {
 }
 
 func TestCreateRequestCommentForbiddenOwnRequest(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -280,7 +280,7 @@ func TestCreateRequestCommentForbiddenOwnRequest(t *testing.T) {
 }
 
 func TestCreateRequestCommentNotInReview(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -319,7 +319,7 @@ func TestCreateRequestCommentNotInReview(t *testing.T) {
 }
 
 func TestCreateRequestCommentNotReviewer(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -370,7 +370,7 @@ func TestCreateRequestCommentNotReviewer(t *testing.T) {
 }
 
 func TestCreateRequestCommentNoPermission(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -414,7 +414,7 @@ func TestCreateRequestCommentNoPermission(t *testing.T) {
 }
 
 func TestCreateRequestCommentSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())

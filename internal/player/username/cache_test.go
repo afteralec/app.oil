@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"petrichormud.com/app/internal/interfaces"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestKey(t *testing.T) {
@@ -13,7 +13,7 @@ func TestKey(t *testing.T) {
 }
 
 func TestCache(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	var pid int64 = 69

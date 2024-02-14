@@ -5,14 +5,14 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/view"
 )
 
-func CharactersPage(i *interfaces.Shared) fiber.Handler {
+func CharactersPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 

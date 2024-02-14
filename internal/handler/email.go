@@ -13,17 +13,17 @@ import (
 
 	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/header"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/player/username"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/view"
 )
 
-func AddEmail(i *interfaces.Shared) fiber.Handler {
+func AddEmail(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Email string `form:"email"`
 	}
@@ -156,7 +156,7 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func EditEmail(i *interfaces.Shared) fiber.Handler {
+func EditEmail(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Email string `form:"email"`
 	}
@@ -328,7 +328,7 @@ func EditEmail(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func DeleteEmail(i *interfaces.Shared) fiber.Handler {
+func DeleteEmail(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {
@@ -424,7 +424,7 @@ func DeleteEmail(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func VerifyEmailPage(i *interfaces.Shared) fiber.Handler {
+func VerifyEmailPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {
@@ -518,7 +518,7 @@ func VerifyEmailPage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func VerifyEmail(i *interfaces.Shared) fiber.Handler {
+func VerifyEmail(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid == nil {
@@ -587,7 +587,7 @@ func VerifyEmail(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
+func ResendEmailVerification(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := util.GetID(c)
 		if err != nil {

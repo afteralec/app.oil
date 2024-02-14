@@ -8,13 +8,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/middleware/bind"
 	"petrichormud.com/app/internal/middleware/permissions"
 	"petrichormud.com/app/internal/middleware/session"
+	"petrichormud.com/app/internal/service"
 )
 
-func Middleware(a *fiber.App, i *interfaces.Shared) {
+func Middleware(a *fiber.App, i *service.Interfaces) {
 	if os.Getenv("DISABLE_LOGGING") != "true" {
 		a.Use(logger.New())
 	}

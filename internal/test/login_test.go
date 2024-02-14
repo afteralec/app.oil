@@ -13,12 +13,12 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestLoginPage(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	config := config.Fiber()
@@ -37,7 +37,7 @@ func TestLoginPage(t *testing.T) {
 }
 
 func TestLoginPageRedirectsIfAlreadyLoggedIn(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -60,7 +60,7 @@ func TestLoginPageRedirectsIfAlreadyLoggedIn(t *testing.T) {
 }
 
 func TestLoginNonExistantUser(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	config := config.Fiber()
@@ -88,7 +88,7 @@ func TestLoginNonExistantUser(t *testing.T) {
 }
 
 func TestLoginSuccess(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -118,7 +118,7 @@ func TestLoginSuccess(t *testing.T) {
 }
 
 func TestLoginUnauthorizedWrongPassword(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -148,7 +148,7 @@ func TestLoginUnauthorizedWrongPassword(t *testing.T) {
 }
 
 func TestLoginBadRequestMalformedBody(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())

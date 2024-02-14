@@ -11,15 +11,15 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/header"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/view"
 )
 
-func HelpPage(i *interfaces.Shared) fiber.Handler {
+func HelpPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tx, err := i.Database.Begin()
 		if err != nil {
@@ -58,7 +58,7 @@ func HelpPage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func HelpFilePage(i *interfaces.Shared) fiber.Handler {
+func HelpFilePage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tx, err := i.Database.Begin()
 		if err != nil {
@@ -130,7 +130,7 @@ func HelpFilePage(i *interfaces.Shared) fiber.Handler {
 	}
 }
 
-func SearchHelp(i *interfaces.Shared) fiber.Handler {
+func SearchHelp(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Search   string `form:"search"`
 		Title    bool   `form:"title"`

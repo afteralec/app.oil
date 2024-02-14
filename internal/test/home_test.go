@@ -10,12 +10,12 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/interfaces"
 	route "petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestHomePage(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	config := config.Fiber()

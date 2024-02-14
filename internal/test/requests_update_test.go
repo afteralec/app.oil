@@ -13,13 +13,13 @@ import (
 
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 )
 
 func TestUpdateRequestFieldUnauthorizedNotLoggedIn(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -50,7 +50,7 @@ func TestUpdateRequestFieldUnauthorizedNotLoggedIn(t *testing.T) {
 }
 
 func TestUpdateRequestFieldBadRequestNotFound(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -84,7 +84,7 @@ func TestUpdateRequestFieldBadRequestNotFound(t *testing.T) {
 }
 
 func TestUpdateRequestFieldFatal(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 
 	a := fiber.New(config.Fiber())
 	app.Middleware(a, &i)
@@ -115,7 +115,7 @@ func TestUpdateRequestFieldFatal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	i = interfaces.SetupShared()
+	i = service.NewInterfaces()
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
@@ -123,7 +123,7 @@ func TestUpdateRequestFieldFatal(t *testing.T) {
 }
 
 func TestUpdateRequestFieldForbiddenUnowned(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -160,7 +160,7 @@ func TestUpdateRequestFieldForbiddenUnowned(t *testing.T) {
 }
 
 func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -199,7 +199,7 @@ func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
 }
 
 func TestUpdateRequestFieldBadRequestMissingBody(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())
@@ -227,7 +227,7 @@ func TestUpdateRequestFieldBadRequestMissingBody(t *testing.T) {
 }
 
 func TestUpdateRequestBadRequestFieldMalformedBody(t *testing.T) {
-	i := interfaces.SetupShared()
+	i := service.NewInterfaces()
 	defer i.Close()
 
 	a := fiber.New(config.Fiber())

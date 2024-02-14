@@ -11,11 +11,11 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/player/password"
 	playerpermission "petrichormud.com/app/internal/player/permission"
 	"petrichormud.com/app/internal/player/username"
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/service"
 )
 
 var playerCmd = &cobra.Command{
@@ -52,10 +52,10 @@ var addPlayerCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if err = interfaces.SetupDB(db); err != nil {
+		if err = service.SetupDB(db); err != nil {
 			return errors.New("error while setting up DB")
 		}
-		if err = interfaces.PingDB(db); err != nil {
+		if err = service.PingDB(db); err != nil {
 			return errors.New("error while pinging DB")
 		}
 
@@ -130,10 +130,10 @@ var grantPlayerPermissionCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if err = interfaces.SetupDB(db); err != nil {
+		if err = service.SetupDB(db); err != nil {
 			return errors.New("error while setting up DB")
 		}
-		if err = interfaces.PingDB(db); err != nil {
+		if err = service.PingDB(db); err != nil {
 			return errors.New("error while pinging DB")
 		}
 
@@ -210,10 +210,10 @@ var listPlayerPermissionCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if err = interfaces.SetupDB(db); err != nil {
+		if err = service.SetupDB(db); err != nil {
 			return errors.New("error while setting up DB")
 		}
-		if err = interfaces.PingDB(db); err != nil {
+		if err = service.PingDB(db); err != nil {
 			return errors.New("error while pinging DB")
 		}
 

@@ -9,7 +9,7 @@ import (
 	redis "github.com/redis/go-redis/v9"
 
 	"petrichormud.com/app/internal/constant"
-	"petrichormud.com/app/internal/interfaces"
+	"petrichormud.com/app/internal/service"
 )
 
 const (
@@ -17,7 +17,7 @@ const (
 	FiveMinutesInNanoSeconds    = 5 * 60 * 1000 * 1000 * 1000
 )
 
-func Get(i *interfaces.Shared, pid int64) (string, error) {
+func Get(i *service.Interfaces, pid int64) (string, error) {
 	key := Key(pid)
 	username, err := i.Redis.Get(context.Background(), key).Result()
 	if err != nil {

@@ -7,15 +7,15 @@ import (
 
 	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/header"
-	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
+	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/util"
 )
 
-func SetTheme(i *interfaces.Shared) fiber.Handler {
+func SetTheme(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		theme := c.Params("theme")
 		if len(theme) == 0 {
