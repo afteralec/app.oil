@@ -17,6 +17,12 @@ import (
 	"petrichormud.com/app/internal/view"
 )
 
+func RecoverPage() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.Render(view.Recover, view.Bind(c), layout.Standalone)
+	}
+}
+
 func SearchPlayer(i *interfaces.Shared) fiber.Handler {
 	type input struct {
 		Search string `form:"search"`

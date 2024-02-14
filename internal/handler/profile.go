@@ -14,7 +14,6 @@ import (
 )
 
 // TODO: Add the Avatar section back into the profile with just Gravatar
-// TODO: Add a section for changing your Username and Password
 func ProfilePage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
