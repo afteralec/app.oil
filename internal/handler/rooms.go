@@ -15,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/room"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/views"
 )
@@ -52,11 +52,11 @@ func RoomsPage(i *interfaces.Shared) fiber.Handler {
 				"Title":      sb.String(),
 				"Size":       record.Size,
 				"SizeString": room.SizeToString(record.Size),
-				"Path":       routes.RoomPath(record.ID),
+				"Path":       route.RoomPath(record.ID),
 			}
 
 			if perms.HasPermission(permissions.PlayerCreateRoomName) {
-				pageRoom["EditPath"] = routes.EditRoomPath(record.ID)
+				pageRoom["EditPath"] = route.EditRoomPath(record.ID)
 			}
 
 			pageRooms = append(pageRooms, pageRoom)
@@ -109,7 +109,7 @@ func RoomPage(i *interfaces.Shared) fiber.Handler {
 
 		b := views.Bind(c)
 		b["NavBack"] = fiber.Map{
-			"Path":  routes.Rooms,
+			"Path":  route.Rooms,
 			"Label": "Back to Rooms",
 		}
 		b["PageHeader"] = fiber.Map{
@@ -469,7 +469,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusCreated)
-		c.Append("HX-Redirect", routes.EditRoomPath(rid))
+		c.Append("HX-Redirect", route.EditRoomPath(rid))
 		c.Append("HX-Reswap", "none")
 		return nil
 	}
@@ -544,7 +544,7 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 		b := views.Bind(c)
 		// TODO: Get a bind function for this
 		b["NavBack"] = fiber.Map{
-			"Path":  routes.Rooms,
+			"Path":  route.Rooms,
 			"Label": "Back to Rooms",
 		}
 		// TODO: Get a bind function for this too
@@ -554,11 +554,11 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 		}
 		b["RoomGrid"] = grid
 		b["Title"] = rm.Title
-		b["TitlePath"] = routes.RoomTitlePath(rm.ID)
+		b["TitlePath"] = route.RoomTitlePath(rm.ID)
 		b["Description"] = rm.Description
-		b["DescriptionPath"] = routes.RoomDescriptionPath(rm.ID)
+		b["DescriptionPath"] = route.RoomDescriptionPath(rm.ID)
 		b["Size"] = rm.Size
-		b["SizePath"] = routes.RoomSizePath(rm.ID)
+		b["SizePath"] = route.RoomSizePath(rm.ID)
 		b = room.BindSizeRadioGroup(b, &rm)
 		// TODO: I don't think these individual dirs are needed
 		b["North"] = rm.North
@@ -1188,7 +1188,7 @@ func EditRoomTitle(i *interfaces.Shared) fiber.Handler {
 			"SubTitle": "Update room properties here",
 		}
 		b["Title"] = rm.Title
-		b["TitlePath"] = routes.RoomTitlePath(rmid)
+		b["TitlePath"] = route.RoomTitlePath(rmid)
 		b["NoticeSection"] = partial.BindNoticeSection(partial.BindNoticeSectionParams{
 			Success:      true,
 			SectionID:    "room-edit-title-notice",
@@ -1285,7 +1285,7 @@ func EditRoomDescription(i *interfaces.Shared) fiber.Handler {
 
 		b := fiber.Map{}
 		b["Description"] = rm.Description
-		b["DescriptionPath"] = routes.RoomDescriptionPath(rmid)
+		b["DescriptionPath"] = route.RoomDescriptionPath(rmid)
 		b["NoticeSection"] = partial.BindNoticeSection(partial.BindNoticeSectionParams{
 			Success:      true,
 			SectionID:    "room-edit-title-notice",
@@ -1382,7 +1382,7 @@ func EditRoomSize(i *interfaces.Shared) fiber.Handler {
 
 		b := fiber.Map{}
 		b["Size"] = rm.Size
-		b["SizePath"] = routes.RoomSizePath(rmid)
+		b["SizePath"] = route.RoomSizePath(rmid)
 		b = room.BindSizeRadioGroup(b, &rm)
 		b["NoticeSection"] = partial.BindNoticeSection(partial.BindNoticeSectionParams{
 			Success:      true,

@@ -18,7 +18,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/room"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestRoomsPageUnauthorized(t *testing.T) {
@@ -29,7 +29,7 @@ func TestRoomsPageUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.Rooms)
+	url := MakeTestURL(route.Rooms)
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
@@ -53,7 +53,7 @@ func TestRoomsPageForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.Rooms)
+	url := MakeTestURL(route.Rooms)
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -81,7 +81,7 @@ func TestRoomsPageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.Rooms)
+	url := MakeTestURL(route.Rooms)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -107,7 +107,7 @@ func TestRoomPageUnauthorized(t *testing.T) {
 	prid := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerViewAllRoomsName)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 
-	url := MakeTestURL(routes.RoomPath(rmid))
+	url := MakeTestURL(route.RoomPath(rmid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 
@@ -134,7 +134,7 @@ func TestRoomPageForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomPath(rmid))
+	url := MakeTestURL(route.RoomPath(rmid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -164,7 +164,7 @@ func TestRoomPageNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomPath(rmid + 1))
+	url := MakeTestURL(route.RoomPath(rmid + 1))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -195,7 +195,7 @@ func TestRoomPageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomPath(rmid))
+	url := MakeTestURL(route.RoomPath(rmid))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -215,7 +215,7 @@ func TestNewRoomUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.Rooms)
+	url := MakeTestURL(route.Rooms)
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
@@ -241,7 +241,7 @@ func TestNewRoomForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.Rooms)
+	url := MakeTestURL(route.Rooms)
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -269,7 +269,7 @@ func TestNewRoomSuccess(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.Rooms)
+	url := MakeTestURL(route.Rooms)
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -294,7 +294,7 @@ func TestNewRoomWithLinkUnauthorized(t *testing.T) {
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
 
-	url := MakeTestURL(routes.Rooms)
+	url := MakeTestURL(route.Rooms)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -330,7 +330,7 @@ func TestNewRoomWithLinkForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.Rooms)
+	url := MakeTestURL(route.Rooms)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -368,7 +368,7 @@ func TestNewRoomWithLinkNotFoundInvalidRID(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.Rooms)
+	url := MakeTestURL(route.Rooms)
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%d", rid+100)
@@ -409,7 +409,7 @@ func TestNewRoomWithLinkBadRequestInvalidDirection(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.Rooms)
+	url := MakeTestURL(route.Rooms)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -447,7 +447,7 @@ func TestNewRoomWithLinkSuccess(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.Rooms)
+	url := MakeTestURL(route.Rooms)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -478,7 +478,7 @@ func TestEditRoomPageUnauthorized(t *testing.T) {
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
 
-	url := MakeTestURL(routes.EditRoomPath(rid))
+	url := MakeTestURL(route.EditRoomPath(rid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 
@@ -505,7 +505,7 @@ func TestEditRoomPageForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EditRoomPath(rid))
+	url := MakeTestURL(route.EditRoomPath(rid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -535,7 +535,7 @@ func TestEditRoomPageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EditRoomPath(rid))
+	url := MakeTestURL(route.EditRoomPath(rid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -561,7 +561,7 @@ func TestEditRoomExitUnauthorized(t *testing.T) {
 	ridTwo := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, ridTwo)
 
-	url := MakeTestURL(routes.RoomExitsPath(ridOne))
+	url := MakeTestURL(route.RoomExitsPath(ridOne))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -599,7 +599,7 @@ func TestEditRoomExitForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomExitsPath(ridOne))
+	url := MakeTestURL(route.RoomExitsPath(ridOne))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -637,7 +637,7 @@ func TestEditRoomExitRoomNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomExitsPath(rid))
+	url := MakeTestURL(route.RoomExitsPath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -675,7 +675,7 @@ func TestEditRoomExitBadRequestLinkToSelf(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomExitsPath(rid))
+	url := MakeTestURL(route.RoomExitsPath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -713,7 +713,7 @@ func TestEditRoomExitBadRequestInvalidID(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomExitsPath(ridOne))
+	url := MakeTestURL(route.RoomExitsPath(ridOne))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -751,7 +751,7 @@ func TestEditRoomExitBadRequestEmptyID(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomExitsPath(ridOne))
+	url := MakeTestURL(route.RoomExitsPath(ridOne))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -789,7 +789,7 @@ func TestEditRoomExitBadRequestInvalidTwoWay(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomExitsPath(rid))
+	url := MakeTestURL(route.RoomExitsPath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -829,7 +829,7 @@ func TestEditRoomExitSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomExitsPath(ridOne))
+	url := MakeTestURL(route.RoomExitsPath(ridOne))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -873,7 +873,7 @@ func TestClearRoomExitUnauthorized(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url := MakeTestURL(routes.RoomExitPath(ridOne, room.DirectionNorth))
+	url := MakeTestURL(route.RoomExitPath(ridOne, room.DirectionNorth))
 
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 
@@ -913,7 +913,7 @@ func TestClearRoomExitForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomExitPath(ridOne, room.DirectionNorth))
+	url := MakeTestURL(route.RoomExitPath(ridOne, room.DirectionNorth))
 
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
@@ -955,7 +955,7 @@ func TestClearRoomExitSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomExitPath(ridOne, room.DirectionNorth))
+	url := MakeTestURL(route.RoomExitPath(ridOne, room.DirectionNorth))
 
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
@@ -979,7 +979,7 @@ func TestEditRoomTitleUnauthorized(t *testing.T) {
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
 
-	url := MakeTestURL(routes.RoomTitlePath(rid))
+	url := MakeTestURL(route.RoomTitlePath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1012,7 +1012,7 @@ func TestEditRoomTitleForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomTitlePath(rid))
+	url := MakeTestURL(route.RoomTitlePath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1048,7 +1048,7 @@ func TestEditRoomTitleNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomTitlePath(rid + 1000))
+	url := MakeTestURL(route.RoomTitlePath(rid + 1000))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1084,7 +1084,7 @@ func TestEditRoomTitleBadRequestInvalid(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomTitlePath(rid))
+	url := MakeTestURL(route.RoomTitlePath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1120,7 +1120,7 @@ func TestEditRoomTitleSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomTitlePath(rid))
+	url := MakeTestURL(route.RoomTitlePath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1150,7 +1150,7 @@ func TestEditRoomDescriptionUnauthorized(t *testing.T) {
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
 
-	url := MakeTestURL(routes.RoomDescriptionPath(rid))
+	url := MakeTestURL(route.RoomDescriptionPath(rid))
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s And has changes.", TestRoom.Description)
@@ -1185,7 +1185,7 @@ func TestEditRoomDescriptionForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomDescriptionPath(rid))
+	url := MakeTestURL(route.RoomDescriptionPath(rid))
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s And has changes.", TestRoom.Description)
@@ -1223,7 +1223,7 @@ func TestEditRoomDescriptionNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomDescriptionPath(rid + 1000))
+	url := MakeTestURL(route.RoomDescriptionPath(rid + 1000))
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s And has changes.", TestRoom.Description)
@@ -1261,7 +1261,7 @@ func TestEditRoomDescriptionBadRequestInvalid(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomDescriptionPath(rid))
+	url := MakeTestURL(route.RoomDescriptionPath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1297,7 +1297,7 @@ func TestEditRoomDescriptionSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomDescriptionPath(rid))
+	url := MakeTestURL(route.RoomDescriptionPath(rid))
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s And has changes.", TestRoom.Description)
@@ -1329,7 +1329,7 @@ func TestEditRoomSizeUnauthorized(t *testing.T) {
 	rid := CreateTestRoom(t, &i, TestRoom)
 	defer DeleteTestRoom(t, &i, rid)
 
-	url := MakeTestURL(routes.RoomSizePath(rid))
+	url := MakeTestURL(route.RoomSizePath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1362,7 +1362,7 @@ func TestEditRoomSizeForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomSizePath(rid))
+	url := MakeTestURL(route.RoomSizePath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1398,7 +1398,7 @@ func TestEditRoomSizeNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomSizePath(rid + 1000))
+	url := MakeTestURL(route.RoomSizePath(rid + 1000))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1434,7 +1434,7 @@ func TestEditRoomSizeBadRequestInvalid(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomSizePath(rid))
+	url := MakeTestURL(route.RoomSizePath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1470,7 +1470,7 @@ func TestEditRoomSizeSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RoomSizePath(rid))
+	url := MakeTestURL(route.RoomSizePath(rid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)

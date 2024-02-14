@@ -15,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/views"
 )
 
@@ -48,7 +48,7 @@ func HelpPage(i *interfaces.Shared) fiber.Handler {
 				"Sub":      header.Sub,
 				"Category": header.Category,
 				"Tags":     tags,
-				"Path":     routes.HelpFilePath(header.Slug),
+				"Path":     route.HelpFilePath(header.Slug),
 			})
 		}
 
@@ -112,7 +112,7 @@ func HelpFilePage(i *interfaces.Shared) fiber.Handler {
 			related = append(related, fiber.Map{
 				"Title": record.RelatedTitle,
 				"Sub":   record.RelatedSub,
-				"Path":  routes.HelpFilePath(record.RelatedSlug),
+				"Path":  route.HelpFilePath(record.RelatedSlug),
 			})
 		}
 
@@ -121,7 +121,7 @@ func HelpFilePage(i *interfaces.Shared) fiber.Handler {
 		b["Content"] = html
 		b["Related"] = related
 		// TODO: Once the help path can take a query string, save the last state of the session's help path
-		b["HelpPath"] = routes.Help
+		b["HelpPath"] = route.Help
 		b["HelpTitle"] = help.Title
 		b["Sub"] = help.Sub
 		b["Category"] = help.Category
@@ -242,7 +242,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					"Sub":      hdr.Sub,
 					"Category": hdr.Category,
 					"Tags":     tags,
-					"Path":     routes.HelpFilePath(hdr.Slug),
+					"Path":     route.HelpFilePath(hdr.Slug),
 				})
 			}
 
@@ -304,7 +304,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					"Sub":      hdr.Sub,
 					"Category": hdr.Category,
 					"Tags":     tags,
-					"Path":     routes.HelpFilePath(hdr.Slug),
+					"Path":     route.HelpFilePath(hdr.Slug),
 				})
 			}
 
@@ -363,7 +363,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					"Sub":      hdr.Sub,
 					"Category": hdr.Category,
 					"Tags":     tags,
-					"Path":     routes.HelpFilePath(hdr.Slug),
+					"Path":     route.HelpFilePath(hdr.Slug),
 				})
 			}
 
@@ -422,7 +422,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					"Sub":      hdr.Sub,
 					"Category": hdr.Category,
 					"Tags":     tags,
-					"Path":     routes.HelpFilePath(hdr.Slug),
+					"Path":     route.HelpFilePath(hdr.Slug),
 				})
 			}
 

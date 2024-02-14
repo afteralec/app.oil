@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestPlayerPermissionsPageUnauthorized(t *testing.T) {
@@ -24,7 +24,7 @@ func TestPlayerPermissionsPageUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.PlayerPermissions)
+	url := MakeTestURL(route.PlayerPermissions)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -47,7 +47,7 @@ func TestPlayerPermissionsPageForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.PlayerPermissions)
+	url := MakeTestURL(route.PlayerPermissions)
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -75,7 +75,7 @@ func TestPlayerPermissionsPageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.PlayerPermissions)
+	url := MakeTestURL(route.PlayerPermissions)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -97,7 +97,7 @@ func TestPlayerPermissionsDetailPageUnauthorized(t *testing.T) {
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	url := MakeTestURL(routes.PlayerPermissionsDetailPath(strconv.FormatInt(pid, 10)))
+	url := MakeTestURL(route.PlayerPermissionsDetailPath(strconv.FormatInt(pid, 10)))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -123,7 +123,7 @@ func TestPlayerPermissionsDetailPageForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.PlayerPermissionsDetailPath(strconv.FormatInt(pid, 10)))
+	url := MakeTestURL(route.PlayerPermissionsDetailPath(strconv.FormatInt(pid, 10)))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -151,7 +151,7 @@ func TestPlayerPermissionsDetailPageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.PlayerPermissionsDetailPath(TestUsername))
+	url := MakeTestURL(route.PlayerPermissionsDetailPath(TestUsername))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)

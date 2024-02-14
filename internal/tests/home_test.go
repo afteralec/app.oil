@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	route "petrichormud.com/app/internal/route"
 )
 
 func TestHomePage(t *testing.T) {
@@ -23,7 +23,7 @@ func TestHomePage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	req := httptest.NewRequest(http.MethodGet, MakeTestURL(routes.Home), nil)
+	req := httptest.NewRequest(http.MethodGet, MakeTestURL(route.Home), nil)
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)

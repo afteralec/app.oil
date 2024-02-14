@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestReservedConflict(t *testing.T) {
@@ -32,7 +32,7 @@ func TestReservedConflict(t *testing.T) {
 	writer.WriteField("username", TestUsername)
 	writer.Close()
 
-	url := MakeTestURL(routes.Reserved)
+	url := MakeTestURL(route.Reserved)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
@@ -61,7 +61,7 @@ func TestReservedFatal(t *testing.T) {
 	writer.WriteField("username", TestUsername)
 	writer.Close()
 
-	url := MakeTestURL(routes.Reserved)
+	url := MakeTestURL(route.Reserved)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
@@ -91,7 +91,7 @@ func TestReservedOK(t *testing.T) {
 	writer.WriteField("username", TestUsername)
 	writer.Close()
 
-	url := MakeTestURL(routes.Reserved)
+	url := MakeTestURL(route.Reserved)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := a.Test(req)

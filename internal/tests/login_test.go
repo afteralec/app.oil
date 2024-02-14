@@ -14,7 +14,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestLoginPage(t *testing.T) {
@@ -26,7 +26,7 @@ func TestLoginPage(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.Login)
+	url := MakeTestURL(route.Login)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -49,7 +49,7 @@ func TestLoginPageRedirectsIfAlreadyLoggedIn(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	req := httptest.NewRequest(http.MethodGet, MakeTestURL(routes.Login), nil)
+	req := httptest.NewRequest(http.MethodGet, MakeTestURL(route.Login), nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
 	if err != nil {
@@ -68,7 +68,7 @@ func TestLoginNonExistantUser(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.Login)
+	url := MakeTestURL(route.Login)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -98,7 +98,7 @@ func TestLoginSuccess(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	url := MakeTestURL(routes.Login)
+	url := MakeTestURL(route.Login)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -128,7 +128,7 @@ func TestLoginUnauthorizedWrongPassword(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	url := MakeTestURL(routes.Login)
+	url := MakeTestURL(route.Login)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -158,7 +158,7 @@ func TestLoginBadRequestMalformedBody(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	url := MakeTestURL(routes.Login)
+	url := MakeTestURL(route.Login)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -183,7 +183,7 @@ func CallLogin(t *testing.T, app *fiber.App, u string, pw string) *http.Response
 	writer.WriteField("password", pw)
 	writer.Close()
 
-	url := MakeTestURL(routes.Login)
+	url := MakeTestURL(route.Login)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)

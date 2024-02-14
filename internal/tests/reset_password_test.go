@@ -16,7 +16,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestResetPasswordPage(t *testing.T) {
@@ -28,7 +28,7 @@ func TestResetPasswordPage(t *testing.T) {
 	app.Handlers(a, &i)
 
 	id := uuid.NewString()
-	url := MakeTestURL(fmt.Sprintf("%s?t=%s", routes.ResetPassword, id))
+	url := MakeTestURL(fmt.Sprintf("%s?t=%s", route.ResetPassword, id))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -46,7 +46,7 @@ func TestResetPasswordSuccessPageSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.ResetPasswordSuccess)
+	url := MakeTestURL(route.ResetPasswordSuccess)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -64,7 +64,7 @@ func TestResetPasswordMissingBody(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.ResetPassword)
+	url := MakeTestURL(route.ResetPassword)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := a.Test(req)
@@ -88,7 +88,7 @@ func TestResetPasswordMalformedBody(t *testing.T) {
 	writer.WriteField("notusername", "notausername")
 	writer.Close()
 
-	url := MakeTestURL(routes.ResetPassword)
+	url := MakeTestURL(route.ResetPassword)
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -125,7 +125,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 	writer.WriteField("confirm", TestPassword)
 	writer.Close()
 
-	url := MakeTestURL(routes.RecoverPassword)
+	url := MakeTestURL(route.RecoverPassword)
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())

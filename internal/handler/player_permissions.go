@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/views"
 )
 
@@ -128,7 +128,7 @@ func PlayerPermissionsDetailPage(i *interfaces.Shared) fiber.Handler {
 				"Tag":      perm.Tag,
 				"Title":    perm.Title,
 				"About":    perm.About,
-				"Link":     routes.PlayerPermissionsTogglePath(strconv.FormatInt(p.ID, 10), perm.Tag),
+				"Link":     route.PlayerPermissionsTogglePath(strconv.FormatInt(p.ID, 10), perm.Tag),
 				"Granted":  granted,
 				"Disabled": disabled,
 			}

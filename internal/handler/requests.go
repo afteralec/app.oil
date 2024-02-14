@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/request"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/views"
 )
@@ -80,7 +80,7 @@ func NewRequest(i *interfaces.Shared) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusCreated)
-		c.Append("HX-Redirect", routes.RequestPath(rid))
+		c.Append("HX-Redirect", route.RequestPath(rid))
 		return nil
 	}
 }
@@ -129,7 +129,7 @@ func NewCharacterApplication(i *interfaces.Shared) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusCreated)
-		c.Append("HX-Redirect", routes.RequestPath(rid))
+		c.Append("HX-Redirect", route.RequestPath(rid))
 		return nil
 	}
 }
@@ -214,7 +214,7 @@ func RequestFieldPage(i *interfaces.Shared) fiber.Handler {
 		}
 
 		if req.Status == request.StatusIncomplete {
-			return c.Redirect(routes.RequestPath(rid))
+			return c.Redirect(route.RequestPath(rid))
 		}
 
 		view := request.GetView(req.Type, field)
@@ -236,9 +236,9 @@ func RequestFieldPage(i *interfaces.Shared) fiber.Handler {
 		b["RequestFormID"] = request.FormID
 
 		b["UpdateButtonText"] = "Update"
-		b["BackLink"] = routes.RequestPath(rid)
+		b["BackLink"] = route.RequestPath(rid)
 
-		b["RequestFormPath"] = routes.RequestFieldPath(rid, field)
+		b["RequestFormPath"] = route.RequestFieldPath(rid, field)
 		b["Field"] = field
 
 		// TODO: Validate this? i.e., make sure that the content map actually has this in there
@@ -343,7 +343,7 @@ func RequestPage(i *interfaces.Shared) fiber.Handler {
 				b["UpdateButtonText"] = "Next"
 			}
 
-			b["RequestFormPath"] = routes.RequestFieldPath(req.ID, field)
+			b["RequestFormPath"] = route.RequestFieldPath(req.ID, field)
 			b["Field"] = field
 			b["FieldValue"] = ""
 
@@ -482,7 +482,7 @@ func UpdateRequestField(i *interfaces.Shared) fiber.Handler {
 			// TODO: Boost this using the same handler logic for the request page?
 			c.Append("HX-Refresh", "true")
 		} else {
-			c.Append("HX-Redirect", routes.RequestPath(rid))
+			c.Append("HX-Redirect", route.RequestPath(rid))
 		}
 
 		return nil

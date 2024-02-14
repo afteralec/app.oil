@@ -14,7 +14,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestAddEmailSuccess(t *testing.T) {
@@ -132,7 +132,7 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	writer.WriteField("notemail", "blahblahblah")
 	writer.Close()
 
-	url := fmt.Sprintf("%s%s", TestURL, routes.NewEmailPath())
+	url := fmt.Sprintf("%s%s", TestURL, route.NewEmailPath())
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)

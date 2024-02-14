@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestRecoverPageSuccess(t *testing.T) {
@@ -22,7 +22,7 @@ func TestRecoverPageSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.Recover)
+	url := MakeTestURL(route.Recover)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 
 	res, err := a.Test(req)

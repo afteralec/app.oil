@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestProfilePageUnauthorizedNotLoggedIn(t *testing.T) {
@@ -22,7 +22,7 @@ func TestProfilePageUnauthorizedNotLoggedIn(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.Profile)
+	url := MakeTestURL(route.Profile)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 
 	res, err := a.Test(req)
@@ -46,7 +46,7 @@ func TestProfilePageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.Profile)
+	url := MakeTestURL(route.Profile)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 

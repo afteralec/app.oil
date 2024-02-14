@@ -8,7 +8,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/request"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/views"
 )
 
@@ -60,7 +60,7 @@ func CharactersPage(i *interfaces.Shared) fiber.Handler {
 		}
 
 		b := views.Bind(c)
-		b["RequestsPath"] = routes.Requests
+		b["RequestsPath"] = route.Requests
 		b["CharacterApplicationSummaries"] = summaries
 		b["HasCharacterApplications"] = len(apps) > 0
 		return c.Render(views.Characters, b)

@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestRecoverUsernamePageSuccess(t *testing.T) {
@@ -24,7 +24,7 @@ func TestRecoverUsernamePageSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.RecoverUsername)
+	url := MakeTestURL(route.RecoverUsername)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 
 	res, err := a.Test(req)
@@ -43,7 +43,7 @@ func TestRecoverUsernameSuccessPageFoundNoToken(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.RecoverUsernameSuccess)
+	url := MakeTestURL(route.RecoverUsernameSuccess)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 
 	res, err := a.Test(req)
@@ -62,7 +62,7 @@ func TestRecoverUsernameBadRequestMissingBody(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.RecoverUsername)
+	url := MakeTestURL(route.RecoverUsername)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := a.Test(req)
@@ -86,7 +86,7 @@ func TestRecoverUsernameBadRequestMalformedBody(t *testing.T) {
 	writer.WriteField("notemail", "notanemail")
 	writer.Close()
 
-	url := MakeTestURL(routes.RecoverUsername)
+	url := MakeTestURL(route.RecoverUsername)
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -116,7 +116,7 @@ func TestRecoverUsernameSuccess(t *testing.T) {
 	writer.WriteField("email", TestEmailAddress)
 	writer.Close()
 
-	url := MakeTestURL(routes.RecoverUsername)
+	url := MakeTestURL(route.RecoverUsername)
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())

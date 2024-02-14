@@ -5,7 +5,7 @@ import (
 
 	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 // TODO: This is a pure dump from the character module; this badly needs cleaning up
@@ -50,7 +50,7 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 	return ApplicationSummary{
 		Reviewed: reviewed,
 		ReviewDialog: ReviewDialogData{
-			Path:     routes.RequestStatusPath(req.ID),
+			Path:     route.RequestStatusPath(req.ID),
 			Variable: fmt.Sprintf("showReviewDialogFor%s%s", app.Name, p.Username),
 		},
 		Status:           req.Status,
@@ -65,7 +65,7 @@ func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.
 		StatusRejected:   req.Status == StatusRejected,
 		StatusArchived:   req.Status == StatusArchived,
 		StatusCanceled:   req.Status == StatusCanceled,
-		Link:             routes.RequestPath(req.ID),
+		Link:             route.RequestPath(req.ID),
 		ID:               req.ID,
 		Name:             name,
 		Author:           p.Username,

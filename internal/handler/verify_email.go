@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/username"
 	"petrichormud.com/app/internal/views"
 )
@@ -38,7 +38,7 @@ func VerifyEmailPage(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusNotFound)
 			b := views.Bind(c)
 			b["NotFoundMessage"] = "Sorry, it looks like this link has expired."
-			b["NotFoundButtonLink"] = routes.Profile
+			b["NotFoundButtonLink"] = route.Profile
 			b["NotFoundButtonText"] = "Return to Profile"
 			return c.Render(views.NotFound, b, layout.Standalone)
 		}

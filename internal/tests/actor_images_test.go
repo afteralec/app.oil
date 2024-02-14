@@ -16,7 +16,7 @@ import (
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestActorImageNameReservedConflict(t *testing.T) {
@@ -37,7 +37,7 @@ func TestActorImageNameReservedConflict(t *testing.T) {
 	writer.WriteField("name", TestActorImage.Name)
 	writer.Close()
 
-	url := MakeTestURL(routes.ActorImageReserved)
+	url := MakeTestURL(route.ActorImageReserved)
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -66,7 +66,7 @@ func TestActorImageNameReservedFatal(t *testing.T) {
 	writer.WriteField("name", TestActorImage.Name)
 	writer.Close()
 
-	url := MakeTestURL(routes.ActorImageReserved)
+	url := MakeTestURL(route.ActorImageReserved)
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -97,7 +97,7 @@ func TestActorImageNameReservedOK(t *testing.T) {
 	writer.WriteField("name", TestActorImage.Name)
 	writer.Close()
 
-	url := MakeTestURL(routes.ActorImageReserved)
+	url := MakeTestURL(route.ActorImageReserved)
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -118,7 +118,7 @@ func TestActorImagesPageUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.ActorImages)
+	url := MakeTestURL(route.ActorImages)
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 
@@ -143,7 +143,7 @@ func TestActorImagesPageForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImages)
+	url := MakeTestURL(route.ActorImages)
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -171,7 +171,7 @@ func TestActorImagesPageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImages)
+	url := MakeTestURL(route.ActorImages)
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -197,7 +197,7 @@ func TestNewActorImageUnauthorized(t *testing.T) {
 	writer.WriteField("name", TestActorImage.Name)
 	writer.Close()
 
-	url := MakeTestURL(routes.ActorImages)
+	url := MakeTestURL(route.ActorImages)
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Add("Content-Type", writer.FormDataContentType())
@@ -224,7 +224,7 @@ func TestNewActorImageForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImages)
+	url := MakeTestURL(route.ActorImages)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -257,7 +257,7 @@ func TestNewActorImageBadRequestMissingBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImages)
+	url := MakeTestURL(route.ActorImages)
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -284,7 +284,7 @@ func TestNewActorImageBadRequestInvalidName(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImages)
+	url := MakeTestURL(route.ActorImages)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -317,7 +317,7 @@ func TestNewActorImageSuccess(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImages)
+	url := MakeTestURL(route.ActorImages)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -348,7 +348,7 @@ func TestEditActorImagePageUnauthorized(t *testing.T) {
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
 
-	url := MakeTestURL(routes.EditActorImagePath(aiid))
+	url := MakeTestURL(route.EditActorImagePath(aiid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 
@@ -375,7 +375,7 @@ func TestEditActorImagePageForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EditActorImagePath(aiid))
+	url := MakeTestURL(route.EditActorImagePath(aiid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -405,7 +405,7 @@ func TestEditActorImagePageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EditActorImagePath(aiid))
+	url := MakeTestURL(route.EditActorImagePath(aiid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -429,7 +429,7 @@ func TestActorImagePageUnauthorized(t *testing.T) {
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
 
-	url := MakeTestURL(routes.ActorImagePath(aiid))
+	url := MakeTestURL(route.ActorImagePath(aiid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 
@@ -456,7 +456,7 @@ func TestActorImagePageForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImagePath(aiid))
+	url := MakeTestURL(route.ActorImagePath(aiid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -486,7 +486,7 @@ func TestActorImagePageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImagePath(aiid))
+	url := MakeTestURL(route.ActorImagePath(aiid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -510,7 +510,7 @@ func TestEditActorImageShortDescriptionUnauthorized(t *testing.T) {
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
 
-	url := MakeTestURL(routes.ActorImageShortDescriptionPath(aiid))
+	url := MakeTestURL(route.ActorImageShortDescriptionPath(aiid))
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s, with changes", TestActorImage.ShortDescription)
@@ -545,7 +545,7 @@ func TestEditActorImageShortDescriptionForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImageShortDescriptionPath(aiid))
+	url := MakeTestURL(route.ActorImageShortDescriptionPath(aiid))
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s, with changes", TestActorImage.ShortDescription)
@@ -583,7 +583,7 @@ func TestEditActorImageShortDescriptionNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImageShortDescriptionPath(aiid + 1000))
+	url := MakeTestURL(route.ActorImageShortDescriptionPath(aiid + 1000))
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s, with changes", TestActorImage.ShortDescription)
@@ -621,7 +621,7 @@ func TestEditActorImageShortDescriptionBadRequestInvalid(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImageShortDescriptionPath(aiid))
+	url := MakeTestURL(route.ActorImageShortDescriptionPath(aiid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -657,7 +657,7 @@ func TestEditActorImageShortDescriptionConflictSameAs(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImageShortDescriptionPath(aiid))
+	url := MakeTestURL(route.ActorImageShortDescriptionPath(aiid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -693,7 +693,7 @@ func TestEditActorImageShortDescriptionSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImageShortDescriptionPath(aiid))
+	url := MakeTestURL(route.ActorImageShortDescriptionPath(aiid))
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s, with changes", TestActorImage.ShortDescription)
@@ -725,7 +725,7 @@ func TestEditActorImageDescriptionUnauthorized(t *testing.T) {
 	aiid := CreateTestActorImage(t, &i, TestActorImage)
 	defer DeleteTestActorImage(t, &i, aiid)
 
-	url := MakeTestURL(routes.ActorImageDescriptionPath(aiid))
+	url := MakeTestURL(route.ActorImageDescriptionPath(aiid))
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s It is a test actor.", TestActorImage.Description)
@@ -760,7 +760,7 @@ func TestEditActorImageDescriptionForbiddenNoPermission(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImageDescriptionPath(aiid))
+	url := MakeTestURL(route.ActorImageDescriptionPath(aiid))
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s It is a test actor.", TestActorImage.Description)
@@ -798,7 +798,7 @@ func TestEditActorImageDescriptionNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImageDescriptionPath(aiid + 1000))
+	url := MakeTestURL(route.ActorImageDescriptionPath(aiid + 1000))
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s It is a test actor.", TestActorImage.Description)
@@ -836,7 +836,7 @@ func TestEditActorImageDescriptionBadRequestInvalid(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImageDescriptionPath(aiid))
+	url := MakeTestURL(route.ActorImageDescriptionPath(aiid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -872,7 +872,7 @@ func TestEditActorImageDescriptionConflictSameAs(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImageDescriptionPath(aiid))
+	url := MakeTestURL(route.ActorImageDescriptionPath(aiid))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -908,7 +908,7 @@ func TestEditActorImageDescriptionSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ActorImageDescriptionPath(aiid))
+	url := MakeTestURL(route.ActorImageDescriptionPath(aiid))
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%s It is a test actor.", TestActorImage.Description)

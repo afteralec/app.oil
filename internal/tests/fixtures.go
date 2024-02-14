@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"strconv"
 
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 // TODO: Rename these to include Fixture?
@@ -18,7 +18,7 @@ func AddEmailRequest(e string) *http.Request {
 	writer.WriteField("email", e)
 	writer.Close()
 
-	url := MakeTestURL(routes.NewEmailPath())
+	url := MakeTestURL(route.NewEmailPath())
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return req
@@ -30,7 +30,7 @@ func EditEmailRequest(id int64, e string) *http.Request {
 	writer.WriteField("email", e)
 	writer.Close()
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(id, 10)))
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(id, 10)))
 	req := httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return req

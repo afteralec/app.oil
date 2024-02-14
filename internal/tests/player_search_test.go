@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestSearchPlayersUnauthorizedNotLoggedIn(t *testing.T) {
@@ -27,7 +27,7 @@ func TestSearchPlayersUnauthorizedNotLoggedIn(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	url := MakeTestURL(routes.SearchPlayerPath("player-permissions"))
+	url := MakeTestURL(route.SearchPlayerPath("player-permissions"))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -58,7 +58,7 @@ func TestSearchPlayersBadRequestMissingBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.SearchPlayerPath("player-permissions"))
+	url := MakeTestURL(route.SearchPlayerPath("player-permissions"))
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)

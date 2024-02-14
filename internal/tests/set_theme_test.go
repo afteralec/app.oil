@@ -12,7 +12,7 @@ import (
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestSetThemeInvalid(t *testing.T) {
@@ -23,7 +23,7 @@ func TestSetThemeInvalid(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.ThemePath("notatheme"))
+	url := MakeTestURL(route.ThemePath("notatheme"))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := a.Test(req)
@@ -42,7 +42,7 @@ func TestSetThemeSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.ThemePath(constant.ThemeLight))
+	url := MakeTestURL(route.ThemePath(constant.ThemeLight))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := a.Test(req)

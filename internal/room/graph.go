@@ -8,7 +8,7 @@ import (
 
 	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 const errListingRooms string = "error listing rooms from database"
@@ -343,18 +343,18 @@ func (n *Node) BindEmptyExit(dir string) fiber.Map {
 		"ExitTitle":       DirectionTitle(dir),
 		"EditElementID":   ExitEditElementID(dir),
 		"SelectElementID": ExitSelectElementID(dir),
-		"RoomsPath":       routes.Rooms,
-		"RoomExitsPath":   routes.RoomExitsPath(n.ID),
-		"RoomExitPath":    routes.RoomExitPath(n.ID, dir),
+		"RoomsPath":       route.Rooms,
+		"RoomExitsPath":   route.RoomExitsPath(n.ID),
+		"RoomExitPath":    route.RoomExitPath(n.ID, dir),
 		"CreateDialog": fiber.Map{
 			"Exit":          dir,
 			"RoomID":        n.ID,
-			"RoomsPath":     routes.Rooms,
+			"RoomsPath":     route.Rooms,
 			"EditElementID": ExitEditElementID(dir),
 		},
 		"LinkDialog": fiber.Map{
 			"Exit":          dir,
-			"RoomExitsPath": routes.RoomExitsPath(n.ID),
+			"RoomExitsPath": route.RoomExitsPath(n.ID),
 			"EditElementID": ExitEditElementID(dir),
 		},
 	}
@@ -369,8 +369,8 @@ func (n *Node) BindExit(dir string) fiber.Map {
 	exit["ID"] = en.ID
 	exit["Title"] = en.Title
 	exit["Description"] = en.Description
-	exit["ExitPath"] = routes.RoomPath(en.ID)
-	exit["ExitEditPath"] = routes.EditRoomPath(en.ID)
+	exit["ExitPath"] = route.RoomPath(en.ID)
+	exit["ExitEditPath"] = route.EditRoomPath(en.ID)
 	exit["TwoWay"] = n.IsExitTwoWay(en, dir)
 	return exit
 }

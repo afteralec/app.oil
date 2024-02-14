@@ -15,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestEditEmailUnauthorized(t *testing.T) {
@@ -51,7 +51,7 @@ func TestEditEmailMissingBody(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -80,7 +80,7 @@ func TestEditEmailMalformedInput(t *testing.T) {
 	writer.WriteField("notemail", "malformed")
 	writer.Close()
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
 
 	req := httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -165,7 +165,7 @@ func TestEditEmailInvalidID(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EmailPath("invalid"))
+	url := MakeTestURL(route.EmailPath("invalid"))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -200,7 +200,7 @@ func TestEditEmailNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
 
 	req, err := http.NewRequest(http.MethodDelete, url, nil)
 	if err != nil {

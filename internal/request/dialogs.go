@@ -4,8 +4,9 @@ import (
 	"html/template"
 
 	fiber "github.com/gofiber/fiber/v2"
+
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 const (
@@ -68,7 +69,7 @@ func BindDialogs(b fiber.Map, p BindDialogsParams) fiber.Map {
 		Header:     bindDialogs.Cancel.Header,
 		Text:       bindDialogs.Cancel.Text,
 		ButtonText: bindDialogs.Cancel.ButtonText,
-		Path:       routes.RequestPath(p.Request.ID),
+		Path:       route.RequestPath(p.Request.ID),
 		Variable:   VariableCancelDialog,
 	}
 
@@ -76,7 +77,7 @@ func BindDialogs(b fiber.Map, p BindDialogsParams) fiber.Map {
 		Header:     bindDialogs.Submit.Header,
 		Text:       bindDialogs.Submit.Text,
 		ButtonText: bindDialogs.Submit.ButtonText,
-		Path:       routes.RequestStatusPath(p.Request.ID),
+		Path:       route.RequestStatusPath(p.Request.ID),
 		Variable:   VariableSubmitDialog,
 	}
 
@@ -84,7 +85,7 @@ func BindDialogs(b fiber.Map, p BindDialogsParams) fiber.Map {
 		Header:     bindDialogs.PutInReview.Header,
 		Text:       bindDialogs.PutInReview.Text,
 		ButtonText: bindDialogs.PutInReview.ButtonText,
-		Path:       routes.RequestStatusPath(p.Request.ID),
+		Path:       route.RequestStatusPath(p.Request.ID),
 		Variable:   VariablePutInReviewDialog,
 	}
 

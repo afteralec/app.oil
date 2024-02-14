@@ -12,7 +12,7 @@ import (
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/username"
 	"petrichormud.com/app/internal/views"
 )
@@ -149,7 +149,7 @@ func LoginPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid := c.Locals("pid")
 		if pid != nil {
-			return c.Redirect(routes.Home)
+			return c.Redirect(route.Home)
 		}
 
 		return c.Render(views.Login, views.Bind(c), layout.Standalone)

@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 // TODO: Add failure tests here for bad inputs
@@ -32,7 +32,7 @@ func TestRegister(t *testing.T) {
 	writer.WriteField("confirmPassword", TestPassword)
 	writer.Close()
 
-	url := MakeTestURL(routes.Register)
+	url := MakeTestURL(route.Register)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
@@ -52,7 +52,7 @@ func CallRegister(t *testing.T, app *fiber.App, u string, pw string) *http.Respo
 	writer.WriteField("confirmPassword", pw)
 	writer.Close()
 
-	url := MakeTestURL(routes.Register)
+	url := MakeTestURL(route.Register)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := app.Test(req)

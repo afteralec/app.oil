@@ -8,7 +8,7 @@ import (
 	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/views"
 )
@@ -34,7 +34,7 @@ func ProfilePage(i *interfaces.Shared) fiber.Handler {
 		b["VerifiedEmails"] = email.Verified(emails)
 		b["GravatarEmail"] = "othertest@quack.ninja"
 		b["GravatarHash"] = email.GravatarHash("after.alec@gmail.com")
-		b["ChangePasswordPath"] = routes.PlayerPasswordPath(pid)
+		b["ChangePasswordPath"] = route.PlayerPasswordPath(pid)
 		return c.Render(views.Profile, b, layout.Main)
 	}
 }

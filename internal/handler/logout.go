@@ -5,7 +5,7 @@ import (
 
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/views"
 )
 
@@ -18,7 +18,7 @@ func Logout(i *interfaces.Shared) fiber.Handler {
 		}
 		sess.Destroy()
 
-		c.Append("HX-Redirect", routes.Logout)
+		c.Append("HX-Redirect", route.Logout)
 		return nil
 	}
 }

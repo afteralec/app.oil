@@ -1,4 +1,4 @@
-package routes
+package route
 
 // TODO: Split these into base strings and params
 

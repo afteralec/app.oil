@@ -14,7 +14,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestResendVerificationEmailUnauthorized(t *testing.T) {
@@ -29,7 +29,7 @@ func TestResendVerificationEmailUnauthorized(t *testing.T) {
 	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	url := MakeTestURL(routes.ResendEmailVerificationPath(strconv.FormatInt(eid, 10)))
+	url := MakeTestURL(route.ResendEmailVerificationPath(strconv.FormatInt(eid, 10)))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -52,7 +52,7 @@ func TestResendVerificationEmailFatal(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ResendEmailVerificationPath(strconv.FormatInt(eid, 10)))
+	url := MakeTestURL(route.ResendEmailVerificationPath(strconv.FormatInt(eid, 10)))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -87,7 +87,7 @@ func TestResendVerificationEmailBadRequestUnowned(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(routes.ResendEmailVerificationPath(strconv.FormatInt(eid, 10)))
+	url := MakeTestURL(route.ResendEmailVerificationPath(strconv.FormatInt(eid, 10)))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -118,7 +118,7 @@ func TestResendEmailVerificationBadRequestInvalidID(t *testing.T) {
 	writer.WriteField("email", TestEmailAddressTwo)
 	writer.Close()
 
-	url := MakeTestURL(routes.ResendEmailVerificationPath("invalid"))
+	url := MakeTestURL(route.ResendEmailVerificationPath("invalid"))
 
 	req, err := http.NewRequest(http.MethodPost, url, body)
 	if err != nil {
@@ -156,7 +156,7 @@ func TestResendEmailVerificationNotFound(t *testing.T) {
 	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(email.ID, 10)))
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(email.ID, 10)))
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 	_, err = a.Test(req)
@@ -164,7 +164,7 @@ func TestResendEmailVerificationNotFound(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	url = MakeTestURL(routes.ResendEmailVerificationPath(strconv.FormatInt(email.ID, 10)))
+	url = MakeTestURL(route.ResendEmailVerificationPath(strconv.FormatInt(email.ID, 10)))
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err = a.Test(req)
@@ -189,7 +189,7 @@ func TestResendEmailVerificationSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.ResendEmailVerificationPath(strconv.FormatInt(eid, 10)))
+	url := MakeTestURL(route.ResendEmailVerificationPath(strconv.FormatInt(eid, 10)))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 

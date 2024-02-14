@@ -18,7 +18,7 @@ import (
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestCharactersPageUnauthorized(t *testing.T) {
@@ -29,7 +29,7 @@ func TestCharactersPageUnauthorized(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.Characters)
+	url := MakeTestURL(route.Characters)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -54,7 +54,7 @@ func TestCharactersPageSuccess(t *testing.T) {
 	cookies := res.Cookies()
 	sessionCookie := cookies[0]
 
-	url := MakeTestURL(routes.Characters)
+	url := MakeTestURL(route.Characters)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -80,7 +80,7 @@ func TestCharactersPageFatal(t *testing.T) {
 	sessionCookie := cookies[0]
 
 	i.Close()
-	url := MakeTestURL(routes.Characters)
+	url := MakeTestURL(route.Characters)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -156,7 +156,7 @@ func CreateTestPlayerAndCharacterApplication(t *testing.T, i *interfaces.Shared,
 }
 
 func NewCharacterApplicationRequest() *http.Request {
-	url := MakeTestURL(routes.Characters)
+	url := MakeTestURL(route.Characters)
 	return httptest.NewRequest(http.MethodPost, url, nil)
 }
 

@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestHelpPageFatal(t *testing.T) {
@@ -24,7 +24,7 @@ func TestHelpPageFatal(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.Help)
+	url := MakeTestURL(route.Help)
 
 	i.Close()
 
@@ -46,7 +46,7 @@ func TestHelpPageSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.Help)
+	url := MakeTestURL(route.Help)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -66,7 +66,7 @@ func TestHelpFilePageNotFound(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.HelpFilePath("notahelpfile"))
+	url := MakeTestURL(route.HelpFilePath("notahelpfile"))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -84,7 +84,7 @@ func TestHelpFilePageFatal(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.HelpFilePath("notahelpfile"))
+	url := MakeTestURL(route.HelpFilePath("notahelpfile"))
 
 	i.Close()
 
@@ -111,7 +111,7 @@ func TestHelpFilePageSuccess(t *testing.T) {
 	CreateTestHelpFile(t, &i, TestHelpFile)
 	defer DeleteTestHelpFile(t, &i, TestHelpFile.Slug)
 
-	url := MakeTestURL(routes.HelpFilePath("test"))
+	url := MakeTestURL(route.HelpFilePath("test"))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -135,7 +135,7 @@ func TestSearchHelpNotFound(t *testing.T) {
 	writer.WriteField("search", "this string doesn't show up anywhere in help files")
 	writer.Close()
 
-	url := MakeTestURL(routes.Help)
+	url := MakeTestURL(route.Help)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Add("Content-Type", writer.FormDataContentType())
 	res, err := a.Test(req)
@@ -167,7 +167,7 @@ func TestSearchHelpSuccess(t *testing.T) {
 	writer.WriteField("title", "true")
 	writer.Close()
 
-	url := MakeTestURL(routes.Help)
+	url := MakeTestURL(route.Help)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Add("Content-Type", writer.FormDataContentType())
 	res, err := a.Test(req)

@@ -17,7 +17,7 @@ import (
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/views"
 )
@@ -53,11 +53,11 @@ func ActorImagesPage(i *interfaces.Shared) fiber.Handler {
 			pageActorImage := fiber.Map{
 				"Title": sb.String(),
 				"Name":  actorImage.Name,
-				"Path":  routes.ActorImagePath(actorImage.ID),
+				"Path":  route.ActorImagePath(actorImage.ID),
 			}
 
 			if perms.HasPermission(permissions.PlayerCreateActorImageName) {
-				pageActorImage["EditPath"] = routes.EditActorImagePath(actorImage.ID)
+				pageActorImage["EditPath"] = route.EditActorImagePath(actorImage.ID)
 			}
 
 			pageActorImages = append(pageActorImages, pageActorImage)
@@ -126,7 +126,7 @@ func EditActorImagePage(i *interfaces.Shared) fiber.Handler {
 		b := views.Bind(c)
 		// TODO: Get a bind function for this
 		b["NavBack"] = fiber.Map{
-			"Path":  routes.ActorImages,
+			"Path":  route.ActorImages,
 			"Label": "Back to Actor Images",
 		}
 		// TODO: Get a bind function for this too
@@ -138,8 +138,8 @@ func EditActorImagePage(i *interfaces.Shared) fiber.Handler {
 		b["Name"] = actorImage.Name
 		b["ShortDescription"] = actorImage.ShortDescription
 		b["Description"] = actorImage.Description
-		b["ShortDescriptionPath"] = routes.ActorImageShortDescriptionPath(aiid)
-		b["DescriptionPath"] = routes.ActorImageDescriptionPath(aiid)
+		b["ShortDescriptionPath"] = route.ActorImageShortDescriptionPath(aiid)
+		b["DescriptionPath"] = route.ActorImageDescriptionPath(aiid)
 		return c.Render(views.EditActorImage, b)
 	}
 }
@@ -194,7 +194,7 @@ func ActorImagePage(i *interfaces.Shared) fiber.Handler {
 		b := views.Bind(c)
 		// TODO: Get a bind function for this
 		b["NavBack"] = fiber.Map{
-			"Path":  routes.ActorImages,
+			"Path":  route.ActorImages,
 			"Label": "Back to Actor Images",
 		}
 		// TODO: Get a bind function for this too
@@ -378,7 +378,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusCreated)
-		c.Append("HX-Redirect", routes.EditActorImagePath(aiid))
+		c.Append("HX-Redirect", route.EditActorImagePath(aiid))
 		c.Append("HX-Reswap", "none")
 		return nil
 	}
@@ -466,7 +466,7 @@ func EditActorImageShortDescription(i *interfaces.Shared) fiber.Handler {
 
 		b := fiber.Map{}
 		b["ShortDescription"] = actorImage.ShortDescription
-		b["ShortDescriptionPath"] = routes.ActorImageShortDescriptionPath(actorImage.ID)
+		b["ShortDescriptionPath"] = route.ActorImageShortDescriptionPath(actorImage.ID)
 		b["NoticeSection"] = partial.BindNoticeSection(partial.BindNoticeSectionParams{
 			Success:      true,
 			SectionID:    "actor-image-edit-short-description-notice",
@@ -562,7 +562,7 @@ func EditActorImageDescription(i *interfaces.Shared) fiber.Handler {
 
 		b := fiber.Map{}
 		b["Description"] = actorImage.Description
-		b["DescriptionPath"] = routes.ActorImageDescriptionPath(actorImage.ID)
+		b["DescriptionPath"] = route.ActorImageDescriptionPath(actorImage.ID)
 		b["NoticeSection"] = partial.BindNoticeSection(partial.BindNoticeSectionParams{
 			Success:      true,
 			SectionID:    "actor-image-edit-description-notice",

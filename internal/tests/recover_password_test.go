@@ -17,7 +17,7 @@ import (
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/password"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestRecoverPasswordPageSuccess(t *testing.T) {
@@ -28,7 +28,7 @@ func TestRecoverPasswordPageSuccess(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.RecoverPassword)
+	url := MakeTestURL(route.RecoverPassword)
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 
 	res, err := a.Test(req)
@@ -53,7 +53,7 @@ func TestRecoverPasswordSuccessPageSuccess(t *testing.T) {
 	}
 
 	var sb strings.Builder
-	fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, kid)
+	fmt.Fprintf(&sb, "%s?t=%s", route.RecoverPasswordSuccess, kid)
 	url := MakeTestURL(sb.String())
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 
@@ -73,7 +73,7 @@ func TestRecoverPasswordBadRequestMissingBody(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	url := MakeTestURL(routes.RecoverPassword)
+	url := MakeTestURL(route.RecoverPassword)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	res, err := a.Test(req)
@@ -97,7 +97,7 @@ func TestRecoverPasswordBadRequestMalformedBody(t *testing.T) {
 	writer.WriteField("notemail", "notanemail")
 	writer.Close()
 
-	url := MakeTestURL(routes.RecoverPassword)
+	url := MakeTestURL(route.RecoverPassword)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
@@ -131,7 +131,7 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 	writer.WriteField("email", TestEmailAddress)
 	writer.Close()
 
-	url := MakeTestURL(routes.RecoverPassword)
+	url := MakeTestURL(route.RecoverPassword)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 

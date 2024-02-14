@@ -12,7 +12,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestDeleteEmailUnauthorized(t *testing.T) {
@@ -27,7 +27,7 @@ func TestDeleteEmailUnauthorized(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
 
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 
@@ -52,7 +52,7 @@ func TestDeleteEmailFatal(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
 
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
@@ -88,7 +88,7 @@ func TestDeleteEmailUnowned(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
 
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
@@ -115,7 +115,7 @@ func TestDeleteEmailInvalidID(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EmailPath("invalid"))
+	url := MakeTestURL(route.EmailPath("invalid"))
 
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
@@ -142,7 +142,7 @@ func TestDeleteEmailNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid+1, 10)))
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid+1, 10)))
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -168,7 +168,7 @@ func TestDeleteEmailSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.EmailPath(strconv.FormatInt(eid, 10)))
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 

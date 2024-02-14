@@ -1,4 +1,4 @@
-package routes
+package route
 
 const (
 	Characters            = "/characters"

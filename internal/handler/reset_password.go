@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/username"
 	"petrichormud.com/app/internal/views"
 )
@@ -137,7 +137,7 @@ func ResetPassword(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
-		c.Append("HX-Redirect", routes.ResetPasswordSuccess)
+		c.Append("HX-Redirect", route.ResetPasswordSuccess)
 		return nil
 	}
 }

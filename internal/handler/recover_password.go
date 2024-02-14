@@ -16,7 +16,7 @@ import (
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/password"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/username"
 	"petrichormud.com/app/internal/views"
 )
@@ -93,7 +93,7 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 					return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 				}
 				var sb strings.Builder
-				fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, id)
+				fmt.Fprintf(&sb, "%s?t=%s", route.RecoverPasswordSuccess, id)
 				path := sb.String()
 				c.Append("HX-Redirect", path)
 				return nil
@@ -117,7 +117,7 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 				return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 			}
 			var sb strings.Builder
-			fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, id)
+			fmt.Fprintf(&sb, "%s?t=%s", route.RecoverPasswordSuccess, id)
 			path := sb.String()
 			c.Append("HX-Redirect", path)
 			return nil
@@ -143,7 +143,7 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 				return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 			}
 			var sb strings.Builder
-			fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, id)
+			fmt.Fprintf(&sb, "%s?t=%s", route.RecoverPasswordSuccess, id)
 			path := sb.String()
 			c.Append("HX-Redirect", path)
 			return nil
@@ -163,7 +163,7 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 		}
 		var sb strings.Builder
-		fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, id)
+		fmt.Fprintf(&sb, "%s?t=%s", route.RecoverPasswordSuccess, id)
 		path := sb.String()
 		c.Append("HX-Redirect", path)
 		return nil

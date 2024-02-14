@@ -15,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/app"
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestChangePasswordMissingBody(t *testing.T) {
@@ -30,7 +30,7 @@ func TestChangePasswordMissingBody(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.PlayerPasswordPath(pid))
+	url := MakeTestURL(route.PlayerPasswordPath(pid))
 	req := httptest.NewRequest(http.MethodPut, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -60,7 +60,7 @@ func TestChangePasswordMalformedBody(t *testing.T) {
 	writer.WriteField("confirmPassword", TestPassword)
 	writer.Close()
 
-	url := MakeTestURL(routes.PlayerPasswordPath(pid))
+	url := MakeTestURL(route.PlayerPasswordPath(pid))
 	req := httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -95,7 +95,7 @@ func TestChangePasswordNotLoggedIn(t *testing.T) {
 	writer.WriteField("confirm", newPassword)
 	writer.Close()
 
-	url := MakeTestURL(routes.PlayerPasswordPath(pid))
+	url := MakeTestURL(route.PlayerPasswordPath(pid))
 	req := httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
@@ -130,7 +130,7 @@ func TestChangePasswordWrongCurrentPassword(t *testing.T) {
 	writer.WriteField("confirm", newPassword)
 	writer.Close()
 
-	url := MakeTestURL(routes.PlayerPasswordPath(pid))
+	url := MakeTestURL(route.PlayerPasswordPath(pid))
 	req := httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -162,7 +162,7 @@ func TestChangePasswordInvalidPassword(t *testing.T) {
 	writer.WriteField("confirm", "bad")
 	writer.Close()
 
-	url := MakeTestURL(routes.PlayerPasswordPath(pid))
+	url := MakeTestURL(route.PlayerPasswordPath(pid))
 	req := httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -198,7 +198,7 @@ func TestChangePasswordInvalidConfirmPassword(t *testing.T) {
 	writer.WriteField("confirm", "notnewpassword")
 	writer.Close()
 
-	url := MakeTestURL(routes.PlayerPasswordPath(pid))
+	url := MakeTestURL(route.PlayerPasswordPath(pid))
 	req := httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -234,7 +234,7 @@ func TestChangePasswordSuccess(t *testing.T) {
 	writer.WriteField("confirm", newPassword)
 	writer.Close()
 
-	url := MakeTestURL(routes.PlayerPasswordPath(pid))
+	url := MakeTestURL(route.PlayerPasswordPath(pid))
 	req := httptest.NewRequest(http.MethodPut, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)

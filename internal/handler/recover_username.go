@@ -12,7 +12,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/username"
 	"petrichormud.com/app/internal/views"
 )
@@ -27,13 +27,13 @@ func RecoverUsernameSuccessPage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		t := c.Query("t")
 		if len(t) == 0 {
-			c.Redirect(routes.Home)
+			c.Redirect(route.Home)
 		}
 
 		key := username.RecoverySuccessKey(t)
 		address, err := i.Redis.Get(context.Background(), key).Result()
 		if err != nil {
-			c.Redirect(routes.Home)
+			c.Redirect(route.Home)
 		}
 
 		b := views.Bind(c)
@@ -72,7 +72,7 @@ func RecoverUsername(i *interfaces.Shared) fiber.Handler {
 					return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInternal, layout.None)
 				}
 
-				path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)
+				path := fmt.Sprintf("%s?t=%s", route.RecoverUsernameSuccess, rusid)
 				c.Append("HX-Redirect", path)
 				return nil
 			}
@@ -88,7 +88,7 @@ func RecoverUsername(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInternal, layout.None)
 		}
 
-		path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)
+		path := fmt.Sprintf("%s?t=%s", route.RecoverUsernameSuccess, rusid)
 		c.Append("HX-Reswap", "none")
 		c.Append("HX-Redirect", path)
 		return nil

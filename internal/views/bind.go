@@ -9,7 +9,7 @@ import (
 
 	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
 )
 
@@ -86,16 +86,16 @@ func themeButton(c *fiber.Ctx) fiber.Map {
 		"Type":            "Theme",
 		"Theme":           theme,
 		"ThemeText":       themeText,
-		"ToggleThemePath": routes.ThemePath(toggleTheme),
+		"ToggleThemePath": route.ThemePath(toggleTheme),
 	}
 }
 
 func helpLink(c *fiber.Ctx) fiber.Map {
 	return fiber.Map{
 		"Type":   "Link",
-		"Path":   routes.Help,
+		"Path":   route.Help,
 		"Text":   "Help",
-		"Active": c.Path() == routes.Help,
+		"Active": c.Path() == route.Help,
 	}
 }
 
@@ -110,15 +110,15 @@ func actorMenu(c *fiber.Ctx) fiber.Map {
 				"Items": []fiber.Map{
 					{
 						"Label":  "Actor Images",
-						"Path":   routes.ActorImages,
-						"Active": c.Path() == routes.ActorImages,
+						"Path":   route.ActorImages,
+						"Active": c.Path() == route.ActorImages,
 					},
 				},
 			},
 		},
-		"Path":   routes.Rooms,
+		"Path":   route.Rooms,
 		"Text":   "Rooms",
-		"Active": strings.Contains(c.Path(), routes.Rooms),
+		"Active": strings.Contains(c.Path(), route.Rooms),
 	}
 }
 
@@ -133,15 +133,15 @@ func roomsMenu(c *fiber.Ctx) fiber.Map {
 				"Items": []fiber.Map{
 					{
 						"Label":  "Rooms",
-						"Path":   routes.Rooms,
-						"Active": c.Path() == routes.Rooms,
+						"Path":   route.Rooms,
+						"Active": c.Path() == route.Rooms,
 					},
 				},
 			},
 		},
-		"Path":   routes.Rooms,
+		"Path":   route.Rooms,
 		"Text":   "Rooms",
-		"Active": strings.Contains(c.Path(), routes.Rooms),
+		"Active": strings.Contains(c.Path(), route.Rooms),
 	}
 }
 
@@ -156,13 +156,13 @@ func accountMenu(c *fiber.Ctx) fiber.Map {
 				"Items": []fiber.Map{
 					{
 						"Label":  "Characters",
-						"Path":   routes.Characters,
-						"Active": c.Path() == routes.Characters,
+						"Path":   route.Characters,
+						"Active": c.Path() == route.Characters,
 					},
 					{
 						"Label":  "Profile",
-						"Path":   routes.Profile,
-						"Active": c.Path() == routes.Profile,
+						"Path":   route.Profile,
+						"Active": c.Path() == route.Profile,
 					},
 				},
 			},
@@ -170,7 +170,7 @@ func accountMenu(c *fiber.Ctx) fiber.Map {
 				"Items": []fiber.Map{
 					{
 						"Label":  "Logout",
-						"Path":   routes.Logout,
+						"Path":   route.Logout,
 						"Action": true,
 					},
 				},
@@ -190,8 +190,8 @@ func reviewMenu(c *fiber.Ctx) fiber.Map {
 				"Items": []fiber.Map{
 					{
 						"Label":  "Character Applications",
-						"Path":   routes.CharacterApplications,
-						"Active": c.Path() == routes.CharacterApplications,
+						"Path":   route.CharacterApplications,
+						"Active": c.Path() == route.CharacterApplications,
 					},
 				},
 			},
@@ -210,8 +210,8 @@ func permissionsMenu(c *fiber.Ctx) fiber.Map {
 				"Items": []fiber.Map{
 					{
 						"Label":  "Player Permissions",
-						"Path":   routes.PlayerPermissions,
-						"Active": c.Path() == routes.PlayerPermissions,
+						"Path":   route.PlayerPermissions,
+						"Active": c.Path() == route.PlayerPermissions,
 					},
 				},
 			},

@@ -15,7 +15,7 @@ import (
 
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/queries"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 // TODO: Create queries to delete records for use during these tests.
@@ -35,7 +35,7 @@ func CreateTestPlayer(t *testing.T, i *interfaces.Shared, a *fiber.App, u, pw st
 	writer.WriteField("confirmPassword", pw)
 	writer.Close()
 
-	url := MakeTestURL(routes.Register)
+	url := MakeTestURL(route.Register)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	_, err := a.Test(req)
@@ -79,7 +79,7 @@ func LoginTestPlayer(t *testing.T, a *fiber.App, u string, pw string) *http.Cook
 	writer.WriteField("password", pw)
 	writer.Close()
 
-	url := MakeTestURL(routes.Login)
+	url := MakeTestURL(route.Login)
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -101,7 +101,7 @@ func CreateTestEmail(t *testing.T, i *interfaces.Shared, a *fiber.App, e, u, pw 
 	writer.WriteField("email", e)
 	writer.Close()
 
-	url := MakeTestURL(routes.NewEmailPath())
+	url := MakeTestURL(route.NewEmailPath())
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -156,7 +156,7 @@ func DeleteTestPlayerPermission(t *testing.T, i *interfaces.Shared, id int64) {
 func CreateTestCharacterApplication(t *testing.T, i *interfaces.Shared, a *fiber.App, u, pw string) int64 {
 	sessionCookie := LoginTestPlayer(t, a, u, pw)
 
-	url := MakeTestURL(routes.Characters)
+	url := MakeTestURL(route.Characters)
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -233,7 +233,7 @@ func CreateTestRequestComment(params CreateTestRequestCommentParams) {
 	writer.WriteField("comment", "This is a test comment, for sure.")
 	writer.Close()
 
-	url := MakeTestURL(routes.CreateRequestCommentPath(strconv.FormatInt(params.RID, 10), params.Field))
+	url := MakeTestURL(route.CreateRequestCommentPath(strconv.FormatInt(params.RID, 10), params.Field))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())

@@ -14,7 +14,7 @@ import (
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestVerifyEmailPageUnauthorized(t *testing.T) {
@@ -36,7 +36,7 @@ func TestVerifyEmailPageUnauthorized(t *testing.T) {
 	}
 	keyParts := strings.Split(keys[0], ":")
 
-	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
+	url := MakeTestURL(route.VerifyEmailWithToken(keyParts[1]))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -67,7 +67,7 @@ func TestVerifyEmailPageSuccess(t *testing.T) {
 	}
 	keyParts := strings.Split(keys[0], ":")
 
-	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
+	url := MakeTestURL(route.VerifyEmailWithToken(keyParts[1]))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -102,7 +102,7 @@ func TestVerifyEmailPageForbiddenUnowned(t *testing.T) {
 	}
 	keyParts := strings.Split(keys[0], ":")
 
-	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
+	url := MakeTestURL(route.VerifyEmailWithToken(keyParts[1]))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -139,7 +139,7 @@ func TestVerifyPageExpiredToken(t *testing.T) {
 	}
 	keyParts := strings.Split(key, ":")
 
-	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
+	url := MakeTestURL(route.VerifyEmailWithToken(keyParts[1]))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -170,7 +170,7 @@ func TestVerifyEmailUnauthorizedNotLoggedIn(t *testing.T) {
 	}
 	keyParts := strings.Split(keys[0], ":")
 
-	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[0]))
+	url := MakeTestURL(route.VerifyEmailWithToken(keyParts[0]))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -195,7 +195,7 @@ func TestVerifyEmailBadRequestMissingToken(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.VerifyEmail)
+	url := MakeTestURL(route.VerifyEmail)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -232,7 +232,7 @@ func TestVerifyEmailNotFoundExpiredToken(t *testing.T) {
 	}
 	keyParts := strings.Split(key, ":")
 
-	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
+	url := MakeTestURL(route.VerifyEmailWithToken(keyParts[1]))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -265,7 +265,7 @@ func TestVerifyEmailSuccess(t *testing.T) {
 	}
 	keyParts := strings.Split(keys[0], ":")
 
-	url := MakeTestURL(routes.VerifyEmailWithToken(keyParts[1]))
+	url := MakeTestURL(route.VerifyEmailWithToken(keyParts[1]))
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 

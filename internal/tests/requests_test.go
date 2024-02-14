@@ -15,7 +15,7 @@ import (
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/request"
-	"petrichormud.com/app/internal/routes"
+	"petrichormud.com/app/internal/route"
 )
 
 func TestCreateRequestUnauthorizedNotLoggedIn(t *testing.T) {
@@ -34,7 +34,7 @@ func TestCreateRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	writer.WriteField("type", request.TypeCharacterApplication)
 	writer.Close()
 
-	url := MakeTestURL(routes.Requests)
+	url := MakeTestURL(route.Requests)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := a.Test(req)
@@ -62,7 +62,7 @@ func TestCreateRequestFatal(t *testing.T) {
 	writer.WriteField("type", request.TypeCharacterApplication)
 	writer.Close()
 
-	url := MakeTestURL(routes.Requests)
+	url := MakeTestURL(route.Requests)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -90,7 +90,7 @@ func TestCreateRequestBadRequestMissingBody(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.Requests)
+	url := MakeTestURL(route.Requests)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -118,7 +118,7 @@ func TestCreateRequestBadRequestInvalidType(t *testing.T) {
 	writer.WriteField("type", "not-a-type")
 	writer.Close()
 
-	url := MakeTestURL(routes.Requests)
+	url := MakeTestURL(route.Requests)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -146,7 +146,7 @@ func TestCreateRequestSuccess(t *testing.T) {
 	writer.WriteField("type", request.TypeCharacterApplication)
 	writer.Close()
 
-	url := MakeTestURL(routes.Requests)
+	url := MakeTestURL(route.Requests)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Add("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
@@ -174,7 +174,7 @@ func TestCreateCharacterApplicationUnauthorizedNotLoggedIn(t *testing.T) {
 	writer.WriteField("type", request.TypeCharacterApplication)
 	writer.Close()
 
-	url := MakeTestURL(routes.Characters)
+	url := MakeTestURL(route.Characters)
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	res, err := a.Test(req)
 	if err != nil {
@@ -196,7 +196,7 @@ func TestCreateCharacterApplicationFatal(t *testing.T) {
 
 	i.Close()
 
-	url := MakeTestURL(routes.Characters)
+	url := MakeTestURL(route.Characters)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -223,7 +223,7 @@ func TestCreateCharacterApplicationSuccess(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.Characters)
+	url := MakeTestURL(route.Characters)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 	res, err := a.Test(req)
@@ -247,7 +247,7 @@ func TestRequestFieldPageUnauthorizedNotLoggedIn(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldName))
+	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldName))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -275,7 +275,7 @@ func TestRequestFieldPageUnowned(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldName))
+	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldName))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -308,7 +308,7 @@ func TestRequestFieldPageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldName))
+	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldName))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -336,7 +336,7 @@ func TestRequestFieldPageNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestFieldPath(rid+1, request.FieldName))
+	url := MakeTestURL(route.RequestFieldPath(rid+1, request.FieldName))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -363,7 +363,7 @@ func TestRequestFieldPageFatal(t *testing.T) {
 
 	i.Close()
 
-	url := MakeTestURL(routes.RequestFieldPath(rid, request.FieldName))
+	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldName))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -392,7 +392,7 @@ func TestRequestPageUnauthorizedNotLoggedIn(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	url := MakeTestURL(routes.RequestPath(rid))
+	url := MakeTestURL(route.RequestPath(rid))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -420,7 +420,7 @@ func TestRequestFieldPageForbiddenUnowned(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(routes.RequestPath(rid))
+	url := MakeTestURL(route.RequestPath(rid))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -447,7 +447,7 @@ func TestRequestPageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestPath(rid))
+	url := MakeTestURL(route.RequestPath(rid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -475,7 +475,7 @@ func TestRequestPageNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(routes.RequestPath(rid + 1))
+	url := MakeTestURL(route.RequestPath(rid + 1))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -502,7 +502,7 @@ func TestRequestPageFatal(t *testing.T) {
 
 	i.Close()
 
-	url := MakeTestURL(routes.RequestPath(rid))
+	url := MakeTestURL(route.RequestPath(rid))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
