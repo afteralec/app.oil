@@ -1,8 +1,6 @@
 package permissions
 
-import (
-	"petrichormud.com/app/internal/queries"
-)
+import "petrichormud.com/app/internal/query"
 
 // TODO: Rename PlayerGranted
 // TODO: Test
@@ -13,7 +11,7 @@ type PlayerGranted struct {
 	PID             int64
 }
 
-func MakePlayerGranted(pid int64, perms []queries.PlayerPermission) PlayerGranted {
+func MakePlayerGranted(pid int64, perms []query.PlayerPermission) PlayerGranted {
 	filtered := filterInvalidPlayerPermissions(perms)
 	list := []string{}
 	for _, perm := range filtered {

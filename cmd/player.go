@@ -14,7 +14,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/username"
 )
 
@@ -59,7 +59,7 @@ var addPlayerCmd = &cobra.Command{
 			return errors.New("error while pinging DB")
 		}
 
-		q := queries.New(db)
+		q := query.New(db)
 		tx, err := db.Begin()
 		if err != nil {
 			return err
@@ -72,7 +72,7 @@ var addPlayerCmd = &cobra.Command{
 			return errors.New("error while hashing password")
 		}
 
-		result, err := qtx.CreatePlayer(context.Background(), queries.CreatePlayerParams{
+		result, err := qtx.CreatePlayer(context.Background(), query.CreatePlayerParams{
 			Username: u,
 			PwHash:   pwHash,
 		})
@@ -137,7 +137,7 @@ var grantPlayerPermissionCmd = &cobra.Command{
 			return errors.New("error while pinging DB")
 		}
 
-		q := queries.New(db)
+		q := query.New(db)
 		tx, err := db.Begin()
 		if err != nil {
 			return err
@@ -163,14 +163,14 @@ var grantPlayerPermissionCmd = &cobra.Command{
 			return nil
 		}
 
-		if err := qtx.CreatePlayerPermissionIssuedChangeHistory(context.Background(), queries.CreatePlayerPermissionIssuedChangeHistoryParams{
+		if err := qtx.CreatePlayerPermissionIssuedChangeHistory(context.Background(), query.CreatePlayerPermissionIssuedChangeHistoryParams{
 			PID:        p.ID,
 			IPID:       p.ID,
 			Permission: perm.Name,
 		}); err != nil {
 			return err
 		}
-		_, err = qtx.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
+		_, err = qtx.CreatePlayerPermission(context.Background(), query.CreatePlayerPermissionParams{
 			PID:        p.ID,
 			IPID:       p.ID,
 			Permission: perm.Name,
@@ -217,7 +217,7 @@ var listPlayerPermissionCmd = &cobra.Command{
 			return errors.New("error while pinging DB")
 		}
 
-		q := queries.New(db)
+		q := query.New(db)
 		tx, err := db.Begin()
 		if err != nil {
 			return err

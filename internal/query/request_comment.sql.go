@@ -3,7 +3,7 @@
 //   sqlc v1.22.0
 // source: request_comment.sql
 
-package queries
+package query
 
 import (
 	"context"

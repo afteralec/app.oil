@@ -8,7 +8,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 )
 
 const (
@@ -120,7 +120,7 @@ func MakeDefaultStatusIcon(size string, includeText bool) StatusIcon {
 	return result
 }
 
-func IsEditable(req *queries.Request) bool {
+func IsEditable(req *query.Request) bool {
 	if req.Status == StatusSubmitted {
 		return false
 	}
@@ -152,7 +152,7 @@ func IsEditable(req *queries.Request) bool {
 	return true
 }
 
-func IsStatusUpdateOK(req *queries.Request, perms permissions.PlayerGranted, pid int64, status string) bool {
+func IsStatusUpdateOK(req *query.Request, perms permissions.PlayerGranted, pid int64, status string) bool {
 	if status == StatusSubmitted {
 		return req.PID == pid && req.Status == StatusReady
 	}
@@ -192,7 +192,7 @@ func IsStatusUpdateOK(req *queries.Request, perms permissions.PlayerGranted, pid
 	return false
 }
 
-func BindStatus(b fiber.Map, req *queries.Request) fiber.Map {
+func BindStatus(b fiber.Map, req *query.Request) fiber.Map {
 	b["StatusIsIncomplete"] = req.Status == StatusIncomplete
 	b["StatusIsReady"] = req.Status == StatusReady
 	b["StatusIsSubmitted"] = req.Status == StatusSubmitted
@@ -206,7 +206,7 @@ func BindStatus(b fiber.Map, req *queries.Request) fiber.Map {
 	return b
 }
 
-func BindStatuses(b fiber.Map, req *queries.Request) fiber.Map {
+func BindStatuses(b fiber.Map, req *query.Request) fiber.Map {
 	// TODO: Can likely split this up to yield just the current status of the request
 	b["StatusIncomplete"] = StatusIncomplete
 	b["StatusReady"] = StatusReady
@@ -244,19 +244,19 @@ type UpdateStatusParams struct {
 // TODO: Get this in a central location
 var ErrInvalidStatus error = errors.New("invalid status")
 
-func UpdateStatus(q *queries.Queries, p UpdateStatusParams) error {
+func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 	if !IsStatusValid(p.Status) {
 		return ErrInvalidStatus
 	}
 
-	if err := q.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
+	if err := q.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
 		ID:     p.RID,
 		Status: p.Status,
 	}); err != nil {
 		return err
 	}
 
-	if err := q.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
+	if err := q.CreateHistoryForRequestStatusChange(context.Background(), query.CreateHistoryForRequestStatusChangeParams{
 		RID: p.RID,
 		PID: p.PID,
 	}); err != nil {

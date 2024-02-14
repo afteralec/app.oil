@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"petrichormud.com/app/internal/constant"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/view"
 )
@@ -29,7 +29,7 @@ func (app *CharacterApplication) Fields() []Field {
 	return FieldsCharacterApplication
 }
 
-func (app *CharacterApplication) ContentBytes(q *queries.Queries, rid int64) ([]byte, error) {
+func (app *CharacterApplication) ContentBytes(q *query.Queries, rid int64) ([]byte, error) {
 	content, err := q.GetCharacterApplicationContentForRequest(context.Background(), rid)
 	if err != nil {
 		return []byte{}, err
@@ -43,14 +43,14 @@ func (app *CharacterApplication) ContentBytes(q *queries.Queries, rid int64) ([]
 	return b, nil
 }
 
-func (app *CharacterApplication) UpdateField(q *queries.Queries, p UpdateFieldParams) error {
+func (app *CharacterApplication) UpdateField(q *query.Queries, p UpdateFieldParams) error {
 	switch p.Field {
 	case FieldName:
 		if !IsNameValid(p.Value) {
 			return ErrInvalidInput
 		}
 
-		if err := q.UpdateCharacterApplicationContentName(context.Background(), queries.UpdateCharacterApplicationContentNameParams{
+		if err := q.UpdateCharacterApplicationContentName(context.Background(), query.UpdateCharacterApplicationContentNameParams{
 			RID:  p.Request.ID,
 			Name: p.Value,
 		}); err != nil {
@@ -62,7 +62,7 @@ func (app *CharacterApplication) UpdateField(q *queries.Queries, p UpdateFieldPa
 			return ErrInvalidInput
 		}
 
-		if err := q.UpdateCharacterApplicationContentGender(context.Background(), queries.UpdateCharacterApplicationContentGenderParams{
+		if err := q.UpdateCharacterApplicationContentGender(context.Background(), query.UpdateCharacterApplicationContentGenderParams{
 			RID:    p.Request.ID,
 			Gender: p.Value,
 		}); err != nil {
@@ -73,7 +73,7 @@ func (app *CharacterApplication) UpdateField(q *queries.Queries, p UpdateFieldPa
 			return ErrInvalidInput
 		}
 
-		if err := q.UpdateCharacterApplicationContentShortDescription(context.Background(), queries.UpdateCharacterApplicationContentShortDescriptionParams{
+		if err := q.UpdateCharacterApplicationContentShortDescription(context.Background(), query.UpdateCharacterApplicationContentShortDescriptionParams{
 			RID:              p.Request.ID,
 			ShortDescription: p.Value,
 		}); err != nil {
@@ -84,7 +84,7 @@ func (app *CharacterApplication) UpdateField(q *queries.Queries, p UpdateFieldPa
 			return ErrInvalidInput
 		}
 
-		if err := q.UpdateCharacterApplicationContentDescription(context.Background(), queries.UpdateCharacterApplicationContentDescriptionParams{
+		if err := q.UpdateCharacterApplicationContentDescription(context.Background(), query.UpdateCharacterApplicationContentDescriptionParams{
 			RID:         p.Request.ID,
 			Description: p.Value,
 		}); err != nil {
@@ -95,7 +95,7 @@ func (app *CharacterApplication) UpdateField(q *queries.Queries, p UpdateFieldPa
 			return ErrInvalidInput
 		}
 
-		if err := q.UpdateCharacterApplicationContentBackstory(context.Background(), queries.UpdateCharacterApplicationContentBackstoryParams{
+		if err := q.UpdateCharacterApplicationContentBackstory(context.Background(), query.UpdateCharacterApplicationContentBackstoryParams{
 			RID:       p.Request.ID,
 			Backstory: p.Value,
 		}); err != nil {
@@ -113,28 +113,28 @@ func (app *CharacterApplication) UpdateField(q *queries.Queries, p UpdateFieldPa
 	ready := IsCharacterApplicationValid(&content)
 
 	if ready && p.Request.Status == StatusIncomplete {
-		if err := q.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
+		if err := q.CreateHistoryForRequestStatusChange(context.Background(), query.CreateHistoryForRequestStatusChangeParams{
 			RID: p.Request.ID,
 			PID: p.PID,
 		}); err != nil {
 			return err
 		}
 
-		if err := q.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
+		if err := q.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
 			ID:     p.Request.ID,
 			Status: StatusReady,
 		}); err != nil {
 			return err
 		}
 	} else if !ready && p.Request.Status == StatusReady {
-		if err := q.CreateHistoryForRequestStatusChange(context.Background(), queries.CreateHistoryForRequestStatusChangeParams{
+		if err := q.CreateHistoryForRequestStatusChange(context.Background(), query.CreateHistoryForRequestStatusChangeParams{
 			RID: p.Request.ID,
 			PID: p.PID,
 		}); err != nil {
 			return err
 		}
 
-		if err := q.UpdateRequestStatus(context.Background(), queries.UpdateRequestStatusParams{
+		if err := q.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
 			ID:     p.Request.ID,
 			Status: StatusIncomplete,
 		}); err != nil {

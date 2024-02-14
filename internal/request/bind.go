@@ -5,7 +5,7 @@ import (
 
 	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/constant"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 )
 
 type BindGenderRadioGroupParams struct {
@@ -45,7 +45,7 @@ func BindGenderRadioGroup(b fiber.Map, p BindGenderRadioGroupParams) fiber.Map {
 }
 
 type BindViewedByParams struct {
-	Request *queries.Request
+	Request *query.Request
 	PID     int64
 }
 
@@ -57,7 +57,7 @@ func BindViewedBy(b fiber.Map, p BindViewedByParams) fiber.Map {
 	return b
 }
 
-func BindComments(b fiber.Map, pid int64, vid int32, rows []queries.ListCommentsForRequestWithAuthorRow) fiber.Map {
+func BindComments(b fiber.Map, pid int64, vid int32, rows []query.ListCommentsForRequestWithAuthorRow) fiber.Map {
 	repliesByCID := map[int64][]Comment{}
 	for _, row := range rows {
 		if row.RequestComment.CID > 0 {

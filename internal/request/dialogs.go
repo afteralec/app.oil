@@ -5,7 +5,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 )
 
@@ -56,7 +56,7 @@ var BindDialogsByType map[string]Dialogs = map[string]Dialogs{
 }
 
 type BindDialogsParams struct {
-	Request *queries.Request
+	Request *query.Request
 }
 
 func BindDialogs(b fiber.Map, p BindDialogsParams) fiber.Map {

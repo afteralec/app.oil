@@ -4,15 +4,15 @@ import (
 	"html/template"
 	"regexp"
 
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 )
 
 type DefinitionInterface interface {
 	Type() string
 	Dialogs() DefinitionDialogs
 	Fields() []Field
-	ContentBytes(q *queries.Queries, rid int64) ([]byte, error)
-	UpdateField(q *queries.Queries, p UpdateFieldParams) error
+	ContentBytes(q *query.Queries, rid int64) ([]byte, error)
+	UpdateField(q *query.Queries, p UpdateFieldParams) error
 	SummaryTitle(content map[string]string) string
 }
 
@@ -193,7 +193,7 @@ func GetFieldLabelAndDescription(t, f string) (string, string) {
 }
 
 type GetSummaryFieldsParams struct {
-	Request *queries.Request
+	Request *query.Request
 	Content map[string]string
 	PID     int64
 }

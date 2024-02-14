@@ -11,7 +11,7 @@ import (
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/password"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/username"
 	"petrichormud.com/app/internal/view"
@@ -110,7 +110,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 		sess.Set("pid", pid)
 		theme := sess.Get("theme")
 		if theme != nil {
-			if err := qtx.UpdatePlayerSettingsTheme(context.Background(), queries.UpdatePlayerSettingsThemeParams{
+			if err := qtx.UpdatePlayerSettingsTheme(context.Background(), query.UpdatePlayerSettingsThemeParams{
 				PID:   pid,
 				Theme: theme.(string),
 			}); err != nil {

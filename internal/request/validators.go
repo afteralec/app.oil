@@ -2,10 +2,10 @@ package request
 
 import (
 	"petrichormud.com/app/internal/constant"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 )
 
-func IsCharacterApplicationValid(app *queries.CharacterApplicationContent) bool {
+func IsCharacterApplicationValid(app *query.CharacterApplicationContent) bool {
 	if !IsNameValid(app.Name) {
 		return false
 	}

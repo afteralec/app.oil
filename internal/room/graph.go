@@ -7,7 +7,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/constant"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 )
 
@@ -212,8 +212,8 @@ func EmptyBindMatrix(size int) [][]fiber.Map {
 }
 
 type BuildGraphParams struct {
-	Queries  *queries.Queries
-	Room     *queries.Room
+	Queries  *query.Queries
+	Room     *query.Room
 	MaxDepth int
 	Depth    int
 }
@@ -228,7 +228,7 @@ func BuildGraph(p BuildGraphParams) (Node, error) {
 	if err != nil {
 		return Node{ID: p.Room.ID}, ErrListingRooms
 	}
-	exitRoomByID := map[int64]queries.Room{}
+	exitRoomByID := map[int64]query.Room{}
 	for _, exitRoom := range exitRooms {
 		exitRoomByID[exitRoom.ID] = exitRoom
 	}
@@ -375,7 +375,7 @@ func (n *Node) BindExit(dir string) fiber.Map {
 	return exit
 }
 
-func TerminalNode(room *queries.Room) Node {
+func TerminalNode(room *query.Room) Node {
 	northNode := EmptyGraphNode()
 	northeastNode := EmptyGraphNode()
 	eastNode := EmptyGraphNode()

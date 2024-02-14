@@ -4,10 +4,10 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/bind"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 )
 
-func BindSizeRadioGroup(b fiber.Map, room *queries.Room) fiber.Map {
+func BindSizeRadioGroup(b fiber.Map, room *query.Room) fiber.Map {
 	b["SizeRadioGroup"] = []bind.Radio{
 		{
 			ID:       "edit-room-image-size-tiny",

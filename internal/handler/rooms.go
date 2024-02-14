@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/room"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
@@ -199,7 +199,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		result, err := qtx.CreateRoom(context.Background(), queries.CreateRoomParams{
+		result, err := qtx.CreateRoom(context.Background(), query.CreateRoomParams{
 			Title:       room.DefaultTitle,
 			Description: room.DefaultDescription,
 			Size:        room.DefaultSize,
@@ -1163,7 +1163,7 @@ func EditRoomTitle(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if err := qtx.UpdateRoomTitle(context.Background(), queries.UpdateRoomTitleParams{
+		if err := qtx.UpdateRoomTitle(context.Background(), query.UpdateRoomTitleParams{
 			ID:    rm.ID,
 			Title: in.Title,
 		}); err != nil {
@@ -1264,7 +1264,7 @@ func EditRoomDescription(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if err := qtx.UpdateRoomDescription(context.Background(), queries.UpdateRoomDescriptionParams{
+		if err := qtx.UpdateRoomDescription(context.Background(), query.UpdateRoomDescriptionParams{
 			ID:          rm.ID,
 			Description: in.Description,
 		}); err != nil {
@@ -1361,7 +1361,7 @@ func EditRoomSize(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if err := qtx.UpdateRoomSize(context.Background(), queries.UpdateRoomSizeParams{
+		if err := qtx.UpdateRoomSize(context.Background(), query.UpdateRoomSizeParams{
 			ID:   rm.ID,
 			Size: in.Size,
 		}); err != nil {

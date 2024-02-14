@@ -9,7 +9,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
@@ -49,7 +49,7 @@ func NewRequest(i *interfaces.Shared) fiber.Handler {
 
 		// TODO: Limit number of new requests by type
 
-		result, err := qtx.CreateRequest(context.Background(), queries.CreateRequestParams{
+		result, err := qtx.CreateRequest(context.Background(), query.CreateRequestParams{
 			PID:  pid,
 			Type: in.Type,
 		})
@@ -104,7 +104,7 @@ func NewCharacterApplication(i *interfaces.Shared) fiber.Handler {
 
 		// TODO: Limit new requests by type
 
-		result, err := qtx.CreateRequest(context.Background(), queries.CreateRequestParams{
+		result, err := qtx.CreateRequest(context.Background(), query.CreateRequestParams{
 			PID:  pid,
 			Type: request.TypeCharacterApplication,
 		})

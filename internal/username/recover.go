@@ -7,10 +7,10 @@ import (
 
 	"petrichormud.com/app/internal/interfaces"
 	pb "petrichormud.com/app/internal/proto/sending"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 )
 
-func Recover(i *interfaces.Shared, e queries.Email) (string, error) {
+func Recover(i *interfaces.Shared, e query.Email) (string, error) {
 	id, err := CacheRecoverySuccessEmail(i.Redis, e.Address)
 	if err != nil {
 		return "", err

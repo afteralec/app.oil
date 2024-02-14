@@ -14,7 +14,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 )
 
 func AddEmail(i *interfaces.Shared) fiber.Handler {
@@ -97,7 +97,7 @@ func AddEmail(i *interfaces.Shared) fiber.Handler {
 
 		result, err := qtx.CreateEmail(
 			context.Background(),
-			queries.CreateEmailParams{PID: pid.(int64), Address: e.Address},
+			query.CreateEmailParams{PID: pid.(int64), Address: e.Address},
 		)
 		if err != nil {
 			if me, ok := err.(*mysql.MySQLError); ok {

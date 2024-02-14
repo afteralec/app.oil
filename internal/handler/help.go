@@ -14,7 +14,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/view"
 )
@@ -198,7 +198,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 		results := []fiber.Map{}
 
 		if in.Title {
-			byTitle, err := qtx.SearchHelpByTitle(context.Background(), queries.SearchHelpByTitleParams{
+			byTitle, err := qtx.SearchHelpByTitle(context.Background(), query.SearchHelpByTitleParams{
 				Slug:  search,
 				Title: search,
 			})
@@ -260,7 +260,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 		}
 
 		if in.Content {
-			byContent, err := qtx.SearchHelpByContent(context.Background(), queries.SearchHelpByContentParams{
+			byContent, err := qtx.SearchHelpByContent(context.Background(), query.SearchHelpByContentParams{
 				Sub: search,
 				Raw: search,
 			})

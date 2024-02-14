@@ -12,7 +12,7 @@ import (
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/password"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/username"
 	"petrichormud.com/app/internal/view"
@@ -127,7 +127,7 @@ func ResetPassword(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
-		_, err = i.Queries.UpdatePlayerPassword(context.Background(), queries.UpdatePlayerPasswordParams{
+		_, err = i.Queries.UpdatePlayerPassword(context.Background(), query.UpdatePlayerPasswordParams{
 			ID:     pid,
 			PwHash: pwHash,
 		})

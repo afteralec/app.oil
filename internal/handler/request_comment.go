@@ -10,7 +10,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
 )
 
@@ -112,7 +112,7 @@ func CreateRequestComment(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		cr, err := qtx.CreateRequestComment(context.Background(), queries.CreateRequestCommentParams{
+		cr, err := qtx.CreateRequestComment(context.Background(), query.CreateRequestCommentParams{
 			RID:   rid,
 			PID:   pid.(int64),
 			Text:  text,

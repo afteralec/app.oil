@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"petrichormud.com/app/internal/constant"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 )
 
@@ -39,7 +39,7 @@ type ApplicationSummary struct {
 	Reviewed         bool
 }
 
-func NewSummaryFromApplication(p *queries.Player, reviewer string, req *queries.Request, app *queries.CharacterApplicationContent) ApplicationSummary {
+func NewSummaryFromApplication(p *query.Player, reviewer string, req *query.Request, app *query.CharacterApplicationContent) ApplicationSummary {
 	name := app.Name
 	if len(app.Name) == 0 {
 		name = constant.DefaultName

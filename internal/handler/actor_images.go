@@ -16,7 +16,7 @@ import (
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/view"
@@ -310,7 +310,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		result, err := qtx.CreateActorImage(context.Background(), queries.CreateActorImageParams{
+		result, err := qtx.CreateActorImage(context.Background(), query.CreateActorImageParams{
 			Name:             in.Name,
 			ShortDescription: actor.DefaultImageShortDescription,
 			Description:      actor.DefaultImageDescription,
@@ -445,7 +445,7 @@ func EditActorImageShortDescription(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if err := qtx.UpdateActorImageShortDescription(context.Background(), queries.UpdateActorImageShortDescriptionParams{
+		if err := qtx.UpdateActorImageShortDescription(context.Background(), query.UpdateActorImageShortDescriptionParams{
 			ID:               actorImage.ID,
 			ShortDescription: in.ShortDescription,
 		}); err != nil {
@@ -541,7 +541,7 @@ func EditActorImageDescription(i *interfaces.Shared) fiber.Handler {
 			return nil
 		}
 
-		if err := qtx.UpdateActorImageDescription(context.Background(), queries.UpdateActorImageDescriptionParams{
+		if err := qtx.UpdateActorImageDescription(context.Background(), query.UpdateActorImageDescriptionParams{
 			ID:          actorImage.ID,
 			Description: in.Description,
 		}); err != nil {

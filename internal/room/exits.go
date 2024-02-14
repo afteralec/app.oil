@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 )
 
 var ErrExitIDNotFound error = errors.New("no exit found for that RID")
@@ -22,7 +22,7 @@ func ExitSelectElementID(dir string) string {
 	return sb.String()
 }
 
-func ExitIDs(room *queries.Room) []int64 {
+func ExitIDs(room *query.Room) []int64 {
 	ids := []int64{}
 	for _, dir := range DirectionsList {
 		ids = append(ids, ExitID(room, dir))
@@ -30,7 +30,7 @@ func ExitIDs(room *queries.Room) []int64 {
 	return ids
 }
 
-func ExitID(room *queries.Room, dir string) int64 {
+func ExitID(room *query.Room, dir string) int64 {
 	switch dir {
 	case DirectionNorth:
 		return room.North
@@ -53,7 +53,7 @@ func ExitID(room *queries.Room, dir string) int64 {
 	}
 }
 
-func ExitDirection(room *queries.Room, id int64) (string, error) {
+func ExitDirection(room *query.Room, id int64) (string, error) {
 	switch id {
 	case room.North:
 		return DirectionNorth, nil
@@ -76,7 +76,7 @@ func ExitDirection(room *queries.Room, id int64) (string, error) {
 	}
 }
 
-func IsExitTwoWay(room *queries.Room, exitRoom *queries.Room, dir string) bool {
+func IsExitTwoWay(room *query.Room, exitRoom *query.Room, dir string) bool {
 	if !IsDirectionValid(dir) {
 		return false
 	}

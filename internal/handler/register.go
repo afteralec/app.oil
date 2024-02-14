@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/password"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/username"
 )
 
@@ -84,7 +84,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 		qtx := i.Queries.WithTx(tx)
 		result, err := qtx.CreatePlayer(
 			context.Background(),
-			queries.CreatePlayerParams{
+			query.CreatePlayerParams{
 				Username: u,
 				PwHash:   pwHash,
 			},
@@ -121,7 +121,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindRegisterErrInternal, layout.None)
 		}
 
-		if err := qtx.CreatePlayerSettings(context.Background(), queries.CreatePlayerSettingsParams{
+		if err := qtx.CreatePlayerSettings(context.Background(), query.CreatePlayerSettingsParams{
 			PID:   pid,
 			Theme: constant.ThemeDefault,
 		}); err != nil {
@@ -143,7 +143,7 @@ func Register(i *interfaces.Shared) fiber.Handler {
 
 		theme := sess.Get("theme")
 		if theme != nil {
-			if err := qtx.UpdatePlayerSettingsTheme(context.Background(), queries.UpdatePlayerSettingsThemeParams{
+			if err := qtx.UpdatePlayerSettingsTheme(context.Background(), query.UpdatePlayerSettingsThemeParams{
 				PID:   pid,
 				Theme: theme.(string),
 			}); err != nil {

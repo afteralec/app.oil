@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 )
 
 const errInvalidType string = "invalid type"
@@ -13,7 +13,7 @@ var ErrInvalidType error = errors.New(errInvalidType)
 
 // TODO: Make this map a comprehensive type with methods on it?
 // For example, it could have a Type field, or an IsMember method, etc
-func Content(q *queries.Queries, req *queries.Request) (map[string]string, error) {
+func Content(q *query.Queries, req *query.Request) (map[string]string, error) {
 	var b []byte
 	m := map[string]string{}
 
@@ -50,13 +50,13 @@ func GetNextIncompleteField(t string, content map[string]string) (string, bool) 
 
 // TODO: Make this FieldTag?
 type UpdateFieldParams struct {
-	Request *queries.Request
+	Request *query.Request
 	Field   string
 	Value   string
 	PID     int64
 }
 
-func UpdateField(q *queries.Queries, p UpdateFieldParams) error {
+func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 	if !IsTypeValid(p.Request.Type) {
 		return ErrInvalidType
 	}

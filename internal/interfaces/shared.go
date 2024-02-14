@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 )
 
 func SetupShared() Shared {
@@ -50,7 +50,7 @@ func SetupShared() Shared {
 type Shared struct {
 	Database   *sql.DB
 	Redis      *redis.Client
-	Queries    *queries.Queries
+	Queries    *query.Queries
 	Sessions   *session.Store
 	ClientConn *grpc.ClientConn
 }
@@ -65,7 +65,7 @@ func InterfacesBuilder() *sharedInterfacesBuilder {
 
 func (b *sharedInterfacesBuilder) Database(db *sql.DB) *sharedInterfacesBuilder {
 	b.Interfaces.Database = db
-	b.Interfaces.Queries = queries.New(db)
+	b.Interfaces.Queries = query.New(db)
 	return b
 }
 

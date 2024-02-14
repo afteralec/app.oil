@@ -14,7 +14,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 )
 
@@ -117,7 +117,7 @@ func CreateTestEmail(t *testing.T, i *interfaces.Shared, a *fiber.App, e, u, pw 
 		t.Fatal(err)
 	}
 
-	email, err := i.Queries.GetEmailByAddressForPlayer(context.Background(), queries.GetEmailByAddressForPlayerParams{
+	email, err := i.Queries.GetEmailByAddressForPlayer(context.Background(), query.GetEmailByAddressForPlayerParams{
 		PID:     p.ID,
 		Address: e,
 	})
@@ -130,7 +130,7 @@ func CreateTestEmail(t *testing.T, i *interfaces.Shared, a *fiber.App, e, u, pw 
 
 // TODO: Rework this to use endpoints on the app instead of interfaces directly
 func CreateTestPlayerPermission(t *testing.T, i *interfaces.Shared, pid int64, permission string) int64 {
-	permissionResult, err := i.Queries.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
+	permissionResult, err := i.Queries.CreatePlayerPermission(context.Background(), query.CreatePlayerPermissionParams{
 		PID:        pid,
 		IPID:       pid,
 		Permission: permission,
@@ -251,7 +251,7 @@ func FlushTestRedis(t *testing.T, i *interfaces.Shared) {
 	}
 }
 
-func ListEmailsForPlayer(t *testing.T, i *interfaces.Shared, username string) []queries.Email {
+func ListEmailsForPlayer(t *testing.T, i *interfaces.Shared, username string) []query.Email {
 	p, err := i.Queries.GetPlayerByUsername(context.Background(), username)
 	if err != nil {
 		t.Fatal(err)
@@ -270,7 +270,7 @@ type CreateTestRoomParams struct {
 }
 
 func CreateTestRoom(t *testing.T, i *interfaces.Shared, p CreateTestRoomParams) int64 {
-	result, err := i.Queries.CreateRoom(context.Background(), queries.CreateRoomParams{
+	result, err := i.Queries.CreateRoom(context.Background(), query.CreateRoomParams{
 		Title:       p.Title,
 		Description: p.Description,
 		Size:        p.Size,
@@ -310,7 +310,7 @@ type CreateTestActorImageParams struct {
 }
 
 func CreateTestActorImage(t *testing.T, i *interfaces.Shared, p CreateTestActorImageParams) int64 {
-	result, err := i.Queries.CreateActorImage(context.Background(), queries.CreateActorImageParams{
+	result, err := i.Queries.CreateActorImage(context.Background(), query.CreateActorImageParams{
 		Gender:           p.Gender,
 		Name:             p.Name,
 		ShortDescription: p.ShortDescription,

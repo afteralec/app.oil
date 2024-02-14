@@ -16,7 +16,7 @@ import (
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/route"
 )
@@ -76,7 +76,7 @@ func TestCreateRequestCommentMissingBody(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
 		RPID: pid,
 		ID:   rid,
 	}); err != nil {
@@ -116,7 +116,7 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
 		RPID: pid,
 		ID:   rid,
 	}); err != nil {
@@ -163,7 +163,7 @@ func TestCreateRequestCommentBadField(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
 		RPID: pid,
 		ID:   rid,
 	}); err != nil {
@@ -210,7 +210,7 @@ func TestCreateRequestCommentNotFound(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
 		RPID: pid,
 		ID:   rid,
 	}); err != nil {
@@ -251,7 +251,7 @@ func TestCreateRequestCommentForbiddenOwnRequest(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
 		RPID: pid,
 		ID:   rid,
 	}); err != nil {
@@ -341,7 +341,7 @@ func TestCreateRequestCommentNotReviewer(t *testing.T) {
 	permissionID = CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
 		RPID: pid,
 		ID:   rid,
 	}); err != nil {
@@ -385,7 +385,7 @@ func TestCreateRequestCommentNoPermission(t *testing.T) {
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
 		RPID: pid,
 		ID:   rid,
 	}); err != nil {
@@ -431,7 +431,7 @@ func TestCreateRequestCommentSuccess(t *testing.T) {
 	permissionID := CreateTestPlayerPermission(t, &i, pid, permissions.PlayerReviewCharacterApplicationsName)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), queries.MarkRequestInReviewParams{
+	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
 		RPID: pid,
 		ID:   rid,
 	}); err != nil {

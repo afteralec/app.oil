@@ -12,7 +12,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/util"
 )
 
@@ -150,7 +150,7 @@ func EditEmail(i *interfaces.Shared) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindProfileEditEmailErrInternal, layout.None)
 		}
 
-		result, err := qtx.CreateEmail(context.Background(), queries.CreateEmailParams{
+		result, err := qtx.CreateEmail(context.Background(), query.CreateEmailParams{
 			Address: ne.Address,
 			PID:     pid,
 		})

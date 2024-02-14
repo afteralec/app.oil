@@ -4,13 +4,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"petrichormud.com/app/internal/queries"
+
+	"petrichormud.com/app/internal/query"
 )
 
 func TestVerified(t *testing.T) {
-	u := queries.Email{ID: 1, PID: 69, Address: "test@test.com", Verified: false}
-	v := queries.Email{ID: 2, PID: 69, Address: "testagain@test.com", Verified: true}
-	emails := []queries.Email{u, v}
-	expected := []queries.Email{v}
+	u := query.Email{ID: 1, PID: 69, Address: "test@test.com", Verified: false}
+	v := query.Email{ID: 2, PID: 69, Address: "testagain@test.com", Verified: true}
+	emails := []query.Email{u, v}
+	expected := []query.Email{v}
 	require.Equal(t, expected, Verified(emails))
 }

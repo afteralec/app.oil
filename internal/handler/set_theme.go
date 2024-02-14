@@ -10,7 +10,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/util"
 )
@@ -61,7 +61,7 @@ func SetTheme(i *interfaces.Shared) fiber.Handler {
 
 		pid, err := util.GetPID(c)
 		if err == nil {
-			if err := i.Queries.UpdatePlayerSettingsTheme(context.Background(), queries.UpdatePlayerSettingsThemeParams{
+			if err := i.Queries.UpdatePlayerSettingsTheme(context.Background(), query.UpdatePlayerSettingsThemeParams{
 				PID:   pid,
 				Theme: theme,
 			}); err != nil {

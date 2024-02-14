@@ -10,7 +10,7 @@ import (
 	"petrichormud.com/app/internal/interfaces"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/permissions"
-	"petrichormud.com/app/internal/queries"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/view"
 )
@@ -230,7 +230,7 @@ func TogglePlayerPermission(i *interfaces.Shared) fiber.Handler {
 				return nil
 			}
 
-			params := queries.CreatePlayerPermissionIssuedChangeHistoryParams{
+			params := query.CreatePlayerPermissionIssuedChangeHistoryParams{
 				IPID:       ipid.(int64),
 				PID:        pid,
 				Permission: perm.Name,
@@ -240,7 +240,7 @@ func TogglePlayerPermission(i *interfaces.Shared) fiber.Handler {
 				return nil
 			}
 
-			_, err := qtx.CreatePlayerPermission(context.Background(), queries.CreatePlayerPermissionParams{
+			_, err := qtx.CreatePlayerPermission(context.Background(), query.CreatePlayerPermissionParams{
 				IPID:       ipid.(int64),
 				PID:        pid,
 				Permission: perm.Name,
@@ -263,7 +263,7 @@ func TogglePlayerPermission(i *interfaces.Shared) fiber.Handler {
 				return nil
 			}
 
-			params := queries.CreatePlayerPermissionRevokedChangeHistoryParams{
+			params := query.CreatePlayerPermissionRevokedChangeHistoryParams{
 				IPID:       ipid.(int64),
 				PID:        pid,
 				Permission: perm.Name,
@@ -273,7 +273,7 @@ func TogglePlayerPermission(i *interfaces.Shared) fiber.Handler {
 				return nil
 			}
 
-			if err := qtx.DeletePlayerPermission(context.Background(), queries.DeletePlayerPermissionParams{
+			if err := qtx.DeletePlayerPermission(context.Background(), query.DeletePlayerPermissionParams{
 				PID:        pid,
 				Permission: perm.Name,
 			}); err != nil {
