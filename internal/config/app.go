@@ -7,7 +7,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/web"
 )
 
@@ -17,7 +17,7 @@ func Fiber() fiber.Config {
 	readTimeout := time.Second * time.Duration(readTimeoutSecondsCount)
 	return fiber.Config{
 		Views:       web.ViewsEngine(),
-		ViewsLayout: layouts.Main,
+		ViewsLayout: layout.Main,
 		ReadTimeout: readTimeout,
 	}
 }

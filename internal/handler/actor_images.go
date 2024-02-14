@@ -13,7 +13,7 @@ import (
 	"petrichormud.com/app/internal/actor"
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
@@ -26,24 +26,24 @@ func ActorImagesPage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Login, views.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerViewAllActorImagesName) {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		actorImages, err := i.Queries.ListActorImages(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		pageActorImages := []fiber.Map{}
@@ -80,30 +80,30 @@ func EditActorImagePage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Login, views.Bind(c), layout.Standalone)
 		}
 
 		aiid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerCreateActorImageName) {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -112,15 +112,15 @@ func EditActorImagePage(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
+				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		b := views.Bind(c)
@@ -148,30 +148,30 @@ func ActorImagePage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Login, views.Bind(c), layout.Standalone)
 		}
 
 		aiid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerViewAllActorImagesName) {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -180,15 +180,15 @@ func ActorImagePage(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
+				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		b := views.Bind(c)
@@ -229,7 +229,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		if !actor.IsImageNameValid(in.Name) {
@@ -243,7 +243,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 					"The Image Name you entered isn't valid. Please try again.",
 				},
 				NoticeIcon: true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		if !util.IsLoggedIn(c) {
@@ -258,7 +258,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		perms, err := util.GetPermissions(c)
@@ -274,7 +274,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		if !perms.HasPermission(permissions.PlayerCreateActorImageName) {
@@ -289,7 +289,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		tx, err := i.Database.Begin()
@@ -305,7 +305,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -329,7 +329,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 							"That Actor Image name is already in use. Please choose another.",
 						},
 						NoticeIcon: true,
-					}), layouts.None)
+					}), layout.None)
 				}
 			}
 			c.Status(fiber.StatusInternalServerError)
@@ -343,7 +343,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		aiid, err := result.LastInsertId()
@@ -359,7 +359,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		if err := tx.Commit(); err != nil {
@@ -374,7 +374,7 @@ func NewActorImage(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		c.Status(fiber.StatusCreated)
@@ -476,7 +476,7 @@ func EditActorImageShortDescription(i *interfaces.Shared) fiber.Handler {
 			},
 			NoticeIcon: true,
 		})
-		return c.Render(partial.ActorImageEditShortDescription, b, layouts.None)
+		return c.Render(partial.ActorImageEditShortDescription, b, layout.None)
 	}
 }
 
@@ -572,7 +572,7 @@ func EditActorImageDescription(i *interfaces.Shared) fiber.Handler {
 			},
 			NoticeIcon: true,
 		})
-		return c.Render(partial.ActorImageEditDescription, b, layouts.None)
+		return c.Render(partial.ActorImageEditDescription, b, layout.None)
 	}
 }
 
@@ -594,14 +594,14 @@ func ActorImageNameReserved(i *interfaces.Shared) fiber.Handler {
 				c.Append("HX-Trigger-After-Swap", "ptrcr:actor-image-reserved")
 				return c.Render(partial.ActorImageFree, fiber.Map{
 					"CSRF": c.Locals("csrf"),
-				}, layouts.CSRF)
+				}, layout.CSRF)
 			}
 			c.Append("HX-Trigger-After-Swap", "ptrcr:actor-image-reserved")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(partial.ActorImageReservedErr, fiber.Map{
 				"CSRF": c.Locals("csrf"),
-			}, layouts.CSRF)
+			}, layout.CSRF)
 		}
 
 		if in.Name == actorImage.Name {
@@ -610,12 +610,12 @@ func ActorImageNameReserved(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusConflict)
 			return c.Render(partial.ActorImageReserved, fiber.Map{
 				"CSRF": c.Locals("csrf"),
-			}, layouts.CSRF)
+			}, layout.CSRF)
 		} else {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:actor-image-reserved")
 			return c.Render(partial.ActorImageFree, fiber.Map{
 				"CSRF": c.Locals("csrf"),
-			}, layouts.CSRF)
+			}, layout.CSRF)
 		}
 	}
 }

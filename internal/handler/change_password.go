@@ -7,7 +7,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/util"
@@ -34,7 +34,7 @@ func ChangePassword(i *interfaces.Shared) fiber.Handler {
 				"NoticeIcon":    true,
 				"RefreshButton": true,
 			}
-			return c.Render(partial.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layout.None)
 		}
 
 		if in.Password != in.ConfirmPassword {
@@ -48,7 +48,7 @@ func ChangePassword(i *interfaces.Shared) fiber.Handler {
 				},
 				"NoticeIcon": true,
 			}
-			return c.Render(partial.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layout.None)
 		}
 
 		pid, err := util.GetPID(c)
@@ -63,7 +63,7 @@ func ChangePassword(i *interfaces.Shared) fiber.Handler {
 				"NoticeIcon":    true,
 				"RefreshButton": true,
 			}
-			return c.Render(partial.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layout.None)
 		}
 
 		tx, err := i.Database.Begin()
@@ -78,7 +78,7 @@ func ChangePassword(i *interfaces.Shared) fiber.Handler {
 				"NoticeIcon":    true,
 				"RefreshButton": true,
 			}
-			return c.Render(partial.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layout.None)
 		}
 		qtx := i.Queries.WithTx(tx)
 
@@ -96,7 +96,7 @@ func ChangePassword(i *interfaces.Shared) fiber.Handler {
 					"NoticeIcon":    true,
 					"RefreshButton": true,
 				}
-				return c.Render(partial.NoticeSectionError, b, layouts.None)
+				return c.Render(partial.NoticeSectionError, b, layout.None)
 			}
 			c.Status(fiber.StatusInternalServerError)
 			b := fiber.Map{
@@ -108,7 +108,7 @@ func ChangePassword(i *interfaces.Shared) fiber.Handler {
 				"NoticeIcon":    true,
 				"RefreshButton": true,
 			}
-			return c.Render(partial.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layout.None)
 		}
 
 		ok, err := password.Verify(in.Current, p.PwHash)
@@ -123,7 +123,7 @@ func ChangePassword(i *interfaces.Shared) fiber.Handler {
 				"NoticeIcon":    true,
 				"RefreshButton": true,
 			}
-			return c.Render(partial.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layout.None)
 		}
 		if !ok {
 			c.Status(fiber.StatusUnauthorized)
@@ -135,7 +135,7 @@ func ChangePassword(i *interfaces.Shared) fiber.Handler {
 				},
 				"NoticeIcon": true,
 			}
-			return c.Render(partial.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layout.None)
 		}
 
 		if !password.IsValid(in.Password) {
@@ -149,7 +149,7 @@ func ChangePassword(i *interfaces.Shared) fiber.Handler {
 				},
 				"NoticeIcon": true,
 			}
-			return c.Render(partial.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layout.None)
 		}
 
 		b := fiber.Map{
@@ -162,6 +162,6 @@ func ChangePassword(i *interfaces.Shared) fiber.Handler {
 			"NoticeIcon": true,
 		}
 
-		return c.Render(partial.NoticeSectionSuccess, b, layouts.None)
+		return c.Render(partial.NoticeSectionSuccess, b, layout.None)
 	}
 }

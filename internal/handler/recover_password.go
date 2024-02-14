@@ -13,7 +13,7 @@ import (
 
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/routes"
@@ -23,7 +23,7 @@ import (
 
 func RecoverPasswordPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.RecoverPassword, views.Bind(c), layouts.Standalone)
+		return c.Render(views.RecoverPassword, views.Bind(c), layout.Standalone)
 	}
 }
 
@@ -35,15 +35,15 @@ func RecoverPasswordSuccessPage(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			if err == redis.Nil {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
+				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		b := views.Bind(c)
 		b["EmailAddress"] = email
-		return c.Render(views.RecoverPasswordSuccess, b, layouts.Standalone)
+		return c.Render(views.RecoverPasswordSuccess, b, layout.Standalone)
 	}
 }
 
@@ -57,28 +57,28 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 		if err := c.BodyParser(in); err != nil {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 		}
 
 		v := username.IsValid(in.Username)
 		if !v {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInvalidUsername, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInvalidUsername, layout.None)
 		}
 
 		_, err := mail.ParseAddress(in.Email)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInvalidEmail, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInvalidEmail, layout.None)
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -90,7 +90,7 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 				if err != nil {
 					c.Status(fiber.StatusInternalServerError)
 					c.Append(header.HXAcceptable, "true")
-					return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
+					return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 				}
 				var sb strings.Builder
 				fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, id)
@@ -100,21 +100,21 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 			}
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 		}
 
 		emails, err := qtx.ListVerifiedEmails(context.Background(), p.ID)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 		}
 		if len(emails) == 0 {
 			id, err := password.SetupRecoverySuccess(i, in.Email)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(header.HXAcceptable, "true")
-				return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 			}
 			var sb strings.Builder
 			fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, id)
@@ -126,7 +126,7 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 		}
 
 		emailAddresses := []string{}
@@ -140,7 +140,7 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(header.HXAcceptable, "true")
-				return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 			}
 			var sb strings.Builder
 			fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, id)
@@ -153,14 +153,14 @@ func RecoverPassword(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 		}
 
 		id, err := password.SetupRecoverySuccess(i, in.Email)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverPasswordErrInternal, layout.None)
 		}
 		var sb strings.Builder
 		fmt.Fprintf(&sb, "%s?t=%s", routes.RecoverPasswordSuccess, id)

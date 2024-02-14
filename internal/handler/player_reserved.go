@@ -8,7 +8,7 @@ import (
 
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 )
 
@@ -29,14 +29,14 @@ func UsernameReserved(i *interfaces.Shared) fiber.Handler {
 				c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 				return c.Render(partial.PlayerFree, fiber.Map{
 					"CSRF": c.Locals("csrf"),
-				}, layouts.CSRF)
+				}, layout.CSRF)
 			}
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(partial.PlayerReservedErr, fiber.Map{
 				"CSRF": c.Locals("csrf"),
-			}, layouts.CSRF)
+			}, layout.CSRF)
 		}
 
 		if in.Username == p.Username {
@@ -45,12 +45,12 @@ func UsernameReserved(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusConflict)
 			return c.Render(partial.PlayerReserved, fiber.Map{
 				"CSRF": c.Locals("csrf"),
-			}, layouts.CSRF)
+			}, layout.CSRF)
 		} else {
 			c.Append("HX-Trigger-After-Swap", "ptrcr:username-reserved")
 			return c.Render(partial.PlayerFree, fiber.Map{
 				"CSRF": c.Locals("csrf"),
-			}, layouts.CSRF)
+			}, layout.CSRF)
 		}
 	}
 }

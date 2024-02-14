@@ -9,7 +9,7 @@ import (
 
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/queries"
@@ -28,13 +28,13 @@ func ResetPasswordPage() fiber.Handler {
 		b := views.Bind(c)
 		b["ResetPasswordToken"] = tid
 
-		return c.Render(views.ResetPassword, b, layouts.Standalone)
+		return c.Render(views.ResetPassword, b, layout.Standalone)
 	}
 }
 
 func ResetPasswordSuccessPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.ResetPasswordSuccess, views.Bind(c), layouts.Standalone)
+		return c.Render(views.ResetPasswordSuccess, views.Bind(c), layout.Standalone)
 	}
 }
 
@@ -50,34 +50,34 @@ func ResetPassword(i *interfaces.Shared) fiber.Handler {
 		if err := c.BodyParser(in); err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
 		vu := username.IsValid(in.Username)
 		if !vu {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
 		if in.Password != in.ConfirmPassword {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
 		vp := password.IsValid(in.Password)
 		if !vp {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
 		tid := c.Query("t")
 		if len(tid) == 0 {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
 		key := password.RecoveryKey(tid)
@@ -85,14 +85,14 @@ func ResetPassword(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
 		pid, err := strconv.ParseInt(rpid, 10, 64)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
 		p, err := i.Queries.GetPlayer(context.Background(), pid)
@@ -100,31 +100,31 @@ func ResetPassword(i *interfaces.Shared) fiber.Handler {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusUnauthorized)
 				c.Append(header.HXAcceptable, "true")
-				return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 			}
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
 		if p.Username != in.Username {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
 		pwHash, err := password.Hash(in.Password)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
 		err = i.Redis.Del(context.Background(), key).Err()
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
 		_, err = i.Queries.UpdatePlayerPassword(context.Background(), queries.UpdatePlayerPasswordParams{
@@ -134,7 +134,7 @@ func ResetPassword(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindResetPasswordErr, layout.None)
 		}
 
 		c.Append("HX-Redirect", routes.ResetPasswordSuccess)

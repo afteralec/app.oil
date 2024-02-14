@@ -10,7 +10,7 @@ import (
 
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/permissions"
 	"petrichormud.com/app/internal/queries"
@@ -24,24 +24,24 @@ func RoomsPage(i *interfaces.Shared) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Login, views.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerViewAllRoomsName) {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		records, err := i.Queries.ListRooms(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		pageRooms := []fiber.Map{}
@@ -77,34 +77,34 @@ func RoomPage(i *interfaces.Shared) fiber.Handler {
 		_, err := util.GetPID(c)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Login, views.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerViewAllRoomsName) {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		rmid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		record, err := i.Queries.GetRoom(context.Background(), rmid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
+				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		b := views.Bind(c)
@@ -120,7 +120,7 @@ func RoomPage(i *interfaces.Shared) fiber.Handler {
 		b["Title"] = record.Title
 		b["Size"] = room.SizeToString(record.Size)
 		b["Description"] = record.Description
-		return c.Render(views.Room, b, layouts.Main)
+		return c.Render(views.Room, b, layout.Main)
 	}
 }
 
@@ -147,7 +147,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		perms, err := util.GetPermissions(c)
@@ -163,7 +163,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
@@ -178,7 +178,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		tx, err := i.Database.Begin()
@@ -194,7 +194,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -216,7 +216,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		rid, err := result.LastInsertId()
@@ -232,7 +232,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		in := new(input)
@@ -248,7 +248,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		if in.LinkID != 0 {
@@ -271,7 +271,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 						},
 						RefreshButton: true,
 						NoticeIcon:    true,
-					}), layouts.None)
+					}), layout.None)
 				}
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(header.HXAcceptable, "true")
@@ -284,7 +284,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 					},
 					RefreshButton: true,
 					NoticeIcon:    true,
-				}), layouts.None)
+				}), layout.None)
 			}
 
 			exitrm, err := qtx.GetRoom(context.Background(), rid)
@@ -301,7 +301,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 						},
 						RefreshButton: true,
 						NoticeIcon:    true,
-					}), layouts.None)
+					}), layout.None)
 				}
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(header.HXAcceptable, "true")
@@ -314,7 +314,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 					},
 					RefreshButton: true,
 					NoticeIcon:    true,
-				}), layouts.None)
+				}), layout.None)
 			}
 
 			if !room.IsDirectionValid(in.Direction) {
@@ -329,7 +329,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 					},
 					RefreshButton: true,
 					NoticeIcon:    true,
-				}), layouts.None)
+				}), layout.None)
 			}
 
 			if err := room.Link(room.LinkParams{
@@ -350,7 +350,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 					},
 					RefreshButton: true,
 					NoticeIcon:    true,
-				}), layouts.None)
+				}), layout.None)
 			}
 
 			rm, err = qtx.GetRoom(context.Background(), rm.ID)
@@ -366,7 +366,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 					},
 					RefreshButton: true,
 					NoticeIcon:    true,
-				}), layouts.None)
+				}), layout.None)
 			}
 			exitrm, err = qtx.GetRoom(context.Background(), exitrm.ID)
 			if err != nil {
@@ -381,7 +381,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 					},
 					RefreshButton: true,
 					NoticeIcon:    true,
-				}), layouts.None)
+				}), layout.None)
 			}
 
 			exitGraph, err := room.BuildGraph(room.BuildGraphParams{
@@ -401,7 +401,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 					},
 					RefreshButton: true,
 					NoticeIcon:    true,
-				}), layouts.None)
+				}), layout.None)
 			}
 
 			gridGraph, err := room.BuildGraph(room.BuildGraphParams{
@@ -420,7 +420,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 					},
 					RefreshButton: true,
 					NoticeIcon:    true,
-				}), layouts.None)
+				}), layout.None)
 			}
 
 			if err := tx.Commit(); err != nil {
@@ -435,7 +435,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 					},
 					RefreshButton: true,
 					NoticeIcon:    true,
-				}), layouts.None)
+				}), layout.None)
 			}
 
 			grid := gridGraph.BindMatrix(room.BindMatrixParams{
@@ -450,7 +450,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 			b := exitGraph.BindExit(in.Direction)
 			b["Exits"] = exitGraph.BindExits()
 			b["RoomGrid"] = grid
-			return c.Render(partial.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
+			return c.Render(partial.EditRoomExitEdit, b, layout.EditRoomExitsSelect)
 		}
 
 		if err := tx.Commit(); err != nil {
@@ -465,7 +465,7 @@ func NewRoom(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		c.Status(fiber.StatusCreated)
@@ -480,30 +480,30 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 		_, err := util.GetPID(c)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(views.Login, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Login, views.Bind(c), layout.Standalone)
 		}
 
 		rmid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
-			return c.Render(views.Forbidden, views.Bind(c), layouts.Standalone)
+			return c.Render(views.Forbidden, views.Bind(c), layout.Standalone)
 		}
 
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -512,10 +512,10 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
+				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		graph, err := room.BuildGraph(room.BuildGraphParams{
@@ -524,12 +524,12 @@ func EditRoomPage(i *interfaces.Shared) fiber.Handler {
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		grid := graph.BindMatrix(room.BindMatrixParams{
@@ -634,7 +634,7 @@ func RoomGrid(i *interfaces.Shared) fiber.Handler {
 
 		b := fiber.Map{}
 		b["RoomGrid"] = grid
-		return c.Render(partial.RoomGrid, b, layouts.None)
+		return c.Render(partial.RoomGrid, b, layout.None)
 	}
 }
 
@@ -694,21 +694,21 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
 		if !room.IsDirectionValid(in.Direction) {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
 		if in.LinkID == 0 {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
 		_, err := util.GetPID(c)
@@ -716,7 +716,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(sessionExpiredNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(sessionExpiredNoticeParams), layout.None)
 		}
 
 		rid, err := util.GetID(c)
@@ -724,7 +724,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
 		perms, err := util.GetPermissions(c)
@@ -732,14 +732,14 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
 		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(noPermissionNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(noPermissionNoticeParams), layout.None)
 		}
 
 		tx, err := i.Database.Begin()
@@ -747,7 +747,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -757,11 +757,11 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				c.Append(header.HXAcceptable, "true")
-				return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(notFoundNoticeParams), layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(notFoundNoticeParams), layout.None)
 			}
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 		exitrm, err := qtx.GetRoom(context.Background(), in.LinkID)
 		if err != nil {
@@ -769,12 +769,12 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 				c.Status(fiber.StatusNotFound)
 				c.Append(header.HXAcceptable, "true")
 				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-				return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(notFoundNoticeParams), layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(notFoundNoticeParams), layout.None)
 			}
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
 		if err := room.Link(room.LinkParams{
@@ -806,7 +806,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 					},
 					RefreshButton: true,
 					NoticeIcon:    true,
-				}), layouts.None)
+				}), layout.None)
 			}
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
@@ -819,7 +819,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 		exitrm, err = qtx.GetRoom(context.Background(), exitrm.ID)
 		if err != nil {
@@ -835,7 +835,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 					},
 					RefreshButton: true,
 					NoticeIcon:    true,
-				}), layouts.None)
+				}), layout.None)
 			}
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
@@ -848,7 +848,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		graph, err := room.BuildGraph(room.BuildGraphParams{
@@ -867,7 +867,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		if err := tx.Commit(); err != nil {
@@ -882,7 +882,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		grid := graph.BindMatrix(room.BindMatrixParams{
@@ -897,7 +897,7 @@ func EditRoomExit(i *interfaces.Shared) fiber.Handler {
 		b := graph.BindExit(in.Direction)
 		b["Exits"] = graph.BindExits()
 		b["RoomGrid"] = grid
-		return c.Render(partial.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
+		return c.Render(partial.EditRoomExitEdit, b, layout.EditRoomExitsSelect)
 	}
 }
 
@@ -951,7 +951,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(sessionExpiredNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(sessionExpiredNoticeParams), layout.None)
 		}
 
 		rid, err := util.GetID(c)
@@ -959,7 +959,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
 		dir := c.Params("exit")
@@ -967,7 +967,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
 		perms, err := util.GetPermissions(c)
@@ -975,14 +975,14 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
 		if !perms.HasPermission(permissions.PlayerCreateRoomName) {
 			c.Status(fiber.StatusForbidden)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(noPermissionNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(noPermissionNoticeParams), layout.None)
 		}
 
 		tx, err := i.Database.Begin()
@@ -990,7 +990,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -1000,11 +1000,11 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				c.Append(header.HXAcceptable, "true")
-				return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(notFoundNoticeParams), layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(notFoundNoticeParams), layout.None)
 			}
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
 		exitID := room.ExitID(&rm, dir)
@@ -1014,19 +1014,19 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 				c.Status(fiber.StatusNotFound)
 				c.Append(header.HXAcceptable, "true")
 				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-				return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(notFoundNoticeParams), layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(notFoundNoticeParams), layout.None)
 			}
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 		exitDir, err := room.ExitDirection(&exitrm, rid)
 		if err != nil && err != room.ErrExitIDNotFound {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 		if err != room.ErrExitIDNotFound {
 			if err := room.Unlink(room.UnlinkParams{
@@ -1037,7 +1037,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 				c.Status(fiber.StatusInternalServerError)
 				c.Append(header.HXAcceptable, "true")
 				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-				return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 			}
 		}
 
@@ -1056,7 +1056,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 				c.Status(fiber.StatusNotFound)
 				c.Append(header.HXAcceptable, "true")
 				c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-				return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(notFoundNoticeParams), layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(notFoundNoticeParams), layout.None)
 			}
 		}
 
@@ -1068,7 +1068,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
-			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(internalServerErrorNoticeParams), layout.None)
 		}
 
 		if err := tx.Commit(); err != nil {
@@ -1083,7 +1083,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 				},
 				RefreshButton: true,
 				NoticeIcon:    true,
-			}), layouts.None)
+			}), layout.None)
 		}
 
 		grid := graph.BindMatrix(room.BindMatrixParams{
@@ -1098,7 +1098,7 @@ func ClearRoomExit(i *interfaces.Shared) fiber.Handler {
 		b := graph.BindEmptyExit(dir)
 		b["Exits"] = graph.BindExits()
 		b["RoomGrid"] = grid
-		return c.Render(partial.EditRoomExitEdit, b, layouts.EditRoomExitsSelect)
+		return c.Render(partial.EditRoomExitEdit, b, layout.EditRoomExitsSelect)
 	}
 }
 
@@ -1198,7 +1198,7 @@ func EditRoomTitle(i *interfaces.Shared) fiber.Handler {
 			},
 			NoticeIcon: true,
 		})
-		return c.Render(partial.RoomEditTitle, b, layouts.PageHeader)
+		return c.Render(partial.RoomEditTitle, b, layout.PageHeader)
 	}
 }
 
@@ -1295,7 +1295,7 @@ func EditRoomDescription(i *interfaces.Shared) fiber.Handler {
 			},
 			NoticeIcon: true,
 		})
-		return c.Render(partial.RoomEditDescription, b, layouts.None)
+		return c.Render(partial.RoomEditDescription, b, layout.None)
 	}
 }
 
@@ -1393,6 +1393,6 @@ func EditRoomSize(i *interfaces.Shared) fiber.Handler {
 			},
 			NoticeIcon: true,
 		})
-		return c.Render(partial.RoomEditSize, b, layouts.None)
+		return c.Render(partial.RoomEditSize, b, layout.None)
 	}
 }

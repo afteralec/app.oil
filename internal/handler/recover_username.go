@@ -10,7 +10,7 @@ import (
 
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/routes"
 	"petrichormud.com/app/internal/username"
@@ -19,7 +19,7 @@ import (
 
 func RecoverUsernamePage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render(views.RecoverUsername, views.Bind(c), layouts.Standalone)
+		return c.Render(views.RecoverUsername, views.Bind(c), layout.Standalone)
 	}
 }
 
@@ -38,7 +38,7 @@ func RecoverUsernameSuccessPage(i *interfaces.Shared) fiber.Handler {
 
 		b := views.Bind(c)
 		b["EmailAddress"] = address
-		return c.Render(views.RecoverUsernameSuccess, b, layouts.Standalone)
+		return c.Render(views.RecoverUsernameSuccess, b, layout.Standalone)
 	}
 }
 
@@ -52,14 +52,14 @@ func RecoverUsername(i *interfaces.Shared) fiber.Handler {
 		if err := c.BodyParser(in); err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInvalid, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInvalid, layout.None)
 		}
 
 		e, err := mail.ParseAddress(in.Email)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInvalid, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInvalid, layout.None)
 		}
 
 		ve, err := i.Queries.GetVerifiedEmailByAddress(context.Background(), e.Address)
@@ -69,7 +69,7 @@ func RecoverUsername(i *interfaces.Shared) fiber.Handler {
 				if err != nil {
 					c.Status(fiber.StatusUnauthorized)
 					c.Append(header.HXAcceptable, "true")
-					return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInternal, layouts.None)
+					return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInternal, layout.None)
 				}
 
 				path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)
@@ -78,14 +78,14 @@ func RecoverUsername(i *interfaces.Shared) fiber.Handler {
 			}
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInternal, layout.None)
 		}
 
 		rusid, err := username.Recover(i, ve)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			c.Append(header.HXAcceptable, "true")
-			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInternal, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindRecoverUsernameErrInternal, layout.None)
 		}
 
 		path := fmt.Sprintf("%s?t=%s", routes.RecoverUsernameSuccess, rusid)

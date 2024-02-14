@@ -12,7 +12,7 @@ import (
 
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
@@ -24,7 +24,7 @@ func HelpPage(i *interfaces.Shared) fiber.Handler {
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -32,7 +32,7 @@ func HelpPage(i *interfaces.Shared) fiber.Handler {
 		header, err := qtx.ListHelpHeaders(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		help := []fiber.Map{}
@@ -40,7 +40,7 @@ func HelpPage(i *interfaces.Shared) fiber.Handler {
 			tags, err := qtx.GetTagsForHelpFile(context.Background(), header.Slug)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
-				return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+				return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 			}
 
 			help = append(help, fiber.Map{
@@ -54,7 +54,7 @@ func HelpPage(i *interfaces.Shared) fiber.Handler {
 
 		b := views.Bind(c)
 		b["Help"] = help
-		return c.Render(views.Help, b, layouts.Main)
+		return c.Render(views.Help, b, layout.Main)
 	}
 }
 
@@ -63,7 +63,7 @@ func HelpFilePage(i *interfaces.Shared) fiber.Handler {
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -71,40 +71,40 @@ func HelpFilePage(i *interfaces.Shared) fiber.Handler {
 		slugs, err := qtx.ListHelpSlugs(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		slug := c.Params("slug")
 		if !slices.Contains(slugs, slug) {
 			c.Status(fiber.StatusNotFound)
-			return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
+			return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
 		}
 
 		help, err := qtx.GetHelp(context.Background(), slug)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
-				return c.Render(views.NotFound, views.Bind(c), layouts.Standalone)
+				return c.Render(views.NotFound, views.Bind(c), layout.Standalone)
 			}
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		relatedRecords, err := qtx.GetHelpRelated(context.Background(), slug)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		tags, err := qtx.GetTagsForHelpFile(context.Background(), slug)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return c.Render(views.InternalServerError, views.Bind(c), layouts.Standalone)
+			return c.Render(views.InternalServerError, views.Bind(c), layout.Standalone)
 		}
 
 		related := []fiber.Map{}
@@ -126,7 +126,7 @@ func HelpFilePage(i *interfaces.Shared) fiber.Handler {
 		b["Sub"] = help.Sub
 		b["Category"] = help.Category
 		b["Tags"] = tags
-		return c.Render(views.HelpFile, b, layouts.Main)
+		return c.Render(views.HelpFile, b, layout.Main)
 	}
 }
 
@@ -153,7 +153,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				RefreshButton: true,
 				NoticeIcon:    true,
 			})
-			return c.Render(partial.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layout.None)
 		}
 
 		if len(in.Search) == 0 {
@@ -169,7 +169,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				RefreshButton: true,
 				NoticeIcon:    true,
 			})
-			return c.Render(partial.NoticeSectionWarn, b, layouts.None)
+			return c.Render(partial.NoticeSectionWarn, b, layout.None)
 		}
 
 		tx, err := i.Database.Begin()
@@ -186,7 +186,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				RefreshButton: true,
 				NoticeIcon:    true,
 			})
-			return c.Render(partial.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layout.None)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -215,7 +215,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					RefreshButton: true,
 					NoticeIcon:    true,
 				})
-				return c.Render(partial.NoticeSectionError, b, layouts.None)
+				return c.Render(partial.NoticeSectionError, b, layout.None)
 			}
 
 			foundByTitle := []fiber.Map{}
@@ -234,7 +234,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 						RefreshButton: true,
 						NoticeIcon:    true,
 					})
-					return c.Render(partial.NoticeSectionError, b, layouts.None)
+					return c.Render(partial.NoticeSectionError, b, layout.None)
 				}
 
 				foundByTitle = append(foundByTitle, fiber.Map{
@@ -277,7 +277,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					RefreshButton: true,
 					NoticeIcon:    true,
 				})
-				return c.Render(partial.NoticeSectionError, b, layouts.None)
+				return c.Render(partial.NoticeSectionError, b, layout.None)
 			}
 
 			foundByContent := []fiber.Map{}
@@ -296,7 +296,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 						RefreshButton: true,
 						NoticeIcon:    true,
 					})
-					return c.Render(partial.NoticeSectionError, b, layouts.None)
+					return c.Render(partial.NoticeSectionError, b, layout.None)
 				}
 
 				foundByContent = append(foundByContent, fiber.Map{
@@ -336,7 +336,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					RefreshButton: true,
 					NoticeIcon:    true,
 				})
-				return c.Render(partial.NoticeSectionError, b, layouts.None)
+				return c.Render(partial.NoticeSectionError, b, layout.None)
 			}
 
 			foundByCategory := []fiber.Map{}
@@ -355,7 +355,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 						RefreshButton: true,
 						NoticeIcon:    true,
 					})
-					return c.Render(partial.NoticeSectionError, b, layouts.None)
+					return c.Render(partial.NoticeSectionError, b, layout.None)
 				}
 
 				foundByCategory = append(foundByCategory, fiber.Map{
@@ -395,7 +395,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 					RefreshButton: true,
 					NoticeIcon:    true,
 				})
-				return c.Render(partial.NoticeSectionError, b, layouts.None)
+				return c.Render(partial.NoticeSectionError, b, layout.None)
 			}
 
 			foundByTags := []fiber.Map{}
@@ -414,7 +414,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 						RefreshButton: true,
 						NoticeIcon:    true,
 					})
-					return c.Render(partial.NoticeSectionError, b, layouts.None)
+					return c.Render(partial.NoticeSectionError, b, layout.None)
 				}
 
 				foundByTags = append(foundByTags, fiber.Map{
@@ -453,7 +453,7 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 				RefreshButton: true,
 				NoticeIcon:    true,
 			})
-			return c.Render(partial.NoticeSectionError, b, layouts.None)
+			return c.Render(partial.NoticeSectionError, b, layout.None)
 		}
 
 		if len(results) == 0 {
@@ -462,11 +462,11 @@ func SearchHelp(i *interfaces.Shared) fiber.Handler {
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", "search-help-error")
 			c.Status(fiber.StatusNotFound)
-			return c.Render(partial.HelpIndexSearchNoResults, b, layouts.None)
+			return c.Render(partial.HelpIndexSearchNoResults, b, layout.None)
 		}
 
 		b := views.Bind(c)
 		b["Results"] = results
-		return c.Render(partial.HelpIndexSearchResults, b, layouts.None)
+		return c.Render(partial.HelpIndexSearchResults, b, layout.None)
 	}
 }

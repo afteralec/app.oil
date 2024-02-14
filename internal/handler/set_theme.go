@@ -8,7 +8,7 @@ import (
 	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/queries"
 	"petrichormud.com/app/internal/routes"
@@ -70,6 +70,6 @@ func SetTheme(i *interfaces.Shared) fiber.Handler {
 			}
 		}
 
-		return c.Render(partial.ThemeToggle, b, layouts.None)
+		return c.Render(partial.ThemeToggle, b, layout.None)
 	}
 }

@@ -8,7 +8,7 @@ import (
 
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/password"
 	"petrichormud.com/app/internal/queries"
@@ -30,7 +30,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layout.None)
 		}
 
 		tx, err := i.Database.Begin()
@@ -39,7 +39,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layout.None)
 		}
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
@@ -50,7 +50,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layout.None)
 		}
 
 		v, err := password.Verify(in.Password, p.PwHash)
@@ -59,14 +59,14 @@ func Login(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layout.None)
 		}
 		if !v {
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layout.None)
 		}
 
 		pid := p.ID
@@ -76,7 +76,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layout.None)
 		}
 
 		settings, err := qtx.GetPlayerSettings(context.Background(), pid)
@@ -88,14 +88,14 @@ func Login(i *interfaces.Shared) fiber.Handler {
 				c.Append("HX-Reswap", "outerHTML")
 				c.Append(header.HXAcceptable, "true")
 				c.Status(fiber.StatusUnauthorized)
-				return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layout.None)
 			}
 			c.Status(fiber.StatusInternalServerError)
 			c.Append("HX-Retarget", "#login-error")
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layout.None)
 		}
 
 		sess, err := i.Sessions.Get(c)
@@ -104,7 +104,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layout.None)
 		}
 
 		sess.Set("pid", pid)
@@ -118,7 +118,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 				c.Append("HX-Reswap", "outerHTML")
 				c.Append(header.HXAcceptable, "true")
 				c.Status(fiber.StatusUnauthorized)
-				return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layouts.None)
+				return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layout.None)
 			}
 		} else {
 			sess.Set("theme", settings.Theme)
@@ -128,7 +128,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layout.None)
 		}
 
 		if err := tx.Commit(); err != nil {
@@ -137,7 +137,7 @@ func Login(i *interfaces.Shared) fiber.Handler {
 			c.Append("HX-Reswap", "outerHTML")
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusUnauthorized)
-			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layouts.None)
+			return c.Render(partial.NoticeSectionError, partial.BindLoginErr, layout.None)
 		}
 
 		c.Append("HX-Refresh", "true")
@@ -152,6 +152,6 @@ func LoginPage() fiber.Handler {
 			return c.Redirect(routes.Home)
 		}
 
-		return c.Render(views.Login, views.Bind(c), layouts.Standalone)
+		return c.Render(views.Login, views.Bind(c), layout.Standalone)
 	}
 }

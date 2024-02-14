@@ -9,7 +9,7 @@ import (
 	"petrichormud.com/app/internal/email"
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/interfaces"
-	"petrichormud.com/app/internal/layouts"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/util"
 )
@@ -23,7 +23,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			return c.Render(
 				partial.NoticeSectionError,
 				partial.BindProfileEmailResendVerificationErrNoID,
-				layouts.None,
+				layout.None,
 			)
 		}
 
@@ -34,7 +34,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			return c.Render(
 				partial.NoticeSectionError,
 				partial.BindProfileEmailResendVerificationErrInternal(id),
-				layouts.None,
+				layout.None,
 			)
 		}
 
@@ -45,7 +45,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			return c.Render(
 				partial.NoticeSectionError,
 				partial.BindProfileEmailResendVerificationErrInternal(id),
-				layouts.None,
+				layout.None,
 			)
 		}
 		defer tx.Rollback()
@@ -59,7 +59,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 				return c.Render(
 					partial.NoticeSectionError,
 					partial.BindProfileEmailResendVerificationErrInternal(id),
-					layouts.None,
+					layout.None,
 				)
 			}
 			c.Append(header.HXAcceptable, "true")
@@ -67,7 +67,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			return c.Render(
 				partial.NoticeSectionError,
 				partial.BindProfileEmailResendVerificationErrInternal(id),
-				layouts.None,
+				layout.None,
 			)
 		}
 
@@ -77,7 +77,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			return c.Render(
 				partial.NoticeSectionError,
 				partial.BindProfileEmailResendVerificationInfoConflict(id),
-				layouts.None,
+				layout.None,
 			)
 		}
 		if e.PID != pid {
@@ -86,7 +86,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			return c.Render(
 				partial.NoticeSectionError,
 				partial.BindProfileEmailResendVerificationErrInternal(id),
-				layouts.None,
+				layout.None,
 			)
 		}
 
@@ -97,7 +97,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			return c.Render(
 				partial.NoticeSectionError,
 				partial.BindProfileEmailResendVerificationErrInternal(id),
-				layouts.None,
+				layout.None,
 			)
 		}
 		if err == nil && ve.Verified {
@@ -106,7 +106,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			return c.Render(
 				partial.NoticeSectionError,
 				partial.BindProfileEmailResendVerificationErrForbiddenAlreadyVerified(id),
-				layouts.None,
+				layout.None,
 			)
 		}
 
@@ -116,7 +116,7 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			return c.Render(
 				partial.NoticeSectionError,
 				partial.BindProfileEmailResendVerificationErrInternal(id),
-				layouts.None,
+				layout.None,
 			)
 		}
 
@@ -126,14 +126,14 @@ func ResendEmailVerification(i *interfaces.Shared) fiber.Handler {
 			return c.Render(
 				partial.NoticeSectionError,
 				partial.BindProfileEmailResendVerificationErrInternal(id),
-				layouts.None,
+				layout.None,
 			)
 		}
 
 		return c.Render(
 			partial.NoticeSectionSuccess,
 			partial.BindProfileEmailResendVerificationSuccess(id),
-			layouts.None,
+			layout.None,
 		)
 	}
 }
