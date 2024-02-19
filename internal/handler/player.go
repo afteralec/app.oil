@@ -10,7 +10,7 @@ import (
 
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	playerpermission "petrichormud.com/app/internal/player/permission"
+	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/service"
@@ -81,13 +81,13 @@ func PlayerPermissionsPage(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		perms, ok := lperms.(playerpermission.PlayerGranted)
+		perms, ok := lperms.(player.Permissions)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		if !perms.HasPermissionInSet(playerpermission.ShowPermissionViewPermissions) {
+		if !perms.HasPermissionInSet(player.ShowPermissionViewPermissions) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -118,13 +118,13 @@ func PlayerPermissionsDetailPage(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		iperms, ok := lperms.(playerpermission.PlayerGranted)
+		iperms, ok := lperms.(player.Permissions)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		if !iperms.HasPermissionInSet(playerpermission.ShowPermissionViewPermissions) {
+		if !iperms.HasPermissionInSet(player.ShowPermissionViewPermissions) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -164,9 +164,9 @@ func PlayerPermissionsDetailPage(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		perms := playerpermission.MakePlayerGranted(p.ID, pperms)
+		perms := player.NewPermissions(p.ID, pperms)
 		allPerms := []fiber.Map{}
-		for _, perm := range playerpermission.AllPlayer {
+		for _, perm := range player.AllPermissions {
 			granted := perms.Permissions[perm.Name]
 			disabled := true
 			if granted {
@@ -174,12 +174,13 @@ func PlayerPermissionsDetailPage(i *service.Interfaces) fiber.Handler {
 			} else {
 				disabled = !iperms.CanGrantPermission(perm.Name)
 			}
+			// TODO: Fix this to just use the "Name" for the permission
 			pm := fiber.Map{
 				"Name":     perm.Name,
-				"Tag":      perm.Tag,
+				"Tag":      perm.Name,
 				"Title":    perm.Title,
 				"About":    perm.About,
-				"Link":     route.PlayerPermissionsTogglePath(strconv.FormatInt(p.ID, 10), perm.Tag),
+				"Link":     route.PlayerPermissionsTogglePath(strconv.FormatInt(p.ID, 10), perm.Name),
 				"Granted":  granted,
 				"Disabled": disabled,
 			}
@@ -209,12 +210,12 @@ func TogglePlayerPermission(i *service.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		iperms, ok := lperms.(playerpermission.PlayerGranted)
+		iperms, ok := lperms.(player.Permissions)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
-		if !iperms.Permissions[playerpermission.PlayerGrantAllPermissionsName] {
+		if !iperms.Permissions[player.PermissionGrantAll.Name] {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -235,7 +236,7 @@ func TogglePlayerPermission(i *service.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
-		_, ok = playerpermission.AllPlayerByTag[ptag]
+		_, ok = player.AllPermissionsByName[ptag]
 		if !ok {
 			c.Status(fiber.StatusBadRequest)
 			return nil
@@ -261,8 +262,8 @@ func TogglePlayerPermission(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		perms := playerpermission.MakePlayerGranted(pid, pperms)
-		perm := playerpermission.AllPlayerByTag[ptag]
+		perms := player.NewPermissions(pid, pperms)
+		perm := player.AllPermissionsByName[ptag]
 		_, granted := perms.Permissions[perm.Name]
 
 		if r.Grant && granted {

@@ -7,7 +7,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	playerpermission "petrichormud.com/app/internal/player/permission"
+	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 )
 
@@ -152,7 +152,7 @@ func IsEditable(req *query.Request) bool {
 	return true
 }
 
-func IsStatusUpdateOK(req *query.Request, perms playerpermission.PlayerGranted, pid int64, status string) bool {
+func IsStatusUpdateOK(req *query.Request, perms player.Permissions, pid int64, status string) bool {
 	if status == StatusSubmitted {
 		return req.PID == pid && req.Status == StatusReady
 	}
@@ -162,28 +162,28 @@ func IsStatusUpdateOK(req *query.Request, perms playerpermission.PlayerGranted, 
 	}
 
 	if status == StatusInReview {
-		if !perms.Permissions[playerpermission.PlayerReviewCharacterApplicationsName] {
+		if !perms.Permissions[player.PermissionReviewCharacterApplications.Name] {
 			return false
 		}
 		return req.PID != pid && req.Status == StatusSubmitted
 	}
 
 	if status == StatusReviewed {
-		if !perms.Permissions[playerpermission.PlayerReviewCharacterApplicationsName] {
+		if !perms.Permissions[player.PermissionReviewCharacterApplications.Name] {
 			return false
 		}
 		return req.PID != pid && req.Status == StatusInReview
 	}
 
 	if status == StatusApproved {
-		if !perms.Permissions[playerpermission.PlayerReviewCharacterApplicationsName] {
+		if !perms.Permissions[player.PermissionReviewCharacterApplications.Name] {
 			return false
 		}
 		return req.PID != pid && req.Status == StatusInReview
 	}
 
 	if status == StatusRejected {
-		if !perms.Permissions[playerpermission.PlayerReviewCharacterApplicationsName] {
+		if !perms.Permissions[player.PermissionReviewCharacterApplications.Name] {
 			return false
 		}
 		return req.PID != pid && req.Status == StatusInReview

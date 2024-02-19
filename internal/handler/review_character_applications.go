@@ -6,7 +6,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/layout"
-	playerpermission "petrichormud.com/app/internal/player/permission"
+	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/view"
@@ -26,12 +26,12 @@ func CharacterApplicationsQueuePage(i *service.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		perms, ok := lperms.(playerpermission.PlayerGranted)
+		perms, ok := lperms.(player.Permissions)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
-		_, ok = perms.Permissions[playerpermission.PlayerReviewCharacterApplicationsName]
+		_, ok = perms.Permissions[player.PermissionReviewCharacterApplications.Name]
 		if !ok {
 			c.Status(fiber.StatusForbidden)
 			return nil

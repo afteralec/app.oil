@@ -9,7 +9,7 @@ import (
 
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
-	playerpermission "petrichormud.com/app/internal/player/permission"
+	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/route"
@@ -209,7 +209,7 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusForbidden)
 				return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 			}
-			if !perms.Permissions[playerpermission.PlayerReviewCharacterApplicationsName] {
+			if !perms.Permissions[player.PermissionReviewCharacterApplications.Name] {
 				c.Status(fiber.StatusForbidden)
 				return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 			}
@@ -298,7 +298,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusForbidden)
 				return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 			}
-			if !perms.Permissions[playerpermission.PlayerReviewCharacterApplicationsName] {
+			if !perms.Permissions[player.PermissionReviewCharacterApplications.Name] {
 				c.Status(fiber.StatusForbidden)
 				return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 			}
@@ -714,12 +714,12 @@ func CreateRequestComment(i *service.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		perms, ok := lperms.(playerpermission.PlayerGranted)
+		perms, ok := lperms.(player.Permissions)
 		if !ok {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-		_, ok = perms.Permissions[playerpermission.PlayerReviewCharacterApplicationsName]
+		_, ok = perms.Permissions[player.PermissionReviewCharacterApplications.Name]
 		if !ok {
 			c.Status(fiber.StatusForbidden)
 			return nil
