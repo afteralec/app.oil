@@ -11,65 +11,65 @@ import (
 )
 
 const createPlayerPermission = `-- name: CreatePlayerPermission :execresult
-INSERT INTO player_permissions (permission, pid, ipid) VALUES (?, ?, ?)
+INSERT INTO player_permissions (name, pid, ipid) VALUES (?, ?, ?)
 `
 
 type CreatePlayerPermissionParams struct {
-	Permission string
-	PID        int64
-	IPID       int64
+	Name string
+	PID  int64
+	IPID int64
 }
 
 func (q *Queries) CreatePlayerPermission(ctx context.Context, arg CreatePlayerPermissionParams) (sql.Result, error) {
-	return q.exec(ctx, q.createPlayerPermissionStmt, createPlayerPermission, arg.Permission, arg.PID, arg.IPID)
+	return q.exec(ctx, q.createPlayerPermissionStmt, createPlayerPermission, arg.Name, arg.PID, arg.IPID)
 }
 
 const createPlayerPermissionIssuedChangeHistory = `-- name: CreatePlayerPermissionIssuedChangeHistory :exec
-INSERT INTO player_permission_change_history (permission, pid, ipid) VALUES (?, ?, ?)
+INSERT INTO player_permission_change_history (name, pid, ipid) VALUES (?, ?, ?)
 `
 
 type CreatePlayerPermissionIssuedChangeHistoryParams struct {
-	Permission string
-	PID        int64
-	IPID       int64
+	Name string
+	PID  int64
+	IPID int64
 }
 
 func (q *Queries) CreatePlayerPermissionIssuedChangeHistory(ctx context.Context, arg CreatePlayerPermissionIssuedChangeHistoryParams) error {
-	_, err := q.exec(ctx, q.createPlayerPermissionIssuedChangeHistoryStmt, createPlayerPermissionIssuedChangeHistory, arg.Permission, arg.PID, arg.IPID)
+	_, err := q.exec(ctx, q.createPlayerPermissionIssuedChangeHistoryStmt, createPlayerPermissionIssuedChangeHistory, arg.Name, arg.PID, arg.IPID)
 	return err
 }
 
 const createPlayerPermissionRevokedChangeHistory = `-- name: CreatePlayerPermissionRevokedChangeHistory :exec
-INSERT INTO player_permission_change_history (permission, pid, ipid, revoked) VALUES (?, ?, ?, true)
+INSERT INTO player_permission_change_history (name, pid, ipid, revoked) VALUES (?, ?, ?, true)
 `
 
 type CreatePlayerPermissionRevokedChangeHistoryParams struct {
-	Permission string
-	PID        int64
-	IPID       int64
+	Name string
+	PID  int64
+	IPID int64
 }
 
 func (q *Queries) CreatePlayerPermissionRevokedChangeHistory(ctx context.Context, arg CreatePlayerPermissionRevokedChangeHistoryParams) error {
-	_, err := q.exec(ctx, q.createPlayerPermissionRevokedChangeHistoryStmt, createPlayerPermissionRevokedChangeHistory, arg.Permission, arg.PID, arg.IPID)
+	_, err := q.exec(ctx, q.createPlayerPermissionRevokedChangeHistoryStmt, createPlayerPermissionRevokedChangeHistory, arg.Name, arg.PID, arg.IPID)
 	return err
 }
 
 const deletePlayerPermission = `-- name: DeletePlayerPermission :exec
-DELETE FROM player_permissions WHERE permission = ? AND pid = ?
+DELETE FROM player_permissions WHERE name = ? AND pid = ?
 `
 
 type DeletePlayerPermissionParams struct {
-	Permission string
-	PID        int64
+	Name string
+	PID  int64
 }
 
 func (q *Queries) DeletePlayerPermission(ctx context.Context, arg DeletePlayerPermissionParams) error {
-	_, err := q.exec(ctx, q.deletePlayerPermissionStmt, deletePlayerPermission, arg.Permission, arg.PID)
+	_, err := q.exec(ctx, q.deletePlayerPermissionStmt, deletePlayerPermission, arg.Name, arg.PID)
 	return err
 }
 
 const listPlayerPermissions = `-- name: ListPlayerPermissions :many
-SELECT created_at, permission, ipid, pid, id FROM player_permissions WHERE pid = ?
+SELECT created_at, name, ipid, pid, id FROM player_permissions WHERE pid = ?
 `
 
 func (q *Queries) ListPlayerPermissions(ctx context.Context, pid int64) ([]PlayerPermission, error) {
@@ -83,7 +83,7 @@ func (q *Queries) ListPlayerPermissions(ctx context.Context, pid int64) ([]Playe
 		var i PlayerPermission
 		if err := rows.Scan(
 			&i.CreatedAt,
-			&i.Permission,
+			&i.Name,
 			&i.IPID,
 			&i.PID,
 			&i.ID,

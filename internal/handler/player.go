@@ -283,9 +283,9 @@ func TogglePlayerPermission(i *service.Interfaces) fiber.Handler {
 			}
 
 			params := query.CreatePlayerPermissionIssuedChangeHistoryParams{
-				IPID:       ipid.(int64),
-				PID:        pid,
-				Permission: perm.Name,
+				IPID: ipid.(int64),
+				PID:  pid,
+				Name: perm.Name,
 			}
 			if err := qtx.CreatePlayerPermissionIssuedChangeHistory(context.Background(), params); err != nil {
 				c.Status(fiber.StatusInternalServerError)
@@ -293,9 +293,9 @@ func TogglePlayerPermission(i *service.Interfaces) fiber.Handler {
 			}
 
 			_, err := qtx.CreatePlayerPermission(context.Background(), query.CreatePlayerPermissionParams{
-				IPID:       ipid.(int64),
-				PID:        pid,
-				Permission: perm.Name,
+				IPID: ipid.(int64),
+				PID:  pid,
+				Name: perm.Name,
 			})
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
@@ -316,9 +316,9 @@ func TogglePlayerPermission(i *service.Interfaces) fiber.Handler {
 			}
 
 			params := query.CreatePlayerPermissionRevokedChangeHistoryParams{
-				IPID:       ipid.(int64),
-				PID:        pid,
-				Permission: perm.Name,
+				IPID: ipid.(int64),
+				PID:  pid,
+				Name: perm.Name,
 			}
 			if err := qtx.CreatePlayerPermissionRevokedChangeHistory(context.Background(), params); err != nil {
 				c.Status(fiber.StatusInternalServerError)
@@ -326,8 +326,8 @@ func TogglePlayerPermission(i *service.Interfaces) fiber.Handler {
 			}
 
 			if err := qtx.DeletePlayerPermission(context.Background(), query.DeletePlayerPermissionParams{
-				PID:        pid,
-				Permission: perm.Name,
+				PID:  pid,
+				Name: perm.Name,
 			}); err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return nil

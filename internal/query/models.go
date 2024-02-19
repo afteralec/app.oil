@@ -154,20 +154,20 @@ type Player struct {
 }
 
 type PlayerPermission struct {
-	CreatedAt  time.Time
-	Permission string
-	IPID       int64
-	PID        int64
-	ID         int64
+	CreatedAt time.Time
+	Name      string
+	IPID      int64
+	PID       int64
+	ID        int64
 }
 
 type PlayerPermissionChangeHistory struct {
-	CreatedAt  time.Time
-	Permission string
-	IPID       int64
-	PID        int64
-	ID         int64
-	Revoked    bool
+	CreatedAt time.Time
+	Name      string
+	IPID      int64
+	PID       int64
+	ID        int64
+	Revoked   bool
 }
 
 type PlayerSetting struct {

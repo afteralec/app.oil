@@ -164,16 +164,16 @@ var grantPlayerPermissionCmd = &cobra.Command{
 		}
 
 		if err := qtx.CreatePlayerPermissionIssuedChangeHistory(context.Background(), query.CreatePlayerPermissionIssuedChangeHistoryParams{
-			PID:        p.ID,
-			IPID:       p.ID,
-			Permission: perm.Name,
+			PID:  p.ID,
+			IPID: p.ID,
+			Name: perm.Name,
 		}); err != nil {
 			return err
 		}
 		_, err = qtx.CreatePlayerPermission(context.Background(), query.CreatePlayerPermissionParams{
-			PID:        p.ID,
-			IPID:       p.ID,
-			Permission: perm.Name,
+			PID:  p.ID,
+			IPID: p.ID,
+			Name: perm.Name,
 		})
 		if err != nil {
 			return err

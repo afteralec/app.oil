@@ -93,17 +93,17 @@ type Permissions struct {
 func NewPermissions(pid int64, perms []query.PlayerPermission) Permissions {
 	filtered := []query.PlayerPermission{}
 	for _, perm := range perms {
-		if IsValidName(perm.Permission) {
+		if IsValidName(perm.Name) {
 			filtered = append(filtered, perm)
 		}
 	}
 	list := []string{}
 	for _, perm := range filtered {
-		list = append(list, perm.Permission)
+		list = append(list, perm.Name)
 	}
 	permissionsmap := map[string]bool{}
 	for _, perm := range filtered {
-		permissionsmap[perm.Permission] = true
+		permissionsmap[perm.Name] = true
 	}
 	return Permissions{
 		PID:             pid,

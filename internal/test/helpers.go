@@ -129,11 +129,11 @@ func CreateTestEmail(t *testing.T, i *service.Interfaces, a *fiber.App, e, u, pw
 }
 
 // TODO: Rework this to use endpoints on the app instead of interfaces directly
-func CreateTestPlayerPermission(t *testing.T, i *service.Interfaces, pid int64, permission string) int64 {
+func CreateTestPlayerPermission(t *testing.T, i *service.Interfaces, pid int64, name string) int64 {
 	permissionResult, err := i.Queries.CreatePlayerPermission(context.Background(), query.CreatePlayerPermissionParams{
-		PID:        pid,
-		IPID:       pid,
-		Permission: permission,
+		PID:  pid,
+		IPID: pid,
+		Name: name,
 	})
 	if err != nil {
 		t.Fatal(err)
