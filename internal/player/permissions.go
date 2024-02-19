@@ -93,7 +93,7 @@ type Permissions struct {
 func NewPermissions(pid int64, perms []query.PlayerPermission) Permissions {
 	filtered := []query.PlayerPermission{}
 	for _, perm := range perms {
-		if IsValidName(perm.Name) {
+		if IsValidPermissionName(perm.Name) {
 			filtered = append(filtered, perm)
 		}
 	}
@@ -139,7 +139,7 @@ func (p *Permissions) HasAllPermissionsInSet(set []string) bool {
 
 // TODO: This is to enable adding sub-permissions to grant individual or groups of permissions
 func (p *Permissions) CanGrantPermission(name string) bool {
-	if !IsValidName(name) {
+	if !IsValidPermissionName(name) {
 		return false
 	}
 
@@ -154,7 +154,7 @@ func (p *Permissions) CanGrantPermission(name string) bool {
 
 // TODO: This is to enable adding sub-permissions to grant individual or groups of permissions
 func (p *Permissions) CanRevokePermission(name string) bool {
-	if !IsValidName(name) {
+	if !IsValidPermissionName(name) {
 		return false
 	}
 
@@ -167,7 +167,7 @@ func (p *Permissions) CanRevokePermission(name string) bool {
 	return ok
 }
 
-func IsValidName(name string) bool {
+func IsValidPermissionName(name string) bool {
 	_, ok := AllPermissionsByName[name]
 	return ok
 }

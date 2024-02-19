@@ -14,6 +14,7 @@ import (
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/service"
+	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/view"
 )
 
@@ -205,17 +206,12 @@ func TogglePlayerPermission(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
-		lperms := c.Locals("perms")
-		if lperms == nil {
+		perms, err := util.GetPermissions(c)
+		if err != nil {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		iperms, ok := lperms.(player.Permissions)
-		if !ok {
-			c.Status(fiber.StatusInternalServerError)
-			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-		}
-		if !iperms.Permissions[player.PermissionGrantAll.Name] {
+		if !perms.HasPermission(player.PermissionGrantAll.Name) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -236,8 +232,7 @@ func TogglePlayerPermission(i *service.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
-		_, ok = player.AllPermissionsByName[ptag]
-		if !ok {
+		if !player.IsValidPermissionName(ptag) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -262,7 +257,7 @@ func TogglePlayerPermission(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		perms := player.NewPermissions(pid, pperms)
+		perms = player.NewPermissions(pid, pperms)
 		perm := player.AllPermissionsByName[ptag]
 		_, granted := perms.Permissions[perm.Name]
 
