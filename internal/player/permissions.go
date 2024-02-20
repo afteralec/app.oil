@@ -2,8 +2,6 @@ package player
 
 import "petrichormud.com/app/internal/query"
 
-// TODO: Test
-
 type Permission struct {
 	Name  string
 	Title string
