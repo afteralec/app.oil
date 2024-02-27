@@ -330,7 +330,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 
 		if req.Status == request.StatusIncomplete {
-			field, last := request.GetNextIncompleteField(req.Type, content)
+			field, last := request.NextIncompleteField(req.Type, content)
 			view := request.GetView(req.Type, field)
 
 			label, description := request.GetFieldLabelAndDescription(req.Type, field)
