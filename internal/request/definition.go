@@ -2,14 +2,20 @@ package request
 
 import (
 	"encoding/json"
+	"errors"
 
 	"petrichormud.com/app/internal/query"
 )
+
+const errNoDefinition string = "no definition with type"
+
+var ErrNoDefinition error = errors.New(errNoDefinition)
 
 type Definition interface {
 	Type() string
 	Dialogs() Dialogs
 	Fields() Fields
+	IsFieldValid(f string) bool
 	ContentBytes(q *query.Queries, rid int64) ([]byte, error)
 	UpdateField(q *query.Queries, p UpdateFieldParams) error
 	SummaryTitle(content map[string]string) string
@@ -26,17 +32,23 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 	if !IsTypeValid(p.Request.Type) {
 		return ErrInvalidType
 	}
+	definition, ok := Definitions.Get(p.Request.Type)
+	if !ok {
+		return ErrNoDefinition
+	}
 
-	definition := DefinitionMap[p.Request.Type]
 	if err := definition.UpdateField(q, p); err != nil {
 		return err
 	}
-
 	return nil
 }
 
 func View(t, f string) string {
-	fields := FieldMapsByType[t]
+	definition, ok := Definitions.Get(t)
+	if !ok {
+		return ""
+	}
+	fields := definition.Fields().Map
 	field := fields[f]
 	return field.View
 }
@@ -51,7 +63,10 @@ func Content(q *query.Queries, req *query.Request) (map[string]string, error) {
 		return m, ErrInvalidType
 	}
 
-	definition := DefinitionMap[req.Type]
+	definition, ok := Definitions.Get(req.Type)
+	if !ok {
+		return m, ErrNoDefinition
+	}
 	b, err := definition.ContentBytes(q, req.ID)
 	if err != nil {
 		return m, err
@@ -64,22 +79,32 @@ func Content(q *query.Queries, req *query.Request) (map[string]string, error) {
 }
 
 // TODO: Key this into the Field API
+// Clean this up based on the Fields or Content API
 func NextIncompleteField(t string, content map[string]string) (string, bool) {
-	fields := FieldNamesByType[t]
-	for i, field := range fields {
-		value, ok := content[field]
+	definition, ok := Definitions.Get(t)
+	if !ok {
+		return "", false
+	}
+	fields := definition.Fields()
+	for i, field := range fields.List {
+		value, ok := content[field.Name]
 		if !ok {
 			continue
 		}
 		if len(value) == 0 {
-			return field, i == len(fields)-1
+			return field.Name, i == len(fields.List)-1
 		}
 	}
 	return "", false
 }
 
+// TODO: Possible error output
 func GetFieldLabelAndDescription(t, f string) (string, string) {
-	fields := FieldMapsByType[t]
+	definition, ok := Definitions.Get(t)
+	if !ok {
+		return "", ""
+	}
+	fields := definition.Fields().Map
 	field := fields[f]
 	return field.Label, field.Description
 }

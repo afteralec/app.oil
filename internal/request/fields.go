@@ -7,10 +7,16 @@ type Fields struct {
 	List []Field
 }
 
-func NewFields(f []Field) Fields {
+func NewFields(fields []Field) Fields {
+	fieldsMap := map[string]Field{}
+
+	for _, field := range fields {
+		fieldsMap[field.Name] = field
+	}
+
 	return Fields{
-		List: f,
-		Map:  MakeDefinitionFieldMap(f),
+		List: fields,
+		Map:  fieldsMap,
 	}
 }
 
@@ -20,4 +26,9 @@ func (f *Fields) Update(q *query.Queries, p UpdateFieldParams) error {
 		return ErrInvalidInput
 	}
 	return field.Update(q, p)
+}
+
+func (f *Fields) IsFieldValid(name string) bool {
+	_, ok := f.Map[name]
+	return ok
 }

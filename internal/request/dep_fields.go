@@ -34,13 +34,12 @@ var ViewsByFieldAndType map[string]map[string]string = map[string]map[string]str
 }
 
 func IsFieldValid(t, field string) bool {
-	fieldsByType, ok := FieldMapsByType[t]
+	definition, ok := Definitions.Get(t)
 	if !ok {
 		return false
 	}
 
-	_, ok = fieldsByType[field]
-	return ok
+	return definition.IsFieldValid(field)
 }
 
 var (

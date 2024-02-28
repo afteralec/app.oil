@@ -760,13 +760,7 @@ func CreateRequestComment(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		fieldMapByType, ok := request.FieldMapsByType[req.Type]
-		if !ok {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-		_, ok = fieldMapByType[field]
-		if !ok {
+		if !request.IsFieldValid(req.Type, field) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}

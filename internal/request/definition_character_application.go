@@ -28,6 +28,10 @@ func (app *CharacterApplication) Fields() Fields {
 	return FieldsCharacterApplication
 }
 
+func (app *CharacterApplication) IsFieldValid(name string) bool {
+	return FieldsCharacterApplication.IsFieldValid(name)
+}
+
 func (app *CharacterApplication) ContentBytes(q *query.Queries, rid int64) ([]byte, error) {
 	content, err := q.GetCharacterApplicationContentForRequest(context.Background(), rid)
 	if err != nil {
