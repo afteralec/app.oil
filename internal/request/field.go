@@ -15,19 +15,56 @@ type Field struct {
 	Layout      string
 	Updater     FieldUpdater
 	Validators  []FieldValidator
-	// Regexes     []*regexp.Regexp
-	// MinLen      int
-	// MaxLen      int
 }
 
-type FieldBuilder struct {
-	Name        string
-	Label       string
-	Description string
-	View        string
-	Layout      string
-	Updater     FieldUpdater
-	Validators  []FieldValidator
+type fieldBuilder struct {
+	Field Field
+}
+
+func FieldBuilder() *fieldBuilder {
+	return new(fieldBuilder)
+}
+
+func (b *fieldBuilder) Name(name string) *fieldBuilder {
+	b.Field.Name = name
+	return b
+}
+
+func (b *fieldBuilder) Label(label string) *fieldBuilder {
+	b.Field.Label = label
+	return b
+}
+
+func (b *fieldBuilder) Description(description string) *fieldBuilder {
+	b.Field.Description = description
+	return b
+}
+
+func (b *fieldBuilder) View(view string) *fieldBuilder {
+	b.Field.View = view
+	return b
+}
+
+func (b *fieldBuilder) Layout(layout string) *fieldBuilder {
+	b.Field.Layout = layout
+	return b
+}
+
+func (b *fieldBuilder) Updater(updater FieldUpdater) *fieldBuilder {
+	b.Field.Updater = updater
+	return b
+}
+
+// TODO: Separate the length validator?
+func (b *fieldBuilder) Validator(validator FieldValidator) *fieldBuilder {
+	// TODO: Panic if a field is attempted to be built with more than one length validator
+	b.Field.Validators = append(b.Field.Validators, validator)
+	return b
+}
+
+func (b *fieldBuilder) Build() Field {
+	// TODO: Validate that the fields work
+	return b.Field
 }
 
 type FieldValidator interface {
