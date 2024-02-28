@@ -9,30 +9,23 @@ import (
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/service"
+	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/view"
 )
 
 func CharacterApplicationsQueuePage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		pid := c.Locals("pid")
-
-		if pid == nil {
+		if !util.IsLoggedIn(c) {
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
-		lperms := c.Locals("perms")
-		if lperms == nil {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-		perms, ok := lperms.(player.Permissions)
-		if !ok {
+		perms, err := util.GetPermissions(c)
+		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
-		_, ok = perms.Permissions[player.PermissionReviewCharacterApplications.Name]
-		if !ok {
+		if !perms.HasPermission(player.PermissionReviewCharacterApplications.Name) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -45,28 +38,29 @@ func CharacterApplicationsQueuePage(i *service.Interfaces) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
+		// TODO: Make this a "List Open Requests By Type" query
 		apps, err := qtx.ListOpenCharacterApplications(context.Background())
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c))
 		}
 
-		summaries := []request.ApplicationSummary{}
+		summaries := []request.SummaryForQueue{}
 		for _, app := range apps {
-			reviewer := ""
-			if app.Request.RPID > 0 {
-				p, err := qtx.GetPlayer(context.Background(), app.Request.RPID)
-				if err != nil {
-					// TODO: Sort out this edge case
-					// if err == sql.ErrNoRows {
-					// TODO: Log this error here, this means we need to reset the reviewer and status on the request
-					// }
-					c.Status(fiber.StatusInternalServerError)
-					return c.Render(view.InternalServerError, view.Bind(c))
-				}
-				reviewer = p.Username
+			content, err := request.Content(qtx, &app.Request)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c))
 			}
-			summaries = append(summaries, request.NewSummaryFromApplication(&app.Player, reviewer, &app.Request, &app.CharacterApplicationContent))
+			summary, err := request.NewSummaryForQueue(request.SummaryForQueueParams{
+				Request: &app.Request,
+				Content: content,
+			})
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c))
+			}
+			summaries = append(summaries, summary)
 		}
 
 		if err = tx.Commit(); err != nil {
@@ -75,6 +69,7 @@ func CharacterApplicationsQueuePage(i *service.Interfaces) fiber.Handler {
 		}
 
 		b := view.Bind(c)
+		// TODO: Move this length check down into the template
 		b["ThereAreCharacterApplications"] = len(summaries) > 0
 		b["CharacterApplicationSummaries"] = summaries
 		return c.Render(view.CharacterApplicationQueue, b)

@@ -3,8 +3,11 @@ package request
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"html/template"
 
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/route"
 )
 
 const errNoDefinition string = "no definition with type"
@@ -21,6 +24,7 @@ type Definition interface {
 	UpdateField(q *query.Queries, p UpdateFieldParams) error
 	TitleForSummary(c content) string
 	FieldsForSummary(p FieldsForSummaryParams) ([]FieldForSummary, error)
+	SummaryForQueue(p SummaryForQueueParams) SummaryForQueue
 }
 
 type DefaultDefinition struct{}
@@ -74,6 +78,64 @@ func (d *DefaultDefinition) FieldsForSummary(p FieldsForSummaryParams) ([]FieldF
 	return fields.ForSummary(p), nil
 }
 
+type ReviewDialogData struct {
+	Path     string
+	Variable string
+}
+
+// TODO: ReviewDialog needs consolidated and cleaned up here
+type SummaryForQueue struct {
+	StatusIcon   StatusIcon
+	ReviewDialog ReviewDialogData
+	StatusColor  string
+	StatusText   string
+	Title        string
+	Link         string
+	ReviewerText template.HTML
+	ID           int64
+	PID          int64
+}
+
+type SummaryForQueueParams struct {
+	Content content
+	Request *query.Request
+}
+
+// TODO: Error output
+func (d *DefaultDefinition) SummaryForQueue(p SummaryForQueueParams) SummaryForQueue {
+	def, ok := Definitions.Get(p.Request.Type)
+	if !ok {
+		return SummaryForQueue{}
+	}
+
+	title := def.TitleForSummary(p.Content)
+
+	var reviewerText template.HTML
+	if p.Request.Status == StatusInReview {
+		reviewerText = template.HTML("<span class=\"font-semibold\">Being reviewed by:</span>")
+	} else {
+		reviewerText = template.HTML("<span class=\"font-semibold\">Never reviewed</span>")
+	}
+
+	reviewDialog := ReviewDialogData{
+		Path:     route.RequestStatusPath(p.Request.ID),
+		Variable: fmt.Sprintf("showReviewDialogFor%s", title),
+	}
+
+	// TODO: Make this resilient to a request with an invalid status
+	return SummaryForQueue{
+		ID:           p.Request.ID,
+		PID:          p.Request.PID,
+		Title:        title,
+		Link:         route.RequestPath(p.Request.ID),
+		StatusIcon:   NewStatusIcon(StatusIconParams{Status: p.Request.Status, Size: "48", IncludeText: false}),
+		StatusColor:  StatusColors[p.Request.Status],
+		StatusText:   StatusTexts[p.Request.Status],
+		ReviewerText: reviewerText,
+		ReviewDialog: reviewDialog,
+	}
+}
+
 func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 	if !IsTypeValid(p.Request.Type) {
 		return ErrInvalidType
@@ -106,6 +168,7 @@ func View(t, f string) string {
 	return field.View
 }
 
+// TODO: Make this a standard utility
 func ContentBytes(content any) ([]byte, error) {
 	b, err := json.Marshal(content)
 	if err != nil {
@@ -114,7 +177,6 @@ func ContentBytes(content any) ([]byte, error) {
 	return b, nil
 }
 
-// TODO: Let this return the fully-qualified type
 func Content(q *query.Queries, req *query.Request) (content, error) {
 	if !IsTypeValid(req.Type) {
 		return content{}, ErrInvalidType
@@ -143,6 +205,7 @@ func NextIncompleteField(t string, c content) (string, bool) {
 }
 
 // TODO: Possible error output
+// TODO: Clean this up
 func GetFieldLabelAndDescription(t, f string) (string, string) {
 	definition, ok := Definitions.Get(t)
 	if !ok {
@@ -162,6 +225,15 @@ func TitleForSummary(t string, c content) string {
 		return ""
 	}
 	return definition.TitleForSummary(c)
+}
+
+func NewSummaryForQueue(p SummaryForQueueParams) (SummaryForQueue, error) {
+	def, ok := Definitions.Get(p.Request.Type)
+	if !ok {
+		return SummaryForQueue{}, ErrNoDefinition
+	}
+
+	return def.SummaryForQueue(p), nil
 }
 
 func IsFieldNameValid(t, name string) bool {

@@ -70,13 +70,13 @@ func IsStatusValid(status string) bool {
 	return ok
 }
 
-type MakeStatusIconParams struct {
+type StatusIconParams struct {
 	Status      string
 	Size        string
 	IncludeText bool
 }
 
-func MakeStatusIcon(p MakeStatusIconParams) StatusIcon {
+func NewStatusIcon(p StatusIconParams) StatusIcon {
 	icon, ok := StatusIcons[p.Status]
 	if !ok {
 		return MakeDefaultStatusIcon(p.Size, p.IncludeText)

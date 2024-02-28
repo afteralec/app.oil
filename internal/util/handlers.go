@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
+
 	"petrichormud.com/app/internal/player"
 )
 

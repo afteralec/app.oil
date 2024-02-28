@@ -9,18 +9,17 @@ import (
 	"petrichormud.com/app/internal/request"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/service"
+	"petrichormud.com/app/internal/util"
 	"petrichormud.com/app/internal/view"
 )
 
 func CharactersPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		pid := c.Locals("pid")
-
-		if pid == nil {
+		pid, err := util.GetPID(c)
+		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
-
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -29,29 +28,30 @@ func CharactersPage(i *service.Interfaces) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		apps, err := qtx.ListCharacterApplicationsForPlayer(context.Background(), pid.(int64))
+		// TODO: Make this a ListRequestsForPlayerByType query instead
+		apps, err := qtx.ListCharacterApplicationsForPlayer(context.Background(), pid)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c))
 		}
 
 		// TODO: Get this into a standard API on the request package
-		summaries := []request.ApplicationSummary{}
+		summaries := []request.SummaryForQueue{}
 		for _, app := range apps {
-			reviewer := ""
-			if app.Request.RPID > 0 {
-				p, err := qtx.GetPlayer(context.Background(), app.Request.RPID)
-				if err != nil {
-					// TODO: Sort out this edge case
-					// if err == sql.ErrNoRows {
-					// TODO: Log this error here, this means we need to reset the reviewer and status on the request
-					// }
-					c.Status(fiber.StatusInternalServerError)
-					return c.Render(view.InternalServerError, view.Bind(c))
-				}
-				reviewer = p.Username
+			content, err := request.Content(qtx, &app.Request)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c))
 			}
-			summaries = append(summaries, request.NewSummaryFromApplication(&app.Player, reviewer, &app.Request, &app.CharacterApplicationContent))
+			summary, err := request.NewSummaryForQueue(request.SummaryForQueueParams{
+				Request: &app.Request,
+				Content: content,
+			})
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c))
+			}
+			summaries = append(summaries, summary)
 		}
 
 		if err = tx.Commit(); err != nil {

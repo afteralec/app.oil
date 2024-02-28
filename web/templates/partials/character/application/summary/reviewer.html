@@ -8,31 +8,17 @@
   </div>
   <div>
     <h2 class="text-base font-semibold leading-none tracking-tight">
-      {{ .Name }}
+      {{ .Title }}
     </h2>
-
     <p class="text-sm font-semibold leading-none {{ .StatusColor }}">
       {{ .StatusText }}
     </p>
   </div>
   <div>
     <p class="text-sm leading-none text-muted-fg">
-      <span class="font-semibold">Author:</span> {{ .Author }}
+      <span class="font-semibold">Author:</span>
     </p>
-    <!-- prettier-ignore -->
-    {{ if .StatusInReview -}}
-    <p class="text-sm leading-none text-muted-fg">
-      <span class="font-semibold">Being reviewed by:</span> {{ .Reviewer }}
-    </p>
-    {{ else if .Reviewer }}
-    <p class="text-sm leading-none text-muted-fg">
-      <span class="font-semibold">Last reviewed by:</span> {{ .Reviewer }}
-    </p>
-    {{ else -}}
-    <p class="text-sm font-semibold leading-none text-muted-fg">
-      Never reviewed
-    </p>
-    {{ end -}}
+    <p class="text-sm leading-none text-muted-fg">{{ .ReviewerText }}</p>
   </div>
   <div class="ml-auto flex items-center justify-center gap-2">
     <a
@@ -41,15 +27,6 @@
     >
       View
     </a>
-    {{ if .StatusSubmitted -}}
-    <!-- <button -->
-    <!--   type="button" -->
-    <!--   class="htmx-trade-indicator-out button-primary" -->
-    <!--   @click.prevent="{{ .ReviewDialog.Variable }} = true" -->
-    <!-- > -->
-    <!--   Put In Review -->
-    <!-- </button> -->
-    {{ end -}}
   </div>
 </div>
 {{ end }}
