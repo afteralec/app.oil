@@ -139,3 +139,11 @@ func SummaryTitle(t string, content map[string]string) string {
 	}
 	return definition.SummaryTitle(content)
 }
+
+func IsFieldNameValid(t, name string) bool {
+	definition, ok := Definitions.Get(t)
+	if !ok {
+		return false
+	}
+	return definition.IsFieldNameValid(name)
+}
