@@ -9,12 +9,16 @@ import (
 )
 
 type BindGenderRadioGroupParams struct {
-	Content map[string]string
+	Content content
 	Name    string
 }
 
 // TODO: Put this behind a Character Applications, Characters or actor package instead?
 func BindGenderRadioGroup(b fiber.Map, p BindGenderRadioGroupParams) fiber.Map {
+	gender, ok := p.Content.Value(FieldCharacterApplicationGender.Name)
+	if !ok {
+		return fiber.Map{}
+	}
 	b["GenderRadioGroup"] = []bind.Radio{
 		{
 			ID:       "edit-request-character-application-gender-non-binary",
@@ -22,7 +26,7 @@ func BindGenderRadioGroup(b fiber.Map, p BindGenderRadioGroupParams) fiber.Map {
 			Variable: "gender",
 			Value:    constant.GenderNonBinary,
 			Label:    "Non-Binary",
-			Active:   p.Content["Gender"] == constant.GenderNonBinary,
+			Active:   gender == constant.GenderNonBinary,
 		},
 		{
 			ID:       "edit-request-character-application-gender-female",
@@ -30,7 +34,7 @@ func BindGenderRadioGroup(b fiber.Map, p BindGenderRadioGroupParams) fiber.Map {
 			Variable: "gender",
 			Value:    constant.GenderFemale,
 			Label:    "Female",
-			Active:   p.Content["Gender"] == constant.GenderFemale,
+			Active:   gender == constant.GenderFemale,
 		},
 		{
 			ID:       "edit-request-character-application-gender-male",
@@ -38,7 +42,7 @@ func BindGenderRadioGroup(b fiber.Map, p BindGenderRadioGroupParams) fiber.Map {
 			Variable: "gender",
 			Value:    constant.GenderMale,
 			Label:    "Male",
-			Active:   p.Content["Gender"] == constant.GenderMale,
+			Active:   gender == constant.GenderMale,
 		},
 	}
 	return b

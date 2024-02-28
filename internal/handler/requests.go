@@ -249,7 +249,7 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 
 		// TODO: Let this bind use the actual content API
 		b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
-			Content: content.Inner,
+			Content: content,
 			Name:    "value",
 		})
 
@@ -355,7 +355,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			b["FieldValue"] = ""
 
 			b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
-				Content: content.Inner,
+				Content: content,
 				Name:    "value",
 			})
 
