@@ -17,9 +17,48 @@ type Definition interface {
 	Fields() Fields
 	IsFieldNameValid(f string) bool
 	Content(q *query.Queries, rid int64) (content, error)
+	IsContentValid(c content) bool
 	UpdateField(q *query.Queries, p UpdateFieldParams) error
 	SummaryTitle(content map[string]string) string
 	SummaryFields(p GetSummaryFieldsParams) []SummaryField
+}
+
+type DefaultDefinition struct{}
+
+func (d *DefaultDefinition) Fields() Fields {
+	return Fields{}
+}
+
+func (d *DefaultDefinition) Content(q *query.Queries, rid int64) (content, error) {
+	return content{}, ErrNoDefinition
+}
+
+func (d *DefaultDefinition) IsContentValid(c content) bool {
+	return false
+}
+
+func (d *DefaultDefinition) UpdateField(q *query.Queries, p UpdateFieldParams) error {
+	fields := d.Fields()
+	if err := fields.Update(q, p); err != nil {
+		return err
+	}
+
+	c, err := d.Content(q, p.Request.ID)
+	if err != nil {
+		return err
+	}
+	ready := d.IsContentValid(c)
+
+	if err := UpdateReadyStatus(q, UpdateReadyStatusParams{
+		Status: p.Request.Status,
+		PID:    p.PID,
+		RID:    p.Request.ID,
+		Ready:  ready,
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 type UpdateFieldParams struct {

@@ -354,17 +354,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				Name:    "value",
 			})
 
-			// TODO: Get bind exceptions into their own extractor
-			// if field == request.FieldGender && req.Type == request.TypeCharacterApplication {
-			// 	b["GenderNonBinary"] = character.GenderNonBinary
-			// 	b["GenderFemale"] = character.GenderFemale
-			// 	b["GenderMale"] = character.GenderMale
-			//
-			// 	b["GenderIsNonBinary"] = content["Gender"] == character.GenderNonBinary
-			// 	b["GenderIsFemale"] = content["Gender"] == character.GenderFemale
-			// 	b["GenderIsMale"] = content["Gender"] == character.GenderMale
-			// }
-
 			return c.Render(view, b, layout.RequestFieldStandalone)
 		}
 

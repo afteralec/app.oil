@@ -194,3 +194,31 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 
 	return nil
 }
+
+type UpdateReadyStatusParams struct {
+	Status string
+	PID    int64
+	RID    int64
+	Ready  bool
+}
+
+func UpdateReadyStatus(q *query.Queries, p UpdateReadyStatusParams) error {
+	if p.Ready && p.Status == StatusIncomplete {
+		if err := UpdateStatus(q, UpdateStatusParams{
+			PID:    p.PID,
+			RID:    p.RID,
+			Status: StatusReady,
+		}); err != nil {
+			return err
+		}
+	} else if !p.Ready && p.Status == StatusReady {
+		if err := UpdateStatus(q, UpdateStatusParams{
+			PID:    p.PID,
+			RID:    p.RID,
+			Status: StatusIncomplete,
+		}); err != nil {
+			return err
+		}
+	}
+	return nil
+}

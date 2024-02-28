@@ -14,7 +14,9 @@ import (
 	"petrichormud.com/app/internal/view"
 )
 
-type CharacterApplication struct{}
+type CharacterApplication struct {
+	DefaultDefinition
+}
 
 func (app *CharacterApplication) Type() string {
 	return TypeCharacterApplication
@@ -49,58 +51,25 @@ func (app *CharacterApplication) Content(q *query.Queries, rid int64) (content, 
 	return content{Inner: m}, nil
 }
 
-func (app *CharacterApplication) UpdateField(q *query.Queries, p UpdateFieldParams) error {
+func (app *CharacterApplication) IsContentValid(c content) bool {
 	fields := app.Fields()
-	if err := fields.Update(q, p); err != nil {
-		return err
-	}
-
-	// TODO: Get this in a utility and put this in the underlying Update calls
-	content, err := q.GetCharacterApplicationContentForRequest(context.Background(), p.Request.ID)
-	if err != nil {
-		return err
-	}
-
-	ready := IsCharacterApplicationValid(&content)
-
-	if ready && p.Request.Status == StatusIncomplete {
-		if err := q.CreateHistoryForRequestStatusChange(context.Background(), query.CreateHistoryForRequestStatusChangeParams{
-			RID: p.Request.ID,
-			PID: p.PID,
-		}); err != nil {
-			return err
+	for _, field := range fields.List {
+		v, ok := c.Value(field.Name)
+		if !ok {
+			return false
 		}
-
-		if err := q.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
-			ID:     p.Request.ID,
-			Status: StatusReady,
-		}); err != nil {
-			return err
-		}
-	} else if !ready && p.Request.Status == StatusReady {
-		if err := q.CreateHistoryForRequestStatusChange(context.Background(), query.CreateHistoryForRequestStatusChangeParams{
-			RID: p.Request.ID,
-			PID: p.PID,
-		}); err != nil {
-			return err
-		}
-
-		if err := q.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
-			ID:     p.Request.ID,
-			Status: StatusIncomplete,
-		}); err != nil {
-			return err
+		if !field.IsValueValid(v) {
+			return false
 		}
 	}
-
-	return nil
+	return true
 }
 
 func (app *CharacterApplication) SummaryTitle(content map[string]string) string {
 	var sb strings.Builder
 	titleName := constant.DefaultName
-	if len(content[FieldName]) > 0 {
-		titleName = content[FieldName]
+	if len(content[FieldCharacterApplicationName.Name]) > 0 {
+		titleName = content[FieldCharacterApplicationName.Name]
 	}
 	fmt.Fprintf(&sb, "Character Application (%s)", titleName)
 	return sb.String()
@@ -257,19 +226,19 @@ func (app *CharacterApplication) SummaryFields(p GetSummaryFieldsParams) []Summa
 		basePath := basePathSB.String()
 
 		var namePathSB strings.Builder
-		fmt.Fprintf(&namePathSB, "%s/%s", basePath, FieldName)
+		fmt.Fprintf(&namePathSB, "%s/%s", basePath, "name")
 
 		var genderPathSB strings.Builder
-		fmt.Fprintf(&genderPathSB, "%s/%s", basePath, FieldGender)
+		fmt.Fprintf(&genderPathSB, "%s/%s", basePath, "gender")
 
 		var shortDescriptionPathSB strings.Builder
-		fmt.Fprintf(&shortDescriptionPathSB, "%s/%s", basePath, FieldShortDescription)
+		fmt.Fprintf(&shortDescriptionPathSB, "%s/%s", basePath, "sdesc")
 
 		var descriptionPathSB strings.Builder
-		fmt.Fprintf(&descriptionPathSB, "%s/%s", basePath, FieldDescription)
+		fmt.Fprintf(&descriptionPathSB, "%s/%s", basePath, "desc")
 
 		var backstoryPathSB strings.Builder
-		fmt.Fprintf(&backstoryPathSB, "%s/%s", basePath, FieldBackstory)
+		fmt.Fprintf(&backstoryPathSB, "%s/%s", basePath, "backstory")
 
 		// TODO: Build a utility for this
 		allowEdit := p.Request.PID == p.PID
@@ -281,31 +250,31 @@ func (app *CharacterApplication) SummaryFields(p GetSummaryFieldsParams) []Summa
 		return []SummaryField{
 			{
 				Label:     "Name",
-				Content:   p.Content[FieldName],
+				Content:   p.Content[FieldCharacterApplicationName.Name],
 				AllowEdit: allowEdit,
 				Path:      namePathSB.String(),
 			},
 			{
 				Label:     "Gender",
-				Content:   p.Content[FieldGender],
+				Content:   p.Content[FieldCharacterApplicationGender.Name],
 				AllowEdit: allowEdit,
 				Path:      genderPathSB.String(),
 			},
 			{
 				Label:     "Short Description",
-				Content:   p.Content[FieldShortDescription],
+				Content:   p.Content[FieldCharacterApplicationShortDescription.Name],
 				AllowEdit: allowEdit,
 				Path:      shortDescriptionPathSB.String(),
 			},
 			{
 				Label:     "Description",
-				Content:   p.Content[FieldDescription],
+				Content:   p.Content[FieldCharacterApplicationDescription.Name],
 				AllowEdit: allowEdit,
 				Path:      descriptionPathSB.String(),
 			},
 			{
 				Label:     "Backstory",
-				Content:   p.Content[FieldBackstory],
+				Content:   p.Content[FieldCharacterApplicationBackstory.Name],
 				AllowEdit: allowEdit,
 				Path:      backstoryPathSB.String(),
 			},

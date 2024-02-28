@@ -31,7 +31,7 @@ func TestUpdateRequestFieldUnauthorizedNotLoggedIn(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldName))
+	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -64,7 +64,7 @@ func TestUpdateRequestFieldBadRequestNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid+1, request.FieldName))
+	url := MakeTestURL(route.RequestFieldPath(rid+1, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -97,7 +97,7 @@ func TestUpdateRequestFieldFatal(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldName))
+	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -142,10 +142,10 @@ func TestUpdateRequestFieldForbiddenUnowned(t *testing.T) {
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField(request.FieldName, "Test")
+	writer.WriteField(request.FieldCharacterApplicationName.Name, "Test")
 	writer.Close()
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldName))
+	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -181,10 +181,10 @@ func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField(request.FieldName, "Test")
+	writer.WriteField(request.FieldCharacterApplicationName.Name, "Test")
 	writer.Close()
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldName))
+	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -213,7 +213,7 @@ func TestUpdateRequestFieldBadRequestMissingBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldName))
+	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
@@ -241,7 +241,7 @@ func TestUpdateRequestBadRequestFieldMalformedBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldName))
+	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
