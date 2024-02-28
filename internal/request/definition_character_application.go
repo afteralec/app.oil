@@ -20,7 +20,7 @@ func (app *CharacterApplication) Type() string {
 	return TypeCharacterApplication
 }
 
-func (app *CharacterApplication) Dialogs() DefinitionDialogs {
+func (app *CharacterApplication) Dialogs() Dialogs {
 	return DialogsCharacterApplication
 }
 
@@ -243,7 +243,7 @@ var FieldsCharacterApplication Fields = NewFields([]Field{
 })
 
 // TODO: Get this built into the Definition
-func (app *CharacterApplication) GetSummaryFields(p GetSummaryFieldsParams) []SummaryField {
+func (app *CharacterApplication) SummaryFields(p GetSummaryFieldsParams) []SummaryField {
 	if p.Request.Type == TypeCharacterApplication {
 		var basePathSB strings.Builder
 		fmt.Fprintf(&basePathSB, "/requests/%d", p.Request.ID)
@@ -308,18 +308,18 @@ func (app *CharacterApplication) GetSummaryFields(p GetSummaryFieldsParams) []Su
 	return []SummaryField{}
 }
 
-var DialogsCharacterApplication DefinitionDialogs = DefinitionDialogs{
-	Submit: DefinitionDialog{
+var DialogsCharacterApplication Dialogs = Dialogs{
+	Submit: Dialog{
 		Header:     "Submit This Application?",
 		Text:       "Once your character application is put in review, this cannot be undone.",
 		ButtonText: "Submit This Application",
 	},
-	Cancel: DefinitionDialog{
+	Cancel: Dialog{
 		Header:     "Cancel This Application?",
 		Text:       "Once you've canceled this application, it cannot be undone. If you want to apply with this character again in the future, you'll need to create a new application.",
 		ButtonText: "Cancel This Application",
 	},
-	PutInReview: DefinitionDialog{
+	PutInReview: Dialog{
 		Header:     "Put This Application In Review?",
 		Text:       template.HTML("Once you put this application in review, <span class=\"font-semibold\">you must review it within 24 hours</span>. After picking up this application, you'll be the only reviewer able to review it."),
 		ButtonText: "I'm Ready to Review This Application",

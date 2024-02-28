@@ -1,49 +1,23 @@
 package request
 
-import (
-	"errors"
+import "petrichormud.com/app/internal/query"
 
-	"petrichormud.com/app/internal/view"
-)
-
-// Request fields
-const FieldStatus string = "status"
-
-// Content fields
-
-// Character Application fields
-const (
-	FieldName             string = "name"
-	FieldGender           string = "gender"
-	FieldShortDescription string = "sdesc"
-	FieldDescription      string = "desc"
-	FieldBackstory        string = "backstory"
-)
-
-// Errors
-var ErrNoIncompleteFields error = errors.New("no incomplete fields")
-
-var ViewsByFieldAndType map[string]map[string]string = map[string]map[string]string{
-	TypeCharacterApplication: {
-		FieldName:             view.CharacterApplicationName,
-		FieldGender:           view.CharacterApplicationGender,
-		FieldShortDescription: view.CharacterApplicationShortDescription,
-		FieldDescription:      view.CharacterApplicationDescription,
-		FieldBackstory:        view.CharacterApplicationBackstory,
-	},
+type Fields struct {
+	Map  map[string]Field
+	List []Field
 }
 
-func IsFieldValid(t, field string) bool {
-	fieldsByType, ok := FieldMapsByType[t]
-	if !ok {
-		return false
+func NewFields(f []Field) Fields {
+	return Fields{
+		List: f,
+		Map:  MakeDefinitionFieldMap(f),
 	}
-
-	_, ok = fieldsByType[field]
-	return ok
 }
 
-var (
-	ErrMalformedUpdateInput error = errors.New("no field matched in input")
-	ErrInvalidInput         error = errors.New("field value didn't pass validation")
-)
+func (f *Fields) Update(q *query.Queries, p UpdateFieldParams) error {
+	field, ok := f.Map[p.FieldName]
+	if !ok {
+		return ErrInvalidInput
+	}
+	return field.Update(q, p)
+}

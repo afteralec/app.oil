@@ -241,7 +241,6 @@ type UpdateStatusParams struct {
 	RID    int64
 }
 
-// TODO: Get this in a central location
 var ErrInvalidStatus error = errors.New("invalid status")
 
 func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
