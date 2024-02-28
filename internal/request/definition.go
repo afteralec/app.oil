@@ -1,6 +1,7 @@
 package request
 
 import (
+	"encoding/json"
 	"errors"
 
 	"petrichormud.com/app/internal/query"
@@ -16,7 +17,6 @@ type Definition interface {
 	Fields() Fields
 	IsFieldNameValid(f string) bool
 	Content(q *query.Queries, rid int64) (content, error)
-	ContentBytes(q *query.Queries, rid int64) ([]byte, error)
 	UpdateField(q *query.Queries, p UpdateFieldParams) error
 	SummaryTitle(content map[string]string) string
 	SummaryFields(p GetSummaryFieldsParams) []SummaryField
@@ -51,6 +51,14 @@ func View(t, f string) string {
 	fields := definition.Fields().Map
 	field := fields[f]
 	return field.View
+}
+
+func ContentBytes(content any) ([]byte, error) {
+	b, err := json.Marshal(content)
+	if err != nil {
+		return []byte{}, err
+	}
+	return b, nil
 }
 
 // TODO: Let this return the fully-qualified type
