@@ -45,11 +45,9 @@ func IsCommentValid(c string) bool {
 	if len(c) < CommentMinLength {
 		return false
 	}
-
 	if len(c) > CommentMaxLength {
 		return false
 	}
-
 	re := regexp.MustCompile("[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+")
 	return !re.MatchString(c)
 }

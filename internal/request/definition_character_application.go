@@ -28,8 +28,8 @@ func (app *CharacterApplication) Fields() Fields {
 	return FieldsCharacterApplication
 }
 
-func (app *CharacterApplication) IsFieldValid(name string) bool {
-	return FieldsCharacterApplication.IsFieldValid(name)
+func (app *CharacterApplication) IsFieldNameValid(name string) bool {
+	return FieldsCharacterApplication.IsFieldNameValid(name)
 }
 
 func (app *CharacterApplication) ContentBytes(q *query.Queries, rid int64) ([]byte, error) {

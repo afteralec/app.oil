@@ -9,11 +9,9 @@ type Fields struct {
 
 func NewFields(fields []Field) Fields {
 	fieldsMap := map[string]Field{}
-
 	for _, field := range fields {
 		fieldsMap[field.Name] = field
 	}
-
 	return Fields{
 		List: fields,
 		Map:  fieldsMap,
@@ -28,7 +26,15 @@ func (f *Fields) Update(q *query.Queries, p UpdateFieldParams) error {
 	return field.Update(q, p)
 }
 
-func (f *Fields) IsFieldValid(name string) bool {
+func (f *Fields) IsFieldNameValid(name string) bool {
 	_, ok := f.Map[name]
 	return ok
+}
+
+func (f *Fields) IsFieldValueValid(name, value string) bool {
+	field, ok := f.Map[name]
+	if !ok {
+		return false
+	}
+	return field.IsValueValid(value)
 }

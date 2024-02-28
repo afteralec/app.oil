@@ -186,7 +186,7 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		if !request.IsFieldValid(req.Type, field) {
+		if !request.IsFieldNameValid(req.Type, field) {
 			c.Status(fiber.StatusBadRequest)
 			// TODO: 400 view
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
@@ -443,7 +443,7 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if !request.IsFieldValid(req.Type, field) {
+		if !request.IsFieldNameValid(req.Type, field) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -452,10 +452,7 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
-		if !request.IsFieldValid(req.Type, field) {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
+
 		if !request.IsEditable(&req) {
 			c.Status(fiber.StatusForbidden)
 			return nil
@@ -760,7 +757,7 @@ func CreateRequestComment(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if !request.IsFieldValid(req.Type, field) {
+		if !request.IsFieldNameValid(req.Type, field) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}

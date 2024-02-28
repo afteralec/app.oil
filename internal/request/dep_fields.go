@@ -33,13 +33,13 @@ var ViewsByFieldAndType map[string]map[string]string = map[string]map[string]str
 	},
 }
 
-func IsFieldValid(t, field string) bool {
+func IsFieldNameValid(t, name string) bool {
 	definition, ok := Definitions.Get(t)
 	if !ok {
 		return false
 	}
 
-	return definition.IsFieldValid(field)
+	return definition.IsFieldNameValid(name)
 }
 
 var (

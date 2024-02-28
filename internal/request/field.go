@@ -26,17 +26,14 @@ func (f *Field) IsValueValid(v string) bool {
 	if len(v) < f.MinLen {
 		return false
 	}
-
 	if len(v) > f.MaxLen {
 		return false
 	}
-
 	for _, regex := range f.Regexes {
 		if regex.MatchString(v) {
 			return false
 		}
 	}
-
 	return true
 }
 
@@ -44,6 +41,5 @@ func (f *Field) Update(q *query.Queries, p UpdateFieldParams) error {
 	if !f.IsValueValid(p.Value) {
 		return ErrInvalidInput
 	}
-
 	return f.Updater.Update(q, p)
 }

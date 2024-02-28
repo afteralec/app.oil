@@ -15,10 +15,11 @@ type Definition interface {
 	Type() string
 	Dialogs() Dialogs
 	Fields() Fields
-	IsFieldValid(f string) bool
+	IsFieldNameValid(f string) bool
 	ContentBytes(q *query.Queries, rid int64) ([]byte, error)
 	UpdateField(q *query.Queries, p UpdateFieldParams) error
 	SummaryTitle(content map[string]string) string
+	SummaryFields(p GetSummaryFieldsParams) []SummaryField
 }
 
 type UpdateFieldParams struct {
@@ -36,7 +37,6 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 	if !ok {
 		return ErrNoDefinition
 	}
-
 	if err := definition.UpdateField(q, p); err != nil {
 		return err
 	}
@@ -78,8 +78,7 @@ func Content(q *query.Queries, req *query.Request) (map[string]string, error) {
 	return m, nil
 }
 
-// TODO: Key this into the Field API
-// Clean this up based on the Fields or Content API
+// TODO: Clean this up based on the Fields or new Content API
 func NextIncompleteField(t string, content map[string]string) (string, bool) {
 	definition, ok := Definitions.Get(t)
 	if !ok {
@@ -107,4 +106,36 @@ func GetFieldLabelAndDescription(t, f string) (string, string) {
 	fields := definition.Fields().Map
 	field := fields[f]
 	return field.Label, field.Description
+}
+
+type SummaryField struct {
+	Label     string
+	Content   string
+	Path      string
+	AllowEdit bool
+}
+
+type GetSummaryFieldsParams struct {
+	Request *query.Request
+	Content map[string]string
+	PID     int64
+}
+
+func SummaryFields(p GetSummaryFieldsParams) []SummaryField {
+	definition, ok := Definitions.Get(p.Request.Type)
+	if !ok {
+		return []SummaryField{}
+	}
+	return definition.SummaryFields(p)
+}
+
+func SummaryTitle(t string, content map[string]string) string {
+	if !IsTypeValid(t) {
+		return "Request"
+	}
+	definition, ok := Definitions.Get(t)
+	if !ok {
+		return ""
+	}
+	return definition.SummaryTitle(content)
 }
