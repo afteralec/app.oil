@@ -19,7 +19,7 @@ type Definition interface {
 	Content(q *query.Queries, rid int64) (content, error)
 	IsContentValid(c content) bool
 	UpdateField(q *query.Queries, p UpdateFieldParams) error
-	SummaryTitle(content map[string]string) string
+	TitleForSummary(c content) string
 	FieldsForSummary(p FieldsForSummaryParams) ([]FieldForSummary, error)
 }
 
@@ -133,23 +133,13 @@ func Content(q *query.Queries, req *query.Request) (content, error) {
 	return c, nil
 }
 
-// TODO: Clean this up based on the Fields or new Content API
-func NextIncompleteField(t string, content map[string]string) (string, bool) {
+func NextIncompleteField(t string, c content) (string, bool) {
 	definition, ok := Definitions.Get(t)
 	if !ok {
 		return "", false
 	}
 	fields := definition.Fields()
-	for i, field := range fields.List {
-		value, ok := content[field.Name]
-		if !ok {
-			continue
-		}
-		if len(value) == 0 {
-			return field.Name, i == len(fields.List)-1
-		}
-	}
-	return "", false
+	return fields.NextIncomplete(c)
 }
 
 // TODO: Possible error output
@@ -163,7 +153,7 @@ func GetFieldLabelAndDescription(t, f string) (string, string) {
 	return field.Label, field.Description
 }
 
-func SummaryTitle(t string, content map[string]string) string {
+func TitleForSummary(t string, c content) string {
 	if !IsTypeValid(t) {
 		return "Request"
 	}
@@ -171,7 +161,7 @@ func SummaryTitle(t string, content map[string]string) string {
 	if !ok {
 		return ""
 	}
-	return definition.SummaryTitle(content)
+	return definition.TitleForSummary(c)
 }
 
 func IsFieldNameValid(t, name string) bool {

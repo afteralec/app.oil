@@ -65,11 +65,12 @@ func (app *CharacterApplication) IsContentValid(c content) bool {
 	return true
 }
 
-func (app *CharacterApplication) SummaryTitle(content map[string]string) string {
+func (app *CharacterApplication) TitleForSummary(c content) string {
 	var sb strings.Builder
 	titleName := constant.DefaultName
-	if len(content[FieldCharacterApplicationName.Name]) > 0 {
-		titleName = content[FieldCharacterApplicationName.Name]
+	characterName, ok := c.Value(FieldCharacterApplicationName.Name)
+	if ok {
+		titleName = characterName
 	}
 	fmt.Fprintf(&sb, "Character Application (%s)", titleName)
 	return sb.String()

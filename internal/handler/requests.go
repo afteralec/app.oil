@@ -333,7 +333,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 
 		if req.Status == request.StatusIncomplete {
 			// TODO: Use the entire Content API here
-			field, last := request.NextIncompleteField(req.Type, content.Inner)
+			field, last := request.NextIncompleteField(req.Type, content)
 			view := request.View(req.Type, field)
 
 			// TODO: Validate that NextIncompleteField returns something here
@@ -363,8 +363,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 
 		b["PageHeader"] = fiber.Map{
-			// TODO: Use the entier Content API here
-			"Title": request.SummaryTitle(req.Type, content.Inner),
+			"Title": request.TitleForSummary(req.Type, content),
 		}
 		// TODO: Look at re-implementing this in the view?
 		// b["headertatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
