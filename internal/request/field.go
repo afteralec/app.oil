@@ -1,7 +1,9 @@
 package request
 
 import (
+	"fmt"
 	"regexp"
+	"strings"
 
 	"petrichormud.com/app/internal/query"
 )
@@ -75,21 +77,45 @@ type FieldUpdater interface {
 	Update(q *query.Queries, p UpdateFieldParams) error
 }
 
-func (f *Field) IsValueValid(v string) bool {
-	for _, validator := range f.Validators {
-		if !validator.IsValid(v) {
-			return false
-		}
-	}
-
-	return true
-}
-
 func (f *Field) Update(q *query.Queries, p UpdateFieldParams) error {
 	if !f.IsValueValid(p.Value) {
 		return ErrInvalidInput
 	}
 	return f.Updater.Update(q, p)
+}
+
+type FieldForSummary struct {
+	Label     string
+	Value     string
+	Path      string
+	AllowEdit bool
+}
+
+// TODO: Error output?
+func (f *Field) ForSummary(p FieldsForSummaryParams) FieldForSummary {
+	v, ok := p.Content.Value(f.Name)
+	if !ok {
+		v = ""
+	}
+
+	var basePathSB strings.Builder
+	fmt.Fprintf(&basePathSB, "/requests/%d", p.Request.ID)
+	basePath := basePathSB.String()
+	var pathSB strings.Builder
+	fmt.Fprintf(&pathSB, "%s/%s", basePath, f.Name)
+
+	// TODO: Build a utility for this
+	allowEdit := p.Request.ID == p.PID
+	if p.Request.Status != StatusIncomplete && p.Request.Status != StatusReady {
+		allowEdit = false
+	}
+
+	return FieldForSummary{
+		Label:     f.Label,
+		Value:     v,
+		Path:      pathSB.String(),
+		AllowEdit: allowEdit,
+	}
 }
 
 type FieldLengthValidator struct {
@@ -142,4 +168,14 @@ func NewFieldRegexNoMatchValidator(regex *regexp.Regexp) FieldRegexNoMatchValida
 
 func (f *FieldRegexNoMatchValidator) IsValid(v string) bool {
 	return !f.Regex.MatchString(v)
+}
+
+func (f *Field) IsValueValid(v string) bool {
+	for _, validator := range f.Validators {
+		if !validator.IsValid(v) {
+			return false
+		}
+	}
+
+	return true
 }

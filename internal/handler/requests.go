@@ -243,11 +243,13 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 		b["RequestFormPath"] = route.RequestFieldPath(rid, field)
 		b["Field"] = field
 
-		// TODO: Validate this? i.e., make sure that the content map actually has this in there
-		b["FieldValue"] = content[field]
+		// TODO: Use this ok value
+		fieldValue, _ := content.Value(field)
+		b["FieldValue"] = fieldValue
 
+		// TODO: Let this bind use the actual content API
 		b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
-			Content: content,
+			Content: content.Inner,
 			Name:    "value",
 		})
 
@@ -330,8 +332,11 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 
 		if req.Status == request.StatusIncomplete {
-			field, last := request.NextIncompleteField(req.Type, content)
+			// TODO: Use the entire Content API here
+			field, last := request.NextIncompleteField(req.Type, content.Inner)
 			view := request.View(req.Type, field)
+
+			// TODO: Validate that NextIncompleteField returns something here
 
 			label, description := request.GetFieldLabelAndDescription(req.Type, field)
 			b["FieldLabel"] = label
@@ -350,7 +355,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			b["FieldValue"] = ""
 
 			b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
-				Content: content,
+				Content: content.Inner,
 				Name:    "value",
 			})
 
@@ -358,7 +363,8 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 
 		b["PageHeader"] = fiber.Map{
-			"Title": request.SummaryTitle(req.Type, content),
+			// TODO: Use the entier Content API here
+			"Title": request.SummaryTitle(req.Type, content.Inner),
 		}
 		// TODO: Look at re-implementing this in the view?
 		// b["headertatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
@@ -366,11 +372,16 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		// 	Size:        "36",
 		// 	IncludeText: true,
 		// })
-		b["SummaryFields"] = request.SummaryFields(request.GetSummaryFieldsParams{
+		summaryFields, err := request.FieldsForSummary(request.FieldsForSummaryParams{
 			PID:     pid,
 			Request: &req,
 			Content: content,
 		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		}
+		b["SummaryFields"] = summaryFields
 
 		return c.Render(view.RequestSummaryFields, b, layout.Page)
 	}

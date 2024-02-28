@@ -44,3 +44,11 @@ func (f *Fields) IsFieldValueValid(name, value string) bool {
 	}
 	return field.IsValueValid(value)
 }
+
+func (f *Fields) ForSummary(p FieldsForSummaryParams) []FieldForSummary {
+	result := []FieldForSummary{}
+	for _, field := range f.List {
+		result = append(result, field.ForSummary(p))
+	}
+	return result
+}

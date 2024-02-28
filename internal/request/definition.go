@@ -20,10 +20,17 @@ type Definition interface {
 	IsContentValid(c content) bool
 	UpdateField(q *query.Queries, p UpdateFieldParams) error
 	SummaryTitle(content map[string]string) string
-	SummaryFields(p GetSummaryFieldsParams) []SummaryField
+	FieldsForSummary(p FieldsForSummaryParams) ([]FieldForSummary, error)
 }
 
 type DefaultDefinition struct{}
+
+type UpdateFieldParams struct {
+	Request   *query.Request
+	FieldName string
+	Value     string
+	PID       int64
+}
 
 func (d *DefaultDefinition) UpdateField(q *query.Queries, p UpdateFieldParams) error {
 	def, ok := Definitions.Get(p.Request.Type)
@@ -52,11 +59,19 @@ func (d *DefaultDefinition) UpdateField(q *query.Queries, p UpdateFieldParams) e
 	return nil
 }
 
-type UpdateFieldParams struct {
-	Request   *query.Request
-	FieldName string
-	Value     string
-	PID       int64
+type FieldsForSummaryParams struct {
+	Content content
+	Request *query.Request
+	PID     int64
+}
+
+func (d *DefaultDefinition) FieldsForSummary(p FieldsForSummaryParams) ([]FieldForSummary, error) {
+	def, ok := Definitions.Get(p.Request.Type)
+	if !ok {
+		return []FieldForSummary{}, ErrNoDefinition
+	}
+	fields := def.Fields()
+	return fields.ForSummary(p), nil
 }
 
 func UpdateField(q *query.Queries, p UpdateFieldParams) error {
@@ -71,6 +86,14 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 		return err
 	}
 	return nil
+}
+
+func FieldsForSummary(p FieldsForSummaryParams) ([]FieldForSummary, error) {
+	def, ok := Definitions.Get(p.Request.Type)
+	if !ok {
+		return []FieldForSummary{}, ErrNoDefinition
+	}
+	return def.FieldsForSummary(p)
 }
 
 func View(t, f string) string {
@@ -92,24 +115,22 @@ func ContentBytes(content any) ([]byte, error) {
 }
 
 // TODO: Let this return the fully-qualified type
-func Content(q *query.Queries, req *query.Request) (map[string]string, error) {
-	m := map[string]string{}
-
+func Content(q *query.Queries, req *query.Request) (content, error) {
 	if !IsTypeValid(req.Type) {
-		return m, ErrInvalidType
+		return content{}, ErrInvalidType
 	}
 
 	definition, ok := Definitions.Get(req.Type)
 	if !ok {
-		return m, ErrNoDefinition
+		return content{}, ErrNoDefinition
 	}
 
-	content, err := definition.Content(q, req.ID)
+	c, err := definition.Content(q, req.ID)
 	if err != nil {
-		return m, err
+		return content{}, err
 	}
 
-	return content.Inner, nil
+	return c, nil
 }
 
 // TODO: Clean this up based on the Fields or new Content API
@@ -140,27 +161,6 @@ func GetFieldLabelAndDescription(t, f string) (string, string) {
 	fields := definition.Fields().Map
 	field := fields[f]
 	return field.Label, field.Description
-}
-
-type SummaryField struct {
-	Label     string
-	Content   string
-	Path      string
-	AllowEdit bool
-}
-
-type GetSummaryFieldsParams struct {
-	Request *query.Request
-	Content map[string]string
-	PID     int64
-}
-
-func SummaryFields(p GetSummaryFieldsParams) []SummaryField {
-	definition, ok := Definitions.Get(p.Request.Type)
-	if !ok {
-		return []SummaryField{}
-	}
-	return definition.SummaryFields(p)
 }
 
 func SummaryTitle(t string, content map[string]string) string {
