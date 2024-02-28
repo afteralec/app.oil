@@ -7,7 +7,6 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
-	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 )
 
@@ -152,46 +151,6 @@ func IsEditable(req *query.Request) bool {
 	return true
 }
 
-func IsStatusUpdateOK(req *query.Request, perms player.Permissions, pid int64, status string) bool {
-	if status == StatusSubmitted {
-		return req.PID == pid && req.Status == StatusReady
-	}
-
-	if status == StatusCanceled {
-		return req.PID == pid
-	}
-
-	if status == StatusInReview {
-		if !perms.Permissions[player.PermissionReviewCharacterApplications.Name] {
-			return false
-		}
-		return req.PID != pid && req.Status == StatusSubmitted
-	}
-
-	if status == StatusReviewed {
-		if !perms.Permissions[player.PermissionReviewCharacterApplications.Name] {
-			return false
-		}
-		return req.PID != pid && req.Status == StatusInReview
-	}
-
-	if status == StatusApproved {
-		if !perms.Permissions[player.PermissionReviewCharacterApplications.Name] {
-			return false
-		}
-		return req.PID != pid && req.Status == StatusInReview
-	}
-
-	if status == StatusRejected {
-		if !perms.Permissions[player.PermissionReviewCharacterApplications.Name] {
-			return false
-		}
-		return req.PID != pid && req.Status == StatusInReview
-	}
-
-	return false
-}
-
 func BindStatus(b fiber.Map, req *query.Request) fiber.Map {
 	b["StatusIsIncomplete"] = req.Status == StatusIncomplete
 	b["StatusIsReady"] = req.Status == StatusReady
@@ -202,35 +161,6 @@ func BindStatus(b fiber.Map, req *query.Request) fiber.Map {
 	b["StatusIsRejected"] = req.Status == StatusRejected
 	b["StatusIsArchived"] = req.Status == StatusArchived
 	b["StatusIsCanceled"] = req.Status == StatusCanceled
-
-	return b
-}
-
-func BindStatuses(b fiber.Map, req *query.Request) fiber.Map {
-	// TODO: Can likely split this up to yield just the current status of the request
-	b["StatusIncomplete"] = StatusIncomplete
-	b["StatusReady"] = StatusReady
-	b["StatusSubmitted"] = StatusSubmitted
-	b["StatusInReview"] = StatusInReview
-	b["StatusApproved"] = StatusApproved
-	b["StatusReviewed"] = StatusReviewed
-	b["StatusRejected"] = StatusRejected
-	b["StatusArchived"] = StatusArchived
-	b["StatusCanceled"] = StatusCanceled
-
-	b["StatusIsIncomplete"] = req.Status == StatusIncomplete
-	b["StatusIsReady"] = req.Status == StatusReady
-	b["StatusIsSubmitted"] = req.Status == StatusSubmitted
-	b["StatusIsInReview"] = req.Status == StatusInReview
-	b["StatusIsApproved"] = req.Status == StatusApproved
-	b["StatusIsReviewed"] = req.Status == StatusReviewed
-	b["StatusIsRejected"] = req.Status == StatusRejected
-	b["StatusIsArchived"] = req.Status == StatusArchived
-	b["StatusIsCanceled"] = req.Status == StatusCanceled
-
-	b["StatusText"] = StatusTexts[req.Status]
-
-	b["StatusColor"] = StatusColors[req.Status]
 
 	return b
 }

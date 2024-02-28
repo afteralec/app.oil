@@ -2,7 +2,6 @@ package request
 
 import (
 	"errors"
-	"html/template"
 
 	"petrichormud.com/app/internal/query"
 )
@@ -13,18 +12,6 @@ var ErrInvalidType error = errors.New(errInvalidType)
 
 // TODO: Add API to a Fields struct that can take in a field and value and return if it's valid
 // Have the Fields struct be in charge of the list of fields and the map of fields by name
-
-type DefinitionDialog struct {
-	Header     string
-	ButtonText string
-	Text       template.HTML
-}
-
-type DefinitionDialogs struct {
-	Submit      DefinitionDialog
-	Cancel      DefinitionDialog
-	PutInReview DefinitionDialog
-}
 
 type SummaryField struct {
 	Label     string
