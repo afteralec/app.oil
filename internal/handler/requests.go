@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"database/sql"
+	"log"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -411,6 +412,7 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 		field := c.Params("field")
 		if len(field) == 0 {
 			c.Status(fiber.StatusBadRequest)
+			log.Println("Invalid field")
 			return nil
 		}
 

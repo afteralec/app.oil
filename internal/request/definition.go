@@ -25,30 +25,21 @@ type Definition interface {
 
 type DefaultDefinition struct{}
 
-func (d *DefaultDefinition) Fields() Fields {
-	return Fields{}
-}
-
-func (d *DefaultDefinition) Content(q *query.Queries, rid int64) (content, error) {
-	return content{}, ErrNoDefinition
-}
-
-func (d *DefaultDefinition) IsContentValid(c content) bool {
-	return false
-}
-
 func (d *DefaultDefinition) UpdateField(q *query.Queries, p UpdateFieldParams) error {
-	fields := d.Fields()
+	def, ok := Definitions.Get(p.Request.Type)
+	if !ok {
+		return ErrNoDefinition
+	}
+	fields := def.Fields()
 	if err := fields.Update(q, p); err != nil {
 		return err
 	}
 
-	c, err := d.Content(q, p.Request.ID)
+	c, err := def.Content(q, p.Request.ID)
 	if err != nil {
 		return err
 	}
-	ready := d.IsContentValid(c)
-
+	ready := def.IsContentValid(c)
 	if err := UpdateReadyStatus(q, UpdateReadyStatusParams{
 		Status: p.Request.Status,
 		PID:    p.PID,

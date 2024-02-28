@@ -90,16 +90,20 @@ func (f *fieldCharacterApplicationNameUpdater) Update(q *query.Queries, p Update
 	return nil
 }
 
+var FieldCharacterApplicationNameLengthValidator FieldLengthValidator = NewFieldLengthValidator(4, 16)
+
+var FieldCharacterApplicationNameRegexValidator FieldRegexNoMatchValidator = NewFieldRegexNoMatchValidator(regexp.MustCompile("[^a-zA-Z'-]+"))
+
 var FieldCharacterApplicationName Field = Field{
 	Name:        "name",
 	Label:       "Name",
 	Description: "Your character's name",
-	MinLen:      4,
-	MaxLen:      16,
-	Regexes: []*regexp.Regexp{
-		regexp.MustCompile("[^a-zA-Z'-]+"),
+	View:        view.CharacterApplicationName,
+	Updater:     &FieldCharacterApplicationNameUpdater,
+	Validators: []FieldValidator{
+		&FieldCharacterApplicationNameLengthValidator,
+		&FieldCharacterApplicationNameRegexValidator,
 	},
-	View: view.CharacterApplicationName,
 }
 
 type fieldCharacterApplicationGenderUpdater struct{}
@@ -117,16 +121,25 @@ func (f *fieldCharacterApplicationGenderUpdater) Update(q *query.Queries, p Upda
 	return nil
 }
 
+var FieldCharacterApplicationGenderLengthValidator FieldLengthValidator = NewFieldLengthValidator(
+	util.MinLengthOfStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
+	util.MaxLengthOfStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
+)
+
+var FieldCharacterApplicationGenderRegexValidator FieldRegexMatchValidator = NewFieldRegexMatchValidator(
+	util.RegexForExactMatchStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
+)
+
 var FieldCharacterApplicationGender Field = Field{
 	Name:        "gender",
 	Label:       "Gender",
 	Description: "Your character's gender determines the pronouns used by third-person descriptions in the game",
-	MinLen:      util.MinLengthOfStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
-	MaxLen:      util.MaxLengthOfStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
-	Regexes: []*regexp.Regexp{
-		util.RegexForExactMatchStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
+	View:        view.CharacterApplicationGender,
+	Updater:     &FieldCharacterApplicationGenderUpdater,
+	Validators: []FieldValidator{
+		&FieldCharacterApplicationGenderLengthValidator,
+		&FieldCharacterApplicationGenderRegexValidator,
 	},
-	View: view.CharacterApplicationGender,
 }
 
 type fieldCharacterApplicationShortDescriptionUpdater struct{}
@@ -144,16 +157,20 @@ func (f *fieldCharacterApplicationShortDescriptionUpdater) Update(q *query.Queri
 	return nil
 }
 
+var FieldCharacterApplicationShortDescriptionLengthValidator FieldLengthValidator = NewFieldLengthValidator(8, 300)
+
+var FieldCharacterApplicationShortDescriptionRegexValidator FieldRegexNoMatchValidator = NewFieldRegexNoMatchValidator(regexp.MustCompile("[^a-zA-Z, -]+"))
+
 var FieldCharacterApplicationShortDescription Field = Field{
 	Name:        "sdesc",
 	Label:       "Short Description",
 	Description: "This is how your character will appear in third-person descriptions during the game",
-	MinLen:      8,
-	MaxLen:      300,
-	Regexes: []*regexp.Regexp{
-		regexp.MustCompile("[^a-zA-Z, -]+"),
+	View:        view.CharacterApplicationShortDescription,
+	Updater:     &FieldCharacterApplicationShortDescriptionUpdater,
+	Validators: []FieldValidator{
+		&FieldCharacterApplicationShortDescriptionLengthValidator,
+		&FieldCharacterApplicationShortDescriptionRegexValidator,
 	},
-	View: view.CharacterApplicationShortDescription,
 }
 
 type fieldCharacterApplicationDescriptionUpdater struct{}
@@ -171,16 +188,20 @@ func (f *fieldCharacterApplicationDescriptionUpdater) Update(q *query.Queries, p
 	return nil
 }
 
+var FieldCharacterApplicationDescriptionLengthValidator FieldLengthValidator = NewFieldLengthValidator(32, 2000)
+
+var FieldCharacterApplicationDescriptionRegexValidator FieldRegexNoMatchValidator = NewFieldRegexNoMatchValidator(regexp.MustCompile("[^a-zA-Z, '-.!()]+"))
+
 var FieldCharacterApplicationDescription Field = Field{
 	Name:        "desc",
 	Label:       "Description",
 	Description: "This is how your character will appear when examined",
-	MinLen:      32,
-	MaxLen:      2000,
-	Regexes: []*regexp.Regexp{
-		regexp.MustCompile("[^a-zA-Z, '-.!()]+"),
+	View:        view.CharacterApplicationDescription,
+	Updater:     &FieldCharacterApplicationDescriptionUpdater,
+	Validators: []FieldValidator{
+		&FieldCharacterApplicationDescriptionLengthValidator,
+		&FieldCharacterApplicationDescriptionRegexValidator,
 	},
-	View: view.CharacterApplicationDescription,
 }
 
 type fieldCharacterApplicationBackstoryUpdater struct{}
@@ -198,16 +219,20 @@ func (f *fieldCharacterApplicationBackstoryUpdater) Update(q *query.Queries, p U
 	return nil
 }
 
+var FieldCharacterApplicationBackstoryLengthValidator FieldLengthValidator = NewFieldLengthValidator(500, 10000)
+
+var FieldCharacterApplicationBackstoryRegexValidator FieldRegexNoMatchValidator = NewFieldRegexNoMatchValidator(regexp.MustCompile("[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+"))
+
 var FieldCharacterApplicationBackstory Field = Field{
 	Name:        "backstory",
 	Label:       "Backstory",
 	Description: "This is your character's private backstory",
-	MinLen:      500,
-	MaxLen:      10000,
-	Regexes: []*regexp.Regexp{
-		regexp.MustCompile("[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+"),
+	View:        view.CharacterApplicationBackstory,
+	Updater:     &FieldCharacterApplicationBackstoryUpdater,
+	Validators: []FieldValidator{
+		&FieldCharacterApplicationBackstoryLengthValidator,
+		&FieldCharacterApplicationBackstoryRegexValidator,
 	},
-	View: view.CharacterApplicationBackstory,
 }
 
 var FieldsCharacterApplication Fields = NewFields([]Field{

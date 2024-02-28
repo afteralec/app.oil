@@ -1,6 +1,12 @@
 package request
 
-import "petrichormud.com/app/internal/query"
+import (
+	"errors"
+
+	"petrichormud.com/app/internal/query"
+)
+
+var ErrInvalidInput error = errors.New("field value didn't pass validation")
 
 type Fields struct {
 	Map  map[string]Field
