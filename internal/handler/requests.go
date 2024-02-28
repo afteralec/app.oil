@@ -219,7 +219,7 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 			return c.Redirect(route.RequestPath(rid))
 		}
 
-		v := request.GetView(req.Type, field)
+		v := request.View(req.Type, field)
 
 		b := view.Bind(c)
 		b = request.BindStatus(b, &req)
@@ -331,7 +331,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 
 		if req.Status == request.StatusIncomplete {
 			field, last := request.NextIncompleteField(req.Type, content)
-			view := request.GetView(req.Type, field)
+			view := request.View(req.Type, field)
 
 			label, description := request.GetFieldLabelAndDescription(req.Type, field)
 			b["FieldLabel"] = label
@@ -377,7 +377,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		// 	Size:        "36",
 		// 	IncludeText: true,
 		// })
-		b["SummaryFields"] = request.GetSummaryFields(request.GetSummaryFieldsParams{
+		b["SummaryFields"] = request.SummaryFields(request.GetSummaryFieldsParams{
 			PID:     pid,
 			Request: &req,
 			Content: content,
@@ -462,10 +462,10 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 		}
 
 		if err = request.UpdateField(qtx, request.UpdateFieldParams{
-			PID:     pid,
-			Request: &req,
-			Field:   field,
-			Value:   in.Value,
+			PID:       pid,
+			Request:   &req,
+			FieldName: field,
+			Value:     in.Value,
 		}); err != nil {
 			if err == request.ErrInvalidInput {
 				c.Status(fiber.StatusBadRequest)

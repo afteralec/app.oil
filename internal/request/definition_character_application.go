@@ -16,7 +16,6 @@ import (
 
 type CharacterApplication struct{}
 
-// Implement the DefinitionInterface for CharacterApplication
 func (app *CharacterApplication) Type() string {
 	return TypeCharacterApplication
 }
@@ -25,7 +24,7 @@ func (app *CharacterApplication) Dialogs() DefinitionDialogs {
 	return DialogsCharacterApplication
 }
 
-func (app *CharacterApplication) Fields() []Field {
+func (app *CharacterApplication) Fields() Fields {
 	return FieldsCharacterApplication
 }
 
@@ -44,67 +43,12 @@ func (app *CharacterApplication) ContentBytes(q *query.Queries, rid int64) ([]by
 }
 
 func (app *CharacterApplication) UpdateField(q *query.Queries, p UpdateFieldParams) error {
-	switch p.Field {
-	case FieldName:
-		if !IsNameValid(p.Value) {
-			return ErrInvalidInput
-		}
-
-		if err := q.UpdateCharacterApplicationContentName(context.Background(), query.UpdateCharacterApplicationContentNameParams{
-			RID:  p.Request.ID,
-			Name: p.Value,
-		}); err != nil {
-			return err
-		}
-
-	case FieldGender:
-		if !IsGenderValid(p.Value) {
-			return ErrInvalidInput
-		}
-
-		if err := q.UpdateCharacterApplicationContentGender(context.Background(), query.UpdateCharacterApplicationContentGenderParams{
-			RID:    p.Request.ID,
-			Gender: p.Value,
-		}); err != nil {
-			return err
-		}
-	case FieldShortDescription:
-		if !IsShortDescriptionValid(p.Value) {
-			return ErrInvalidInput
-		}
-
-		if err := q.UpdateCharacterApplicationContentShortDescription(context.Background(), query.UpdateCharacterApplicationContentShortDescriptionParams{
-			RID:              p.Request.ID,
-			ShortDescription: p.Value,
-		}); err != nil {
-			return err
-		}
-	case FieldDescription:
-		if !IsDescriptionValid(p.Value) {
-			return ErrInvalidInput
-		}
-
-		if err := q.UpdateCharacterApplicationContentDescription(context.Background(), query.UpdateCharacterApplicationContentDescriptionParams{
-			RID:         p.Request.ID,
-			Description: p.Value,
-		}); err != nil {
-			return err
-		}
-	case FieldBackstory:
-		if !IsBackstoryValid(p.Value) {
-			return ErrInvalidInput
-		}
-
-		if err := q.UpdateCharacterApplicationContentBackstory(context.Background(), query.UpdateCharacterApplicationContentBackstoryParams{
-			RID:       p.Request.ID,
-			Backstory: p.Value,
-		}); err != nil {
-			return err
-		}
-	default:
-		return ErrMalformedUpdateInput
+	fields := app.Fields()
+	if err := fields.Update(q, p); err != nil {
+		return err
 	}
 
+	// TODO: Get this in a utility and put this in the underlying Update calls
 	content, err := q.GetCharacterApplicationContentForRequest(context.Background(), p.Request.ID)
 	if err != nil {
 		return err
@@ -155,73 +99,148 @@ func (app *CharacterApplication) SummaryTitle(content map[string]string) string 
 	return sb.String()
 }
 
+type fieldCharacterApplicationNameUpdater struct{}
+
+var FieldCharacterApplicationNameUpdater fieldCharacterApplicationNameUpdater = fieldCharacterApplicationNameUpdater{}
+
+func (f *fieldCharacterApplicationNameUpdater) Update(q *query.Queries, p UpdateFieldParams) error {
+	if err := q.UpdateCharacterApplicationContentName(context.Background(), query.UpdateCharacterApplicationContentNameParams{
+		RID:  p.Request.ID,
+		Name: p.Value,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 var FieldCharacterApplicationName Field = Field{
 	Name:        "name",
 	Label:       "Name",
 	Description: "Your character's name",
-	Min:         4,
-	Max:         16,
+	MinLen:      4,
+	MaxLen:      16,
 	Regexes: []*regexp.Regexp{
 		regexp.MustCompile("[^a-zA-Z'-]+"),
 	},
 	View: view.CharacterApplicationName,
 }
 
+type fieldCharacterApplicationGenderUpdater struct{}
+
+var FieldCharacterApplicationGenderUpdater fieldCharacterApplicationGenderUpdater = fieldCharacterApplicationGenderUpdater{}
+
+func (f *fieldCharacterApplicationGenderUpdater) Update(q *query.Queries, p UpdateFieldParams) error {
+	if err := q.UpdateCharacterApplicationContentGender(context.Background(), query.UpdateCharacterApplicationContentGenderParams{
+		RID:    p.Request.ID,
+		Gender: p.Value,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 var FieldCharacterApplicationGender Field = Field{
 	Name:        "gender",
 	Label:       "Gender",
 	Description: "Your character's gender determines the pronouns used by third-person descriptions in the game",
-	Min:         util.MinLengthOfStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
-	Max:         util.MaxLengthOfStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
+	MinLen:      util.MinLengthOfStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
+	MaxLen:      util.MaxLengthOfStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
 	Regexes: []*regexp.Regexp{
 		util.RegexForExactMatchStrings([]string{constant.GenderNonBinary, constant.GenderFemale, constant.GenderMale}),
 	},
 	View: view.CharacterApplicationGender,
 }
 
+type fieldCharacterApplicationShortDescriptionUpdater struct{}
+
+var FieldCharacterApplicationShortDescriptionUpdater fieldCharacterApplicationShortDescriptionUpdater = fieldCharacterApplicationShortDescriptionUpdater{}
+
+func (f *fieldCharacterApplicationShortDescriptionUpdater) Update(q *query.Queries, p UpdateFieldParams) error {
+	if err := q.UpdateCharacterApplicationContentShortDescription(context.Background(), query.UpdateCharacterApplicationContentShortDescriptionParams{
+		RID:              p.Request.ID,
+		ShortDescription: p.Value,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 var FieldCharacterApplicationShortDescription Field = Field{
 	Name:        "sdesc",
 	Label:       "Short Description",
 	Description: "This is how your character will appear in third-person descriptions during the game",
-	Min:         8,
-	Max:         300,
+	MinLen:      8,
+	MaxLen:      300,
 	Regexes: []*regexp.Regexp{
 		regexp.MustCompile("[^a-zA-Z, -]+"),
 	},
 	View: view.CharacterApplicationShortDescription,
 }
 
+type fieldCharacterApplicationDescriptionUpdater struct{}
+
+var FieldCharacterApplicationDescriptionUpdater fieldCharacterApplicationDescriptionUpdater = fieldCharacterApplicationDescriptionUpdater{}
+
+func (f *fieldCharacterApplicationDescriptionUpdater) Update(q *query.Queries, p UpdateFieldParams) error {
+	if err := q.UpdateCharacterApplicationContentDescription(context.Background(), query.UpdateCharacterApplicationContentDescriptionParams{
+		RID:         p.Request.ID,
+		Description: p.Value,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 var FieldCharacterApplicationDescription Field = Field{
 	Name:        "desc",
 	Label:       "Description",
 	Description: "This is how your character will appear when examined",
-	Min:         32,
-	Max:         2000,
+	MinLen:      32,
+	MaxLen:      2000,
 	Regexes: []*regexp.Regexp{
 		regexp.MustCompile("[^a-zA-Z, '-.!()]+"),
 	},
 	View: view.CharacterApplicationDescription,
 }
 
+type fieldCharacterApplicationBackstoryUpdater struct{}
+
+var FieldCharacterApplicationBackstoryUpdater fieldCharacterApplicationBackstoryUpdater = fieldCharacterApplicationBackstoryUpdater{}
+
+func (f *fieldCharacterApplicationBackstoryUpdater) Update(q *query.Queries, p UpdateFieldParams) error {
+	if err := q.UpdateCharacterApplicationContentBackstory(context.Background(), query.UpdateCharacterApplicationContentBackstoryParams{
+		RID:       p.Request.ID,
+		Backstory: p.Value,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 var FieldCharacterApplicationBackstory Field = Field{
 	Name:        "backstory",
 	Label:       "Backstory",
 	Description: "This is your character's private backstory",
-	Min:         500,
-	Max:         10000,
+	MinLen:      500,
+	MaxLen:      10000,
 	Regexes: []*regexp.Regexp{
 		regexp.MustCompile("[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+"),
 	},
 	View: view.CharacterApplicationBackstory,
 }
 
-var FieldsCharacterApplication []Field = []Field{
+var FieldsCharacterApplication Fields = NewFields([]Field{
 	FieldCharacterApplicationName,
 	FieldCharacterApplicationGender,
 	FieldCharacterApplicationShortDescription,
 	FieldCharacterApplicationDescription,
 	FieldCharacterApplicationBackstory,
-}
+})
 
 // TODO: Get this built into the Definition
 func (app *CharacterApplication) GetSummaryFields(p GetSummaryFieldsParams) []SummaryField {
@@ -251,6 +270,7 @@ func (app *CharacterApplication) GetSummaryFields(p GetSummaryFieldsParams) []Su
 			allowEdit = false
 		}
 
+		// TODO: Can build these from the individual Field or use the Content API
 		return []SummaryField{
 			{
 				Label:     "Name",

@@ -13,19 +13,13 @@ const errInvalidType string = "invalid type"
 
 var ErrInvalidType error = errors.New(errInvalidType)
 
-type DefinitionInterface interface {
+type Definition interface {
 	Type() string
 	Dialogs() DefinitionDialogs
-	Fields() []Field
+	Fields() Fields
 	ContentBytes(q *query.Queries, rid int64) ([]byte, error)
 	UpdateField(q *query.Queries, p UpdateFieldParams) error
 	SummaryTitle(content map[string]string) string
-}
-
-type FieldsInterface interface {
-	IsFieldValid(f string) bool
-	IsValueValid(f, v string) bool
-	NextIncomplete() string
 }
 
 // TODO: Add API to a Fields struct that can take in a field and value and return if it's valid
@@ -43,17 +37,25 @@ type DefinitionDialogs struct {
 	PutInReview DefinitionDialog
 }
 
-// TODO: Change Name to Tag
-// TODO: Change Min and Max to MinLen and MaxLen
+type Fields struct {
+	Map  map[string]Field
+	List []Field
+}
+
 type Field struct {
 	Name        string
 	Label       string
 	Description string
 	View        string
 	Layout      string
+	Updater     FieldUpdater
 	Regexes     []*regexp.Regexp
-	Min         int
-	Max         int
+	MinLen      int
+	MaxLen      int
+}
+
+type FieldUpdater interface {
+	Update(q *query.Queries, p UpdateFieldParams) error
 }
 
 type SummaryField struct {
@@ -63,13 +65,36 @@ type SummaryField struct {
 	AllowEdit bool
 }
 
+func NewFields(f []Field) Fields {
+	return Fields{
+		List: f,
+		Map:  MakeDefinitionFieldMap(f),
+	}
+}
+
+func (f *Fields) Update(q *query.Queries, p UpdateFieldParams) error {
+	field, ok := f.Map[p.FieldName]
+	if !ok {
+		return ErrInvalidInput
+	}
+	return field.Update(q, p)
+}
+
+func (f *Field) Update(q *query.Queries, p UpdateFieldParams) error {
+	if !f.IsValueValid(p.Value) {
+		return ErrInvalidInput
+	}
+
+	return f.Updater.Update(q, p)
+}
+
 // TODO: Test this
 func (f *Field) IsValueValid(v string) bool {
-	if len(v) < f.Min {
+	if len(v) < f.MinLen {
 		return false
 	}
 
-	if len(v) > f.Max {
+	if len(v) > f.MaxLen {
 		return false
 	}
 
@@ -112,8 +137,8 @@ func MakeDefinitionFieldNameMap(fields []Field) map[string]bool {
 	return fieldNameMap
 }
 
-func MakeDefinitionMap(definitions []DefinitionInterface) map[string]DefinitionInterface {
-	m := make(map[string]DefinitionInterface, len(definitions))
+func MakeDefinitionMap(definitions []Definition) map[string]Definition {
+	m := make(map[string]Definition, len(definitions))
 
 	for _, d := range definitions {
 		m[d.Type()] = d
@@ -122,7 +147,7 @@ func MakeDefinitionMap(definitions []DefinitionInterface) map[string]DefinitionI
 	return m
 }
 
-func MakeTypes(definitions []DefinitionInterface) []string {
+func MakeTypes(definitions []Definition) []string {
 	types := make([]string, len(definitions))
 
 	for i, d := range definitions {
@@ -142,32 +167,32 @@ func MakeTypeMap(types []string) map[string]bool {
 	return m
 }
 
-func MakeFieldsByType(definitions []DefinitionInterface) map[string][]Field {
+func MakeFieldsByType(definitions []Definition) map[string][]Field {
 	fieldsByType := make(map[string][]Field, len(definitions))
 
 	for _, d := range definitions {
-		fieldsByType[d.Type()] = d.Fields()
+		fieldsByType[d.Type()] = d.Fields().List
 	}
 
 	return fieldsByType
 }
 
-func MakeFieldNamesByType(definitions []DefinitionInterface) map[string][]string {
+func MakeFieldNamesByType(definitions []Definition) map[string][]string {
 	fieldNamesByType := make(map[string][]string, len(definitions))
 
 	for _, d := range definitions {
-		fieldNames := MakeDefinitionFieldNames(d.Fields())
+		fieldNames := MakeDefinitionFieldNames(d.Fields().List)
 		fieldNamesByType[d.Type()] = fieldNames
 	}
 
 	return fieldNamesByType
 }
 
-func MakeFieldMapsByType(definitions []DefinitionInterface) map[string]map[string]Field {
+func MakeFieldMapsByType(definitions []Definition) map[string]map[string]Field {
 	fieldMapsByType := make(map[string]map[string]Field, len(definitions))
 
 	for _, d := range definitions {
-		fieldMap := MakeDefinitionFieldMap(d.Fields())
+		fieldMap := MakeDefinitionFieldMap(d.Fields().List)
 		fieldMapsByType[d.Type()] = fieldMap
 	}
 
@@ -175,10 +200,10 @@ func MakeFieldMapsByType(definitions []DefinitionInterface) map[string]map[strin
 }
 
 var (
-	Definitions []DefinitionInterface = []DefinitionInterface{
+	Definitions []Definition = []Definition{
 		&DefinitionCharacterApplication,
 	}
-	DefinitionMap map[string]DefinitionInterface = MakeDefinitionMap(Definitions)
+	DefinitionMap map[string]Definition = MakeDefinitionMap(Definitions)
 )
 
 var (
@@ -229,12 +254,11 @@ func NextIncompleteField(t string, content map[string]string) (string, bool) {
 	return "", false
 }
 
-// TODO: Make this FieldTag?
 type UpdateFieldParams struct {
-	Request *query.Request
-	Field   string
-	Value   string
-	PID     int64
+	Request   *query.Request
+	FieldName string
+	Value     string
+	PID       int64
 }
 
 func UpdateField(q *query.Queries, p UpdateFieldParams) error {
@@ -246,11 +270,11 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 	if err := definition.UpdateField(q, p); err != nil {
 		return err
 	}
+
 	return nil
 }
 
-// TODO: Change this to just View
-func GetView(t, f string) string {
+func View(t, f string) string {
 	fields := FieldMapsByType[t]
 	field := fields[f]
 	return field.View
@@ -268,8 +292,7 @@ type GetSummaryFieldsParams struct {
 	PID     int64
 }
 
-// TODO: Rename to SummaryFields
-func GetSummaryFields(p GetSummaryFieldsParams) []SummaryField {
+func SummaryFields(p GetSummaryFieldsParams) []SummaryField {
 	switch p.Request.Type {
 	case TypeCharacterApplication:
 		return DefinitionCharacterApplication.GetSummaryFields(p)
