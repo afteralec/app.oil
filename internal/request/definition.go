@@ -1,7 +1,6 @@
 package request
 
 import (
-	"encoding/json"
 	"errors"
 
 	"petrichormud.com/app/internal/query"
@@ -16,6 +15,7 @@ type Definition interface {
 	Dialogs() Dialogs
 	Fields() Fields
 	IsFieldNameValid(f string) bool
+	Content(q *query.Queries, rid int64) (content, error)
 	ContentBytes(q *query.Queries, rid int64) ([]byte, error)
 	UpdateField(q *query.Queries, p UpdateFieldParams) error
 	SummaryTitle(content map[string]string) string
@@ -53,10 +53,8 @@ func View(t, f string) string {
 	return field.View
 }
 
-// TODO: Make this map a comprehensive type with methods on it?
-// For example, it could have a Type field, or an IsMember method, etc
+// TODO: Let this return the fully-qualified type
 func Content(q *query.Queries, req *query.Request) (map[string]string, error) {
-	var b []byte
 	m := map[string]string{}
 
 	if !IsTypeValid(req.Type) {
@@ -67,15 +65,13 @@ func Content(q *query.Queries, req *query.Request) (map[string]string, error) {
 	if !ok {
 		return m, ErrNoDefinition
 	}
-	b, err := definition.ContentBytes(q, req.ID)
+
+	content, err := definition.Content(q, req.ID)
 	if err != nil {
 		return m, err
 	}
-	if err := json.Unmarshal(b, &m); err != nil {
-		return map[string]string{}, err
-	}
 
-	return m, nil
+	return content.Inner, nil
 }
 
 // TODO: Clean this up based on the Fields or new Content API

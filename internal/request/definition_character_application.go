@@ -37,13 +37,26 @@ func (app *CharacterApplication) ContentBytes(q *query.Queries, rid int64) ([]by
 	if err != nil {
 		return []byte{}, err
 	}
-
 	b, err := json.Marshal(content)
 	if err != nil {
 		return []byte{}, err
 	}
-
 	return b, nil
+}
+
+func (app *CharacterApplication) Content(q *query.Queries, rid int64) (content, error) {
+	var b []byte
+	m := map[string]string{}
+
+	b, err := app.ContentBytes(q, rid)
+	if err != nil {
+		return content{}, err
+	}
+	if err := json.Unmarshal(b, &m); err != nil {
+		return content{}, err
+	}
+
+	return content{Inner: m}, nil
 }
 
 func (app *CharacterApplication) UpdateField(q *query.Queries, p UpdateFieldParams) error {
