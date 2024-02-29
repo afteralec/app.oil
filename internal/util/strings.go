@@ -2,12 +2,11 @@ package util
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 )
 
-func RegexForExactMatchStrings(ss []string) *regexp.Regexp {
+func RegexForExactMatchStrings(ss []string) string {
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "^(%s)$", strings.Join(ss, "|"))
-	return regexp.MustCompile(sb.String())
+	return sb.String()
 }

@@ -232,7 +232,7 @@ func NewActorImage(i *service.Interfaces) fiber.Handler {
 			}), layout.None)
 		}
 
-		if !actor.IsImageNameValid(in.Name) {
+		if !actor.IsImageNameValid(actor.SanitizeImageName(in.Name)) {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
 			c.Append("HX-Retarget", util.PrependHTMLID(sectionID))
@@ -396,7 +396,7 @@ func EditActorImageShortDescription(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if !actor.IsShortDescriptionValid(in.ShortDescription) {
+		if !actor.IsShortDescriptionValid(actor.SanitizeShortDescription(in.ShortDescription)) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -492,7 +492,7 @@ func EditActorImageDescription(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if !actor.IsDescriptionValid(in.Description) {
+		if !actor.IsDescriptionValid(actor.SanitizeDescription(in.Description)) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
