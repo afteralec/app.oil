@@ -13,10 +13,9 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/require"
 
+	"petrichormud.com/app/internal/actor"
 	"petrichormud.com/app/internal/app"
-	"petrichormud.com/app/internal/character"
 	"petrichormud.com/app/internal/config"
-	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/service"
 )
@@ -179,7 +178,7 @@ func MakeTestCharacterApplicationNameBodyInvalid() (*bytes.Buffer, *multipart.Wr
 func MakeTestCharacterApplicationGenderBody() (*bytes.Buffer, *multipart.Writer) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("gender", character.GenderNonBinary)
+	writer.WriteField("gender", actor.GenderNonBinary)
 	writer.Close()
 	return body, writer
 }
@@ -212,7 +211,7 @@ func MakeTestCharacterApplicationDescriptionBody() (*bytes.Buffer, *multipart.Wr
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	description := ""
-	for len(description) < constant.MinCharacterDescriptionLength {
+	for len(description) < actor.DescriptionMinLen {
 		description = description + "This is a test actor."
 	}
 	writer.WriteField("description", description)
@@ -232,7 +231,7 @@ func MakeTestCharacterApplicationBackstoryBody() (*bytes.Buffer, *multipart.Writ
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	backstory := ""
-	for len(backstory) < constant.MinCharacterBackstoryLength {
+	for len(backstory) < actor.CharacterBackstoryMinLen {
 		backstory = backstory + "This is a tragic backstory."
 	}
 	writer.WriteField("backstory", backstory)

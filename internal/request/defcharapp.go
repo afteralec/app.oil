@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"petrichormud.com/app/internal/actor"
-	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/view"
 )
@@ -66,7 +65,7 @@ func (app *CharacterApplication) IsContentValid(c content) bool {
 
 func (app *CharacterApplication) TitleForSummary(c content) string {
 	var sb strings.Builder
-	titleName := constant.DefaultName
+	titleName := actor.DefaultCharacterName
 	characterName, ok := c.Value(FieldCharacterApplicationName.Name)
 	if ok {
 		titleName = characterName

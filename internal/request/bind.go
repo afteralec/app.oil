@@ -3,8 +3,8 @@ package request
 import (
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/actor"
 	"petrichormud.com/app/internal/bind"
-	"petrichormud.com/app/internal/constant"
 	"petrichormud.com/app/internal/query"
 )
 
@@ -24,25 +24,25 @@ func BindGenderRadioGroup(b fiber.Map, p BindGenderRadioGroupParams) fiber.Map {
 			ID:       "edit-request-character-application-gender-non-binary",
 			Name:     p.Name,
 			Variable: "gender",
-			Value:    constant.GenderNonBinary,
+			Value:    actor.GenderNonBinary,
 			Label:    "Non-Binary",
-			Active:   gender == constant.GenderNonBinary,
+			Active:   gender == actor.GenderNonBinary,
 		},
 		{
 			ID:       "edit-request-character-application-gender-female",
 			Name:     p.Name,
 			Variable: "gender",
-			Value:    constant.GenderFemale,
+			Value:    actor.GenderFemale,
 			Label:    "Female",
-			Active:   gender == constant.GenderFemale,
+			Active:   gender == actor.GenderFemale,
 		},
 		{
 			ID:       "edit-request-character-application-gender-male",
 			Name:     p.Name,
 			Variable: "gender",
-			Value:    constant.GenderMale,
+			Value:    actor.GenderMale,
 			Label:    "Male",
-			Active:   gender == constant.GenderMale,
+			Active:   gender == actor.GenderMale,
 		},
 	}
 	return b

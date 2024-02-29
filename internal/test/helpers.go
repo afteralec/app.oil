@@ -27,6 +27,10 @@ import (
 // TODO: Add a function to clean up resources starting with the test usernames -
 // pretty much everything can be traced up to a PID - and call it from the CLI
 
+func MakeTestURL(path string) string {
+	return fmt.Sprintf("%s%s", TestURL, path)
+}
+
 func CreateTestPlayer(t *testing.T, i *service.Interfaces, a *fiber.App, u, pw string) int64 {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)

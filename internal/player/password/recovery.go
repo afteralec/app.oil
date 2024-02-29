@@ -9,9 +9,13 @@ import (
 	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
 
-	"petrichormud.com/app/internal/constant"
 	pb "petrichormud.com/app/internal/proto/sending"
 	"petrichormud.com/app/internal/service"
+)
+
+const (
+	RecoverPasswordTokenKey        = "rp"
+	RecoverPasswordSuccessTokenKey = "rps"
 )
 
 const ThirtyMinutesInNanoseconds = 30 * 60 * 1000 * 1000 * 1000
@@ -46,7 +50,7 @@ func SetupRecovery(i *service.Interfaces, pid int64, email string) error {
 }
 
 func RecoveryKey(key string) string {
-	return fmt.Sprintf("%s:%s", constant.RecoverPasswordTokenKey, key)
+	return fmt.Sprintf("%s:%s", RecoverPasswordTokenKey, key)
 }
 
 func Cache(r *redis.Client, key string, pid int64) error {
@@ -70,5 +74,5 @@ func CacheEmail(r *redis.Client, key, email string) error {
 }
 
 func RecoverySuccessKey(key string) string {
-	return fmt.Sprintf("%s:%s", constant.RecoverPasswordSuccessTokenKey, key)
+	return fmt.Sprintf("%s:%s", RecoverPasswordSuccessTokenKey, key)
 }

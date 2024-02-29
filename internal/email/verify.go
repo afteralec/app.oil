@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 	redis "github.com/redis/go-redis/v9"
 
-	"petrichormud.com/app/internal/constant"
 	pb "petrichormud.com/app/internal/proto/sending"
 	"petrichormud.com/app/internal/service"
 )
@@ -45,7 +44,7 @@ func SendVerificationEmail(i *service.Interfaces, id int64, email string) error 
 }
 
 func VerificationKey(id string) string {
-	return fmt.Sprintf("%s:%s", constant.VerifyEmailTokenKey, id)
+	return fmt.Sprintf("%s:%s", VerifyEmailTokenKey, id)
 }
 
 func Cache(r *redis.Client, key string, id int64) error {
