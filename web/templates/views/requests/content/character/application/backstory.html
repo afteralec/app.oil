@@ -4,8 +4,8 @@
   {{ template "partial-request-divider" . }}
 
   {{ if and .ViewedByPlayer (or .StatusIsReady .StatusIsIncomplete) }}
-    {{ template "requests-character-application-backstory-form" . }}
+    {{ template "partial-requests-character-application-backstory-form" . }}
   {{ else }}
-    {{ template "requests-character-application-backstory-data" . }}
+    {{ template "partial-requests-character-application-backstory-data" . }}
   {{ end }}
 {{ end }}

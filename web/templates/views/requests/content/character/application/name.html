@@ -3,8 +3,8 @@
 {{ template "partial-request-character-application-name-help" . }}
 {{ template "partial-request-divider" . }}
 {{ if and .ViewedByPlayer (or .StatusIsReady .StatusIsIncomplete) }}
-  {{ template "requests-character-application-name-form" . }}
+  {{ template "partial-requests-character-application-name-form" . }}
 {{ else }}
-  {{ template "requests-character-application-name-data" . }}
+  {{ template "partial-requests-character-application-name-data" . }}
 {{ end }}
 {{ end }}

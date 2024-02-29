@@ -98,7 +98,7 @@ func (f *Field) ForSummary(p FieldsForSummaryParams) FieldForSummary {
 	fmt.Fprintf(&pathSB, "%s/%s", basePath, f.Name)
 
 	// TODO: Build a utility for this
-	allowEdit := p.Request.ID == p.PID
+	allowEdit := p.Request.PID == p.PID
 	if p.Request.Status != StatusIncomplete && p.Request.Status != StatusReady {
 		allowEdit = false
 	}
