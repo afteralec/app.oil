@@ -625,7 +625,7 @@ func TestEditActorImageShortDescriptionBadRequestInvalid(t *testing.T) {
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("sdesc", "This is an invalid short description - 1234 tell_me that you love me mo4r.")
+	writer.WriteField("sdesc", "sdesc")
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
@@ -840,7 +840,7 @@ func TestEditActorImageDescriptionBadRequestInvalid(t *testing.T) {
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("desc", "This is an invalid description - 1234 tell_me that you love me mo4r.")
+	writer.WriteField("desc", "This desc")
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)

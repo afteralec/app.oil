@@ -3,8 +3,8 @@
 {{ template "partial-request-character-application-gender-help" . }}
 {{ template "partial-request-divider" . }}
 {{ if and .ViewedByPlayer (or .StatusIsReady .StatusIsIncomplete) }}
-  {{ template "requests-character-application-gender-form" . }}
+  {{ template "partial-requests-character-application-gender-form" . }}
 {{ else }}
-  {{ template "requests-character-application-gender-data" . }}
+  {{ template "partial-requests-character-application-gender-data" . }}
 {{ end }}
 {{ end }}
