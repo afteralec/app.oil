@@ -2,21 +2,20 @@ package request
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/validate"
 )
 
-// TODO: Add custom validators here
 type Field struct {
+	Updater     FieldUpdater
+	Validator   validate.StringValidator
 	Name        string
 	Label       string
 	Description string
 	View        string
 	Layout      string
-	Updater     FieldUpdater
-	Validators  []FieldValidator
 }
 
 type fieldBuilder struct {
@@ -57,20 +56,14 @@ func (b *fieldBuilder) Updater(updater FieldUpdater) *fieldBuilder {
 	return b
 }
 
-// TODO: Separate the length validator?
-func (b *fieldBuilder) Validator(validator FieldValidator) *fieldBuilder {
-	// TODO: Panic if a field is attempted to be built with more than one length validator
-	b.Field.Validators = append(b.Field.Validators, validator)
+func (b *fieldBuilder) Validator(validator validate.StringValidator) *fieldBuilder {
+	b.Field.Validator = validator
 	return b
 }
 
 func (b *fieldBuilder) Build() Field {
 	// TODO: Validate that the fields work
 	return b.Field
-}
-
-type FieldValidator interface {
-	IsValid(v string) bool
 }
 
 type FieldUpdater interface {
@@ -118,64 +111,6 @@ func (f *Field) ForSummary(p FieldsForSummaryParams) FieldForSummary {
 	}
 }
 
-type FieldLengthValidator struct {
-	MinLen int
-	MaxLen int
-}
-
-func NewFieldLengthValidator(min, max int) FieldLengthValidator {
-	return FieldLengthValidator{
-		MinLen: min,
-		MaxLen: max,
-	}
-}
-
-func (f *FieldLengthValidator) IsValid(v string) bool {
-	if len(v) < f.MinLen {
-		return false
-	}
-
-	if len(v) > f.MaxLen {
-		return false
-	}
-
-	return true
-}
-
-type FieldRegexMatchValidator struct {
-	Regex *regexp.Regexp
-}
-
-func NewFieldRegexMatchValidator(regex *regexp.Regexp) FieldRegexMatchValidator {
-	return FieldRegexMatchValidator{
-		Regex: regex,
-	}
-}
-
-func (f *FieldRegexMatchValidator) IsValid(v string) bool {
-	return f.Regex.MatchString(v)
-}
-
-type FieldRegexNoMatchValidator struct {
-	Regex *regexp.Regexp
-}
-
-func NewFieldRegexNoMatchValidator(regex *regexp.Regexp) FieldRegexNoMatchValidator {
-	return FieldRegexNoMatchValidator{
-		Regex: regex,
-	}
-}
-
-func (f *FieldRegexNoMatchValidator) IsValid(v string) bool {
-	return !f.Regex.MatchString(v)
-}
-
 func (f *Field) IsValueValid(v string) bool {
-	for _, validator := range f.Validators {
-		if !validator.IsValid(v) {
-			return false
-		}
-	}
-
-	return true
+	return f.Validator.IsValid(v)
 }
