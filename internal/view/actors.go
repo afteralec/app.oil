@@ -6,4 +6,4 @@ const (
 	EditActorImage string = "view-actor-image-edit"
 )
 
-const Characters string = "characters"
+const Characters string = "view-characters"
