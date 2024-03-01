@@ -1,9 +1,9 @@
-<!--prettier-ignore -->
+<!-- prettier-ignore -->
 {{ define "partial-request-put-in-review-dialog" }}
 {{ template "partial-modal-overlay" .Variable }}
 <div
   class="modal"
-  @click.away="{{ .Variable }}= false"
+  @click.away="{{ .Variable }}= false;"
   x-cloak
   x-show="{{ .Variable }}"
 >
@@ -18,5 +18,4 @@
     </button>
   </footer>
 </div>
-<!-- prettier-ignore -->
 {{ end }}

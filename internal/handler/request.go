@@ -366,6 +366,9 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		b["PageHeader"] = fiber.Map{
 			"Title": request.TitleForSummary(req.Type, content),
 		}
+		b["Status"] = fiber.Map{
+			"StatusIcon": request.NewStatusIcon(request.StatusIconParams{Status: req.Status, IconSize: 48, IncludeText: true}),
+		}
 		// TODO: Look at re-implementing this in the view?
 		// b["headertatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
 		// 	Status:      req.Status,
@@ -529,62 +532,17 @@ func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		var status string
-		switch req.Status {
-		case request.StatusReady:
-			if req.PID != pid {
+		status, err := request.NextStatus(request.NextStatusParams{
+			Query:   qtx,
+			Request: &req,
+			PID:     pid,
+		})
+		if err != nil {
+			if err == request.ErrNextStatusForbidden {
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
-
-			status = request.StatusSubmitted
-		case request.StatusSubmitted:
-			if req.PID == pid {
-				c.Status(fiber.StatusForbidden)
-				return nil
-			}
-
-			status = request.StatusInReview
-		case request.StatusInReview:
-			if req.PID == pid {
-				c.Status(fiber.StatusForbidden)
-				return nil
-			}
-
-			count, err := qtx.CountUnresolvedComments(context.Background(), rid)
-			if err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
-
-			if count > 0 {
-				status = request.StatusReviewed
-			} else {
-				status = request.StatusApproved
-			}
-		case request.StatusReviewed:
-			if req.PID != pid {
-				c.Status(fiber.StatusForbidden)
-				return nil
-			}
-
-			status = request.StatusReady
-		case request.StatusApproved:
-			if req.PID != pid {
-				c.Status(fiber.StatusForbidden)
-				return nil
-			}
-
-			// TODO: Figure out resolving an approved request
-		case request.StatusRejected:
-			if req.PID != pid {
-				c.Status(fiber.StatusForbidden)
-				return nil
-			}
-
-			status = request.StatusArchived
-		default:
-			c.Status(fiber.StatusForbidden)
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 

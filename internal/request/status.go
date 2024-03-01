@@ -59,10 +59,10 @@ var StatusColors map[string]string = map[string]string{
 }
 
 type StatusIcon struct {
-	Icon  template.URL
-	Size  string
-	Color string
-	Text  string
+	Icon     template.URL
+	Color    string
+	Text     string
+	IconSize int
 }
 
 func IsStatusValid(status string) bool {
@@ -72,31 +72,31 @@ func IsStatusValid(status string) bool {
 
 type StatusIconParams struct {
 	Status      string
-	Size        string
+	IconSize    int
 	IncludeText bool
 }
 
 func NewStatusIcon(p StatusIconParams) StatusIcon {
 	icon, ok := StatusIcons[p.Status]
 	if !ok {
-		return MakeDefaultStatusIcon(p.Size, p.IncludeText)
+		return MakeDefaultStatusIcon(p.IconSize, p.IncludeText)
 	}
 
 	color, ok := StatusColors[p.Status]
 	if !ok {
-		return MakeDefaultStatusIcon(p.Size, p.IncludeText)
+		return MakeDefaultStatusIcon(p.IconSize, p.IncludeText)
 	}
 
 	result := StatusIcon{
-		Icon:  template.URL(icon),
-		Color: color,
-		Size:  p.Size,
+		Icon:     template.URL(icon),
+		Color:    color,
+		IconSize: p.IconSize,
 	}
 
 	if p.IncludeText {
 		text, ok := StatusTexts[p.Status]
 		if !ok {
-			return MakeDefaultStatusIcon(p.Size, p.IncludeText)
+			return MakeDefaultStatusIcon(p.IconSize, p.IncludeText)
 		}
 
 		result.Text = text
@@ -105,11 +105,11 @@ func NewStatusIcon(p StatusIconParams) StatusIcon {
 	return result
 }
 
-func MakeDefaultStatusIcon(size string, includeText bool) StatusIcon {
+func MakeDefaultStatusIcon(iconsize int, includeText bool) StatusIcon {
 	result := StatusIcon{
-		Icon:  template.URL(StatusIcons[StatusIncomplete]),
-		Color: StatusColors[StatusIncomplete],
-		Size:  size,
+		Icon:     template.URL(StatusIcons[StatusIncomplete]),
+		Color:    StatusColors[StatusIncomplete],
+		IconSize: iconsize,
 	}
 
 	if includeText {
@@ -163,6 +163,67 @@ func BindStatus(b fiber.Map, req *query.Request) fiber.Map {
 	b["StatusIsCanceled"] = req.Status == StatusCanceled
 
 	return b
+}
+
+var ErrNextStatusForbidden error = errors.New("that status update is forbidden")
+
+type NextStatusParams struct {
+	Query   *query.Queries
+	Request *query.Request
+	PID     int64
+}
+
+func NextStatus(p NextStatusParams) (string, error) {
+	switch p.Request.Status {
+	case StatusReady:
+		if p.Request.PID != p.PID {
+			return "", ErrNextStatusForbidden
+		}
+
+		return StatusSubmitted, nil
+	case StatusSubmitted:
+		if p.Request.PID == p.PID {
+			return "", ErrNextStatusForbidden
+		}
+
+		return StatusInReview, nil
+	case StatusInReview:
+		if p.Request.PID == p.PID {
+			return "", ErrNextStatusForbidden
+		}
+
+		count, err := p.Query.CountUnresolvedComments(context.Background(), p.Request.ID)
+		if err != nil {
+			return "", err
+		}
+
+		if count > 0 {
+			return StatusReviewed, nil
+		} else {
+			return StatusApproved, nil
+		}
+	case StatusReviewed:
+		if p.Request.PID != p.PID {
+			return "", ErrNextStatusForbidden
+		}
+
+		return StatusReady, nil
+	case StatusApproved:
+		if p.Request.PID != p.PID {
+			return "", ErrNextStatusForbidden
+		}
+
+		// TODO: Figure out resolving an approved request
+		return "", ErrNextStatusForbidden
+	case StatusRejected:
+		if p.Request.PID != p.PID {
+			return "", ErrNextStatusForbidden
+		}
+
+		return StatusArchived, nil
+	default:
+		return "", ErrNextStatusForbidden
+	}
 }
 
 type UpdateStatusParams struct {

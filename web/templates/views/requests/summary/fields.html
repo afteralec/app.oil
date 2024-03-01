@@ -4,6 +4,7 @@
   x-data="getRequestData()"
 >
   <!-- prettier-ignore -->
+  {{ template "partial-request-summary-status" .Status }}
   {{ template "partial-request-summary-actions" . }}
   {{ range .SummaryFields }}
     {{ template "partial-requests-summary-field" . }}

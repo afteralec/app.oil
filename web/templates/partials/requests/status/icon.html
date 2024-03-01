@@ -2,11 +2,11 @@
 <iconify-icon
   class="{{ .Color }}"
   icon="{{ .Icon }}"
-  height="{{ .Size }}"
-  width="{{ .Size }}"
+  height="{{ .IconSize }}"
+  width="{{ .IconSize }}"
 ></iconify-icon>
 {{ if .Text }}
-<div class="flex items-center">
+<div class="flex items-center px-2">
   <p class="text-lg leading-none tracking-tight {{ .Color }}">{{ .Text}}</p>
 </div>
 <!-- prettier-ignore -->

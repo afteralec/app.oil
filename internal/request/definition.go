@@ -85,13 +85,13 @@ type ReviewDialogData struct {
 
 // TODO: ReviewDialog needs consolidated and cleaned up here
 type SummaryForQueue struct {
-	StatusIcon   StatusIcon
 	ReviewDialog ReviewDialogData
 	StatusColor  string
 	StatusText   string
 	Title        string
 	Link         string
 	ReviewerText template.HTML
+	StatusIcon   StatusIcon
 	ID           int64
 	PID          int64
 }
@@ -128,7 +128,7 @@ func (d *DefaultDefinition) SummaryForQueue(p SummaryForQueueParams) SummaryForQ
 		PID:          p.Request.PID,
 		Title:        title,
 		Link:         route.RequestPath(p.Request.ID),
-		StatusIcon:   NewStatusIcon(StatusIconParams{Status: p.Request.Status, Size: "48", IncludeText: false}),
+		StatusIcon:   NewStatusIcon(StatusIconParams{Status: p.Request.Status, IconSize: 48, IncludeText: false}),
 		StatusColor:  StatusColors[p.Request.Status],
 		StatusText:   StatusTexts[p.Request.Status],
 		ReviewerText: reviewerText,
