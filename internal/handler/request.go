@@ -366,15 +366,10 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		b["PageHeader"] = fiber.Map{
 			"Title": request.TitleForSummary(req.Type, content),
 		}
+		// TODO: Build a utility for this
 		b["Status"] = fiber.Map{
-			"StatusIcon": request.NewStatusIcon(request.StatusIconParams{Status: req.Status, IconSize: 48, IncludeText: true}),
+			"StatusIcon": request.NewStatusIcon(request.StatusIconParams{Status: req.Status, IconSize: 48, IncludeText: true, TextSize: "text-xl"}),
 		}
-		// TODO: Look at re-implementing this in the view?
-		// b["headertatusIcon"] = request.MakeStatusIcon(request.MakeStatusIconParams{
-		// 	Status:      req.Status,
-		// 	Size:        "36",
-		// 	IncludeText: true,
-		// })
 		summaryFields, err := request.FieldsForSummary(request.FieldsForSummaryParams{
 			PID:     pid,
 			Request: &req,
@@ -560,6 +555,7 @@ func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		c.Append("HX-Refresh", "true")
 		return nil
 	}
 }

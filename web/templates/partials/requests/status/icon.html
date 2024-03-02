@@ -7,7 +7,9 @@
 ></iconify-icon>
 {{ if .Text }}
 <div class="flex items-center px-2">
-  <p class="text-lg leading-none tracking-tight {{ .Color }}">{{ .Text}}</p>
+  <p class="leading-none tracking-tight {{ .Color }} {{ .TextSize }}">
+    {{ .Text}}
+  </p>
 </div>
 <!-- prettier-ignore -->
 {{ end }}

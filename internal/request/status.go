@@ -62,6 +62,7 @@ type StatusIcon struct {
 	Icon     template.URL
 	Color    string
 	Text     string
+	TextSize string
 	IconSize int
 }
 
@@ -72,6 +73,7 @@ func IsStatusValid(status string) bool {
 
 type StatusIconParams struct {
 	Status      string
+	TextSize    string
 	IconSize    int
 	IncludeText bool
 }
@@ -79,12 +81,12 @@ type StatusIconParams struct {
 func NewStatusIcon(p StatusIconParams) StatusIcon {
 	icon, ok := StatusIcons[p.Status]
 	if !ok {
-		return MakeDefaultStatusIcon(p.IconSize, p.IncludeText)
+		return MakeDefaultStatusIcon(p.IconSize, "text-lg", p.IncludeText)
 	}
 
 	color, ok := StatusColors[p.Status]
 	if !ok {
-		return MakeDefaultStatusIcon(p.IconSize, p.IncludeText)
+		return MakeDefaultStatusIcon(p.IconSize, "text-lg", p.IncludeText)
 	}
 
 	result := StatusIcon{
@@ -96,20 +98,26 @@ func NewStatusIcon(p StatusIconParams) StatusIcon {
 	if p.IncludeText {
 		text, ok := StatusTexts[p.Status]
 		if !ok {
-			return MakeDefaultStatusIcon(p.IconSize, p.IncludeText)
+			return MakeDefaultStatusIcon(p.IconSize, "text-lg", p.IncludeText)
 		}
 
 		result.Text = text
+		// TODO: Add some validation to possible size classes
+		if len(p.TextSize) == 0 {
+			return MakeDefaultStatusIcon(p.IconSize, "text-lg", p.IncludeText)
+		}
+		result.TextSize = p.TextSize
 	}
 
 	return result
 }
 
-func MakeDefaultStatusIcon(iconsize int, includeText bool) StatusIcon {
+func MakeDefaultStatusIcon(iconsize int, textsize string, includeText bool) StatusIcon {
 	result := StatusIcon{
 		Icon:     template.URL(StatusIcons[StatusIncomplete]),
 		Color:    StatusColors[StatusIncomplete],
 		IconSize: iconsize,
+		TextSize: textsize,
 	}
 
 	if includeText {
