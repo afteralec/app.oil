@@ -803,6 +803,7 @@ func CharactersPage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.InternalServerError, view.Bind(c))
 			}
 			summary, err := request.NewSummaryForQueue(request.SummaryForQueueParams{
+				Query:   qtx,
 				Request: &app.Request,
 				Content: content,
 			})
@@ -866,6 +867,7 @@ func CharacterApplicationsQueuePage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.InternalServerError, view.Bind(c))
 			}
 			summary, err := request.NewSummaryForQueue(request.SummaryForQueueParams{
+				Query:   qtx,
 				Request: &app.Request,
 				Content: content,
 			})

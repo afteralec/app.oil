@@ -1,6 +1,7 @@
 package request
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -85,20 +86,23 @@ type ReviewDialogData struct {
 
 // TODO: ReviewDialog needs consolidated and cleaned up here
 type SummaryForQueue struct {
-	ReviewDialog ReviewDialogData
-	StatusColor  string
-	StatusText   string
-	Title        string
-	Link         string
-	ReviewerText template.HTML
-	StatusIcon   StatusIcon
-	ID           int64
-	PID          int64
+	ReviewDialog   ReviewDialogData
+	StatusColor    string
+	StatusText     string
+	Title          string
+	Link           string
+	AuthorUsername string
+	ReviewerText   template.HTML
+	StatusIcon     StatusIcon
+	ID             int64
+	PID            int64
 }
 
 type SummaryForQueueParams struct {
+	Query   *query.Queries
 	Content content
 	Request *query.Request
+	Player  *query.Player
 }
 
 // TODO: Error output
@@ -124,15 +128,16 @@ func (d *DefaultDefinition) SummaryForQueue(p SummaryForQueueParams) SummaryForQ
 
 	// TODO: Make this resilient to a request with an invalid status
 	return SummaryForQueue{
-		ID:           p.Request.ID,
-		PID:          p.Request.PID,
-		Title:        title,
-		Link:         route.RequestPath(p.Request.ID),
-		StatusIcon:   NewStatusIcon(StatusIconParams{Status: p.Request.Status, IconSize: 48, IncludeText: false}),
-		StatusColor:  StatusColors[p.Request.Status],
-		StatusText:   StatusTexts[p.Request.Status],
-		ReviewerText: reviewerText,
-		ReviewDialog: reviewDialog,
+		ID:             p.Request.ID,
+		PID:            p.Request.PID,
+		Title:          title,
+		Link:           route.RequestPath(p.Request.ID),
+		StatusIcon:     NewStatusIcon(StatusIconParams{Status: p.Request.Status, IconSize: 48, IncludeText: false}),
+		StatusColor:    StatusColors[p.Request.Status],
+		StatusText:     StatusTexts[p.Request.Status],
+		ReviewerText:   reviewerText,
+		ReviewDialog:   reviewDialog,
+		AuthorUsername: p.Player.Username,
 	}
 }
 
@@ -232,6 +237,13 @@ func NewSummaryForQueue(p SummaryForQueueParams) (SummaryForQueue, error) {
 	if !ok {
 		return SummaryForQueue{}, ErrNoDefinition
 	}
+
+	player, err := p.Query.GetPlayer(context.Background(), p.Request.PID)
+	if err != nil {
+		return SummaryForQueue{}, err
+	}
+
+	p.Player = &player
 
 	return def.SummaryForQueue(p), nil
 }
