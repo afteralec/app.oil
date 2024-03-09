@@ -23,6 +23,7 @@ type Definition interface {
 	IsFieldNameValid(f string) bool
 	Content(q *query.Queries, rid int64) (content, error)
 	IsContentValid(c content) bool
+	ContentReview(q *query.Queries, rid int64) (contentreview, error)
 	UpdateField(q *query.Queries, p UpdateFieldParams) error
 	TitleForSummary(c content) string
 	FieldsForSummary(p FieldsForSummaryParams) ([]FieldForSummary, error)
@@ -207,6 +208,24 @@ func Content(q *query.Queries, req *query.Request) (content, error) {
 	c, err := definition.Content(q, req.ID)
 	if err != nil {
 		return content{}, err
+	}
+
+	return c, nil
+}
+
+func ContentReview(q *query.Queries, req *query.Request) (contentreview, error) {
+	if !IsTypeValid(req.Type) {
+		return contentreview{}, ErrInvalidType
+	}
+
+	definition, ok := Definitions.Get(req.Type)
+	if !ok {
+		return contentreview{}, ErrNoDefinition
+	}
+
+	c, err := definition.ContentReview(q, req.ID)
+	if err != nil {
+		return contentreview{}, err
 	}
 
 	return c, nil

@@ -125,6 +125,11 @@ func NewCharacterApplication(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		if err = qtx.CreateCharacterApplicationContentReview(context.Background(), rid); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -315,6 +320,12 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		// 4. If the request is Reviewed, show an intro page to the review, then all the changes required in one view
 		// 5. Player Accepts the Review > back to #3, show the fields with unresolved comments
 
+		content, err := request.Content(qtx, &req)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		}
+
 		// TODO: Finish new bind pattern
 		b := view.Bind(c)
 		b = request.BindStatus(b, &req)
@@ -325,12 +336,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		b = request.BindDialogs(b, request.BindDialogsParams{
 			Request: &req,
 		})
-
-		content, err := request.Content(qtx, &req)
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-		}
 
 		if req.Status == request.StatusIncomplete {
 			// TODO: Use the entire Content API here
@@ -361,6 +366,15 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			})
 
 			return c.Render(view, b, layout.RequestFieldStandalone)
+		}
+
+		if req.Status == request.StatusInReview && req.RPID == pid {
+			// TODO: Here, the reviewer is viewing a request they're currently
+			_, err := request.ContentReview(qtx, &req)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			}
 		}
 
 		b["PageHeader"] = fiber.Map{

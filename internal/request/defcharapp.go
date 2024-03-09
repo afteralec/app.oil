@@ -63,6 +63,23 @@ func (app *CharacterApplication) IsContentValid(c content) bool {
 	return true
 }
 
+func (app *CharacterApplication) ContentReview(q *query.Queries, rid int64) (contentreview, error) {
+	var b []byte
+	m := map[string]string{}
+	c, err := q.GetCharacterApplicationContentReviewForRequest(context.Background(), rid)
+	if err != nil {
+		return contentreview{}, err
+	}
+	b, err = ContentBytes(c)
+	if err != nil {
+		return contentreview{}, err
+	}
+	if err := json.Unmarshal(b, &m); err != nil {
+		return contentreview{}, err
+	}
+	return contentreview{Inner: m}, nil
+}
+
 func (app *CharacterApplication) TitleForSummary(c content) string {
 	var sb strings.Builder
 	titleName := actor.DefaultCharacterName

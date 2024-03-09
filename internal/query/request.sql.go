@@ -72,6 +72,19 @@ func (q *Queries) CreateCharacterApplicationContent(ctx context.Context, rid int
 	return err
 }
 
+const createCharacterApplicationContentReview = `-- name: CreateCharacterApplicationContentReview :exec
+INSERT INTO
+  character_application_content_reviews
+  (gender, name, short_description, description, backstory, rid) 
+VALUES 
+  ("", "", "", "", "", ?)
+`
+
+func (q *Queries) CreateCharacterApplicationContentReview(ctx context.Context, rid int64) error {
+	_, err := q.exec(ctx, q.createCharacterApplicationContentReviewStmt, createCharacterApplicationContentReview, rid)
+	return err
+}
+
 const createHistoryForCharacterApplication = `-- name: CreateHistoryForCharacterApplication :exec
 INSERT INTO
   character_application_content_history
@@ -228,6 +241,28 @@ func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, 
 		&i.Gender,
 		&i.RID,
 		&i.ID,
+	)
+	return i, err
+}
+
+const getCharacterApplicationContentReviewForRequest = `-- name: GetCharacterApplicationContentReviewForRequest :one
+SELECT created_at, updated_at, name, gender, short_description, description, backstory, rid, id, vid FROM character_application_content_reviews WHERE rid = ?
+`
+
+func (q *Queries) GetCharacterApplicationContentReviewForRequest(ctx context.Context, rid int64) (CharacterApplicationContentReview, error) {
+	row := q.queryRow(ctx, q.getCharacterApplicationContentReviewForRequestStmt, getCharacterApplicationContentReviewForRequest, rid)
+	var i CharacterApplicationContentReview
+	err := row.Scan(
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.Gender,
+		&i.ShortDescription,
+		&i.Description,
+		&i.Backstory,
+		&i.RID,
+		&i.ID,
+		&i.VID,
 	)
 	return i, err
 }

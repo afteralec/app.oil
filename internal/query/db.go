@@ -66,6 +66,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createCharacterApplicationContentStmt, err = db.PrepareContext(ctx, createCharacterApplicationContent); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateCharacterApplicationContent: %w", err)
 	}
+	if q.createCharacterApplicationContentReviewStmt, err = db.PrepareContext(ctx, createCharacterApplicationContentReview); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateCharacterApplicationContentReview: %w", err)
+	}
 	if q.createEmailStmt, err = db.PrepareContext(ctx, createEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateEmail: %w", err)
 	}
@@ -149,6 +152,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getCharacterApplicationContentForRequestStmt, err = db.PrepareContext(ctx, getCharacterApplicationContentForRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCharacterApplicationContentForRequest: %w", err)
+	}
+	if q.getCharacterApplicationContentReviewForRequestStmt, err = db.PrepareContext(ctx, getCharacterApplicationContentReviewForRequest); err != nil {
+		return nil, fmt.Errorf("error preparing query GetCharacterApplicationContentReviewForRequest: %w", err)
 	}
 	if q.getCommentWithAuthorStmt, err = db.PrepareContext(ctx, getCommentWithAuthor); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCommentWithAuthor: %w", err)
@@ -417,6 +423,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createCharacterApplicationContentStmt: %w", cerr)
 		}
 	}
+	if q.createCharacterApplicationContentReviewStmt != nil {
+		if cerr := q.createCharacterApplicationContentReviewStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createCharacterApplicationContentReviewStmt: %w", cerr)
+		}
+	}
 	if q.createEmailStmt != nil {
 		if cerr := q.createEmailStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createEmailStmt: %w", cerr)
@@ -555,6 +566,11 @@ func (q *Queries) Close() error {
 	if q.getCharacterApplicationContentForRequestStmt != nil {
 		if cerr := q.getCharacterApplicationContentForRequestStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getCharacterApplicationContentForRequestStmt: %w", cerr)
+		}
+	}
+	if q.getCharacterApplicationContentReviewForRequestStmt != nil {
+		if cerr := q.getCharacterApplicationContentReviewForRequestStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getCharacterApplicationContentReviewForRequestStmt: %w", cerr)
 		}
 	}
 	if q.getCommentWithAuthorStmt != nil {
@@ -930,6 +946,7 @@ type Queries struct {
 	createActorImageKeywordStmt                           *sql.Stmt
 	createActorImagePrimaryHandStmt                       *sql.Stmt
 	createCharacterApplicationContentStmt                 *sql.Stmt
+	createCharacterApplicationContentReviewStmt           *sql.Stmt
 	createEmailStmt                                       *sql.Stmt
 	createHistoryForCharacterApplicationStmt              *sql.Stmt
 	createHistoryForRequestStatusChangeStmt               *sql.Stmt
@@ -958,6 +975,7 @@ type Queries struct {
 	getCharacterApplicationStmt                           *sql.Stmt
 	getCharacterApplicationContentStmt                    *sql.Stmt
 	getCharacterApplicationContentForRequestStmt          *sql.Stmt
+	getCharacterApplicationContentReviewForRequestStmt    *sql.Stmt
 	getCommentWithAuthorStmt                              *sql.Stmt
 	getEmailStmt                                          *sql.Stmt
 	getEmailByAddressForPlayerStmt                        *sql.Stmt
@@ -1042,6 +1060,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createActorImageKeywordStmt:                           q.createActorImageKeywordStmt,
 		createActorImagePrimaryHandStmt:                       q.createActorImagePrimaryHandStmt,
 		createCharacterApplicationContentStmt:                 q.createCharacterApplicationContentStmt,
+		createCharacterApplicationContentReviewStmt:           q.createCharacterApplicationContentReviewStmt,
 		createEmailStmt:                                       q.createEmailStmt,
 		createHistoryForCharacterApplicationStmt:              q.createHistoryForCharacterApplicationStmt,
 		createHistoryForRequestStatusChangeStmt:               q.createHistoryForRequestStatusChangeStmt,
@@ -1070,6 +1089,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getCharacterApplicationStmt:                           q.getCharacterApplicationStmt,
 		getCharacterApplicationContentStmt:                    q.getCharacterApplicationContentStmt,
 		getCharacterApplicationContentForRequestStmt:          q.getCharacterApplicationContentForRequestStmt,
+		getCharacterApplicationContentReviewForRequestStmt:    q.getCharacterApplicationContentReviewForRequestStmt,
 		getCommentWithAuthorStmt:                              q.getCommentWithAuthorStmt,
 		getEmailStmt:                                          q.getEmailStmt,
 		getEmailByAddressForPlayerStmt:                        q.getEmailByAddressForPlayerStmt,
