@@ -25,6 +25,13 @@ const (
 	StatusCanceled   = "Canceled"
 )
 
+const (
+	FieldStatusNotReviewed = "NotReviewed"
+	FieldStatusApproved    = "Approved"
+	FieldStatusReviewed    = "Reviewed"
+	FieldStatusRejected    = "Rejected"
+)
+
 var StatusTexts map[string]string = map[string]string{
 	StatusIncomplete: "Incomplete",
 	StatusReady:      "Ready",

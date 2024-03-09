@@ -111,6 +111,19 @@ type CharacterApplicationContentHistory struct {
 	VID              int32
 }
 
+type CharacterApplicationContentReview struct {
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	Name             string
+	Gender           string
+	ShortDescription string
+	Description      string
+	Backstory        string
+	RID              int64
+	ID               int64
+	VID              int32
+}
+
 type Email struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
