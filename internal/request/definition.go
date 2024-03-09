@@ -26,7 +26,7 @@ type Definition interface {
 	UpdateField(q *query.Queries, p UpdateFieldParams) error
 	TitleForSummary(c content) string
 	FieldsForSummary(p FieldsForSummaryParams) ([]FieldForSummary, error)
-	SummaryForQueue(p SummaryForQueueParams) SummaryForQueue
+	SummaryForQueue(p SummaryForQueueParams) (SummaryForQueue, error)
 }
 
 type DefaultDefinition struct{}
@@ -101,35 +101,41 @@ type SummaryForQueue struct {
 }
 
 type SummaryForQueueParams struct {
-	Query       *query.Queries
-	Content     content
-	Request     *query.Request
-	Player      *query.Player
-	Permissions *player.Permissions
-	PID         int64
+	Query               *query.Queries
+	Content             content
+	Request             *query.Request
+	ReviewerPermissions *player.Permissions
+	PlayerUsername      string
+	ReviewerUsername    string
+	PID                 int64
 }
 
 // TODO: Error output
-func (d *DefaultDefinition) SummaryForQueue(p SummaryForQueueParams) SummaryForQueue {
+func (d *DefaultDefinition) SummaryForQueue(p SummaryForQueueParams) (SummaryForQueue, error) {
 	def, ok := Definitions.Get(p.Request.Type)
 	if !ok {
-		return SummaryForQueue{}
+		return SummaryForQueue{}, ErrNoDefinition
 	}
 
 	title := def.TitleForSummary(p.Content)
 
-	var reviewerText template.HTML
-	if p.Request.Status == StatusInReview {
-		reviewerText = template.HTML("<span class=\"font-semibold\">Being reviewed by:</span>")
-	} else {
-		reviewerText = template.HTML("<span class=\"font-semibold\">Never reviewed</span>")
-	}
+	reviewerText := ReviewerText(ReviewerTextParams{
+		Request:          p.Request,
+		ReviewerUsername: p.ReviewerUsername,
+	})
 
+	// TODO: Build a utility for this
 	putInReviewDialog := def.Dialogs().PutInReview
 	putInReviewDialog.Path = route.RequestStatusPath(p.Request.ID)
 	putInReviewDialog.Variable = fmt.Sprintf("showReviewDialogForRequest%d", p.Request.ID)
 
-	showPutInReview := p.PID != p.Request.PID && p.Permissions.HasPermission(player.PermissionReviewCharacterApplications.Name)
+	showPutInReview := CanBePutInReview(
+		CanBePutInReviewParams{
+			Request:             p.Request,
+			ReviewerPermissions: p.ReviewerPermissions,
+			PID:                 p.PID,
+		},
+	)
 
 	// TODO: Make this resilient to a request with an invalid status
 	return SummaryForQueue{
@@ -142,9 +148,9 @@ func (d *DefaultDefinition) SummaryForQueue(p SummaryForQueueParams) SummaryForQ
 		StatusText:        StatusTexts[p.Request.Status],
 		ReviewerText:      reviewerText,
 		PutInReviewDialog: putInReviewDialog,
-		AuthorUsername:    p.Player.Username,
+		AuthorUsername:    p.PlayerUsername,
 		ShowPutInReview:   showPutInReview,
-	}
+	}, nil
 }
 
 func UpdateField(q *query.Queries, p UpdateFieldParams) error {
@@ -248,10 +254,17 @@ func NewSummaryForQueue(p SummaryForQueueParams) (SummaryForQueue, error) {
 	if err != nil {
 		return SummaryForQueue{}, err
 	}
+	p.PlayerUsername = player.Username
 
-	p.Player = &player
+	if p.Request.RPID != 0 {
+		reviewer, err := p.Query.GetPlayer(context.Background(), p.Request.RPID)
+		if err != nil {
+			return SummaryForQueue{}, err
+		}
+		p.ReviewerUsername = reviewer.Username
+	}
 
-	return def.SummaryForQueue(p), nil
+	return def.SummaryForQueue(p)
 }
 
 func IsFieldNameValid(t, name string) bool {

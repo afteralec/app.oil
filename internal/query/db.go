@@ -312,6 +312,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updatePlayerSettingsThemeStmt, err = db.PrepareContext(ctx, updatePlayerSettingsTheme); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePlayerSettingsTheme: %w", err)
 	}
+	if q.updateRequestReviewerStmt, err = db.PrepareContext(ctx, updateRequestReviewer); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRequestReviewer: %w", err)
+	}
 	if q.updateRequestStatusStmt, err = db.PrepareContext(ctx, updateRequestStatus); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateRequestStatus: %w", err)
 	}
@@ -836,6 +839,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updatePlayerSettingsThemeStmt: %w", cerr)
 		}
 	}
+	if q.updateRequestReviewerStmt != nil {
+		if cerr := q.updateRequestReviewerStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRequestReviewerStmt: %w", cerr)
+		}
+	}
 	if q.updateRequestStatusStmt != nil {
 		if cerr := q.updateRequestStatusStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateRequestStatusStmt: %w", cerr)
@@ -1036,6 +1044,7 @@ type Queries struct {
 	updateCharacterApplicationContentShortDescriptionStmt *sql.Stmt
 	updatePlayerPasswordStmt                              *sql.Stmt
 	updatePlayerSettingsThemeStmt                         *sql.Stmt
+	updateRequestReviewerStmt                             *sql.Stmt
 	updateRequestStatusStmt                               *sql.Stmt
 	updateRoomStmt                                        *sql.Stmt
 	updateRoomDescriptionStmt                             *sql.Stmt
@@ -1151,6 +1160,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updateCharacterApplicationContentShortDescriptionStmt: q.updateCharacterApplicationContentShortDescriptionStmt,
 		updatePlayerPasswordStmt:                              q.updatePlayerPasswordStmt,
 		updatePlayerSettingsThemeStmt:                         q.updatePlayerSettingsThemeStmt,
+		updateRequestReviewerStmt:                             q.updateRequestReviewerStmt,
 		updateRequestStatusStmt:                               q.updateRequestStatusStmt,
 		updateRoomStmt:                                        q.updateRoomStmt,
 		updateRoomDescriptionStmt:                             q.updateRoomDescriptionStmt,

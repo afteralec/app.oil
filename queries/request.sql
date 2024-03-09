@@ -28,6 +28,11 @@ VALUES
 -- name: UpdateRequestStatus :exec
 UPDATE requests SET status = ? WHERE id = ?;
 
+-- name: UpdateRequestReviewer :exec
+UPDATE requests SET rpid = ? WHERE id = ?;
+
+-- TODO: Remove these MarkRequestX queries
+
 -- name: MarkRequestReady :exec
 UPDATE requests SET status = "Ready" WHERE id = ?;
 

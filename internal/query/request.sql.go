@@ -656,9 +656,11 @@ func (q *Queries) MarkRequestInReview(ctx context.Context, arg MarkRequestInRevi
 }
 
 const markRequestReady = `-- name: MarkRequestReady :exec
+
 UPDATE requests SET status = "Ready" WHERE id = ?
 `
 
+// TODO: Remove these MarkRequestX queries
 func (q *Queries) MarkRequestReady(ctx context.Context, id int64) error {
 	_, err := q.exec(ctx, q.markRequestReadyStmt, markRequestReady, id)
 	return err
@@ -740,6 +742,20 @@ type UpdateCharacterApplicationContentShortDescriptionParams struct {
 
 func (q *Queries) UpdateCharacterApplicationContentShortDescription(ctx context.Context, arg UpdateCharacterApplicationContentShortDescriptionParams) error {
 	_, err := q.exec(ctx, q.updateCharacterApplicationContentShortDescriptionStmt, updateCharacterApplicationContentShortDescription, arg.ShortDescription, arg.RID)
+	return err
+}
+
+const updateRequestReviewer = `-- name: UpdateRequestReviewer :exec
+UPDATE requests SET rpid = ? WHERE id = ?
+`
+
+type UpdateRequestReviewerParams struct {
+	RPID int64
+	ID   int64
+}
+
+func (q *Queries) UpdateRequestReviewer(ctx context.Context, arg UpdateRequestReviewerParams) error {
+	_, err := q.exec(ctx, q.updateRequestReviewerStmt, updateRequestReviewer, arg.RPID, arg.ID)
 	return err
 }
 

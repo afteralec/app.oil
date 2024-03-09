@@ -308,7 +308,10 @@ func TestRequestFieldPageSuccess(t *testing.T) {
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
 	// TODO: Hack
-	if err := i.Queries.MarkRequestReady(context.Background(), rid); err != nil {
+	if err := i.Queries.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
+		ID:     rid,
+		Status: request.StatusReady,
+	}); err != nil {
 		t.Fatal(err)
 	}
 

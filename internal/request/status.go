@@ -3,10 +3,13 @@ package request
 import (
 	"context"
 	"errors"
+	"fmt"
 	"html/template"
+	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 )
 
@@ -240,7 +243,10 @@ type UpdateStatusParams struct {
 	RID    int64
 }
 
-var ErrInvalidStatus error = errors.New("invalid status")
+var (
+	ErrInvalidStatus     error = errors.New("invalid status")
+	ErrInvalidReviewerID error = errors.New("invalid reviewer ID")
+)
 
 func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 	if !IsStatusValid(p.Status) {
@@ -259,6 +265,19 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 		PID: p.PID,
 	}); err != nil {
 		return err
+	}
+
+	if p.Status == StatusInReview {
+		if p.PID == 0 {
+			return ErrInvalidReviewerID
+		}
+
+		if err := q.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
+			ID:   p.RID,
+			RPID: p.PID,
+		}); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -290,4 +309,60 @@ func UpdateReadyStatus(q *query.Queries, p UpdateReadyStatusParams) error {
 		}
 	}
 	return nil
+}
+
+type CanBePutInReviewParams struct {
+	Request             *query.Request
+	ReviewerPermissions *player.Permissions
+	PID                 int64
+}
+
+func CanBePutInReview(p CanBePutInReviewParams) bool {
+	if p.PID == p.Request.PID {
+		return false
+	}
+
+	if p.Request.Status != StatusSubmitted {
+		return false
+	}
+
+	if !p.ReviewerPermissions.HasPermission(player.PermissionReviewCharacterApplications.Name) {
+		return false
+	}
+
+	return true
+}
+
+type ReviewerTextParams struct {
+	Request          *query.Request
+	ReviewerUsername string
+}
+
+func ReviewerText(p ReviewerTextParams) template.HTML {
+	if p.Request.RPID != 0 {
+		switch p.Request.Status {
+		case StatusInReview:
+			var sb strings.Builder
+			fmt.Fprintf(&sb, "<span class=\"font-semibold\">Being reviewed by: %s</span>", p.ReviewerUsername)
+			return template.HTML(sb.String())
+		case StatusApproved:
+			var sb strings.Builder
+			fmt.Fprintf(&sb, "<span class=\"font-semibold\">Reviewed by: %s</span>", p.ReviewerUsername)
+			return template.HTML(sb.String())
+		case StatusRejected:
+			var sb strings.Builder
+			fmt.Fprintf(&sb, "<span class=\"font-semibold\">Reviewed by: %s</span>", p.ReviewerUsername)
+			return template.HTML(sb.String())
+		case StatusReviewed:
+			var sb strings.Builder
+			fmt.Fprintf(&sb, "<span class=\"font-semibold\">Reviewed by: %s</span>", p.ReviewerUsername)
+			return template.HTML(sb.String())
+		default:
+			var sb strings.Builder
+			fmt.Fprintf(&sb, "<span class=\"font-semibold\">Last reviewed by: %s</span>", p.ReviewerUsername)
+			return template.HTML(sb.String())
+		}
+	} else {
+		return template.HTML("<span class=\"font-semibold\">Never reviewed</span>")
+	}
 }
