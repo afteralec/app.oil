@@ -51,27 +51,11 @@ func NewRequest(i *service.Interfaces) fiber.Handler {
 
 		// TODO: Limit number of new requests by type
 
-		result, err := qtx.CreateRequest(context.Background(), query.CreateRequestParams{
-			PID:  pid,
+		rid, err := request.New(qtx, request.NewParams{
 			Type: in.Type,
+			PID:  pid,
 		})
 		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-		rid, err := result.LastInsertId()
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		// TODO: Rework this so there can't be a missing case
-		if in.Type == request.TypeCharacterApplication {
-			if err = qtx.CreateCharacterApplicationContent(context.Background(), rid); err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
-		} else {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -106,26 +90,11 @@ func NewCharacterApplication(i *service.Interfaces) fiber.Handler {
 
 		// TODO: Limit new requests by type
 
-		result, err := qtx.CreateRequest(context.Background(), query.CreateRequestParams{
-			PID:  pid,
+		rid, err := request.New(qtx, request.NewParams{
 			Type: request.TypeCharacterApplication,
+			PID:  pid,
 		})
 		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-		rid, err := result.LastInsertId()
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if err = qtx.CreateCharacterApplicationContent(context.Background(), rid); err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if err = qtx.CreateCharacterApplicationContentReview(context.Background(), rid); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}

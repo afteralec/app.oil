@@ -16,6 +16,30 @@ type CharacterApplication struct {
 	DefaultDefinition
 }
 
+func (app *CharacterApplication) New(q *query.Queries, pid int64) (int64, error) {
+	result, err := q.CreateRequest(context.Background(), query.CreateRequestParams{
+		PID:  pid,
+		Type: TypeCharacterApplication,
+	})
+	if err != nil {
+		return 0, err
+	}
+	rid, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	if err = q.CreateCharacterApplicationContent(context.Background(), rid); err != nil {
+		return 0, err
+	}
+
+	if err = q.CreateCharacterApplicationContentReview(context.Background(), rid); err != nil {
+		return 0, err
+	}
+
+	return rid, nil
+}
+
 func (app *CharacterApplication) Type() string {
 	return TypeCharacterApplication
 }

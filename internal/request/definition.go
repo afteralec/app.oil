@@ -17,6 +17,7 @@ const errNoDefinition string = "no definition with type"
 var ErrNoDefinition error = errors.New(errNoDefinition)
 
 type Definition interface {
+	New(q *query.Queries, pid int64) (int64, error)
 	Type() string
 	Dialogs() Dialogs
 	Fields() Fields
@@ -193,6 +194,28 @@ func ContentBytes(content any) ([]byte, error) {
 		return []byte{}, err
 	}
 	return b, nil
+}
+
+type NewParams struct {
+	Type string
+	PID  int64
+}
+
+func New(q *query.Queries, p NewParams) (int64, error) {
+	if p.PID == 0 {
+		return 0, ErrInvalidInput
+	}
+
+	if !IsTypeValid(p.Type) {
+		return 0, ErrInvalidType
+	}
+
+	def, ok := Definitions.Get(p.Type)
+	if !ok {
+		return 0, ErrNoDefinition
+	}
+
+	return def.New(q, p.PID)
 }
 
 func Content(q *query.Queries, req *query.Request) (content, error) {
