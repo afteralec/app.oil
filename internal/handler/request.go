@@ -779,6 +779,13 @@ func CharactersPage(i *service.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusUnauthorized)
+			return c.Render(view.Login, view.Bind(c), layout.Standalone)
+		}
+
 		tx, err := i.Database.Begin()
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -803,9 +810,11 @@ func CharactersPage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.InternalServerError, view.Bind(c))
 			}
 			summary, err := request.NewSummaryForQueue(request.SummaryForQueueParams{
-				Query:   qtx,
-				Request: &app.Request,
-				Content: content,
+				Query:       qtx,
+				Request:     &app.Request,
+				Content:     content,
+				PID:         pid,
+				Permissions: &perms,
 			})
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
@@ -829,7 +838,8 @@ func CharactersPage(i *service.Interfaces) fiber.Handler {
 
 func CharacterApplicationsQueuePage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		if !util.IsLoggedIn(c) {
+		pid, err := util.GetPID(c)
+		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
@@ -867,9 +877,11 @@ func CharacterApplicationsQueuePage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.InternalServerError, view.Bind(c))
 			}
 			summary, err := request.NewSummaryForQueue(request.SummaryForQueueParams{
-				Query:   qtx,
-				Request: &app.Request,
-				Content: content,
+				Query:       qtx,
+				Request:     &app.Request,
+				Content:     content,
+				PID:         pid,
+				Permissions: &perms,
 			})
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)

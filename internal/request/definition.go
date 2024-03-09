@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"html/template"
 
+	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 )
@@ -86,23 +87,26 @@ type ReviewDialogData struct {
 
 // TODO: ReviewDialog needs consolidated and cleaned up here
 type SummaryForQueue struct {
-	ReviewDialog   ReviewDialogData
-	StatusColor    string
-	StatusText     string
-	Title          string
-	Link           string
-	AuthorUsername string
-	ReviewerText   template.HTML
-	StatusIcon     StatusIcon
-	ID             int64
-	PID            int64
+	PutInReviewDialog Dialog
+	StatusColor       string
+	StatusText        string
+	Title             string
+	Link              string
+	AuthorUsername    string
+	ReviewerText      template.HTML
+	StatusIcon        StatusIcon
+	ID                int64
+	PID               int64
+	ShowPutInReview   bool
 }
 
 type SummaryForQueueParams struct {
-	Query   *query.Queries
-	Content content
-	Request *query.Request
-	Player  *query.Player
+	Query       *query.Queries
+	Content     content
+	Request     *query.Request
+	Player      *query.Player
+	Permissions *player.Permissions
+	PID         int64
 }
 
 // TODO: Error output
@@ -121,23 +125,25 @@ func (d *DefaultDefinition) SummaryForQueue(p SummaryForQueueParams) SummaryForQ
 		reviewerText = template.HTML("<span class=\"font-semibold\">Never reviewed</span>")
 	}
 
-	reviewDialog := ReviewDialogData{
-		Path:     route.RequestStatusPath(p.Request.ID),
-		Variable: fmt.Sprintf("showReviewDialogFor%s", title),
-	}
+	putInReviewDialog := def.Dialogs().PutInReview
+	putInReviewDialog.Path = route.RequestStatusPath(p.Request.ID)
+	putInReviewDialog.Variable = fmt.Sprintf("showReviewDialogForRequest%d", p.Request.ID)
+
+	showPutInReview := p.PID != p.Request.PID && p.Permissions.HasPermission(player.PermissionReviewCharacterApplications.Name)
 
 	// TODO: Make this resilient to a request with an invalid status
 	return SummaryForQueue{
-		ID:             p.Request.ID,
-		PID:            p.Request.PID,
-		Title:          title,
-		Link:           route.RequestPath(p.Request.ID),
-		StatusIcon:     NewStatusIcon(StatusIconParams{Status: p.Request.Status, IconSize: 48, IncludeText: false}),
-		StatusColor:    StatusColors[p.Request.Status],
-		StatusText:     StatusTexts[p.Request.Status],
-		ReviewerText:   reviewerText,
-		ReviewDialog:   reviewDialog,
-		AuthorUsername: p.Player.Username,
+		ID:                p.Request.ID,
+		PID:               p.Request.PID,
+		Title:             title,
+		Link:              route.RequestPath(p.Request.ID),
+		StatusIcon:        NewStatusIcon(StatusIconParams{Status: p.Request.Status, IconSize: 48, IncludeText: false}),
+		StatusColor:       StatusColors[p.Request.Status],
+		StatusText:        StatusTexts[p.Request.Status],
+		ReviewerText:      reviewerText,
+		PutInReviewDialog: putInReviewDialog,
+		AuthorUsername:    p.Player.Username,
+		ShowPutInReview:   showPutInReview,
 	}
 }
 
