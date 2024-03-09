@@ -903,14 +903,18 @@ func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
 	// TODO: Update this to use a helper that calls the app's API instead of hacking it
-	if err := i.Queries.MarkRequestSubmitted(context.Background(), rid); err != nil {
-		t.Fatal(err)
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusSubmitted,
+	}); err != nil {
+		t.Fatal(t)
 	}
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
@@ -1051,9 +1055,10 @@ func TestCreateRequestCommentMissingBody(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
-		RPID: pid,
-		ID:   rid,
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1091,9 +1096,10 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
-		RPID: pid,
-		ID:   rid,
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1138,9 +1144,10 @@ func TestCreateRequestCommentBadField(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
-		RPID: pid,
-		ID:   rid,
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1185,9 +1192,10 @@ func TestCreateRequestCommentNotFound(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
-		RPID: pid,
-		ID:   rid,
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1226,9 +1234,10 @@ func TestCreateRequestCommentForbiddenOwnRequest(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
-		RPID: pid,
-		ID:   rid,
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1316,9 +1325,10 @@ func TestCreateRequestCommentNotReviewer(t *testing.T) {
 	permissionID = CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
-		RPID: pid,
-		ID:   rid,
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1360,9 +1370,10 @@ func TestCreateRequestCommentNoPermission(t *testing.T) {
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
-		RPID: pid,
-		ID:   rid,
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1406,9 +1417,10 @@ func TestCreateRequestCommentSuccess(t *testing.T) {
 	permissionID := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
-	if err := i.Queries.MarkRequestInReview(context.Background(), query.MarkRequestInReviewParams{
-		RPID: pid,
-		ID:   rid,
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}

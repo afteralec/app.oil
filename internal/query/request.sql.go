@@ -632,49 +632,6 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 	return items, nil
 }
 
-const markRequestCanceled = `-- name: MarkRequestCanceled :exec
-UPDATE requests SET status = "Canceled" WHERE id = ?
-`
-
-func (q *Queries) MarkRequestCanceled(ctx context.Context, id int64) error {
-	_, err := q.exec(ctx, q.markRequestCanceledStmt, markRequestCanceled, id)
-	return err
-}
-
-const markRequestInReview = `-- name: MarkRequestInReview :exec
-UPDATE requests SET status = "InReview", rpid = ? WHERE id = ?
-`
-
-type MarkRequestInReviewParams struct {
-	RPID int64
-	ID   int64
-}
-
-func (q *Queries) MarkRequestInReview(ctx context.Context, arg MarkRequestInReviewParams) error {
-	_, err := q.exec(ctx, q.markRequestInReviewStmt, markRequestInReview, arg.RPID, arg.ID)
-	return err
-}
-
-const markRequestReady = `-- name: MarkRequestReady :exec
-
-UPDATE requests SET status = "Ready" WHERE id = ?
-`
-
-// TODO: Remove these MarkRequestX queries
-func (q *Queries) MarkRequestReady(ctx context.Context, id int64) error {
-	_, err := q.exec(ctx, q.markRequestReadyStmt, markRequestReady, id)
-	return err
-}
-
-const markRequestSubmitted = `-- name: MarkRequestSubmitted :exec
-UPDATE requests SET status = "Submitted" WHERE id = ?
-`
-
-func (q *Queries) MarkRequestSubmitted(ctx context.Context, id int64) error {
-	_, err := q.exec(ctx, q.markRequestSubmittedStmt, markRequestSubmitted, id)
-	return err
-}
-
 const updateCharacterApplicationContentBackstory = `-- name: UpdateCharacterApplicationContentBackstory :exec
 UPDATE character_application_content SET backstory = ? WHERE rid = ?
 `

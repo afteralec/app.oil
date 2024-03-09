@@ -255,18 +255,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.markEmailVerifiedStmt, err = db.PrepareContext(ctx, markEmailVerified); err != nil {
 		return nil, fmt.Errorf("error preparing query MarkEmailVerified: %w", err)
 	}
-	if q.markRequestCanceledStmt, err = db.PrepareContext(ctx, markRequestCanceled); err != nil {
-		return nil, fmt.Errorf("error preparing query MarkRequestCanceled: %w", err)
-	}
-	if q.markRequestInReviewStmt, err = db.PrepareContext(ctx, markRequestInReview); err != nil {
-		return nil, fmt.Errorf("error preparing query MarkRequestInReview: %w", err)
-	}
-	if q.markRequestReadyStmt, err = db.PrepareContext(ctx, markRequestReady); err != nil {
-		return nil, fmt.Errorf("error preparing query MarkRequestReady: %w", err)
-	}
-	if q.markRequestSubmittedStmt, err = db.PrepareContext(ctx, markRequestSubmitted); err != nil {
-		return nil, fmt.Errorf("error preparing query MarkRequestSubmitted: %w", err)
-	}
 	if q.searchHelpByCategoryStmt, err = db.PrepareContext(ctx, searchHelpByCategory); err != nil {
 		return nil, fmt.Errorf("error preparing query SearchHelpByCategory: %w", err)
 	}
@@ -744,26 +732,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing markEmailVerifiedStmt: %w", cerr)
 		}
 	}
-	if q.markRequestCanceledStmt != nil {
-		if cerr := q.markRequestCanceledStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing markRequestCanceledStmt: %w", cerr)
-		}
-	}
-	if q.markRequestInReviewStmt != nil {
-		if cerr := q.markRequestInReviewStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing markRequestInReviewStmt: %w", cerr)
-		}
-	}
-	if q.markRequestReadyStmt != nil {
-		if cerr := q.markRequestReadyStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing markRequestReadyStmt: %w", cerr)
-		}
-	}
-	if q.markRequestSubmittedStmt != nil {
-		if cerr := q.markRequestSubmittedStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing markRequestSubmittedStmt: %w", cerr)
-		}
-	}
 	if q.searchHelpByCategoryStmt != nil {
 		if cerr := q.searchHelpByCategoryStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing searchHelpByCategoryStmt: %w", cerr)
@@ -1025,10 +993,6 @@ type Queries struct {
 	listRoomsByIDsStmt                                    *sql.Stmt
 	listVerifiedEmailsStmt                                *sql.Stmt
 	markEmailVerifiedStmt                                 *sql.Stmt
-	markRequestCanceledStmt                               *sql.Stmt
-	markRequestInReviewStmt                               *sql.Stmt
-	markRequestReadyStmt                                  *sql.Stmt
-	markRequestSubmittedStmt                              *sql.Stmt
 	searchHelpByCategoryStmt                              *sql.Stmt
 	searchHelpByContentStmt                               *sql.Stmt
 	searchHelpByTagsStmt                                  *sql.Stmt
@@ -1141,10 +1105,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listRoomsByIDsStmt:                                    q.listRoomsByIDsStmt,
 		listVerifiedEmailsStmt:                                q.listVerifiedEmailsStmt,
 		markEmailVerifiedStmt:                                 q.markEmailVerifiedStmt,
-		markRequestCanceledStmt:                               q.markRequestCanceledStmt,
-		markRequestInReviewStmt:                               q.markRequestInReviewStmt,
-		markRequestReadyStmt:                                  q.markRequestReadyStmt,
-		markRequestSubmittedStmt:                              q.markRequestSubmittedStmt,
 		searchHelpByCategoryStmt:                              q.searchHelpByCategoryStmt,
 		searchHelpByContentStmt:                               q.searchHelpByContentStmt,
 		searchHelpByTagsStmt:                                  q.searchHelpByTagsStmt,

@@ -31,20 +31,6 @@ UPDATE requests SET status = ? WHERE id = ?;
 -- name: UpdateRequestReviewer :exec
 UPDATE requests SET rpid = ? WHERE id = ?;
 
--- TODO: Remove these MarkRequestX queries
-
--- name: MarkRequestReady :exec
-UPDATE requests SET status = "Ready" WHERE id = ?;
-
--- name: MarkRequestSubmitted :exec
-UPDATE requests SET status = "Submitted" WHERE id = ?;
-
--- name: MarkRequestInReview :exec
-UPDATE requests SET status = "InReview", rpid = ? WHERE id = ?;
-
--- name: MarkRequestCanceled :exec
-UPDATE requests SET status = "Canceled" WHERE id = ?;
-
 -- name: CreateRequestComment :execresult
 INSERT INTO
   request_comments (text, field, pid, rid, vid) 
