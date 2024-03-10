@@ -1,25 +1,31 @@
 {{ define "partial-request-field-footer" }}
-<footer class="flex justify-end gap-2 pt-4" x-show="!commentOpen">
-  {{ if and .ViewedByReviewer .StatusIsInReview -}}
-  <button
-    type="button"
-    class="button-outline"
-    @click.prevent="commentOpen = true;"
-  >
-    Comment
-  </button>
-  {{ end -}}
+<footer class="pt-4">
+  <section class="flex justify-end gap-2">
+    {{ if and .ViewedByReviewer .StatusIsInReview }}
+    <button
+      type="button"
+      class="button-outline"
+      @click.prevent="commentOpen = true;"
+      x-show="!commentOpen"
+    >
+      Comment
+    </button>
+    {{ end }}
 
-  <!-- prettier-ignore -->
-  {{ if .BackLink -}}
-  <a href="{{ .BackLink }}" class="button-outline">Back</a>
-  {{ end -}}
-  <!-- prettier-ignore -->
-  <!-- TODO: This should disable if the field is incomplete -->
-  {{ if and .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
-  <button type="submit" form="{{ .RequestFormID }}" class="button-primary">
-    {{ .UpdateButtonText }}
-  </button>
-  {{ end -}}
+    <!-- prettier-ignore -->
+    {{ if .BackLink }}
+    <a href="{{ .BackLink }}" class="button-outline">Back</a>
+    {{ end }}
+
+    <!-- prettier-ignore -->
+    <!-- TODO: This should disable if the field is incomplete -->
+    {{ if and .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
+    <button type="submit" form="{{ .RequestFormID }}" class="button-primary">
+      {{ .UpdateButtonText }}
+    </button>
+    {{ end }}
+  </section>
+
+  {{ template "partial-request-comment-form" . }}
 </footer>
 {{ end }}
