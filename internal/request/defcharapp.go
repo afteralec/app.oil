@@ -33,7 +33,14 @@ func (app *CharacterApplication) New(q *query.Queries, pid int64) (int64, error)
 		return 0, err
 	}
 
-	if err = q.CreateCharacterApplicationContentReview(context.Background(), rid); err != nil {
+	if err = q.CreateCharacterApplicationContentReview(context.Background(), query.CreateCharacterApplicationContentReviewParams{
+		RID:              rid,
+		Name:             FieldStatusNotReviewed,
+		Gender:           FieldStatusNotReviewed,
+		ShortDescription: FieldStatusNotReviewed,
+		Description:      FieldStatusNotReviewed,
+		Backstory:        FieldStatusNotReviewed,
+	}); err != nil {
 		return 0, err
 	}
 

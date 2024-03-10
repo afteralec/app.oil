@@ -40,3 +40,21 @@ sql:
             go_struct_tag: json:"desc"
           - column: character_application_content.backstory
             go_struct_tag: json:"backstory"
+          - column: character_application_content_review.created_at
+            go_struct_tag: json:"-"
+          - column: character_application_content_review.updated_at
+            go_struct_tag: json:"-"
+          - column: character_application_content_review.rid
+            go_struct_tag: json:"-"
+          - column: character_application_content_review.id
+            go_struct_tag: json:"-"
+          - column: character_application_content_review.name
+            go_struct_tag: json:"name"
+          - column: character_application_content_review.gender
+            go_struct_tag: json:"gender"
+          - column: character_application_content_review.short_description
+            go_struct_tag: json:"sdesc"
+          - column: character_application_content_review.description
+            go_struct_tag: json:"desc"
+          - column: character_application_content_review.backstory
+            go_struct_tag: json:"backstory"

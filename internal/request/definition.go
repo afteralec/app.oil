@@ -254,6 +254,7 @@ func ContentReview(q *query.Queries, req *query.Request) (contentreview, error) 
 	return c, nil
 }
 
+// TODO: Let this error out with no definition
 func NextIncompleteField(t string, c content) (string, bool) {
 	definition, ok := Definitions.Get(t)
 	if !ok {
@@ -261,6 +262,16 @@ func NextIncompleteField(t string, c content) (string, bool) {
 	}
 	fields := definition.Fields()
 	return fields.NextIncomplete(c)
+}
+
+// TODO: Let this error out with no definition
+func NextUnreviewedField(t string, cr contentreview) (string, bool) {
+	definition, ok := Definitions.Get(t)
+	if !ok {
+		return "", false
+	}
+	fields := definition.Fields()
+	return fields.NextUnreviewed(cr)
 }
 
 // TODO: Possible error output

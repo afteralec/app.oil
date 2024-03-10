@@ -45,6 +45,19 @@ func (f *Fields) NextIncomplete(c content) (string, bool) {
 	return "", false
 }
 
+func (f *Fields) NextUnreviewed(cr contentreview) (string, bool) {
+	for i, field := range f.List {
+		status, ok := cr.Status(field.Name)
+		if !ok {
+			continue
+		}
+		if status == FieldStatusNotReviewed {
+			return field.Name, i == len(f.List)-1
+		}
+	}
+	return "", false
+}
+
 func (f *Fields) IsFieldNameValid(name string) bool {
 	_, ok := f.Map[name]
 	return ok

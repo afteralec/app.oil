@@ -112,16 +112,15 @@ type CharacterApplicationContentHistory struct {
 }
 
 type CharacterApplicationContentReview struct {
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	Name             string
-	Gender           string
-	ShortDescription string
-	Description      string
-	Backstory        string
-	RID              int64
-	ID               int64
-	VID              int32
+	CreatedAt        time.Time `json:"-"`
+	UpdatedAt        time.Time `json:"-"`
+	Name             string    `json:"name"`
+	Gender           string    `json:"gender"`
+	ShortDescription string    `json:"sdesc"`
+	Description      string    `json:"desc"`
+	Backstory        string    `json:"backstory"`
+	RID              int64     `json:"-"`
+	ID               int64     `json:"-"`
 }
 
 type Email struct {

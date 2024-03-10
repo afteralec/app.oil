@@ -74,14 +74,30 @@ func (q *Queries) CreateCharacterApplicationContent(ctx context.Context, rid int
 
 const createCharacterApplicationContentReview = `-- name: CreateCharacterApplicationContentReview :exec
 INSERT INTO
-  character_application_content_reviews
+  character_application_content_review
   (gender, name, short_description, description, backstory, rid) 
 VALUES 
-  ("", "", "", "", "", ?)
+  (?, ?, ?, ?, ?, ?)
 `
 
-func (q *Queries) CreateCharacterApplicationContentReview(ctx context.Context, rid int64) error {
-	_, err := q.exec(ctx, q.createCharacterApplicationContentReviewStmt, createCharacterApplicationContentReview, rid)
+type CreateCharacterApplicationContentReviewParams struct {
+	Gender           string `json:"gender"`
+	Name             string `json:"name"`
+	ShortDescription string `json:"sdesc"`
+	Description      string `json:"desc"`
+	Backstory        string `json:"backstory"`
+	RID              int64  `json:"-"`
+}
+
+func (q *Queries) CreateCharacterApplicationContentReview(ctx context.Context, arg CreateCharacterApplicationContentReviewParams) error {
+	_, err := q.exec(ctx, q.createCharacterApplicationContentReviewStmt, createCharacterApplicationContentReview,
+		arg.Gender,
+		arg.Name,
+		arg.ShortDescription,
+		arg.Description,
+		arg.Backstory,
+		arg.RID,
+	)
 	return err
 }
 
@@ -246,7 +262,7 @@ func (q *Queries) GetCharacterApplicationContentForRequest(ctx context.Context, 
 }
 
 const getCharacterApplicationContentReviewForRequest = `-- name: GetCharacterApplicationContentReviewForRequest :one
-SELECT created_at, updated_at, name, gender, short_description, description, backstory, rid, id, vid FROM character_application_content_reviews WHERE rid = ?
+SELECT created_at, updated_at, name, gender, short_description, description, backstory, rid, id FROM character_application_content_review WHERE rid = ?
 `
 
 func (q *Queries) GetCharacterApplicationContentReviewForRequest(ctx context.Context, rid int64) (CharacterApplicationContentReview, error) {
@@ -262,7 +278,6 @@ func (q *Queries) GetCharacterApplicationContentReviewForRequest(ctx context.Con
 		&i.Backstory,
 		&i.RID,
 		&i.ID,
-		&i.VID,
 	)
 	return i, err
 }

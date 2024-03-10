@@ -76,10 +76,10 @@ VALUES
 
 -- name: CreateCharacterApplicationContentReview :exec
 INSERT INTO
-  character_application_content_reviews
+  character_application_content_review
   (gender, name, short_description, description, backstory, rid) 
 VALUES 
-  ("", "", "", "", "", ?);
+  (?, ?, ?, ?, ?, ?);
 
 -- name: GetCharacterApplicationContent :one
 SELECT * FROM character_application_content WHERE id = ?;
@@ -100,7 +100,7 @@ WHERE
 SELECT * FROM character_application_content WHERE rid = ?;
 
 -- name: GetCharacterApplicationContentReviewForRequest :one
-SELECT * FROM character_application_content_reviews WHERE rid = ?;
+SELECT * FROM character_application_content_review WHERE rid = ?;
 
 -- name: ListCharacterApplicationsForPlayer :many
 SELECT

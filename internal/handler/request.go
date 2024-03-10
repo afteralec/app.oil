@@ -71,7 +71,6 @@ func NewRequest(i *service.Interfaces) fiber.Handler {
 	}
 }
 
-// TODO: Combine this functionality with the above so it's consistent
 func NewCharacterApplication(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
@@ -307,7 +306,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		})
 
 		if req.Status == request.StatusIncomplete {
-			// TODO: Use the entire Content API here
 			field, last := request.NextIncompleteField(req.Type, content)
 			view := request.View(req.Type, field)
 
@@ -339,11 +337,44 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 
 		if req.Status == request.StatusInReview && req.RPID == pid {
 			// TODO: Here, the reviewer is viewing a request they're currently
-			_, err := request.ContentReview(qtx, &req)
+			cr, err := request.ContentReview(qtx, &req)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
+
+			field, last := request.NextUnreviewedField(req.Type, cr)
+			v := request.View(req.Type, field)
+			value, ok := content.Value(field)
+			if !ok {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			}
+
+			// TODO: Validate that NextIncompleteField returns something here
+
+			label, description := request.GetFieldLabelAndDescription(req.Type, field)
+			b["FieldLabel"] = label
+			b["FieldDescription"] = description
+
+			b["RequestFormID"] = request.FormID
+
+			if last {
+				b["UpdateButtonText"] = "Finish"
+			} else {
+				b["UpdateButtonText"] = "Next"
+			}
+
+			b["RequestFormPath"] = route.RequestFieldPath(req.ID, field)
+			b["Field"] = field
+			b["FieldValue"] = value
+
+			b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
+				Content: content,
+				Name:    "value",
+			})
+
+			return c.Render(v, b, layout.RequestFieldStandalone)
 		}
 
 		b["PageHeader"] = fiber.Map{
