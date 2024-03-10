@@ -8,7 +8,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -237,7 +236,7 @@ func CreateTestRequestComment(params CreateTestRequestCommentParams) {
 	writer.WriteField("comment", "This is a test comment, for sure.")
 	writer.Close()
 
-	url := MakeTestURL(route.CreateRequestCommentPath(strconv.FormatInt(params.RID, 10), params.Field))
+	url := MakeTestURL(route.CreateRequestCommentPath(params.RID, params.Field))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())

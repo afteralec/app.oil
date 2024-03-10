@@ -351,6 +351,20 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
 
+			commentRows, err := qtx.ListCommentsForRequestFieldWithAuthor(context.Background(), query.ListCommentsForRequestFieldWithAuthorParams{
+				RID:   rid,
+				Field: field,
+			})
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			}
+
+			comments := []request.Comment{}
+			for _, row := range commentRows {
+				comments = append(comments, request.CommentFromListForRequestFieldWithAuthorRow(&row))
+			}
+
 			// TODO: Validate that NextIncompleteField returns something here
 
 			label, description := request.GetFieldLabelAndDescription(req.Type, field)
@@ -373,6 +387,9 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				Content: content,
 				Name:    "value",
 			})
+
+			b["CreateRequestCommentPath"] = route.CreateRequestCommentPath(req.ID, field)
+			b["Comments"] = comments
 
 			return c.Render(v, b, layout.RequestFieldStandalone)
 		}
@@ -743,7 +760,7 @@ func CreateRequestComment(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		cr, err := qtx.CreateRequestComment(context.Background(), query.CreateRequestCommentParams{
+		_, err = qtx.CreateRequestComment(context.Background(), query.CreateRequestCommentParams{
 			RID:   rid,
 			PID:   pid.(int64),
 			Text:  text,
@@ -753,13 +770,11 @@ func CreateRequestComment(i *service.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-		cid, err := cr.LastInsertId()
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
 
-		row, err := qtx.GetCommentWithAuthor(context.Background(), cid)
+		rows, err := qtx.ListCommentsForRequestFieldWithAuthor(context.Background(), query.ListCommentsForRequestFieldWithAuthorParams{
+			RID:   rid,
+			Field: field,
+		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -770,19 +785,16 @@ func CreateRequestComment(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		// TODO: Move this type to the bind package
-		comment := request.Comment{
-			Current:        true,
-			ID:             row.RequestComment.ID,
-			VID:            row.RequestComment.VID,
-			Author:         row.Player.Username,
-			Text:           row.RequestComment.Text,
-			AvatarLink:     "https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50.jpeg?f=y&r=m&s=256&d=retro",
-			CreatedAt:      row.RequestComment.CreatedAt.Unix(),
-			ViewedByAuthor: true,
-			Replies:        []request.Comment{},
+		comments := []request.Comment{}
+		for _, row := range rows {
+			comments = append(comments, request.CommentFromListForRequestFieldWithAuthorRow(&row))
 		}
-		return c.Render(partial.RequestCommentCurrent, comment.Bind(), "")
+
+		b := fiber.Map{
+			"Comments": comments,
+		}
+
+		return c.Render(partial.RequestCommentList, b, "")
 	}
 }
 

@@ -64,7 +64,19 @@ ON
 WHERE
   rid = ?;
 
--- name: CountUnresolvedComments :one
+-- name: ListCommentsForRequestFieldWithAuthor :many
+SELECT
+  sqlc.embed(players), sqlc.embed(request_comments)
+FROM
+  request_comments
+JOIN
+  players
+ON
+  request_comments.pid = players.id
+WHERE
+  field = ? AND rid = ?;
+
+-- name: CountUnresolvedCommentsForRequest :one
 SELECT COUNT(*) FROM request_comments WHERE rid = ? AND resolved = false;
 
 -- name: CreateCharacterApplicationContent :exec

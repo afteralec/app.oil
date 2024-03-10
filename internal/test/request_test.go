@@ -8,7 +8,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -1019,7 +1018,7 @@ func TestCreateRequestCommentUnauthorized(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
 	// TODO: Make a map of valid Character Application fields
-	url := MakeTestURL(route.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1065,7 +1064,7 @@ func TestCreateRequestCommentMissingBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(route.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -1107,7 +1106,7 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
 	sessionCookie := res.Cookies()[0]
 
-	url := MakeTestURL(route.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1155,7 +1154,7 @@ func TestCreateRequestCommentBadField(t *testing.T) {
 	res := CallLogin(t, a, TestUsernameTwo, TestPassword)
 	sessionCookie := res.Cookies()[0]
 
-	url := MakeTestURL(route.CreateRequestCommentPath(strconv.FormatInt(rid, 10), "notafield"))
+	url := MakeTestURL(route.CreateRequestCommentPath(rid, "notafield"))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1202,7 +1201,7 @@ func TestCreateRequestCommentNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(route.CreateRequestCommentPath(strconv.FormatInt(rid+1, 10), request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.CreateRequestCommentPath(rid+1, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1244,7 +1243,7 @@ func TestCreateRequestCommentForbiddenOwnRequest(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1283,7 +1282,7 @@ func TestCreateRequestCommentNotInReview(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(route.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1335,7 +1334,7 @@ func TestCreateRequestCommentNotReviewer(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(route.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1385,7 +1384,7 @@ func TestCreateRequestCommentNoPermission(t *testing.T) {
 	writer.WriteField("comment", "This name is fantastic.")
 	writer.Close()
 
-	url := MakeTestURL(route.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.AddCookie(sessionCookie)
@@ -1432,7 +1431,7 @@ func TestCreateRequestCommentSuccess(t *testing.T) {
 	writer.WriteField("comment", "This name is fantastic.")
 	writer.Close()
 
-	url := MakeTestURL(route.CreateRequestCommentPath(strconv.FormatInt(rid, 10), request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())

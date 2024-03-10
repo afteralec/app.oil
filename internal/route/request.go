@@ -2,6 +2,8 @@ package route
 
 import "fmt"
 
-func CreateRequestCommentPath(rid, field string) string {
-	return fmt.Sprintf("/request/%s/comment/%s", rid, field)
+const CreateRequestCommentPathParam string = "/request/:id/comment/:field"
+
+func CreateRequestCommentPath(rid int64, field string) string {
+	return fmt.Sprintf("/request/%d/comment/%s", rid, field)
 }

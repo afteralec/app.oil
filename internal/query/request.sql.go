@@ -48,12 +48,12 @@ func (q *Queries) CountOpenRequests(ctx context.Context, pid int64) (int64, erro
 	return count, err
 }
 
-const countUnresolvedComments = `-- name: CountUnresolvedComments :one
+const countUnresolvedCommentsForRequest = `-- name: CountUnresolvedCommentsForRequest :one
 SELECT COUNT(*) FROM request_comments WHERE rid = ? AND resolved = false
 `
 
-func (q *Queries) CountUnresolvedComments(ctx context.Context, rid int64) (int64, error) {
-	row := q.queryRow(ctx, q.countUnresolvedCommentsStmt, countUnresolvedComments, rid)
+func (q *Queries) CountUnresolvedCommentsForRequest(ctx context.Context, rid int64) (int64, error) {
+	row := q.queryRow(ctx, q.countUnresolvedCommentsForRequestStmt, countUnresolvedCommentsForRequest, rid)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -498,6 +498,70 @@ func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]Requ
 			&i.VID,
 			&i.Deleted,
 			&i.Resolved,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listCommentsForRequestFieldWithAuthor = `-- name: ListCommentsForRequestFieldWithAuthor :many
+SELECT
+  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted, request_comments.resolved
+FROM
+  request_comments
+JOIN
+  players
+ON
+  request_comments.pid = players.id
+WHERE
+  field = ? AND rid = ?
+`
+
+type ListCommentsForRequestFieldWithAuthorParams struct {
+	Field string
+	RID   int64
+}
+
+type ListCommentsForRequestFieldWithAuthorRow struct {
+	Player         Player
+	RequestComment RequestComment
+}
+
+func (q *Queries) ListCommentsForRequestFieldWithAuthor(ctx context.Context, arg ListCommentsForRequestFieldWithAuthorParams) ([]ListCommentsForRequestFieldWithAuthorRow, error) {
+	rows, err := q.query(ctx, q.listCommentsForRequestFieldWithAuthorStmt, listCommentsForRequestFieldWithAuthor, arg.Field, arg.RID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListCommentsForRequestFieldWithAuthorRow
+	for rows.Next() {
+		var i ListCommentsForRequestFieldWithAuthorRow
+		if err := rows.Scan(
+			&i.Player.CreatedAt,
+			&i.Player.UpdatedAt,
+			&i.Player.PwHash,
+			&i.Player.Username,
+			&i.Player.ID,
+			&i.RequestComment.CreatedAt,
+			&i.RequestComment.UpdatedAt,
+			&i.RequestComment.DeletedAt,
+			&i.RequestComment.Text,
+			&i.RequestComment.Field,
+			&i.RequestComment.RID,
+			&i.RequestComment.PID,
+			&i.RequestComment.CID,
+			&i.RequestComment.ID,
+			&i.RequestComment.VID,
+			&i.RequestComment.Deleted,
+			&i.RequestComment.Resolved,
 		); err != nil {
 			return nil, err
 		}

@@ -56,7 +56,10 @@ const (
 	RegisterErrConflict string = "partial-register-err-conflict"
 )
 
-const RequestCommentCurrent string = "partial-request-comment-current"
+const (
+	RequestCommentList    string = "partial-request-comment-list"
+	RequestCommentCurrent string = "partial-request-comment-current"
+)
 
 const (
 	ResendVerificationEmailErrInternal        string = "partial-resend-verification-email-err-internal"
