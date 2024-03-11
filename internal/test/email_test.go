@@ -33,7 +33,14 @@ func TestAddEmailSuccess(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	req := AddEmailRequest(TestEmailAddress)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", TestEmailAddress)
+	writer.Close()
+
+	url := MakeTestURL(route.NewEmailPath())
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)
@@ -56,7 +63,14 @@ func TestAddEmailUnauthorized(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
-	req := AddEmailRequest(TestEmailAddress)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", TestEmailAddress)
+	writer.Close()
+
+	url := MakeTestURL(route.NewEmailPath())
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 
 	res, err := a.Test(req)
 	if err != nil {
@@ -80,8 +94,16 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
 	// TODO: Add more test cases for possible inputs here
-	req := AddEmailRequest("invalid")
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", "invalid")
+	writer.Close()
+
+	url := MakeTestURL(route.NewEmailPath())
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -102,7 +124,14 @@ func TestAddEmailFatal(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	req := AddEmailRequest(TestEmailAddress)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", TestEmailAddress)
+	writer.Close()
+
+	url := MakeTestURL(route.NewEmailPath())
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
 	i.Close()
@@ -999,7 +1028,14 @@ func TestResendEmailVerificationNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	req := AddEmailRequest(TestEmailAddress)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", TestEmailAddress)
+	writer.Close()
+
+	url := MakeTestURL(route.NewEmailPath())
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 	_, err := a.Test(req)
 	if err != nil {
@@ -1009,7 +1045,7 @@ func TestResendEmailVerificationNotFound(t *testing.T) {
 	emails := ListEmailsForPlayer(t, &i, TestUsername)
 	email := emails[0]
 
-	url := MakeTestURL(route.EmailPath(strconv.FormatInt(email.ID, 10)))
+	url = MakeTestURL(route.EmailPath(strconv.FormatInt(email.ID, 10)))
 	req = httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 	_, err = a.Test(req)
