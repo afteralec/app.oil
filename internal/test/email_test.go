@@ -190,7 +190,15 @@ func TestEditEmailUnauthorized(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	eid := CreateTestEmail(t, &i, a, TestEmailAddress, TestUsername, TestPassword)
 
-	req := EditEmailRequest(eid, TestEmailAddressTwo)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", TestEmailAddressTwo)
+	writer.Close()
+
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
+	req := httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
 	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
@@ -266,7 +274,14 @@ func TestEditEmailFatal(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	req := EditEmailRequest(eid, TestEmailAddressTwo)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", TestEmailAddressTwo)
+	writer.Close()
+
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
+	req := httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
 	i.Close()
@@ -300,7 +315,14 @@ func TestEditEmailUnowned(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	req := EditEmailRequest(eid, TestEmailAddressTwo)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", TestEmailAddressTwo)
+	writer.Close()
+
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
+	req := httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)
@@ -373,7 +395,14 @@ func TestEditEmailNotFound(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req = EditEmailRequest(eid, TestEmailAddress)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", TestEmailAddress)
+	writer.Close()
+
+	url = MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
+	req = httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)
@@ -398,7 +427,14 @@ func TestEditEmailForbiddenUnverified(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	req := EditEmailRequest(eid, TestEmailAddress)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", TestEmailAddress)
+	writer.Close()
+
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
+	req := httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)
@@ -433,7 +469,14 @@ func TestEditEmailConflictAlreadyVerified(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req := EditEmailRequest(eid, TestEmailAddressTwo)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", TestEmailAddressTwo)
+	writer.Close()
+
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
+	req := httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)
@@ -462,7 +505,14 @@ func TestEditEmailSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req := EditEmailRequest(eid, TestEmailAddressTwo)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("email", TestEmailAddressTwo)
+	writer.Close()
+
+	url := MakeTestURL(route.EmailPath(strconv.FormatInt(eid, 10)))
+	req := httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)
