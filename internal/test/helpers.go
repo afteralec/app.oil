@@ -190,6 +190,11 @@ func DeleteTestCharacterApplication(t *testing.T, i *service.Interfaces, rid int
 		t.Fatal(err)
 	}
 
+	_, err = i.Database.Exec("DELETE FROM character_application_content_review WHERE id = ?;", rid)
+	if err != nil && err != sql.ErrNoRows {
+		t.Fatal(err)
+	}
+
 	_, err = i.Database.Exec("DELETE FROM character_application_content_history WHERE rid = ?;", rid)
 	if err != nil && err != sql.ErrNoRows {
 		t.Fatal(err)

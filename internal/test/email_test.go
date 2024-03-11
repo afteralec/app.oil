@@ -994,10 +994,11 @@ func TestResendEmailVerificationNotFound(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	CallRegister(t, a, TestUsername, TestPassword)
-	res := CallLogin(t, a, TestUsername, TestPassword)
-	cookies := res.Cookies()
-	sessionCookie := cookies[0]
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
 	req := AddEmailRequest(TestEmailAddress)
 	req.AddCookie(sessionCookie)
 	_, err := a.Test(req)
@@ -1019,7 +1020,7 @@ func TestResendEmailVerificationNotFound(t *testing.T) {
 	url = MakeTestURL(route.ResendEmailVerificationPath(strconv.FormatInt(email.ID, 10)))
 	req = httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
-	res, err = a.Test(req)
+	res, err := a.Test(req)
 	if err != nil {
 		t.Fatal(err)
 	}

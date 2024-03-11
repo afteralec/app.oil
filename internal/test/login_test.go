@@ -175,21 +175,3 @@ func TestLoginBadRequestMalformedBody(t *testing.T) {
 
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
-
-func CallLogin(t *testing.T, app *fiber.App, u string, pw string) *http.Response {
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("username", u)
-	writer.WriteField("password", pw)
-	writer.Close()
-
-	url := MakeTestURL(route.Login)
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	res, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	return res
-}

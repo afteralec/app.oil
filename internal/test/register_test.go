@@ -43,22 +43,3 @@ func TestRegister(t *testing.T) {
 
 	require.Equal(t, fiber.StatusCreated, res.StatusCode)
 }
-
-func CallRegister(t *testing.T, app *fiber.App, u string, pw string) *http.Response {
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("username", u)
-	writer.WriteField("password", pw)
-	writer.WriteField("confirmPassword", pw)
-	writer.Close()
-
-	url := MakeTestURL(route.Register)
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	res, err := app.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	return res
-}
