@@ -366,6 +366,15 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				comments = append(comments, request.CommentFromListForRequestFieldWithAuthorRow(&row))
 			}
 
+			unresolvedCommentCount, err := qtx.CountUnresolvedCommentsForRequestField(context.Background(), query.CountUnresolvedCommentsForRequestFieldParams{
+				RID:   rid,
+				Field: field,
+			})
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			}
+
 			// TODO: Validate that NextIncompleteField returns something here
 
 			label, description := request.GetFieldLabelAndDescription(req.Type, field)
@@ -391,6 +400,13 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 
 			b["CreateRequestCommentPath"] = route.CreateRequestCommentPath(req.ID, field)
 			b["Comments"] = comments
+
+			b["ActionButtonPath"] = route.RequestFieldStatusPath(rid, field)
+			if unresolvedCommentCount > 0 {
+				b["ActionButtonText"] = "Next"
+			} else {
+				b["ActionButtonText"] = "Approve"
+			}
 
 			return c.Render(v, b, layout.RequestFieldStandalone)
 		}
@@ -652,7 +668,6 @@ func UpdateRequestFieldStatus(i *service.Interfaces) fiber.Handler {
 		}
 
 		if req.Status != request.StatusInReview {
-			log.Println("Wrong status")
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -662,10 +677,27 @@ func UpdateRequestFieldStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		unresolvedCommentCount, err := qtx.CountUnresolvedCommentsForRequestField(context.Background(), query.CountUnresolvedCommentsForRequestFieldParams{
+			RID:   rid,
+			Field: field,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		// TODO: Get this in a request utility
+		var status string
+		if unresolvedCommentCount > 0 {
+			status = request.FieldStatusReviewed
+		} else {
+			status = request.FieldStatusApproved
+		}
+
 		if err = request.UpdateFieldStatus(qtx, request.UpdateFieldStatusParams{
 			Request:   &req,
 			FieldName: field,
-			Status:    request.FieldStatusApproved,
+			Status:    status,
 		}); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil

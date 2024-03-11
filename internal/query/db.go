@@ -36,6 +36,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.countUnresolvedCommentsForRequestStmt, err = db.PrepareContext(ctx, countUnresolvedCommentsForRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query CountUnresolvedCommentsForRequest: %w", err)
 	}
+	if q.countUnresolvedCommentsForRequestFieldStmt, err = db.PrepareContext(ctx, countUnresolvedCommentsForRequestField); err != nil {
+		return nil, fmt.Errorf("error preparing query CountUnresolvedCommentsForRequestField: %w", err)
+	}
 	if q.createActorImageStmt, err = db.PrepareContext(ctx, createActorImage); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateActorImage: %w", err)
 	}
@@ -389,6 +392,11 @@ func (q *Queries) Close() error {
 	if q.countUnresolvedCommentsForRequestStmt != nil {
 		if cerr := q.countUnresolvedCommentsForRequestStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing countUnresolvedCommentsForRequestStmt: %w", cerr)
+		}
+	}
+	if q.countUnresolvedCommentsForRequestFieldStmt != nil {
+		if cerr := q.countUnresolvedCommentsForRequestFieldStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countUnresolvedCommentsForRequestFieldStmt: %w", cerr)
 		}
 	}
 	if q.createActorImageStmt != nil {
@@ -984,6 +992,7 @@ type Queries struct {
 	countOpenCharacterApplicationsForPlayerStmt                 *sql.Stmt
 	countOpenRequestsStmt                                       *sql.Stmt
 	countUnresolvedCommentsForRequestStmt                       *sql.Stmt
+	countUnresolvedCommentsForRequestFieldStmt                  *sql.Stmt
 	createActorImageStmt                                        *sql.Stmt
 	createActorImageCanStmt                                     *sql.Stmt
 	createActorImageCanBeStmt                                   *sql.Stmt
@@ -1104,6 +1113,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		countOpenCharacterApplicationsForPlayerStmt:                 q.countOpenCharacterApplicationsForPlayerStmt,
 		countOpenRequestsStmt:                                       q.countOpenRequestsStmt,
 		countUnresolvedCommentsForRequestStmt:                       q.countUnresolvedCommentsForRequestStmt,
+		countUnresolvedCommentsForRequestFieldStmt:                  q.countUnresolvedCommentsForRequestFieldStmt,
 		createActorImageStmt:                                        q.createActorImageStmt,
 		createActorImageCanStmt:                                     q.createActorImageCanStmt,
 		createActorImageCanBeStmt:                                   q.createActorImageCanBeStmt,

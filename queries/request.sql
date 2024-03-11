@@ -79,6 +79,9 @@ WHERE
 -- name: CountUnresolvedCommentsForRequest :one
 SELECT COUNT(*) FROM request_comments WHERE rid = ? AND resolved = false;
 
+-- name: CountUnresolvedCommentsForRequestField :one
+SELECT COUNT(*) FROM request_comments WHERE rid = ? AND field = ? AND resolved = false;
+
 -- name: CreateCharacterApplicationContent :exec
 INSERT INTO
   character_application_content 

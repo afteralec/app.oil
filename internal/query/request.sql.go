@@ -59,6 +59,22 @@ func (q *Queries) CountUnresolvedCommentsForRequest(ctx context.Context, rid int
 	return count, err
 }
 
+const countUnresolvedCommentsForRequestField = `-- name: CountUnresolvedCommentsForRequestField :one
+SELECT COUNT(*) FROM request_comments WHERE rid = ? AND field = ? AND resolved = false
+`
+
+type CountUnresolvedCommentsForRequestFieldParams struct {
+	RID   int64
+	Field string
+}
+
+func (q *Queries) CountUnresolvedCommentsForRequestField(ctx context.Context, arg CountUnresolvedCommentsForRequestFieldParams) (int64, error) {
+	row := q.queryRow(ctx, q.countUnresolvedCommentsForRequestFieldStmt, countUnresolvedCommentsForRequestField, arg.RID, arg.Field)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createCharacterApplicationContent = `-- name: CreateCharacterApplicationContent :exec
 INSERT INTO
   character_application_content 

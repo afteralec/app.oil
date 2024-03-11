@@ -10,11 +10,23 @@
     >
       Comment
     </button>
-    {{ end }}
 
-    <!-- prettier-ignore -->
-    {{ if .BackLink }}
-    <a href="{{ .BackLink }}" class="button-outline">Back</a>
+    <button
+      type="button"
+      class="button-primary button-primary-destructive"
+      @click.prevent=""
+    >
+      Reject
+    </button>
+
+    <button
+      type="button"
+      class="button-primary"
+      @click.prevent=""
+      hx-post="{{ .ActionButtonPath }}"
+    >
+      {{ .ActionButtonText }}
+    </button>
     {{ end }}
 
     <!-- prettier-ignore -->
