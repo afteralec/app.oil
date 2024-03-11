@@ -32,6 +32,14 @@ func (f *Fields) Update(q *query.Queries, p UpdateFieldParams) error {
 	return field.Update(q, p)
 }
 
+func (f *Fields) UpdateStatus(q *query.Queries, p UpdateFieldStatusParams) error {
+	field, ok := f.Map[p.FieldName]
+	if !ok {
+		return ErrInvalidInput
+	}
+	return field.UpdateStatus(q, p)
+}
+
 func (f *Fields) NextIncomplete(c content) (string, bool) {
 	for i, field := range f.List {
 		value, ok := c.Value(field.Name)

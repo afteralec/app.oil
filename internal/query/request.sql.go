@@ -802,6 +802,76 @@ func (q *Queries) UpdateCharacterApplicationContentName(ctx context.Context, arg
 	return err
 }
 
+const updateCharacterApplicationContentReviewBackstory = `-- name: UpdateCharacterApplicationContentReviewBackstory :exec
+UPDATE character_application_content_review SET backstory = ? WHERE rid = ?
+`
+
+type UpdateCharacterApplicationContentReviewBackstoryParams struct {
+	Backstory string `json:"backstory"`
+	RID       int64  `json:"-"`
+}
+
+func (q *Queries) UpdateCharacterApplicationContentReviewBackstory(ctx context.Context, arg UpdateCharacterApplicationContentReviewBackstoryParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentReviewBackstoryStmt, updateCharacterApplicationContentReviewBackstory, arg.Backstory, arg.RID)
+	return err
+}
+
+const updateCharacterApplicationContentReviewDescription = `-- name: UpdateCharacterApplicationContentReviewDescription :exec
+UPDATE character_application_content_review SET description = ? WHERE rid = ?
+`
+
+type UpdateCharacterApplicationContentReviewDescriptionParams struct {
+	Description string `json:"desc"`
+	RID         int64  `json:"-"`
+}
+
+func (q *Queries) UpdateCharacterApplicationContentReviewDescription(ctx context.Context, arg UpdateCharacterApplicationContentReviewDescriptionParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentReviewDescriptionStmt, updateCharacterApplicationContentReviewDescription, arg.Description, arg.RID)
+	return err
+}
+
+const updateCharacterApplicationContentReviewGender = `-- name: UpdateCharacterApplicationContentReviewGender :exec
+UPDATE character_application_content_review SET gender = ? WHERE rid = ?
+`
+
+type UpdateCharacterApplicationContentReviewGenderParams struct {
+	Gender string `json:"gender"`
+	RID    int64  `json:"-"`
+}
+
+func (q *Queries) UpdateCharacterApplicationContentReviewGender(ctx context.Context, arg UpdateCharacterApplicationContentReviewGenderParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentReviewGenderStmt, updateCharacterApplicationContentReviewGender, arg.Gender, arg.RID)
+	return err
+}
+
+const updateCharacterApplicationContentReviewName = `-- name: UpdateCharacterApplicationContentReviewName :exec
+UPDATE character_application_content_review SET name = ? WHERE rid = ?
+`
+
+type UpdateCharacterApplicationContentReviewNameParams struct {
+	Name string `json:"name"`
+	RID  int64  `json:"-"`
+}
+
+func (q *Queries) UpdateCharacterApplicationContentReviewName(ctx context.Context, arg UpdateCharacterApplicationContentReviewNameParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentReviewNameStmt, updateCharacterApplicationContentReviewName, arg.Name, arg.RID)
+	return err
+}
+
+const updateCharacterApplicationContentReviewShortDescription = `-- name: UpdateCharacterApplicationContentReviewShortDescription :exec
+UPDATE character_application_content_review SET short_description = ? WHERE rid = ?
+`
+
+type UpdateCharacterApplicationContentReviewShortDescriptionParams struct {
+	ShortDescription string `json:"sdesc"`
+	RID              int64  `json:"-"`
+}
+
+func (q *Queries) UpdateCharacterApplicationContentReviewShortDescription(ctx context.Context, arg UpdateCharacterApplicationContentReviewShortDescriptionParams) error {
+	_, err := q.exec(ctx, q.updateCharacterApplicationContentReviewShortDescriptionStmt, updateCharacterApplicationContentReviewShortDescription, arg.ShortDescription, arg.RID)
+	return err
+}
+
 const updateCharacterApplicationContentShortDescription = `-- name: UpdateCharacterApplicationContentShortDescription :exec
 UPDATE character_application_content SET short_description = ? WHERE rid = ?
 `

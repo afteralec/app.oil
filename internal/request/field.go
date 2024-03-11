@@ -68,6 +68,7 @@ func (b *fieldBuilder) Build() Field {
 
 type FieldUpdater interface {
 	Update(q *query.Queries, p UpdateFieldParams) error
+	UpdateStatus(q *query.Queries, p UpdateFieldStatusParams) error
 }
 
 func (f *Field) Update(q *query.Queries, p UpdateFieldParams) error {
@@ -75,6 +76,14 @@ func (f *Field) Update(q *query.Queries, p UpdateFieldParams) error {
 		return ErrInvalidInput
 	}
 	return f.Updater.Update(q, p)
+}
+
+func (f *Field) UpdateStatus(q *query.Queries, p UpdateFieldStatusParams) error {
+	if !IsFieldStatusValid(p.Status) {
+		return ErrInvalidInput
+	}
+
+	return f.Updater.UpdateStatus(q, p)
 }
 
 type FieldForSummary struct {

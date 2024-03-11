@@ -210,3 +210,18 @@ UPDATE character_application_content SET description = ? WHERE rid = ?;
 
 -- name: UpdateCharacterApplicationContentBackstory :exec
 UPDATE character_application_content SET backstory = ? WHERE rid = ?;
+
+-- name: UpdateCharacterApplicationContentReviewName :exec
+UPDATE character_application_content_review SET name = ? WHERE rid = ?;
+
+-- name: UpdateCharacterApplicationContentReviewGender :exec
+UPDATE character_application_content_review SET gender = ? WHERE rid = ?;
+
+-- name: UpdateCharacterApplicationContentReviewShortDescription :exec
+UPDATE character_application_content_review SET short_description = ? WHERE rid = ?;
+
+-- name: UpdateCharacterApplicationContentReviewDescription :exec
+UPDATE character_application_content_review SET description = ? WHERE rid = ?;
+
+-- name: UpdateCharacterApplicationContentReviewBackstory :exec
+UPDATE character_application_content_review SET backstory = ? WHERE rid = ?;

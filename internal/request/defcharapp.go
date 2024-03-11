@@ -135,6 +135,17 @@ func (f *fieldCharacterApplicationNameUpdater) Update(q *query.Queries, p Update
 	return nil
 }
 
+func (f *fieldCharacterApplicationNameUpdater) UpdateStatus(q *query.Queries, p UpdateFieldStatusParams) error {
+	if err := q.UpdateCharacterApplicationContentReviewName(context.Background(), query.UpdateCharacterApplicationContentReviewNameParams{
+		RID:  p.Request.ID,
+		Name: p.Status,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func NewFieldCharacterApplicationName() Field {
 	updater := new(fieldCharacterApplicationNameUpdater)
 
@@ -157,6 +168,17 @@ func (f *fieldCharacterApplicationGenderUpdater) Update(q *query.Queries, p Upda
 	if err := q.UpdateCharacterApplicationContentGender(context.Background(), query.UpdateCharacterApplicationContentGenderParams{
 		RID:    p.Request.ID,
 		Gender: p.Value,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (f *fieldCharacterApplicationGenderUpdater) UpdateStatus(q *query.Queries, p UpdateFieldStatusParams) error {
+	if err := q.UpdateCharacterApplicationContentReviewGender(context.Background(), query.UpdateCharacterApplicationContentReviewGenderParams{
+		RID:    p.Request.ID,
+		Gender: p.Status,
 	}); err != nil {
 		return err
 	}
@@ -193,6 +215,17 @@ func (f *fieldCharacterApplicationShortDescriptionUpdater) Update(q *query.Queri
 	return nil
 }
 
+func (f *fieldCharacterApplicationShortDescriptionUpdater) UpdateStatus(q *query.Queries, p UpdateFieldStatusParams) error {
+	if err := q.UpdateCharacterApplicationContentReviewShortDescription(context.Background(), query.UpdateCharacterApplicationContentReviewShortDescriptionParams{
+		RID:              p.Request.ID,
+		ShortDescription: p.Status,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func NewFieldCharacterApplicationShortDescription() Field {
 	updater := new(fieldCharacterApplicationShortDescriptionUpdater)
 
@@ -215,6 +248,17 @@ func (f *fieldCharacterApplicationDescriptionUpdater) Update(q *query.Queries, p
 	if err := q.UpdateCharacterApplicationContentDescription(context.Background(), query.UpdateCharacterApplicationContentDescriptionParams{
 		RID:         p.Request.ID,
 		Description: p.Value,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (f *fieldCharacterApplicationDescriptionUpdater) UpdateStatus(q *query.Queries, p UpdateFieldStatusParams) error {
+	if err := q.UpdateCharacterApplicationContentReviewDescription(context.Background(), query.UpdateCharacterApplicationContentReviewDescriptionParams{
+		RID:         p.Request.ID,
+		Description: p.Status,
 	}); err != nil {
 		return err
 	}
@@ -247,6 +291,17 @@ func (f *fieldCharacterApplicationBackstoryUpdater) Update(q *query.Queries, p U
 	if err := q.UpdateCharacterApplicationContentBackstory(context.Background(), query.UpdateCharacterApplicationContentBackstoryParams{
 		RID:       p.Request.ID,
 		Backstory: p.Value,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (f *fieldCharacterApplicationBackstoryUpdater) UpdateStatus(q *query.Queries, p UpdateFieldStatusParams) error {
+	if err := q.UpdateCharacterApplicationContentReviewBackstory(context.Background(), query.UpdateCharacterApplicationContentReviewBackstoryParams{
+		RID:       p.Request.ID,
+		Backstory: p.Status,
 	}); err != nil {
 		return err
 	}

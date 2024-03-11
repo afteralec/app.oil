@@ -29,6 +29,7 @@ type Definition interface {
 	TitleForSummary(c content) string
 	FieldsForSummary(p FieldsForSummaryParams) ([]FieldForSummary, error)
 	SummaryForQueue(p SummaryForQueueParams) (SummaryForQueue, error)
+	UpdateFieldStatus(q *query.Queries, p UpdateFieldStatusParams) error
 }
 
 type DefaultDefinition struct{}
@@ -50,6 +51,15 @@ func (d *DefaultDefinition) UpdateField(q *query.Queries, p UpdateFieldParams) e
 		return err
 	}
 
+	// TODO: This needs to mark all current comments as irrelevant
+	if err := fields.UpdateStatus(q, UpdateFieldStatusParams{
+		FieldName: p.FieldName,
+		Request:   p.Request,
+		Status:    FieldStatusNotReviewed,
+	}); err != nil {
+		return err
+	}
+
 	c, err := def.Content(q, p.Request.ID)
 	if err != nil {
 		return err
@@ -61,6 +71,26 @@ func (d *DefaultDefinition) UpdateField(q *query.Queries, p UpdateFieldParams) e
 		RID:    p.Request.ID,
 		Ready:  ready,
 	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type UpdateFieldStatusParams struct {
+	Request   *query.Request
+	FieldName string
+	Status    string
+	PID       int64
+}
+
+func (d *DefaultDefinition) UpdateFieldStatus(q *query.Queries, p UpdateFieldStatusParams) error {
+	def, ok := Definitions.Get(p.Request.Type)
+	if !ok {
+		return ErrNoDefinition
+	}
+	fields := def.Fields()
+	if err := fields.UpdateStatus(q, p); err != nil {
 		return err
 	}
 
@@ -163,10 +193,18 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 	if !ok {
 		return ErrNoDefinition
 	}
-	if err := definition.UpdateField(q, p); err != nil {
-		return err
+	return definition.UpdateField(q, p)
+}
+
+func UpdateFieldStatus(q *query.Queries, p UpdateFieldStatusParams) error {
+	if !IsTypeValid(p.Request.Type) {
+		return ErrInvalidType
 	}
-	return nil
+	definition, ok := Definitions.Get(p.Request.Type)
+	if !ok {
+		return ErrNoDefinition
+	}
+	return definition.UpdateFieldStatus(q, p)
 }
 
 func FieldsForSummary(p FieldsForSummaryParams) ([]FieldForSummary, error) {
