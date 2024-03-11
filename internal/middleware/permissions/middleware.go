@@ -6,6 +6,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/player"
+	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/service"
 )
 
@@ -26,6 +27,8 @@ func New(i *service.Interfaces) fiber.Handler {
 			return c.Next()
 		}
 		if len(ps) == 0 {
+			perms := player.NewPermissions(pid.(int64), []query.PlayerPermission{})
+			c.Locals("perms", perms)
 			return c.Next()
 		}
 

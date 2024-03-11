@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"database/sql"
+	"log"
 	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -591,6 +592,95 @@ func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 	}
 }
 
+func UpdateRequestFieldStatus(i *service.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		pid, err := util.GetPID(c)
+		if err != nil {
+			if err == util.ErrNoPID {
+				c.Status(fiber.StatusUnauthorized)
+				return nil
+			}
+
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if !perms.HasPermission(player.PermissionReviewCharacterApplications.Name) {
+			log.Println("No permission")
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		rid, err := util.GetID(c)
+		if err != nil {
+			if err == util.ErrNoID {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		field := c.Params("field")
+		if len(field) == 0 {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		req, err := qtx.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if req.Status != request.StatusInReview {
+			log.Println("Wrong status")
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if req.RPID != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if err = request.UpdateFieldStatus(qtx, request.UpdateFieldStatusParams{
+			Request:   &req,
+			FieldName: field,
+			Status:    request.FieldStatusApproved,
+		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		c.Append("HX-Refresh", "true")
+		return nil
+	}
+}
+
 func DeleteRequest(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
@@ -798,17 +888,20 @@ func CreateRequestComment(i *service.Interfaces) fiber.Handler {
 	}
 }
 
+// TODO: Move this to the Actor file?
 func CharactersPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {
+			// TODO: Pivot this on ErrNoPID
 			c.Status(fiber.StatusUnauthorized)
 			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
 		perms, err := util.GetPermissions(c)
 		if err != nil {
-			c.Status(fiber.StatusUnauthorized)
+			c.Status(fiber.StatusInternalServerError)
+			// TODO: Figure out what this should redirect to
 			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 

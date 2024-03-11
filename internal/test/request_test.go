@@ -1085,6 +1085,132 @@ func TestUpdateRequestStatusFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
+func TestUpdateRequestFieldStatusUnauthorizedNotLoggedIn(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	prid := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	if err := i.Queries.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
+		ID:   rid,
+		RPID: pid,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := i.Queries.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
+		ID:     rid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+
+	url := MakeTestURL(route.RequestFieldStatusPath(rid, request.FieldCharacterApplicationName.Name))
+
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestUpdateRequestFieldStatusBadRequestNotFound(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	prid := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	if err := i.Queries.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
+		ID:   rid,
+		RPID: pid,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := i.Queries.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
+		ID:     rid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(route.RequestFieldStatusPath(rid+1000, request.FieldCharacterApplicationName.Name))
+
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestUpdateRequestFieldStatusFatal(t *testing.T) {
+	i := service.NewInterfaces()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	prid := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	if err := i.Queries.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
+		ID:   rid,
+		RPID: pid,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := i.Queries.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
+		ID:     rid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(route.RequestFieldStatusPath(rid, request.FieldCharacterApplicationName.Name))
+
+	i.Close()
+
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	i = service.NewInterfaces()
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
+}
+
 func TestCreateRequestCommentUnauthorized(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()

@@ -70,11 +70,11 @@ func GetPermissions(c *fiber.Ctx) (player.Permissions, error) {
 	// TODO: Get this locals key into a constant
 	lperms := c.Locals("perms")
 	if lperms == nil {
-		return player.Permissions{}, nil
+		return player.Permissions{}, ErrNoPermissions
 	}
 	perms, ok := lperms.(player.Permissions)
 	if !ok {
-		return player.Permissions{}, nil
+		return player.Permissions{}, ErrNoPermissions
 	}
 	return perms, nil
 }

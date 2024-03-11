@@ -20,6 +20,7 @@ func Handlers(app *fiber.App, i *service.Interfaces) {
 	app.Post(route.Requests, handler.NewRequest(i))
 	app.Get(route.RequestFieldPathParam, handler.RequestFieldPage(i))
 	app.Patch(route.RequestFieldPathParam, handler.UpdateRequestField(i))
+	app.Post(route.RequestFieldStatusPathParam, handler.UpdateRequestFieldStatus(i))
 	app.Get(route.RequestPathParam, handler.RequestPage(i))
 	app.Post(route.RequestStatusPathParam, handler.UpdateRequestStatus(i))
 	app.Post(route.CreateRequestCommentPathParam, handler.CreateRequestComment(i))
