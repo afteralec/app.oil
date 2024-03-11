@@ -965,7 +965,7 @@ func TestUpdateRequestFieldBadRequestMissingBody(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestUpdateRequestBadRequestFieldMalformedBody(t *testing.T) {
+func TestUpdateRequestFieldBadRequestMalformedBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
@@ -997,6 +997,92 @@ func TestUpdateRequestBadRequestFieldMalformedBody(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestUpdateRequestStatusUnauthorizedNotLoggedIn(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	url := MakeTestURL(route.RequestStatusPath(rid))
+
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestUpdateRequestStatusBadRequestNotFound(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(route.RequestStatusPath(rid + 1000))
+
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestUpdateRequestStatusFatal(t *testing.T) {
+	i := service.NewInterfaces()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	url := MakeTestURL(route.RequestStatusPath(rid))
+
+	i.Close()
+
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	i = service.NewInterfaces()
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
 func TestCreateRequestCommentUnauthorized(t *testing.T) {
