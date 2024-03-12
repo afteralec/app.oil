@@ -4,12 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"log"
-	"strconv"
 
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/layout"
-	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
@@ -672,7 +670,7 @@ func UpdateRequestFieldStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		unresolvedCommentCount, err := qtx.CountUnresolvedCommentsForRequestField(context.Background(), query.CountUnresolvedCommentsForRequestFieldParams{
+		currentChangeRequestCount, err := qtx.CountCurrentRequestChangeRequestForRequestField(context.Background(), query.CountCurrentRequestChangeRequestForRequestFieldParams{
 			RID:   rid,
 			Field: field,
 		})
@@ -683,7 +681,7 @@ func UpdateRequestFieldStatus(i *service.Interfaces) fiber.Handler {
 
 		// TODO: Get this in a request utility
 		var status string
-		if unresolvedCommentCount > 0 {
+		if currentChangeRequestCount > 0 {
 			status = request.FieldStatusReviewed
 		} else {
 			status = request.FieldStatusApproved
@@ -894,136 +892,6 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 
 		// TODO: HTML return
 		return nil
-	}
-}
-
-func CreateRequestComment(i *service.Interfaces) fiber.Handler {
-	type input struct {
-		Comment string `form:"comment"`
-	}
-	return func(c *fiber.Ctx) error {
-		in := new(input)
-		if err := c.BodyParser(in); err != nil {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-
-		text := request.SanitizeComment(in.Comment)
-		if !request.IsCommentValid(text) {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-
-		pid := c.Locals("pid")
-		if pid == nil {
-			c.Status(fiber.StatusUnauthorized)
-			return nil
-		}
-
-		lperms := c.Locals("perms")
-		if lperms == nil {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-		perms, ok := lperms.(player.Permissions)
-		if !ok {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-		_, ok = perms.Permissions[player.PermissionReviewCharacterApplications.Name]
-		if !ok {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-
-		prid := c.Params("id")
-		if len(prid) == 0 {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-		rid, err := strconv.ParseInt(prid, 10, 64)
-		if err != nil {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-
-		field := c.Params("field")
-		if len(field) == 0 {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-
-		tx, err := i.Database.Begin()
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-		defer tx.Rollback()
-		qtx := i.Queries.WithTx(tx)
-
-		req, err := qtx.GetRequest(context.Background(), rid)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				c.Status(fiber.StatusNotFound)
-				return nil
-			}
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if !request.IsFieldNameValid(req.Type, field) {
-			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-
-		if req.PID == pid {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-		if req.Status != request.StatusInReview {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-		if req.RPID != pid {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-
-		_, err = qtx.CreateRequestComment(context.Background(), query.CreateRequestCommentParams{
-			RID:   rid,
-			PID:   pid.(int64),
-			Text:  text,
-			Field: field,
-		})
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		rows, err := qtx.ListCommentsForRequestFieldWithAuthor(context.Background(), query.ListCommentsForRequestFieldWithAuthorParams{
-			RID:   rid,
-			Field: field,
-		})
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if err = tx.Commit(); err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		comments := []request.Comment{}
-		for _, row := range rows {
-			comments = append(comments, request.CommentFromListForRequestFieldWithAuthorRow(&row))
-		}
-
-		b := fiber.Map{
-			"Comments": comments,
-		}
-
-		return c.Render(partial.RequestCommentList, b, "")
 	}
 }
 

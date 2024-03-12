@@ -10,6 +10,33 @@ import (
 	"database/sql"
 )
 
+const countCurrentRequestChangeRequestForRequest = `-- name: CountCurrentRequestChangeRequestForRequest :one
+SELECT COUNT(*) FROM request_change_requests WHERE rid = ? AND old = false
+`
+
+func (q *Queries) CountCurrentRequestChangeRequestForRequest(ctx context.Context, rid int64) (int64, error) {
+	row := q.queryRow(ctx, q.countCurrentRequestChangeRequestForRequestStmt, countCurrentRequestChangeRequestForRequest, rid)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const countCurrentRequestChangeRequestForRequestField = `-- name: CountCurrentRequestChangeRequestForRequestField :one
+SELECT COUNT(*) FROM request_change_requests WHERE rid = ? AND field = ? AND old = false
+`
+
+type CountCurrentRequestChangeRequestForRequestFieldParams struct {
+	RID   int64
+	Field string
+}
+
+func (q *Queries) CountCurrentRequestChangeRequestForRequestField(ctx context.Context, arg CountCurrentRequestChangeRequestForRequestFieldParams) (int64, error) {
+	row := q.queryRow(ctx, q.countCurrentRequestChangeRequestForRequestFieldStmt, countCurrentRequestChangeRequestForRequestField, arg.RID, arg.Field)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const countOpenCharacterApplicationsForPlayer = `-- name: CountOpenCharacterApplicationsForPlayer :one
 SELECT
   COUNT(*)
@@ -43,33 +70,6 @@ WHERE
 
 func (q *Queries) CountOpenRequests(ctx context.Context, pid int64) (int64, error) {
 	row := q.queryRow(ctx, q.countOpenRequestsStmt, countOpenRequests, pid)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
-
-const countUnresolvedCommentsForRequest = `-- name: CountUnresolvedCommentsForRequest :one
-SELECT COUNT(*) FROM request_comments WHERE rid = ? AND resolved = false
-`
-
-func (q *Queries) CountUnresolvedCommentsForRequest(ctx context.Context, rid int64) (int64, error) {
-	row := q.queryRow(ctx, q.countUnresolvedCommentsForRequestStmt, countUnresolvedCommentsForRequest, rid)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
-
-const countUnresolvedCommentsForRequestField = `-- name: CountUnresolvedCommentsForRequestField :one
-SELECT COUNT(*) FROM request_comments WHERE rid = ? AND field = ? AND resolved = false
-`
-
-type CountUnresolvedCommentsForRequestFieldParams struct {
-	RID   int64
-	Field string
-}
-
-func (q *Queries) CountUnresolvedCommentsForRequestField(ctx context.Context, arg CountUnresolvedCommentsForRequestFieldParams) (int64, error) {
-	row := q.queryRow(ctx, q.countUnresolvedCommentsForRequestFieldStmt, countUnresolvedCommentsForRequestField, arg.RID, arg.Field)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -190,29 +190,6 @@ func (q *Queries) CreateRequestChangeRequest(ctx context.Context, arg CreateRequ
 	return err
 }
 
-const createRequestComment = `-- name: CreateRequestComment :execresult
-INSERT INTO
-  request_comments (text, field, pid, rid, vid) 
-VALUES
-  (?, ?, ?, ?, (SELECT vid FROM requests WHERE requests.id = rid))
-`
-
-type CreateRequestCommentParams struct {
-	Text  string
-	Field string
-	PID   int64
-	RID   int64
-}
-
-func (q *Queries) CreateRequestComment(ctx context.Context, arg CreateRequestCommentParams) (sql.Result, error) {
-	return q.exec(ctx, q.createRequestCommentStmt, createRequestComment,
-		arg.Text,
-		arg.Field,
-		arg.PID,
-		arg.RID,
-	)
-}
-
 const getCharacterApplication = `-- name: GetCharacterApplication :one
 SELECT
   character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id, requests.vid
@@ -315,49 +292,6 @@ func (q *Queries) GetCharacterApplicationContentReviewForRequest(ctx context.Con
 		&i.Backstory,
 		&i.RID,
 		&i.ID,
-	)
-	return i, err
-}
-
-const getCommentWithAuthor = `-- name: GetCommentWithAuthor :one
-SELECT 
-  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted, request_comments.resolved
-FROM 
-  request_comments 
-JOIN
-  players
-ON
-  request_comments.pid = players.id
-WHERE 
-  request_comments.id = ?
-`
-
-type GetCommentWithAuthorRow struct {
-	Player         Player
-	RequestComment RequestComment
-}
-
-func (q *Queries) GetCommentWithAuthor(ctx context.Context, id int64) (GetCommentWithAuthorRow, error) {
-	row := q.queryRow(ctx, q.getCommentWithAuthorStmt, getCommentWithAuthor, id)
-	var i GetCommentWithAuthorRow
-	err := row.Scan(
-		&i.Player.CreatedAt,
-		&i.Player.UpdatedAt,
-		&i.Player.PwHash,
-		&i.Player.Username,
-		&i.Player.ID,
-		&i.RequestComment.CreatedAt,
-		&i.RequestComment.UpdatedAt,
-		&i.RequestComment.DeletedAt,
-		&i.RequestComment.Text,
-		&i.RequestComment.Field,
-		&i.RequestComment.RID,
-		&i.RequestComment.PID,
-		&i.RequestComment.CID,
-		&i.RequestComment.ID,
-		&i.RequestComment.VID,
-		&i.RequestComment.Deleted,
-		&i.RequestComment.Resolved,
 	)
 	return i, err
 }
@@ -520,169 +454,6 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 			&i.Request.PID,
 			&i.Request.ID,
 			&i.Request.VID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listCommentsForRequest = `-- name: ListCommentsForRequest :many
-SELECT created_at, updated_at, deleted_at, text, field, rid, pid, cid, id, vid, deleted, resolved FROM request_comments WHERE rid = ?
-`
-
-func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]RequestComment, error) {
-	rows, err := q.query(ctx, q.listCommentsForRequestStmt, listCommentsForRequest, rid)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []RequestComment
-	for rows.Next() {
-		var i RequestComment
-		if err := rows.Scan(
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-			&i.Text,
-			&i.Field,
-			&i.RID,
-			&i.PID,
-			&i.CID,
-			&i.ID,
-			&i.VID,
-			&i.Deleted,
-			&i.Resolved,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listCommentsForRequestFieldWithAuthor = `-- name: ListCommentsForRequestFieldWithAuthor :many
-SELECT
-  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted, request_comments.resolved
-FROM
-  request_comments
-JOIN
-  players
-ON
-  request_comments.pid = players.id
-WHERE
-  field = ? AND rid = ?
-`
-
-type ListCommentsForRequestFieldWithAuthorParams struct {
-	Field string
-	RID   int64
-}
-
-type ListCommentsForRequestFieldWithAuthorRow struct {
-	Player         Player
-	RequestComment RequestComment
-}
-
-func (q *Queries) ListCommentsForRequestFieldWithAuthor(ctx context.Context, arg ListCommentsForRequestFieldWithAuthorParams) ([]ListCommentsForRequestFieldWithAuthorRow, error) {
-	rows, err := q.query(ctx, q.listCommentsForRequestFieldWithAuthorStmt, listCommentsForRequestFieldWithAuthor, arg.Field, arg.RID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ListCommentsForRequestFieldWithAuthorRow
-	for rows.Next() {
-		var i ListCommentsForRequestFieldWithAuthorRow
-		if err := rows.Scan(
-			&i.Player.CreatedAt,
-			&i.Player.UpdatedAt,
-			&i.Player.PwHash,
-			&i.Player.Username,
-			&i.Player.ID,
-			&i.RequestComment.CreatedAt,
-			&i.RequestComment.UpdatedAt,
-			&i.RequestComment.DeletedAt,
-			&i.RequestComment.Text,
-			&i.RequestComment.Field,
-			&i.RequestComment.RID,
-			&i.RequestComment.PID,
-			&i.RequestComment.CID,
-			&i.RequestComment.ID,
-			&i.RequestComment.VID,
-			&i.RequestComment.Deleted,
-			&i.RequestComment.Resolved,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listCommentsForRequestWithAuthor = `-- name: ListCommentsForRequestWithAuthor :many
-SELECT
-  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted, request_comments.resolved
-FROM
-  request_comments
-JOIN
-  players
-ON
-  request_comments.pid = players.id
-WHERE
-  rid = ?
-`
-
-type ListCommentsForRequestWithAuthorRow struct {
-	Player         Player
-	RequestComment RequestComment
-}
-
-func (q *Queries) ListCommentsForRequestWithAuthor(ctx context.Context, rid int64) ([]ListCommentsForRequestWithAuthorRow, error) {
-	rows, err := q.query(ctx, q.listCommentsForRequestWithAuthorStmt, listCommentsForRequestWithAuthor, rid)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ListCommentsForRequestWithAuthorRow
-	for rows.Next() {
-		var i ListCommentsForRequestWithAuthorRow
-		if err := rows.Scan(
-			&i.Player.CreatedAt,
-			&i.Player.UpdatedAt,
-			&i.Player.PwHash,
-			&i.Player.Username,
-			&i.Player.ID,
-			&i.RequestComment.CreatedAt,
-			&i.RequestComment.UpdatedAt,
-			&i.RequestComment.DeletedAt,
-			&i.RequestComment.Text,
-			&i.RequestComment.Field,
-			&i.RequestComment.RID,
-			&i.RequestComment.PID,
-			&i.RequestComment.CID,
-			&i.RequestComment.ID,
-			&i.RequestComment.VID,
-			&i.RequestComment.Deleted,
-			&i.RequestComment.Resolved,
 		); err != nil {
 			return nil, err
 		}

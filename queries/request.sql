@@ -31,62 +31,17 @@ UPDATE requests SET status = ? WHERE id = ?;
 -- name: UpdateRequestReviewer :exec
 UPDATE requests SET rpid = ? WHERE id = ?;
 
--- name: CreateRequestComment :execresult
-INSERT INTO
-  request_comments (text, field, pid, rid, vid) 
-VALUES
-  (?, ?, ?, ?, (SELECT vid FROM requests WHERE requests.id = rid));
-
--- name: GetCommentWithAuthor :one
-SELECT 
-  sqlc.embed(players), sqlc.embed(request_comments)
-FROM 
-  request_comments 
-JOIN
-  players
-ON
-  request_comments.pid = players.id
-WHERE 
-  request_comments.id = ?;
-
--- name: ListCommentsForRequest :many
-SELECT * FROM request_comments WHERE rid = ?;
-
--- name: ListCommentsForRequestWithAuthor :many
-SELECT
-  sqlc.embed(players), sqlc.embed(request_comments)
-FROM
-  request_comments
-JOIN
-  players
-ON
-  request_comments.pid = players.id
-WHERE
-  rid = ?;
-
--- name: ListCommentsForRequestFieldWithAuthor :many
-SELECT
-  sqlc.embed(players), sqlc.embed(request_comments)
-FROM
-  request_comments
-JOIN
-  players
-ON
-  request_comments.pid = players.id
-WHERE
-  field = ? AND rid = ?;
-
 -- name: CreateRequestChangeRequest :exec
 INSERT INTO request_change_requests (rid, field, pid, text) VALUES (?, ?, ?, ?);
 
 -- name: GetCurrentRequestChangeRequestForRequestField :one
 SELECT * FROM request_change_requests WHERE rid = ? AND field = ? AND old = false;
 
--- name: CountUnresolvedCommentsForRequest :one
-SELECT COUNT(*) FROM request_comments WHERE rid = ? AND resolved = false;
+-- name: CountCurrentRequestChangeRequestForRequest :one
+SELECT COUNT(*) FROM request_change_requests WHERE rid = ? AND old = false;
 
--- name: CountUnresolvedCommentsForRequestField :one
-SELECT COUNT(*) FROM request_comments WHERE rid = ? AND field = ? AND resolved = false;
+-- name: CountCurrentRequestChangeRequestForRequestField :one
+SELECT COUNT(*) FROM request_change_requests WHERE rid = ? AND field = ? AND old = false;
 
 -- name: CreateCharacterApplicationContent :exec
 INSERT INTO

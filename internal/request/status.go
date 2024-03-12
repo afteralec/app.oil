@@ -225,7 +225,7 @@ func NextStatus(p NextStatusParams) (string, error) {
 			return "", ErrNextStatusForbidden
 		}
 
-		count, err := p.Query.CountUnresolvedCommentsForRequest(context.Background(), p.Request.ID)
+		count, err := p.Query.CountCurrentRequestChangeRequestForRequest(context.Background(), p.Request.ID)
 		if err != nil {
 			return "", err
 		}

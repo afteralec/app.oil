@@ -24,6 +24,12 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.countCurrentRequestChangeRequestForRequestStmt, err = db.PrepareContext(ctx, countCurrentRequestChangeRequestForRequest); err != nil {
+		return nil, fmt.Errorf("error preparing query CountCurrentRequestChangeRequestForRequest: %w", err)
+	}
+	if q.countCurrentRequestChangeRequestForRequestFieldStmt, err = db.PrepareContext(ctx, countCurrentRequestChangeRequestForRequestField); err != nil {
+		return nil, fmt.Errorf("error preparing query CountCurrentRequestChangeRequestForRequestField: %w", err)
+	}
 	if q.countEmailsStmt, err = db.PrepareContext(ctx, countEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query CountEmails: %w", err)
 	}
@@ -32,12 +38,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.countOpenRequestsStmt, err = db.PrepareContext(ctx, countOpenRequests); err != nil {
 		return nil, fmt.Errorf("error preparing query CountOpenRequests: %w", err)
-	}
-	if q.countUnresolvedCommentsForRequestStmt, err = db.PrepareContext(ctx, countUnresolvedCommentsForRequest); err != nil {
-		return nil, fmt.Errorf("error preparing query CountUnresolvedCommentsForRequest: %w", err)
-	}
-	if q.countUnresolvedCommentsForRequestFieldStmt, err = db.PrepareContext(ctx, countUnresolvedCommentsForRequestField); err != nil {
-		return nil, fmt.Errorf("error preparing query CountUnresolvedCommentsForRequestField: %w", err)
 	}
 	if q.createActorImageStmt, err = db.PrepareContext(ctx, createActorImage); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateActorImage: %w", err)
@@ -102,9 +102,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createRequestChangeRequestStmt, err = db.PrepareContext(ctx, createRequestChangeRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateRequestChangeRequest: %w", err)
 	}
-	if q.createRequestCommentStmt, err = db.PrepareContext(ctx, createRequestComment); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateRequestComment: %w", err)
-	}
 	if q.createRoomStmt, err = db.PrepareContext(ctx, createRoom); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateRoom: %w", err)
 	}
@@ -161,9 +158,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getCharacterApplicationContentReviewForRequestStmt, err = db.PrepareContext(ctx, getCharacterApplicationContentReviewForRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCharacterApplicationContentReviewForRequest: %w", err)
-	}
-	if q.getCommentWithAuthorStmt, err = db.PrepareContext(ctx, getCommentWithAuthor); err != nil {
-		return nil, fmt.Errorf("error preparing query GetCommentWithAuthor: %w", err)
 	}
 	if q.getCurrentRequestChangeRequestForRequestFieldStmt, err = db.PrepareContext(ctx, getCurrentRequestChangeRequestForRequestField); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCurrentRequestChangeRequestForRequestField: %w", err)
@@ -233,15 +227,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.listCharacterApplicationsForPlayerStmt, err = db.PrepareContext(ctx, listCharacterApplicationsForPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query ListCharacterApplicationsForPlayer: %w", err)
-	}
-	if q.listCommentsForRequestStmt, err = db.PrepareContext(ctx, listCommentsForRequest); err != nil {
-		return nil, fmt.Errorf("error preparing query ListCommentsForRequest: %w", err)
-	}
-	if q.listCommentsForRequestFieldWithAuthorStmt, err = db.PrepareContext(ctx, listCommentsForRequestFieldWithAuthor); err != nil {
-		return nil, fmt.Errorf("error preparing query ListCommentsForRequestFieldWithAuthor: %w", err)
-	}
-	if q.listCommentsForRequestWithAuthorStmt, err = db.PrepareContext(ctx, listCommentsForRequestWithAuthor); err != nil {
-		return nil, fmt.Errorf("error preparing query ListCommentsForRequestWithAuthor: %w", err)
 	}
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
@@ -380,6 +365,16 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.countCurrentRequestChangeRequestForRequestStmt != nil {
+		if cerr := q.countCurrentRequestChangeRequestForRequestStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countCurrentRequestChangeRequestForRequestStmt: %w", cerr)
+		}
+	}
+	if q.countCurrentRequestChangeRequestForRequestFieldStmt != nil {
+		if cerr := q.countCurrentRequestChangeRequestForRequestFieldStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countCurrentRequestChangeRequestForRequestFieldStmt: %w", cerr)
+		}
+	}
 	if q.countEmailsStmt != nil {
 		if cerr := q.countEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing countEmailsStmt: %w", cerr)
@@ -393,16 +388,6 @@ func (q *Queries) Close() error {
 	if q.countOpenRequestsStmt != nil {
 		if cerr := q.countOpenRequestsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing countOpenRequestsStmt: %w", cerr)
-		}
-	}
-	if q.countUnresolvedCommentsForRequestStmt != nil {
-		if cerr := q.countUnresolvedCommentsForRequestStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing countUnresolvedCommentsForRequestStmt: %w", cerr)
-		}
-	}
-	if q.countUnresolvedCommentsForRequestFieldStmt != nil {
-		if cerr := q.countUnresolvedCommentsForRequestFieldStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing countUnresolvedCommentsForRequestFieldStmt: %w", cerr)
 		}
 	}
 	if q.createActorImageStmt != nil {
@@ -510,11 +495,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createRequestChangeRequestStmt: %w", cerr)
 		}
 	}
-	if q.createRequestCommentStmt != nil {
-		if cerr := q.createRequestCommentStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createRequestCommentStmt: %w", cerr)
-		}
-	}
 	if q.createRoomStmt != nil {
 		if cerr := q.createRoomStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createRoomStmt: %w", cerr)
@@ -608,11 +588,6 @@ func (q *Queries) Close() error {
 	if q.getCharacterApplicationContentReviewForRequestStmt != nil {
 		if cerr := q.getCharacterApplicationContentReviewForRequestStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getCharacterApplicationContentReviewForRequestStmt: %w", cerr)
-		}
-	}
-	if q.getCommentWithAuthorStmt != nil {
-		if cerr := q.getCommentWithAuthorStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getCommentWithAuthorStmt: %w", cerr)
 		}
 	}
 	if q.getCurrentRequestChangeRequestForRequestFieldStmt != nil {
@@ -728,21 +703,6 @@ func (q *Queries) Close() error {
 	if q.listCharacterApplicationsForPlayerStmt != nil {
 		if cerr := q.listCharacterApplicationsForPlayerStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listCharacterApplicationsForPlayerStmt: %w", cerr)
-		}
-	}
-	if q.listCommentsForRequestStmt != nil {
-		if cerr := q.listCommentsForRequestStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listCommentsForRequestStmt: %w", cerr)
-		}
-	}
-	if q.listCommentsForRequestFieldWithAuthorStmt != nil {
-		if cerr := q.listCommentsForRequestFieldWithAuthorStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listCommentsForRequestFieldWithAuthorStmt: %w", cerr)
-		}
-	}
-	if q.listCommentsForRequestWithAuthorStmt != nil {
-		if cerr := q.listCommentsForRequestWithAuthorStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listCommentsForRequestWithAuthorStmt: %w", cerr)
 		}
 	}
 	if q.listEmailsStmt != nil {
@@ -1004,11 +964,11 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db                                                          DBTX
 	tx                                                          *sql.Tx
+	countCurrentRequestChangeRequestForRequestStmt              *sql.Stmt
+	countCurrentRequestChangeRequestForRequestFieldStmt         *sql.Stmt
 	countEmailsStmt                                             *sql.Stmt
 	countOpenCharacterApplicationsForPlayerStmt                 *sql.Stmt
 	countOpenRequestsStmt                                       *sql.Stmt
-	countUnresolvedCommentsForRequestStmt                       *sql.Stmt
-	countUnresolvedCommentsForRequestFieldStmt                  *sql.Stmt
 	createActorImageStmt                                        *sql.Stmt
 	createActorImageCanStmt                                     *sql.Stmt
 	createActorImageCanBeStmt                                   *sql.Stmt
@@ -1030,7 +990,6 @@ type Queries struct {
 	createPlayerSettingsStmt                                    *sql.Stmt
 	createRequestStmt                                           *sql.Stmt
 	createRequestChangeRequestStmt                              *sql.Stmt
-	createRequestCommentStmt                                    *sql.Stmt
 	createRoomStmt                                              *sql.Stmt
 	deleteActorImageCanStmt                                     *sql.Stmt
 	deleteActorImageCanBeStmt                                   *sql.Stmt
@@ -1050,7 +1009,6 @@ type Queries struct {
 	getCharacterApplicationContentStmt                          *sql.Stmt
 	getCharacterApplicationContentForRequestStmt                *sql.Stmt
 	getCharacterApplicationContentReviewForRequestStmt          *sql.Stmt
-	getCommentWithAuthorStmt                                    *sql.Stmt
 	getCurrentRequestChangeRequestForRequestFieldStmt           *sql.Stmt
 	getEmailStmt                                                *sql.Stmt
 	getEmailByAddressForPlayerStmt                              *sql.Stmt
@@ -1074,9 +1032,6 @@ type Queries struct {
 	listActorImagesPrimaryHandsStmt                             *sql.Stmt
 	listCharacterApplicationContentForPlayerStmt                *sql.Stmt
 	listCharacterApplicationsForPlayerStmt                      *sql.Stmt
-	listCommentsForRequestStmt                                  *sql.Stmt
-	listCommentsForRequestFieldWithAuthorStmt                   *sql.Stmt
-	listCommentsForRequestWithAuthorStmt                        *sql.Stmt
 	listEmailsStmt                                              *sql.Stmt
 	listHelpHeadersStmt                                         *sql.Stmt
 	listHelpSlugsStmt                                           *sql.Stmt
@@ -1125,13 +1080,13 @@ type Queries struct {
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:              tx,
-		tx:              tx,
+		db: tx,
+		tx: tx,
+		countCurrentRequestChangeRequestForRequestStmt:      q.countCurrentRequestChangeRequestForRequestStmt,
+		countCurrentRequestChangeRequestForRequestFieldStmt: q.countCurrentRequestChangeRequestForRequestFieldStmt,
 		countEmailsStmt: q.countEmailsStmt,
 		countOpenCharacterApplicationsForPlayerStmt:                 q.countOpenCharacterApplicationsForPlayerStmt,
 		countOpenRequestsStmt:                                       q.countOpenRequestsStmt,
-		countUnresolvedCommentsForRequestStmt:                       q.countUnresolvedCommentsForRequestStmt,
-		countUnresolvedCommentsForRequestFieldStmt:                  q.countUnresolvedCommentsForRequestFieldStmt,
 		createActorImageStmt:                                        q.createActorImageStmt,
 		createActorImageCanStmt:                                     q.createActorImageCanStmt,
 		createActorImageCanBeStmt:                                   q.createActorImageCanBeStmt,
@@ -1153,7 +1108,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createPlayerSettingsStmt:                                    q.createPlayerSettingsStmt,
 		createRequestStmt:                                           q.createRequestStmt,
 		createRequestChangeRequestStmt:                              q.createRequestChangeRequestStmt,
-		createRequestCommentStmt:                                    q.createRequestCommentStmt,
 		createRoomStmt:                                              q.createRoomStmt,
 		deleteActorImageCanStmt:                                     q.deleteActorImageCanStmt,
 		deleteActorImageCanBeStmt:                                   q.deleteActorImageCanBeStmt,
@@ -1173,7 +1127,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getCharacterApplicationContentStmt:                          q.getCharacterApplicationContentStmt,
 		getCharacterApplicationContentForRequestStmt:                q.getCharacterApplicationContentForRequestStmt,
 		getCharacterApplicationContentReviewForRequestStmt:          q.getCharacterApplicationContentReviewForRequestStmt,
-		getCommentWithAuthorStmt:                                    q.getCommentWithAuthorStmt,
 		getCurrentRequestChangeRequestForRequestFieldStmt:           q.getCurrentRequestChangeRequestForRequestFieldStmt,
 		getEmailStmt:                                                q.getEmailStmt,
 		getEmailByAddressForPlayerStmt:                              q.getEmailByAddressForPlayerStmt,
@@ -1197,9 +1150,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listActorImagesPrimaryHandsStmt:                             q.listActorImagesPrimaryHandsStmt,
 		listCharacterApplicationContentForPlayerStmt:                q.listCharacterApplicationContentForPlayerStmt,
 		listCharacterApplicationsForPlayerStmt:                      q.listCharacterApplicationsForPlayerStmt,
-		listCommentsForRequestStmt:                                  q.listCommentsForRequestStmt,
-		listCommentsForRequestFieldWithAuthorStmt:                   q.listCommentsForRequestFieldWithAuthorStmt,
-		listCommentsForRequestWithAuthorStmt:                        q.listCommentsForRequestWithAuthorStmt,
 		listEmailsStmt:                                              q.listEmailsStmt,
 		listHelpHeadersStmt:                                         q.listHelpHeadersStmt,
 		listHelpSlugsStmt:                                           q.listHelpSlugsStmt,
