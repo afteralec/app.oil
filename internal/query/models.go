@@ -213,20 +213,18 @@ type RequestChangeRequest struct {
 }
 
 type RequestComment struct {
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	DeletedAt        time.Time
-	Text             string
-	Field            string
-	RID              int64
-	PID              int64
-	CID              int64
-	ID               int64
-	VID              int32
-	Deleted          bool
-	Resolved         bool
-	ResolvedReviewer bool
-	ResolvedPlayer   bool
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time
+	Text      string
+	Field     string
+	RID       int64
+	PID       int64
+	CID       int64
+	ID        int64
+	VID       int32
+	Deleted   bool
+	Resolved  bool
 }
 
 type RequestCommentHistory struct {

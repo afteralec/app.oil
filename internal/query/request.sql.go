@@ -169,6 +169,27 @@ func (q *Queries) CreateRequest(ctx context.Context, arg CreateRequestParams) (s
 	return q.exec(ctx, q.createRequestStmt, createRequest, arg.Type, arg.PID)
 }
 
+const createRequestChangeRequest = `-- name: CreateRequestChangeRequest :exec
+INSERT INTO request_change_requests (rid, field, pid, text) VALUES (?, ?, ?, ?)
+`
+
+type CreateRequestChangeRequestParams struct {
+	RID   int64
+	Field string
+	PID   int64
+	Text  string
+}
+
+func (q *Queries) CreateRequestChangeRequest(ctx context.Context, arg CreateRequestChangeRequestParams) error {
+	_, err := q.exec(ctx, q.createRequestChangeRequestStmt, createRequestChangeRequest,
+		arg.RID,
+		arg.Field,
+		arg.PID,
+		arg.Text,
+	)
+	return err
+}
+
 const createRequestComment = `-- name: CreateRequestComment :execresult
 INSERT INTO
   request_comments (text, field, pid, rid, vid) 
@@ -300,7 +321,7 @@ func (q *Queries) GetCharacterApplicationContentReviewForRequest(ctx context.Con
 
 const getCommentWithAuthor = `-- name: GetCommentWithAuthor :one
 SELECT 
-  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted, request_comments.resolved, request_comments.resolved_reviewer, request_comments.resolved_player
+  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted, request_comments.resolved
 FROM 
   request_comments 
 JOIN
@@ -337,8 +358,31 @@ func (q *Queries) GetCommentWithAuthor(ctx context.Context, id int64) (GetCommen
 		&i.RequestComment.VID,
 		&i.RequestComment.Deleted,
 		&i.RequestComment.Resolved,
-		&i.RequestComment.ResolvedReviewer,
-		&i.RequestComment.ResolvedPlayer,
+	)
+	return i, err
+}
+
+const getCurrentRequestChangeRequestForRequestField = `-- name: GetCurrentRequestChangeRequestForRequestField :one
+SELECT created_at, updated_at, text, field, rid, pid, id, old FROM request_change_requests WHERE rid = ? AND field = ? AND old = false
+`
+
+type GetCurrentRequestChangeRequestForRequestFieldParams struct {
+	RID   int64
+	Field string
+}
+
+func (q *Queries) GetCurrentRequestChangeRequestForRequestField(ctx context.Context, arg GetCurrentRequestChangeRequestForRequestFieldParams) (RequestChangeRequest, error) {
+	row := q.queryRow(ctx, q.getCurrentRequestChangeRequestForRequestFieldStmt, getCurrentRequestChangeRequestForRequestField, arg.RID, arg.Field)
+	var i RequestChangeRequest
+	err := row.Scan(
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Text,
+		&i.Field,
+		&i.RID,
+		&i.PID,
+		&i.ID,
+		&i.Old,
 	)
 	return i, err
 }
@@ -491,7 +535,7 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 }
 
 const listCommentsForRequest = `-- name: ListCommentsForRequest :many
-SELECT created_at, updated_at, deleted_at, text, field, rid, pid, cid, id, vid, deleted, resolved, resolved_reviewer, resolved_player FROM request_comments WHERE rid = ?
+SELECT created_at, updated_at, deleted_at, text, field, rid, pid, cid, id, vid, deleted, resolved FROM request_comments WHERE rid = ?
 `
 
 func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]RequestComment, error) {
@@ -516,8 +560,6 @@ func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]Requ
 			&i.VID,
 			&i.Deleted,
 			&i.Resolved,
-			&i.ResolvedReviewer,
-			&i.ResolvedPlayer,
 		); err != nil {
 			return nil, err
 		}
@@ -534,7 +576,7 @@ func (q *Queries) ListCommentsForRequest(ctx context.Context, rid int64) ([]Requ
 
 const listCommentsForRequestFieldWithAuthor = `-- name: ListCommentsForRequestFieldWithAuthor :many
 SELECT
-  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted, request_comments.resolved, request_comments.resolved_reviewer, request_comments.resolved_player
+  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted, request_comments.resolved
 FROM
   request_comments
 JOIN
@@ -582,8 +624,6 @@ func (q *Queries) ListCommentsForRequestFieldWithAuthor(ctx context.Context, arg
 			&i.RequestComment.VID,
 			&i.RequestComment.Deleted,
 			&i.RequestComment.Resolved,
-			&i.RequestComment.ResolvedReviewer,
-			&i.RequestComment.ResolvedPlayer,
 		); err != nil {
 			return nil, err
 		}
@@ -600,7 +640,7 @@ func (q *Queries) ListCommentsForRequestFieldWithAuthor(ctx context.Context, arg
 
 const listCommentsForRequestWithAuthor = `-- name: ListCommentsForRequestWithAuthor :many
 SELECT
-  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted, request_comments.resolved, request_comments.resolved_reviewer, request_comments.resolved_player
+  players.created_at, players.updated_at, players.pw_hash, players.username, players.id, request_comments.created_at, request_comments.updated_at, request_comments.deleted_at, request_comments.text, request_comments.field, request_comments.rid, request_comments.pid, request_comments.cid, request_comments.id, request_comments.vid, request_comments.deleted, request_comments.resolved
 FROM
   request_comments
 JOIN
@@ -643,8 +683,6 @@ func (q *Queries) ListCommentsForRequestWithAuthor(ctx context.Context, rid int6
 			&i.RequestComment.VID,
 			&i.RequestComment.Deleted,
 			&i.RequestComment.Resolved,
-			&i.RequestComment.ResolvedReviewer,
-			&i.RequestComment.ResolvedPlayer,
 		); err != nil {
 			return nil, err
 		}

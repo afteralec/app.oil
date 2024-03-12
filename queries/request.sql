@@ -76,6 +76,12 @@ ON
 WHERE
   field = ? AND rid = ?;
 
+-- name: CreateRequestChangeRequest :exec
+INSERT INTO request_change_requests (rid, field, pid, text) VALUES (?, ?, ?, ?);
+
+-- name: GetCurrentRequestChangeRequestForRequestField :one
+SELECT * FROM request_change_requests WHERE rid = ? AND field = ? AND old = false;
+
 -- name: CountUnresolvedCommentsForRequest :one
 SELECT COUNT(*) FROM request_comments WHERE rid = ? AND resolved = false;
 

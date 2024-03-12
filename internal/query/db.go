@@ -99,6 +99,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createRequestStmt, err = db.PrepareContext(ctx, createRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateRequest: %w", err)
 	}
+	if q.createRequestChangeRequestStmt, err = db.PrepareContext(ctx, createRequestChangeRequest); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateRequestChangeRequest: %w", err)
+	}
 	if q.createRequestCommentStmt, err = db.PrepareContext(ctx, createRequestComment); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateRequestComment: %w", err)
 	}
@@ -161,6 +164,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getCommentWithAuthorStmt, err = db.PrepareContext(ctx, getCommentWithAuthor); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCommentWithAuthor: %w", err)
+	}
+	if q.getCurrentRequestChangeRequestForRequestFieldStmt, err = db.PrepareContext(ctx, getCurrentRequestChangeRequestForRequestField); err != nil {
+		return nil, fmt.Errorf("error preparing query GetCurrentRequestChangeRequestForRequestField: %w", err)
 	}
 	if q.getEmailStmt, err = db.PrepareContext(ctx, getEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query GetEmail: %w", err)
@@ -499,6 +505,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createRequestStmt: %w", cerr)
 		}
 	}
+	if q.createRequestChangeRequestStmt != nil {
+		if cerr := q.createRequestChangeRequestStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createRequestChangeRequestStmt: %w", cerr)
+		}
+	}
 	if q.createRequestCommentStmt != nil {
 		if cerr := q.createRequestCommentStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createRequestCommentStmt: %w", cerr)
@@ -602,6 +613,11 @@ func (q *Queries) Close() error {
 	if q.getCommentWithAuthorStmt != nil {
 		if cerr := q.getCommentWithAuthorStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getCommentWithAuthorStmt: %w", cerr)
+		}
+	}
+	if q.getCurrentRequestChangeRequestForRequestFieldStmt != nil {
+		if cerr := q.getCurrentRequestChangeRequestForRequestFieldStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getCurrentRequestChangeRequestForRequestFieldStmt: %w", cerr)
 		}
 	}
 	if q.getEmailStmt != nil {
@@ -1013,6 +1029,7 @@ type Queries struct {
 	createPlayerPermissionRevokedChangeHistoryStmt              *sql.Stmt
 	createPlayerSettingsStmt                                    *sql.Stmt
 	createRequestStmt                                           *sql.Stmt
+	createRequestChangeRequestStmt                              *sql.Stmt
 	createRequestCommentStmt                                    *sql.Stmt
 	createRoomStmt                                              *sql.Stmt
 	deleteActorImageCanStmt                                     *sql.Stmt
@@ -1034,6 +1051,7 @@ type Queries struct {
 	getCharacterApplicationContentForRequestStmt                *sql.Stmt
 	getCharacterApplicationContentReviewForRequestStmt          *sql.Stmt
 	getCommentWithAuthorStmt                                    *sql.Stmt
+	getCurrentRequestChangeRequestForRequestFieldStmt           *sql.Stmt
 	getEmailStmt                                                *sql.Stmt
 	getEmailByAddressForPlayerStmt                              *sql.Stmt
 	getHelpStmt                                                 *sql.Stmt
@@ -1134,6 +1152,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createPlayerPermissionRevokedChangeHistoryStmt:              q.createPlayerPermissionRevokedChangeHistoryStmt,
 		createPlayerSettingsStmt:                                    q.createPlayerSettingsStmt,
 		createRequestStmt:                                           q.createRequestStmt,
+		createRequestChangeRequestStmt:                              q.createRequestChangeRequestStmt,
 		createRequestCommentStmt:                                    q.createRequestCommentStmt,
 		createRoomStmt:                                              q.createRoomStmt,
 		deleteActorImageCanStmt:                                     q.deleteActorImageCanStmt,
@@ -1155,6 +1174,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getCharacterApplicationContentForRequestStmt:                q.getCharacterApplicationContentForRequestStmt,
 		getCharacterApplicationContentReviewForRequestStmt:          q.getCharacterApplicationContentReviewForRequestStmt,
 		getCommentWithAuthorStmt:                                    q.getCommentWithAuthorStmt,
+		getCurrentRequestChangeRequestForRequestFieldStmt:           q.getCurrentRequestChangeRequestForRequestFieldStmt,
 		getEmailStmt:                                                q.getEmailStmt,
 		getEmailByAddressForPlayerStmt:                              q.getEmailByAddressForPlayerStmt,
 		getHelpStmt:                                                 q.getHelpStmt,
