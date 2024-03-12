@@ -6,11 +6,12 @@ import (
 )
 
 const (
-	Requests                    = "/requests"
-	RequestPathParam            = "/requests/:id"
-	RequestFieldPathParam       = "/requests/:id/:field"
-	RequestFieldStatusPathParam = "/requests/:id/:field/status"
-	RequestStatusPathParam      = "/requests/:id/status"
+	Requests                      = "/requests"
+	RequestPathParam              = "/requests/:id"
+	RequestFieldPathParam         = "/requests/:id/:field"
+	RequestFieldStatusPathParam   = "/requests/:id/:field/status"
+	RequestChangeRequestPathParam = "/requests/:id/:field/change"
+	RequestStatusPathParam        = "/requests/:id/status"
 )
 
 const CreateRequestCommentPathParam string = "/request/:id/comment/:field"
@@ -30,6 +31,12 @@ func RequestFieldPath(id int64, field string) string {
 func RequestFieldStatusPath(id int64, field string) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "%s/%d/%s/status", Requests, id, field)
+	return b.String()
+}
+
+func RequestChangeRequestPath(id int64, field string) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "%s/%d/%s/change", Requests, id, field)
 	return b.String()
 }
 

@@ -8,8 +8,10 @@ import (
 )
 
 const (
-	CommentMinLength = 1
-	CommentMaxLength = 500
+	CommentMinLength           = 1
+	CommentMaxLength           = 500
+	ChangeRequestTextMinLength = 10
+	ChangeRequestTextMaxLength = 1000
 )
 
 type Comment struct {
@@ -42,11 +44,28 @@ func SanitizeComment(c string) string {
 	return re.ReplaceAllString(c, "")
 }
 
+func SanitizeChangeRequestText(c string) string {
+	re := regexp.MustCompile("[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+")
+	return re.ReplaceAllString(c, "")
+}
+
 func IsCommentValid(c string) bool {
 	if len(c) < CommentMinLength {
 		return false
 	}
 	if len(c) > CommentMaxLength {
+		return false
+	}
+	re := regexp.MustCompile("[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+")
+	return !re.MatchString(c)
+}
+
+// TODO: Turn this into a Validator
+func IsChangeRequestTextValid(c string) bool {
+	if len(c) < ChangeRequestTextMinLength {
+		return false
+	}
+	if len(c) > ChangeRequestTextMaxLength {
 		return false
 	}
 	re := regexp.MustCompile("[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+")

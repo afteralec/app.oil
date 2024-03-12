@@ -1052,7 +1052,7 @@ func TestUpdateRequestFieldStatusFatal(t *testing.T) {
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
 
-func TestCreateRequestCommentUnauthorized(t *testing.T) {
+func TestCreateRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
@@ -1070,12 +1070,11 @@ func TestCreateRequestCommentUnauthorized(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	// TODO: Make a map of valid Character Application fields
-	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("comment", "This name is fantastic.")
+	writer.WriteField("text", "This name is terrible.")
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
@@ -1089,7 +1088,7 @@ func TestCreateRequestCommentUnauthorized(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestCreateRequestCommentMissingBody(t *testing.T) {
+func TestCreateRequestChangeRequestBadRequestMissingBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
@@ -1106,6 +1105,7 @@ func TestCreateRequestCommentMissingBody(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
 		RID:    rid,
@@ -1115,9 +1115,7 @@ func TestCreateRequestCommentMissingBody(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
-
-	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -1130,7 +1128,7 @@ func TestCreateRequestCommentMissingBody(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestCreateRequestCommentInvalidText(t *testing.T) {
+func TestCreateRequestChangeRequestBadRequestInvalidText(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
@@ -1147,6 +1145,7 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
 		RID:    rid,
@@ -1156,13 +1155,11 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
-
-	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("comment", "")
+	writer.WriteField("text", "")
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
@@ -1177,7 +1174,7 @@ func TestCreateRequestCommentInvalidText(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestCreateRequestCommentBadField(t *testing.T) {
+func TestCreateRequestChangeRequestBadRequestInvalidField(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
@@ -1194,6 +1191,7 @@ func TestCreateRequestCommentBadField(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
 		RID:    rid,
@@ -1203,13 +1201,11 @@ func TestCreateRequestCommentBadField(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
-
-	url := MakeTestURL(route.CreateRequestCommentPath(rid, "notafield"))
+	url := MakeTestURL(route.RequestChangeRequestPath(rid, "notafield"))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("comment", "This whatever is also fantastic.")
+	writer.WriteField("text", "This whatever is also fantastic.")
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
@@ -1224,7 +1220,7 @@ func TestCreateRequestCommentBadField(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
-func TestCreateRequestCommentNotFound(t *testing.T) {
+func TestCreateRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
@@ -1241,6 +1237,7 @@ func TestCreateRequestCommentNotFound(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
 		RID:    rid,
@@ -1250,13 +1247,11 @@ func TestCreateRequestCommentNotFound(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
-
-	url := MakeTestURL(route.CreateRequestCommentPath(rid+1, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestPath(rid+1000, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("comment", "This name is fantastic.")
+	writer.WriteField("text", "This name is fantastic.")
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
@@ -1271,7 +1266,7 @@ func TestCreateRequestCommentNotFound(t *testing.T) {
 	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
 }
 
-func TestCreateRequestCommentForbiddenOwnRequest(t *testing.T) {
+func TestCreateRequestChangeRequestForbiddenNotInReview(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
@@ -1279,65 +1274,22 @@ func TestCreateRequestCommentForbiddenOwnRequest(t *testing.T) {
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
-	}); err != nil {
-		t.Fatal(t)
-	}
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("comment", "This name is fantastic.")
-	writer.Close()
-
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
-}
-
-func TestCreateRequestCommentNotInReview(t *testing.T) {
-	i := service.NewInterfaces()
-	defer i.Close()
-
-	a := fiber.New(config.Fiber())
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
-
-	CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
-
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("comment", "This name is fantastic.")
+	writer.WriteField("text", "This name is fantastic.")
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
@@ -1352,7 +1304,7 @@ func TestCreateRequestCommentNotInReview(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestCreateRequestCommentNotReviewer(t *testing.T) {
+func TestCreateRequestChangeRequestForbiddenNotReviewer(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
@@ -1385,11 +1337,11 @@ func TestCreateRequestCommentNotReviewer(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("comment", "This name is fantastic.")
+	writer.WriteField("text", "This name is fantastic.")
 	writer.Close()
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
@@ -1404,7 +1356,7 @@ func TestCreateRequestCommentNotReviewer(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestCreateRequestCommentNoPermission(t *testing.T) {
+func TestCreateRequestChangeRequestForbiddenNoPermission(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
@@ -1432,10 +1384,10 @@ func TestCreateRequestCommentNoPermission(t *testing.T) {
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("comment", "This name is fantastic.")
+	writer.WriteField("text", "This name is fantastic.")
 	writer.Close()
 
-	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.AddCookie(sessionCookie)
@@ -1449,7 +1401,7 @@ func TestCreateRequestCommentNoPermission(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
-func TestCreateRequestCommentSuccess(t *testing.T) {
+func TestCreateRequestChangeRequestSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
@@ -1466,6 +1418,7 @@ func TestCreateRequestCommentSuccess(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
 	permissionID := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
 		RID:    rid,
@@ -1475,14 +1428,12 @@ func TestCreateRequestCommentSuccess(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
-
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("comment", "This name is fantastic.")
+	writer.WriteField("text", "This name is fantastic.")
 	writer.Close()
 
-	url := MakeTestURL(route.CreateRequestCommentPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())

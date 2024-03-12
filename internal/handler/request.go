@@ -344,6 +344,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
 
+			// TODO: Validate that NextUnreviewedField returns something here
 			field, last := request.NextUnreviewedField(req.Type, cr)
 			v := request.View(req.Type, field)
 			value, ok := content.Value(field)
@@ -352,30 +353,19 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
 
-			commentRows, err := qtx.ListCommentsForRequestFieldWithAuthor(context.Background(), query.ListCommentsForRequestFieldWithAuthorParams{
+			openChange := true
+			change, err := qtx.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
 				RID:   rid,
 				Field: field,
 			})
 			if err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+				if err == sql.ErrNoRows {
+					openChange = false
+				} else {
+					c.Status(fiber.StatusInternalServerError)
+					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+				}
 			}
-
-			comments := []request.Comment{}
-			for _, row := range commentRows {
-				comments = append(comments, request.CommentFromListForRequestFieldWithAuthorRow(&row))
-			}
-
-			unresolvedCommentCount, err := qtx.CountUnresolvedCommentsForRequestField(context.Background(), query.CountUnresolvedCommentsForRequestFieldParams{
-				RID:   rid,
-				Field: field,
-			})
-			if err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-			}
-
-			// TODO: Validate that NextIncompleteField returns something here
 
 			label, description := request.GetFieldLabelAndDescription(req.Type, field)
 			b["FieldLabel"] = label
@@ -398,14 +388,19 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				Name:    "value",
 			})
 
-			b["CreateRequestCommentPath"] = route.CreateRequestCommentPath(req.ID, field)
-			b["Comments"] = comments
-
+			b["ChangeRequestPath"] = route.RequestChangeRequestPath(req.ID, field)
 			b["ActionButtonPath"] = route.RequestFieldStatusPath(rid, field)
-			if unresolvedCommentCount > 0 {
+
+			if openChange {
 				b["ActionButtonText"] = "Next"
+				b["ChangeRequest"] = change
 			} else {
 				b["ActionButtonText"] = "Approve"
+			}
+
+			if err := tx.Commit(); err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
 
 			return c.Render(v, b, layout.RequestFieldStandalone)
@@ -786,6 +781,118 @@ func DeleteRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		return nil
+	}
+}
+
+func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
+	type input struct {
+		Text string `form:"text"`
+	}
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		text := request.SanitizeChangeRequestText(in.Text)
+		if !request.IsChangeRequestTextValid(text) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		pid, err := util.GetPID(c)
+		if err != nil {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		if !perms.HasPermission(player.PermissionReviewCharacterApplications.Name) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		rid, err := util.GetID(c)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		field := c.Params("field")
+		if len(field) == 0 {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		req, err := qtx.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if !request.IsFieldNameValid(req.Type, field) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if req.PID == pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if req.Status != request.StatusInReview {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if req.RPID != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if err = qtx.CreateRequestChangeRequest(context.Background(), query.CreateRequestChangeRequestParams{
+			RID:   rid,
+			PID:   pid,
+			Text:  text,
+			Field: field,
+		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		_, err = qtx.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
+			RID:   rid,
+			Field: field,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		// TODO: HTML return
 		return nil
 	}
 }
