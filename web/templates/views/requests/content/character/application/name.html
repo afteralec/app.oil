@@ -2,8 +2,13 @@
 {{ define "view-request-character-application-name" }}
 {{ template "partial-request-character-application-name-help" . }}
 {{ template "partial-request-divider" . }}
-<section id="change-request"></section>
-<!-- prettier-ignore -->
+
+{{ if .ChangeRequest }}
+{{ template "partial-request-change-request" .ChangeRequest }}
+{{ else }}
+{{ template "partial-request-change-request-empty" }}
+{{ end }}
+
 {{ if and .ViewedByPlayer (or .StatusIsReady .StatusIsIncomplete) }}
   {{ template "partial-requests-character-application-name-form" . }}
 {{ else }}

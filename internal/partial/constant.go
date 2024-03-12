@@ -91,3 +91,8 @@ const (
 )
 
 const VerifyEmailSuccess string = "partial-verify-email-success"
+
+const (
+	RequestChangeRequest      string = "partial-request-change-request"
+	RequestChangeRequestEmpty string = "partial-request-change-request-empty"
+)

@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"database/sql"
-	"html/template"
 	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -393,6 +392,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 
 			if openChange {
 				b["ActionButtonText"] = "Next"
+				// TODO: Use a Bind for this
 				b["ChangeRequest"] = change
 			} else {
 				b["ActionButtonText"] = "Approve"
@@ -892,16 +892,12 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		// TODO: Create a Bind function for this
 		b := fiber.Map{
-			"NoticeSectionID": "change-request",
-			"SectionClass":    "py-2",
-			"NoticeText": []template.HTML{
-				template.HTML("<span class=\"font-semibold\">Change Requested:</span>"),
-				template.HTML(change.Text),
-			},
+			"Text": change.Text,
 		}
 
-		return c.Render(partial.NoticeSectionWarn, b, layout.None)
+		return c.Render(partial.RequestChangeRequest, b, layout.None)
 	}
 }
 

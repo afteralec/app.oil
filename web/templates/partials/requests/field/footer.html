@@ -1,7 +1,9 @@
 {{ define "partial-request-field-footer" }}
 <footer class="pt-4">
   <section class="flex justify-end gap-2">
+    <!-- prettier-ignore -->
     {{ if and .ViewedByReviewer .StatusIsInReview }}
+    {{ if not .ChangeRequest }}
     <button
       type="button"
       class="button-outline"
@@ -10,6 +12,7 @@
     >
       Request Change
     </button>
+    {{ end }}
 
     <button
       type="button"
@@ -38,6 +41,9 @@
     {{ end }}
   </section>
 
+  <!-- prettier-ignore -->
+  {{ if not .ChangeRequest }}
   {{ template "partial-request-change-request-form" . }}
+  {{ end }}
 </footer>
 {{ end }}
