@@ -201,19 +201,32 @@ type Request struct {
 	VID       int32
 }
 
-type RequestComment struct {
+type RequestChangeRequest struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt time.Time
 	Text      string
 	Field     string
 	RID       int64
 	PID       int64
-	CID       int64
 	ID        int64
-	VID       int32
-	Deleted   bool
-	Resolved  bool
+	Old       bool
+}
+
+type RequestComment struct {
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	DeletedAt        time.Time
+	Text             string
+	Field            string
+	RID              int64
+	PID              int64
+	CID              int64
+	ID               int64
+	VID              int32
+	Deleted          bool
+	Resolved         bool
+	ResolvedReviewer bool
+	ResolvedPlayer   bool
 }
 
 type RequestCommentHistory struct {
