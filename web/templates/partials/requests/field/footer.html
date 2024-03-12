@@ -5,10 +5,10 @@
     <button
       type="button"
       class="button-outline"
-      @click.prevent="commentOpen = true;"
-      x-show="!commentOpen"
+      @click.prevent="changeRequestOpen = true;"
+      x-show="!changeRequestOpen"
     >
-      Comment
+      Request Change
     </button>
 
     <button
@@ -38,6 +38,6 @@
     {{ end }}
   </section>
 
-  {{ template "partial-request-comment-form" . }}
+  {{ template "partial-request-change-request-form" . }}
 </footer>
 {{ end }}

@@ -1,0 +1,48 @@
+{{ define "partial-request-change-request-form" }}
+<form
+  @submit.prevent="
+    text = '';
+    changeRequestOpen = false;
+  "
+  hx-post="{{ .ChangeRequestPath }}"
+  hx-swap="outerHTML"
+  hx-target="#request-change-request"
+  x-cloak
+  x-show="changeRequestOpen"
+  class="space-y-2 pt-4"
+>
+  <label
+    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+    for="request-change-request"
+  >
+    Change Request
+  </label>
+  <textarea
+    id="request-change-request"
+    class="flex min-h-[3rem] w-full rounded-md border border-input bg-bg px-3 py-2 text-sm ring-offset-bg placeholder:text-muted-fg focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    x-model="text"
+    @input="
+      text = sanitizeRequestChangeRequest(event.target.value);
+    "
+    placeholder=""
+    name="text"
+    autofocus
+  ></textarea>
+  <footer class="flex items-center justify-end gap-2">
+    <button
+      type="button"
+      class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-bg transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      @click.prevent="changeRequestOpen = false;"
+    >
+      Close
+    </button>
+    <button
+      type="submit"
+      class="button-primary"
+      :disabled="!isRequestChangeRequestValid(text)"
+    >
+      Submit
+    </button>
+  </footer>
+</form>
+{{ end }}

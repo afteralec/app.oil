@@ -123,6 +123,11 @@ export function sanitizeRequestComment(c = "") {
   return c.replace(regex, "");
 }
 
+export function sanitizeRequestChangeRequest(c = "") {
+  const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
+  return c.replace(regex, "");
+}
+
 export function sanitizeActorImageName(u) {
   return u.replace(/[^a-z-]+/gi, "").toLowerCase();
 }
@@ -182,6 +187,15 @@ export function isCharacterBackstoryValid(bs) {
 export function isRequestCommentValid(c = "") {
   if (c.length < 1) return false;
   if (c.length > 500) return false;
+  const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
+  if (regex.test(c)) return false;
+  return true;
+}
+
+// TODO: Test
+export function isRequestChangeRequestValid(c = "") {
+  if (c.length < 1) return false;
+  if (c.length > 1000) return false;
   const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
   if (regex.test(c)) return false;
   return true;
@@ -418,12 +432,16 @@ export function getRequestData() {
     comment: "",
     sanitizeRequestComment,
     isRequestCommentValid,
+    sanitizeRequestChangeRequest,
+    isRequestChangeRequestValid,
     showSubmitDialog: false,
     showCancelDialog: false,
     showPutInReviewDialog: false,
     partsOpen: false,
     actionsOpen: false,
     commentOpen: false,
+    changeRequestOpen: false,
+    text: "",
   };
 }
 
