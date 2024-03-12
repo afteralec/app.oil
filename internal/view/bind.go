@@ -169,7 +169,7 @@ func accountMenu(c *fiber.Ctx) fiber.Map {
 			{
 				"Items": []fiber.Map{
 					{
-						"Label":  "Logout",
+						"Label":  "Log Out",
 						"Path":   route.Logout,
 						"Action": true,
 					},
