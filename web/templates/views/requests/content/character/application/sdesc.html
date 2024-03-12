@@ -2,6 +2,8 @@
 {{ define "view-request-character-application-sdesc" }}
 {{ template "partial-request-character-application-sdesc-help" . }}
 {{ template "partial-request-divider" . }}
+<section id="change-request"></section>
+<!-- prettier-ignore -->
 {{ if and .ViewedByPlayer (or .StatusIsReady .StatusIsIncomplete) }}
   {{ template "partial-requests-character-application-sdesc-form" . }}
 {{ else }}

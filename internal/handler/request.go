@@ -3,11 +3,13 @@ package handler
 import (
 	"context"
 	"database/sql"
+	"html/template"
 	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
 	"petrichormud.com/app/internal/layout"
+	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
@@ -876,7 +878,7 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		_, err = qtx.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
+		change, err := qtx.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
 			RID:   rid,
 			Field: field,
 		})
@@ -890,8 +892,16 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		// TODO: HTML return
-		return nil
+		b := fiber.Map{
+			"NoticeSectionID": "change-request",
+			"SectionClass":    "py-2",
+			"NoticeText": []template.HTML{
+				template.HTML("<span class=\"font-semibold\">Change Requested:</span>"),
+				template.HTML(change.Text),
+			},
+		}
+
+		return c.Render(partial.NoticeSectionWarn, b, layout.None)
 	}
 }
 

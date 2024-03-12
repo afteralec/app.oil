@@ -199,6 +199,11 @@ func DeleteTestCharacterApplication(t *testing.T, i *service.Interfaces, rid int
 	if err != nil && err != sql.ErrNoRows {
 		t.Fatal(err)
 	}
+
+	_, err = i.Database.Exec("DELETE FROM request_change_requests WHERE rid = ?;", rid)
+	if err != nil && err != sql.ErrNoRows {
+		t.Fatal(err)
+	}
 }
 
 func DeleteTestRequest(t *testing.T, i *service.Interfaces, rid int64) {
