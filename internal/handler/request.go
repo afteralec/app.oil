@@ -7,6 +7,7 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 
+	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/player"
@@ -392,7 +393,10 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			if openChange {
 				b["ActionButtonText"] = "Next"
 				// TODO: Use a Bind for this
-				b["ChangeRequest"] = change
+				b["ChangeRequest"] = fiber.Map{
+					"Text": change.Text,
+					"Path": route.RequestChangeRequestPath(change.ID),
+				}
 			} else {
 				b["ActionButtonText"] = "Approve"
 			}
@@ -990,6 +994,7 @@ func DeleteRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		c.Append(header.HXRefresh, "true")
 		return nil
 	}
 }
