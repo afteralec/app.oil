@@ -22,16 +22,16 @@ func (q *Queries) CountCurrentRequestChangeRequestForRequest(ctx context.Context
 }
 
 const countCurrentRequestChangeRequestForRequestField = `-- name: CountCurrentRequestChangeRequestForRequestField :one
-SELECT COUNT(*) FROM request_change_requests WHERE rid = ? AND field = ? AND old = false
+SELECT COUNT(*) FROM request_change_requests WHERE field = ? AND rid = ? AND old = false
 `
 
 type CountCurrentRequestChangeRequestForRequestFieldParams struct {
-	RID   int64
 	Field string
+	RID   int64
 }
 
 func (q *Queries) CountCurrentRequestChangeRequestForRequestField(ctx context.Context, arg CountCurrentRequestChangeRequestForRequestFieldParams) (int64, error) {
-	row := q.queryRow(ctx, q.countCurrentRequestChangeRequestForRequestFieldStmt, countCurrentRequestChangeRequestForRequestField, arg.RID, arg.Field)
+	row := q.queryRow(ctx, q.countCurrentRequestChangeRequestForRequestFieldStmt, countCurrentRequestChangeRequestForRequestField, arg.Field, arg.RID)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -170,23 +170,32 @@ func (q *Queries) CreateRequest(ctx context.Context, arg CreateRequestParams) (s
 }
 
 const createRequestChangeRequest = `-- name: CreateRequestChangeRequest :exec
-INSERT INTO request_change_requests (rid, field, pid, text) VALUES (?, ?, ?, ?)
+INSERT INTO request_change_requests (field, text, rid, pid) VALUES (?, ?, ?, ?)
 `
 
 type CreateRequestChangeRequestParams struct {
-	RID   int64
 	Field string
-	PID   int64
 	Text  string
+	RID   int64
+	PID   int64
 }
 
 func (q *Queries) CreateRequestChangeRequest(ctx context.Context, arg CreateRequestChangeRequestParams) error {
 	_, err := q.exec(ctx, q.createRequestChangeRequestStmt, createRequestChangeRequest,
-		arg.RID,
 		arg.Field,
-		arg.PID,
 		arg.Text,
+		arg.RID,
+		arg.PID,
 	)
+	return err
+}
+
+const deleteRequestChangeRequest = `-- name: DeleteRequestChangeRequest :exec
+DELETE FROM request_change_requests WHERE id = ?
+`
+
+func (q *Queries) DeleteRequestChangeRequest(ctx context.Context, id int64) error {
+	_, err := q.exec(ctx, q.deleteRequestChangeRequestStmt, deleteRequestChangeRequest, id)
 	return err
 }
 
@@ -297,16 +306,16 @@ func (q *Queries) GetCharacterApplicationContentReviewForRequest(ctx context.Con
 }
 
 const getCurrentRequestChangeRequestForRequestField = `-- name: GetCurrentRequestChangeRequestForRequestField :one
-SELECT created_at, updated_at, text, field, rid, pid, id, old FROM request_change_requests WHERE rid = ? AND field = ? AND old = false
+SELECT created_at, updated_at, text, field, rid, pid, id, old FROM request_change_requests WHERE field = ? AND rid = ? AND old = false
 `
 
 type GetCurrentRequestChangeRequestForRequestFieldParams struct {
-	RID   int64
 	Field string
+	RID   int64
 }
 
 func (q *Queries) GetCurrentRequestChangeRequestForRequestField(ctx context.Context, arg GetCurrentRequestChangeRequestForRequestFieldParams) (RequestChangeRequest, error) {
-	row := q.queryRow(ctx, q.getCurrentRequestChangeRequestForRequestFieldStmt, getCurrentRequestChangeRequestForRequestField, arg.RID, arg.Field)
+	row := q.queryRow(ctx, q.getCurrentRequestChangeRequestForRequestFieldStmt, getCurrentRequestChangeRequestForRequestField, arg.Field, arg.RID)
 	var i RequestChangeRequest
 	err := row.Scan(
 		&i.CreatedAt,
@@ -337,6 +346,26 @@ func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
 		&i.PID,
 		&i.ID,
 		&i.VID,
+	)
+	return i, err
+}
+
+const getRequestChangeRequest = `-- name: GetRequestChangeRequest :one
+SELECT created_at, updated_at, text, field, rid, pid, id, old FROM request_change_requests WHERE id = ?
+`
+
+func (q *Queries) GetRequestChangeRequest(ctx context.Context, id int64) (RequestChangeRequest, error) {
+	row := q.queryRow(ctx, q.getRequestChangeRequestStmt, getRequestChangeRequest, id)
+	var i RequestChangeRequest
+	err := row.Scan(
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Text,
+		&i.Field,
+		&i.RID,
+		&i.PID,
+		&i.ID,
+		&i.Old,
 	)
 	return i, err
 }

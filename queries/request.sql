@@ -32,16 +32,22 @@ UPDATE requests SET status = ? WHERE id = ?;
 UPDATE requests SET rpid = ? WHERE id = ?;
 
 -- name: CreateRequestChangeRequest :exec
-INSERT INTO request_change_requests (rid, field, pid, text) VALUES (?, ?, ?, ?);
+INSERT INTO request_change_requests (field, text, rid, pid) VALUES (?, ?, ?, ?);
+
+-- name: GetRequestChangeRequest :one
+SELECT * FROM request_change_requests WHERE id = ?;
+
+-- name: DeleteRequestChangeRequest :exec
+DELETE FROM request_change_requests WHERE id = ?;
 
 -- name: GetCurrentRequestChangeRequestForRequestField :one
-SELECT * FROM request_change_requests WHERE rid = ? AND field = ? AND old = false;
+SELECT * FROM request_change_requests WHERE field = ? AND rid = ? AND old = false;
 
 -- name: CountCurrentRequestChangeRequestForRequest :one
 SELECT COUNT(*) FROM request_change_requests WHERE rid = ? AND old = false;
 
 -- name: CountCurrentRequestChangeRequestForRequestField :one
-SELECT COUNT(*) FROM request_change_requests WHERE rid = ? AND field = ? AND old = false;
+SELECT COUNT(*) FROM request_change_requests WHERE field = ? AND rid = ? AND old = false;
 
 -- name: CreateCharacterApplicationContent :exec
 INSERT INTO

@@ -1070,7 +1070,7 @@ func TestCreateRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1115,7 +1115,7 @@ func TestCreateRequestChangeRequestBadRequestMissingBody(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -1155,7 +1155,7 @@ func TestCreateRequestChangeRequestBadRequestInvalidText(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1201,7 +1201,7 @@ func TestCreateRequestChangeRequestBadRequestInvalidField(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	url := MakeTestURL(route.RequestChangeRequestPath(rid, "notafield"))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, "notafield"))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1247,7 +1247,7 @@ func TestCreateRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	url := MakeTestURL(route.RequestChangeRequestPath(rid+1000, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid+1000, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1285,7 +1285,7 @@ func TestCreateRequestChangeRequestForbiddenNotInReview(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1337,7 +1337,7 @@ func TestCreateRequestChangeRequestForbiddenNotReviewer(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1387,7 +1387,7 @@ func TestCreateRequestChangeRequestForbiddenNoPermission(t *testing.T) {
 	writer.WriteField("text", "This name is fantastic.")
 	writer.Close()
 
-	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.AddCookie(sessionCookie)
@@ -1433,10 +1433,209 @@ func TestCreateRequestChangeRequestSuccess(t *testing.T) {
 	writer.WriteField("text", "This name is fantastic.")
 	writer.Close()
 
-	url := MakeTestURL(route.RequestChangeRequestPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestDeleteRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
+
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(t)
+	}
+
+	id := CreateTestRequestChangeRequest(CreateTestRequestChangeRequestParams{
+		T:        t,
+		I:        &i,
+		A:        a,
+		Username: TestUsernameTwo,
+		Password: TestPassword,
+		Field:    request.FieldCharacterApplicationName.Name,
+		RID:      rid,
+	})
+
+	url := MakeTestURL(route.RequestChangeRequestPath(id))
+
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestDeleteRequestChangeRequestNotFoundNoChangeRequest(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(t)
+	}
+
+	id := CreateTestRequestChangeRequest(CreateTestRequestChangeRequestParams{
+		T:        t,
+		I:        &i,
+		A:        a,
+		Username: TestUsernameTwo,
+		Password: TestPassword,
+		Field:    request.FieldCharacterApplicationName.Name,
+		RID:      rid,
+	})
+
+	url := MakeTestURL(route.RequestChangeRequestPath(id + 1000))
+
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestDeleteRequestChangeRequestNotFoundNoRequest(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(t)
+	}
+
+	id := CreateTestRequestChangeRequest(CreateTestRequestChangeRequestParams{
+		T:        t,
+		I:        &i,
+		A:        a,
+		Username: TestUsernameTwo,
+		Password: TestPassword,
+		Field:    request.FieldCharacterApplicationName.Name,
+		RID:      rid,
+	})
+
+	url := MakeTestURL(route.RequestChangeRequestPath(id + 1000))
+
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestDeleteRequestChangeRequestSuccess(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permissionID)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(t)
+	}
+
+	id := CreateTestRequestChangeRequest(CreateTestRequestChangeRequestParams{
+		T:        t,
+		I:        &i,
+		A:        a,
+		Username: TestUsernameTwo,
+		Password: TestPassword,
+		Field:    request.FieldCharacterApplicationName.Name,
+		RID:      rid,
+	})
+
+	url := MakeTestURL(route.RequestChangeRequestPath(id))
+
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
 	req.AddCookie(sessionCookie)
 
 	res, err := a.Test(req)

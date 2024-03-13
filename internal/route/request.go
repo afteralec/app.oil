@@ -6,15 +6,16 @@ import (
 )
 
 const (
-	Requests                      = "/requests"
-	RequestPathParam              = "/requests/:id"
-	RequestFieldPathParam         = "/requests/:id/:field"
-	RequestFieldStatusPathParam   = "/requests/:id/:field/status"
-	RequestChangeRequestPathParam = "/requests/:id/:field/change"
-	RequestStatusPathParam        = "/requests/:id/status"
+	Requests                           = "/requests"
+	RequestPathParam                   = "/requests/:id"
+	RequestFieldPathParam              = "/requests/:id/:field"
+	RequestFieldStatusPathParam        = "/requests/:id/:field/status"
+	RequestChangeRequestPathParam      = "/requests/changes/:id"
+	RequestChangeRequestFieldPathParam = "/requests/:id/:field/changes"
+	RequestStatusPathParam             = "/requests/:id/status"
 )
 
-const CreateRequestCommentPathParam string = "/request/:id/comment/:field"
+const ChangeRequests = "changes"
 
 func RequestPath(id int64) string {
 	var b strings.Builder
@@ -34,9 +35,15 @@ func RequestFieldStatusPath(id int64, field string) string {
 	return b.String()
 }
 
-func RequestChangeRequestPath(id int64, field string) string {
+func RequestChangeRequestPath(id int64) string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "%s/%d/%s/change", Requests, id, field)
+	fmt.Fprintf(&b, "%s/%s/%d", Requests, ChangeRequests, id)
+	return b.String()
+}
+
+func RequestChangeRequestFieldPath(id int64, field string) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "%s/%d/%s/%s", Requests, id, field, ChangeRequests)
 	return b.String()
 }
 
@@ -44,8 +51,4 @@ func RequestStatusPath(id int64) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "%s/%d/status", Requests, id)
 	return b.String()
-}
-
-func CreateRequestCommentPath(rid int64, field string) string {
-	return fmt.Sprintf("/request/%d/comment/%s", rid, field)
 }

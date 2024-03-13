@@ -22,7 +22,6 @@ func NewRequest(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Type string `form:"type"`
 	}
-
 	return func(c *fiber.Ctx) error {
 		in := new(input)
 		if err := c.BodyParser(in); err != nil {
@@ -387,7 +386,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				Name:    "value",
 			})
 
-			b["ChangeRequestPath"] = route.RequestChangeRequestPath(req.ID, field)
+			b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(req.ID, field)
 			b["ActionButtonPath"] = route.RequestFieldStatusPath(rid, field)
 
 			if openChange {
@@ -898,6 +897,100 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 		}
 
 		return c.Render(partial.RequestChangeRequest, b, layout.None)
+	}
+}
+
+func DeleteRequestChangeRequest(i *service.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		pid, err := util.GetPID(c)
+		if err != nil {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		// TODO: Bind this so the permission check is the same as the permission required to create change requests
+		// TODO: Or make this more granular
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		if !perms.HasPermission(player.PermissionReviewCharacterApplications.Name) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		id, err := util.GetID(c)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		change, err := qtx.GetRequestChangeRequest(context.Background(), id)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if change.Old {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		req, err := qtx.GetRequest(context.Background(), change.RID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if !request.IsFieldNameValid(req.Type, change.Field) {
+			// TODO: This is a catastrophic failure and needs a recovery path
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if change.PID != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if req.Status != request.StatusInReview {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if req.RPID != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if err = qtx.DeleteRequestChangeRequest(context.Background(), change.ID); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		return nil
 	}
 }
 

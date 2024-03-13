@@ -132,6 +132,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.deletePlayerPermissionStmt, err = db.PrepareContext(ctx, deletePlayerPermission); err != nil {
 		return nil, fmt.Errorf("error preparing query DeletePlayerPermission: %w", err)
 	}
+	if q.deleteRequestChangeRequestStmt, err = db.PrepareContext(ctx, deleteRequestChangeRequest); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteRequestChangeRequest: %w", err)
+	}
 	if q.getActorImageStmt, err = db.PrepareContext(ctx, getActorImage); err != nil {
 		return nil, fmt.Errorf("error preparing query GetActorImage: %w", err)
 	}
@@ -191,6 +194,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getRequestStmt, err = db.PrepareContext(ctx, getRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRequest: %w", err)
+	}
+	if q.getRequestChangeRequestStmt, err = db.PrepareContext(ctx, getRequestChangeRequest); err != nil {
+		return nil, fmt.Errorf("error preparing query GetRequestChangeRequest: %w", err)
 	}
 	if q.getRoomStmt, err = db.PrepareContext(ctx, getRoom); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRoom: %w", err)
@@ -545,6 +551,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing deletePlayerPermissionStmt: %w", cerr)
 		}
 	}
+	if q.deleteRequestChangeRequestStmt != nil {
+		if cerr := q.deleteRequestChangeRequestStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteRequestChangeRequestStmt: %w", cerr)
+		}
+	}
 	if q.getActorImageStmt != nil {
 		if cerr := q.getActorImageStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getActorImageStmt: %w", cerr)
@@ -643,6 +654,11 @@ func (q *Queries) Close() error {
 	if q.getRequestStmt != nil {
 		if cerr := q.getRequestStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getRequestStmt: %w", cerr)
+		}
+	}
+	if q.getRequestChangeRequestStmt != nil {
+		if cerr := q.getRequestChangeRequestStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getRequestChangeRequestStmt: %w", cerr)
 		}
 	}
 	if q.getRoomStmt != nil {
@@ -1000,6 +1016,7 @@ type Queries struct {
 	deleteActorImagePrimaryHandStmt                             *sql.Stmt
 	deleteEmailStmt                                             *sql.Stmt
 	deletePlayerPermissionStmt                                  *sql.Stmt
+	deleteRequestChangeRequestStmt                              *sql.Stmt
 	getActorImageStmt                                           *sql.Stmt
 	getActorImageByNameStmt                                     *sql.Stmt
 	getActorImageContainerPropertiesStmt                        *sql.Stmt
@@ -1020,6 +1037,7 @@ type Queries struct {
 	getPlayerUsernameStmt                                       *sql.Stmt
 	getPlayerUsernameByIdStmt                                   *sql.Stmt
 	getRequestStmt                                              *sql.Stmt
+	getRequestChangeRequestStmt                                 *sql.Stmt
 	getRoomStmt                                                 *sql.Stmt
 	getTagsForHelpFileStmt                                      *sql.Stmt
 	getVerifiedEmailByAddressStmt                               *sql.Stmt
@@ -1118,6 +1136,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		deleteActorImagePrimaryHandStmt:                             q.deleteActorImagePrimaryHandStmt,
 		deleteEmailStmt:                                             q.deleteEmailStmt,
 		deletePlayerPermissionStmt:                                  q.deletePlayerPermissionStmt,
+		deleteRequestChangeRequestStmt:                              q.deleteRequestChangeRequestStmt,
 		getActorImageStmt:                                           q.getActorImageStmt,
 		getActorImageByNameStmt:                                     q.getActorImageByNameStmt,
 		getActorImageContainerPropertiesStmt:                        q.getActorImageContainerPropertiesStmt,
@@ -1138,6 +1157,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getPlayerUsernameStmt:                                       q.getPlayerUsernameStmt,
 		getPlayerUsernameByIdStmt:                                   q.getPlayerUsernameByIdStmt,
 		getRequestStmt:                                              q.getRequestStmt,
+		getRequestChangeRequestStmt:                                 q.getRequestChangeRequestStmt,
 		getRoomStmt:                                                 q.getRoomStmt,
 		getTagsForHelpFileStmt:                                      q.getTagsForHelpFileStmt,
 		getVerifiedEmailByAddressStmt:                               q.getVerifiedEmailByAddressStmt,

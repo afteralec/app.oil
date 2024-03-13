@@ -228,7 +228,7 @@ func DeleteTestRequest(t *testing.T, i *service.Interfaces, rid int64) {
 	}
 }
 
-type CreateTestRequestCommentParams struct {
+type CreateTestRequestChangeRequestParams struct {
 	T        *testing.T
 	I        *service.Interfaces
 	A        *fiber.App
@@ -238,24 +238,34 @@ type CreateTestRequestCommentParams struct {
 	RID      int64
 }
 
-func CreateTestRequestComment(params CreateTestRequestCommentParams) {
-	sessionCookie := LoginTestPlayer(params.T, params.A, params.Username, params.Password)
+func CreateTestRequestChangeRequest(p CreateTestRequestChangeRequestParams) int64 {
+	sessionCookie := LoginTestPlayer(p.T, p.A, p.Username, p.Password)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField("comment", "This is a test comment, for sure.")
+	writer.WriteField("text", "This is a test change request, for sure.")
 	writer.Close()
 
-	url := MakeTestURL(route.CreateRequestCommentPath(params.RID, params.Field))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(p.RID, p.Field))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
-	_, err := params.A.Test(req)
+	_, err := p.A.Test(req)
 	if err != nil {
-		params.T.Fatal(err)
+		p.T.Fatal(err)
 	}
+
+	change, err := p.I.Queries.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
+		RID:   p.RID,
+		Field: p.Field,
+	})
+	if err != nil {
+		p.T.Fatal(err)
+	}
+
+	return change.ID
 }
 
 func FlushTestRedis(t *testing.T, i *service.Interfaces) {
