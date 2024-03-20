@@ -1,14 +1,14 @@
-{{ define "partial-request-change-request-form" }}
+{{ define "partial-request-change-request-form-create" }}
 <form
+  class="space-y-2 pt-4"
+  hx-post="{{ .ChangeRequestPath }}"
+  hx-swap="none"
   @submit.prevent="
     text = '';
     changeRequestOpen = false;
   "
-  hx-post="{{ .ChangeRequestPath }}"
-  hx-swap="none"
   x-cloak
   x-show="changeRequestOpen"
-  class="space-y-2 pt-4"
 >
   <label
     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

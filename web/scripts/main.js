@@ -427,8 +427,9 @@ export function getCharacterApplicationSummaryData() {
   };
 }
 
-export function getRequestData() {
+export function getRequestData(text = "") {
   return {
+    // TODO: Remove comment fields
     comment: "",
     sanitizeRequestComment,
     isRequestCommentValid,
@@ -441,7 +442,7 @@ export function getRequestData() {
     actionsOpen: false,
     commentOpen: false,
     changeRequestOpen: false,
-    text: "",
+    text,
   };
 }
 

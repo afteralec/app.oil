@@ -42,8 +42,10 @@
   </section>
 
   <!-- prettier-ignore -->
-  {{ if not .ChangeRequest }}
-  {{ template "partial-request-change-request-form" . }}
+  {{ if .ChangeRequest }}
+    {{ template "partial-request-change-request-form-edit" . }}
+  {{ else }}
+    {{ template "partial-request-change-request-form-create" . }}
   {{ end }}
 </footer>
 {{ end }}
