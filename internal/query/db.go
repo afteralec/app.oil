@@ -135,6 +135,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.deleteRequestChangeRequestStmt, err = db.PrepareContext(ctx, deleteRequestChangeRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteRequestChangeRequest: %w", err)
 	}
+	if q.editRequestChangeRequestStmt, err = db.PrepareContext(ctx, editRequestChangeRequest); err != nil {
+		return nil, fmt.Errorf("error preparing query EditRequestChangeRequest: %w", err)
+	}
 	if q.getActorImageStmt, err = db.PrepareContext(ctx, getActorImage); err != nil {
 		return nil, fmt.Errorf("error preparing query GetActorImage: %w", err)
 	}
@@ -554,6 +557,11 @@ func (q *Queries) Close() error {
 	if q.deleteRequestChangeRequestStmt != nil {
 		if cerr := q.deleteRequestChangeRequestStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteRequestChangeRequestStmt: %w", cerr)
+		}
+	}
+	if q.editRequestChangeRequestStmt != nil {
+		if cerr := q.editRequestChangeRequestStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing editRequestChangeRequestStmt: %w", cerr)
 		}
 	}
 	if q.getActorImageStmt != nil {
@@ -1017,6 +1025,7 @@ type Queries struct {
 	deleteEmailStmt                                             *sql.Stmt
 	deletePlayerPermissionStmt                                  *sql.Stmt
 	deleteRequestChangeRequestStmt                              *sql.Stmt
+	editRequestChangeRequestStmt                                *sql.Stmt
 	getActorImageStmt                                           *sql.Stmt
 	getActorImageByNameStmt                                     *sql.Stmt
 	getActorImageContainerPropertiesStmt                        *sql.Stmt
@@ -1137,6 +1146,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		deleteEmailStmt:                                             q.deleteEmailStmt,
 		deletePlayerPermissionStmt:                                  q.deletePlayerPermissionStmt,
 		deleteRequestChangeRequestStmt:                              q.deleteRequestChangeRequestStmt,
+		editRequestChangeRequestStmt:                                q.editRequestChangeRequestStmt,
 		getActorImageStmt:                                           q.getActorImageStmt,
 		getActorImageByNameStmt:                                     q.getActorImageByNameStmt,
 		getActorImageContainerPropertiesStmt:                        q.getActorImageContainerPropertiesStmt,

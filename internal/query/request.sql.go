@@ -199,6 +199,20 @@ func (q *Queries) DeleteRequestChangeRequest(ctx context.Context, id int64) erro
 	return err
 }
 
+const editRequestChangeRequest = `-- name: EditRequestChangeRequest :exec
+UPDATE request_change_requests SET text = ? WHERE id = ?
+`
+
+type EditRequestChangeRequestParams struct {
+	Text string
+	ID   int64
+}
+
+func (q *Queries) EditRequestChangeRequest(ctx context.Context, arg EditRequestChangeRequestParams) error {
+	_, err := q.exec(ctx, q.editRequestChangeRequestStmt, editRequestChangeRequest, arg.Text, arg.ID)
+	return err
+}
+
 const getCharacterApplication = `-- name: GetCharacterApplication :one
 SELECT
   character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id, requests.vid

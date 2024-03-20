@@ -1645,3 +1645,342 @@ func TestDeleteRequestChangeRequestSuccess(t *testing.T) {
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
+
+func TestEditRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
+
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(t)
+	}
+
+	id := CreateTestRequestChangeRequest(CreateTestRequestChangeRequestParams{
+		T:        t,
+		I:        &i,
+		A:        a,
+		Username: TestUsernameTwo,
+		Password: TestPassword,
+		Field:    request.FieldCharacterApplicationName.Name,
+		RID:      rid,
+	})
+
+	url := MakeTestURL(route.RequestChangeRequestPath(id))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("text", "This name is not fantastic.")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestEditRequestChangeRequestBadRequestMissingBody(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(t)
+	}
+
+	id := CreateTestRequestChangeRequest(CreateTestRequestChangeRequestParams{
+		T:        t,
+		I:        &i,
+		A:        a,
+		Username: TestUsernameTwo,
+		Password: TestPassword,
+		Field:    request.FieldCharacterApplicationName.Name,
+		RID:      rid,
+	})
+
+	url := MakeTestURL(route.RequestChangeRequestPath(id + 1000))
+
+	req := httptest.NewRequest(http.MethodPut, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestEditRequestChangeRequestBadRequestInvalidText(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(t)
+	}
+
+	id := CreateTestRequestChangeRequest(CreateTestRequestChangeRequestParams{
+		T:        t,
+		I:        &i,
+		A:        a,
+		Username: TestUsernameTwo,
+		Password: TestPassword,
+		Field:    request.FieldCharacterApplicationName.Name,
+		RID:      rid,
+	})
+
+	url := MakeTestURL(route.RequestChangeRequestPath(id + 1000))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("text", "tooshort")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestEditRequestChangeRequestNotFoundNoChangeRequest(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(t)
+	}
+
+	id := CreateTestRequestChangeRequest(CreateTestRequestChangeRequestParams{
+		T:        t,
+		I:        &i,
+		A:        a,
+		Username: TestUsernameTwo,
+		Password: TestPassword,
+		Field:    request.FieldCharacterApplicationName.Name,
+		RID:      rid,
+	})
+
+	url := MakeTestURL(route.RequestChangeRequestPath(id + 1000))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("text", "This name is not fantastic.")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestEditRequestChangeRequestNotFoundNoRequest(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permissionId)
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(t)
+	}
+
+	id := CreateTestRequestChangeRequest(CreateTestRequestChangeRequestParams{
+		T:        t,
+		I:        &i,
+		A:        a,
+		Username: TestUsernameTwo,
+		Password: TestPassword,
+		Field:    request.FieldCharacterApplicationName.Name,
+		RID:      rid,
+	})
+
+	url := MakeTestURL(route.RequestChangeRequestPath(id + 1000))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("text", "This name is not fantastic.")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusNotFound, res.StatusCode)
+}
+
+func TestEditRequestChangeRequestSuccess(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber())
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestCharacterApplication(t, &i, rid)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permissionID := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permissionID)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(t)
+	}
+
+	id := CreateTestRequestChangeRequest(CreateTestRequestChangeRequestParams{
+		T:        t,
+		I:        &i,
+		A:        a,
+		Username: TestUsernameTwo,
+		Password: TestPassword,
+		Field:    request.FieldCharacterApplicationName.Name,
+		RID:      rid,
+	})
+
+	url := MakeTestURL(route.RequestChangeRequestPath(id))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("text", "This name is not fantastic.")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPut, url, body)
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+
+	change, err := i.Queries.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
+		RID:   rid,
+		Field: request.FieldCharacterApplicationName.Name,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, change.Text, "This name is not fantastic.")
+}

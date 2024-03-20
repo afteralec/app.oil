@@ -40,6 +40,9 @@ SELECT * FROM request_change_requests WHERE id = ?;
 -- name: DeleteRequestChangeRequest :exec
 DELETE FROM request_change_requests WHERE id = ?;
 
+-- name: EditRequestChangeRequest :exec
+UPDATE request_change_requests SET text = ? WHERE id = ?;
+
 -- name: GetCurrentRequestChangeRequestForRequestField :one
 SELECT * FROM request_change_requests WHERE field = ? AND rid = ? AND old = false;
 

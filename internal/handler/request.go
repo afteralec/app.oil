@@ -987,6 +987,121 @@ func DeleteRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 	}
 }
 
+func EditRequestChangeRequest(i *service.Interfaces) fiber.Handler {
+	type input struct {
+		Text string
+	}
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		text := request.SanitizeChangeRequestText(in.Text)
+		if !request.IsChangeRequestTextValid(text) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		pid, err := util.GetPID(c)
+		if err != nil {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		// TODO: Bind this so the permission check is the same as the permission required to create change requests
+		// TODO: Or make this more granular
+		perms, err := util.GetPermissions(c)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		if !perms.HasPermission(player.PermissionReviewCharacterApplications.Name) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		id, err := util.GetID(c)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		change, err := qtx.GetRequestChangeRequest(context.Background(), id)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if change.Old {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		req, err := qtx.GetRequest(context.Background(), change.RID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if !request.IsFieldNameValid(req.Type, change.Field) {
+			// TODO: This is a catastrophic failure and needs a recovery path
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if change.PID != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if req.Status != request.StatusInReview {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if req.RPID != pid {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if err = qtx.EditRequestChangeRequest(context.Background(), query.EditRequestChangeRequestParams{
+			ID:   change.ID,
+			Text: text,
+		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		// TODO: Use something other than refresh here, either Boost or oob swaps
+
+		c.Append(header.HXRefresh, "true")
+		return nil
+	}
+}
+
 // TODO: Move this to the Actor file?
 func CharactersPage(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {

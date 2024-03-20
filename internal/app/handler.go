@@ -26,6 +26,7 @@ func Handlers(app *fiber.App, i *service.Interfaces) {
 
 	app.Post(route.RequestChangeRequestFieldPathParam, handler.CreateRequestChangeRequest(i))
 	app.Delete(route.RequestChangeRequestPathParam, handler.DeleteRequestChangeRequest(i))
+	app.Put(route.RequestChangeRequestPathParam, handler.EditRequestChangeRequest(i))
 
 	app.Post(route.Characters, handler.NewCharacterApplication(i))
 	app.Get(route.Characters, handler.CharactersPage(i))
