@@ -9,7 +9,6 @@ import (
 
 	"petrichormud.com/app/internal/header"
 	"petrichormud.com/app/internal/layout"
-	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
@@ -881,26 +880,15 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		change, err := qtx.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
-			RID:   rid,
-			Field: field,
-		})
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		// TODO: Create a Bind function for this
-		b := fiber.Map{
-			"Text": change.Text,
-		}
+		// TODO: Look into returning a Boost or specific components here
 
-		return c.Render(partial.RequestChangeRequest, b, layout.None)
+		c.Append(header.HXRefresh, "true")
+		return nil
 	}
 }
 
