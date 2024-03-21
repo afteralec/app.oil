@@ -212,16 +212,6 @@ func DeleteTestRequest(t *testing.T, i *service.Interfaces, rid int64) {
 		t.Fatal(err)
 	}
 
-	_, err = i.Database.Exec("DELETE FROM request_comments WHERE rid = ?;", rid)
-	if err != nil && err != sql.ErrNoRows {
-		t.Fatal(err)
-	}
-
-	_, err = i.Database.Exec("DELETE FROM request_comment_history WHERE rid = ?;", rid)
-	if err != nil && err != sql.ErrNoRows {
-		t.Fatal(err)
-	}
-
 	_, err = i.Database.Exec("DELETE FROM request_status_change_history WHERE rid = ?;", rid)
 	if err != nil && err != sql.ErrNoRows {
 		t.Fatal(err)

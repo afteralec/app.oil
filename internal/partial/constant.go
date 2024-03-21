@@ -57,11 +57,6 @@ const (
 )
 
 const (
-	RequestCommentList    string = "partial-request-comment-list"
-	RequestCommentCurrent string = "partial-request-comment-current"
-)
-
-const (
 	ResendVerificationEmailErrInternal        string = "partial-resend-verification-email-err-internal"
 	ResendVerificationEmailErrNotFound        string = "partial-resend-verification-email-err-not-found"
 	ResendVerificationEmailErrConflict        string = "partial-resend-verification-email-err-conflict"

@@ -279,14 +279,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			}
 		}
 
-		// TODO: Plan for the requests/:id handler (PLAYER)
-		// 1. If the request is Incomplete, drop them into the flow -
-		//    * Pull the first incomplete field and render that page
-		// 2. If the request is Ready with no unresolved comments, render the summary
-		// 3. If the request is Ready with unresolved comments, show the next field with an unresolved comment
-		// 4. If the request is Reviewed, show an intro page to the review, then all the changes required in one view
-		// 5. Player Accepts the Review > back to #3, show the fields with unresolved comments
-
 		content, err := request.Content(qtx, &req)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)

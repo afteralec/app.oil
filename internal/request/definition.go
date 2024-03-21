@@ -51,7 +51,6 @@ func (d *DefaultDefinition) UpdateField(q *query.Queries, p UpdateFieldParams) e
 		return err
 	}
 
-	// TODO: This needs to mark all current comments as irrelevant
 	if err := fields.UpdateStatus(q, UpdateFieldStatusParams{
 		FieldName: p.FieldName,
 		Request:   p.Request,

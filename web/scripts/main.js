@@ -118,11 +118,6 @@ export function sanitizeCharacterBackstory(bs) {
   return bs.replace(/[^a-zA-Z, '\-\.!()\r\n]+/gi, "");
 }
 
-export function sanitizeRequestComment(c = "") {
-  const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
-  return c.replace(regex, "");
-}
-
 export function sanitizeRequestChangeRequest(c = "") {
   const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
   return c.replace(regex, "");
@@ -180,15 +175,6 @@ export function isCharacterBackstoryValid(bs) {
   if (bs.length > 10000) return false;
   const regex = /[^a-zA-Z, '\-\.!()\r\n]+/gi;
   if (regex.test(bs)) return false;
-  return true;
-}
-
-// TODO: Test
-export function isRequestCommentValid(c = "") {
-  if (c.length < 1) return false;
-  if (c.length > 500) return false;
-  const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
-  if (regex.test(c)) return false;
   return true;
 }
 
@@ -359,7 +345,6 @@ export function getCharacterApplicationGenderData(gender) {
     showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
-    commentOpen: false,
   };
 }
 
@@ -377,7 +362,6 @@ export function getCharacterApplicationShortDescriptionData(sdesc) {
     showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
-    commentOpen: false,
   };
 }
 
@@ -395,7 +379,6 @@ export function getCharacterApplicationDescriptionData(description) {
     showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
-    commentOpen: false,
   };
 }
 
@@ -413,7 +396,6 @@ export function getCharacterApplicationBackstoryData(backstory) {
     showCancelDialog: false,
     partsOpen: false,
     actionsOpen: false,
-    commentOpen: false,
   };
 }
 
@@ -429,41 +411,13 @@ export function getCharacterApplicationSummaryData() {
 
 export function getRequestData(text = "") {
   return {
-    // TODO: Remove comment fields
-    comment: "",
-    sanitizeRequestComment,
-    isRequestCommentValid,
     sanitizeRequestChangeRequest,
     isRequestChangeRequestValid,
     showSubmitDialog: false,
     showCancelDialog: false,
     showPutInReviewDialog: false,
-    partsOpen: false,
-    actionsOpen: false,
-    commentOpen: false,
     changeRequestOpen: false,
     text,
-  };
-}
-
-export function getCharacterApplicationData() {
-  return {
-    comment: "",
-    sanitizeRequestComment,
-    isRequestCommentValid,
-    showSubmitDialog: false,
-    showCancelDialog: false,
-    partsOpen: false,
-    actionsOpen: false,
-    commentOpen: false,
-  };
-}
-
-export function getRequestCommentData(c = "") {
-  return {
-    comment: c,
-    editOpen: false,
-    showDeleteConfirm: false,
   };
 }
 
@@ -532,10 +486,8 @@ window.getCharacterApplicationBackstoryData =
 // TODO: I believe this function can be removed
 window.getCharacterApplicationSummaryData = getCharacterApplicationSummaryData;
 // TODO: I think this function can be removed
-window.getCharacterApplicationData = getCharacterApplicationData;
 window.getRequestData = getRequestData;
 window.getPlayerPermissionsData = getPlayerPermissionsData;
-window.getRequestCommentData = getRequestCommentData;
 window.getSearchHelpIndexData = getSearchHelpIndexData;
 window.sanitizeActorImageName = sanitizeActorImageName;
 window.isActorImageNameValid = isActorImageNameValid;

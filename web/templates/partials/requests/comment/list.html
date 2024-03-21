@@ -1,9 +1,0 @@
-<!-- prettier-ignore -->
-{{ define "partial-request-comment-list" }}
-<section id="comments" class="flex w-full max-w-lg flex-col gap-3 pt-4">
-  <!-- prettier-ignore -->
-  {{ range .Comments }}
-    {{ template "partial-request-comment-current" . }}
-  {{ end }}
-</section>
-{{ end }}

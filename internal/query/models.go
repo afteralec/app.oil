@@ -212,32 +212,6 @@ type RequestChangeRequest struct {
 	Old       bool
 }
 
-type RequestComment struct {
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
-	Text      string
-	Field     string
-	RID       int64
-	PID       int64
-	CID       int64
-	ID        int64
-	VID       int32
-	Deleted   bool
-	Resolved  bool
-}
-
-type RequestCommentHistory struct {
-	CreatedAt time.Time
-	Text      string
-	Field     string
-	RID       int64
-	PID       int64
-	CID       int64
-	ID        int64
-	VID       int32
-}
-
 type RequestStatusChangeHistory struct {
 	CreatedAt time.Time
 	Status    string
