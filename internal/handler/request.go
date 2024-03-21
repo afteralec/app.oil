@@ -187,6 +187,7 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 			}
 		}
 
+		// TODO: Make this just return the main view or redirect to the logic
 		if req.Status == request.StatusIncomplete {
 			return c.Redirect(route.RequestPath(rid))
 		}
@@ -375,10 +376,10 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 					change, ok := changeMap[summaryField.Name]
 					if ok {
 						summaryField.HasChangeRequest = true
-						summaryField.ChangeRequest = fiber.Map{
-							"Text": change.Text,
-							"Path": route.RequestChangeRequestPath(change.ID),
-						}
+						summaryField.ChangeRequest = request.BindChangeRequest(request.BindChangeRequestParams{
+							PID:           pid,
+							ChangeRequest: &change,
+						})
 					}
 
 					processedSummaryFields = append(processedSummaryFields, summaryField)
@@ -437,10 +438,10 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			if openChange {
 				b["ActionButtonText"] = "Next"
 				// TODO: Use a Bind for this
-				b["ChangeRequest"] = fiber.Map{
-					"Text": change.Text,
-					"Path": route.RequestChangeRequestPath(change.ID),
-				}
+				b["ChangeRequest"] = request.BindChangeRequest(request.BindChangeRequestParams{
+					PID:           pid,
+					ChangeRequest: &change,
+				})
 			} else {
 				b["ActionButtonText"] = "Approve"
 			}

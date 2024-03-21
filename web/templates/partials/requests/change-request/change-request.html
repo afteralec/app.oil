@@ -6,6 +6,7 @@
     <h3 class="font-semibold">Change Requested:</h3>
     <p>{{ .Text }}</p>
     <footer class="flex items-center justify-end gap-2 text-xs">
+      {{ if .ShowDeleteAction }}
       <button
         type="button"
         class="notice-link-warn flex cursor-pointer items-end justify-end gap-[0.5] align-bottom text-xs leading-[0.9]"
@@ -15,6 +16,10 @@
         <iconify-icon icon="fe:trash" height="12" width="12"></iconify-icon>
         Delete
       </button>
+      {{ end }}
+
+      <!-- prettier-ignore -->
+      {{ if .ShowEditAction }}
       <button
         type="button"
         class="notice-link-warn flex cursor-pointer items-end justify-end gap-[0.5] align-bottom text-xs leading-[0.9]"
@@ -23,6 +28,7 @@
         <iconify-icon icon="fe:pencil" height="12" width="12"></iconify-icon>
         Edit
       </button>
+      {{ end }}
     </footer>
   </div>
 </section>

@@ -6,6 +6,7 @@ import (
 	"petrichormud.com/app/internal/actor"
 	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/route"
 )
 
 type BindGenderRadioGroupParams struct {
@@ -57,6 +58,25 @@ type BindViewedByParams struct {
 func BindViewedBy(b fiber.Map, p BindViewedByParams) fiber.Map {
 	b["ViewedByPlayer"] = p.Request.PID == p.PID
 	b["ViewedByReviewer"] = p.Request.RPID == p.PID
+
+	return b
+}
+
+type BindChangeRequestParams struct {
+	ChangeRequest *query.RequestChangeRequest
+	PID           int64
+}
+
+func BindChangeRequest(p BindChangeRequestParams) fiber.Map {
+	b := fiber.Map{
+		"Text": p.ChangeRequest.Text,
+		"Path": route.RequestChangeRequestPath(p.ChangeRequest.ID),
+	}
+
+	if !p.ChangeRequest.Old && p.ChangeRequest.PID == p.PID {
+		b["ShowDeleteAction"] = true
+		b["ShowEditAction"] = true
+	}
 
 	return b
 }
