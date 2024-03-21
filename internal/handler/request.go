@@ -358,7 +358,33 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 					c.Status(fiber.StatusInternalServerError)
 					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 				}
-				b["SummaryFields"] = summaryFields
+
+				changes, err := qtx.ListCurrentRequestChangeRequestsForRequest(context.Background(), rid)
+				if err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return nil
+				}
+
+				changeMap := make(map[string]query.RequestChangeRequest)
+				for _, change := range changes {
+					changeMap[change.Field] = change
+				}
+
+				processedSummaryFields := []request.FieldForSummary{}
+				for _, summaryField := range summaryFields {
+					change, ok := changeMap[summaryField.Name]
+					if ok {
+						summaryField.HasChangeRequest = true
+						summaryField.ChangeRequest = fiber.Map{
+							"Text": change.Text,
+							"Path": route.RequestChangeRequestPath(change.ID),
+						}
+					}
+
+					processedSummaryFields = append(processedSummaryFields, summaryField)
+				}
+
+				b["SummaryFields"] = processedSummaryFields
 
 				return c.Render(view.RequestSummaryFields, b, layout.Page)
 			}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	fiber "github.com/gofiber/fiber/v2"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/validate"
 )
@@ -87,10 +88,13 @@ func (f *Field) UpdateStatus(q *query.Queries, p UpdateFieldStatusParams) error 
 }
 
 type FieldForSummary struct {
-	Label     string
-	Value     string
-	Path      string
-	AllowEdit bool
+	ChangeRequest    fiber.Map
+	Name             string
+	Label            string
+	Value            string
+	Path             string
+	AllowEdit        bool
+	HasChangeRequest bool
 }
 
 // TODO: Error output?
@@ -113,6 +117,7 @@ func (f *Field) ForSummary(p FieldsForSummaryParams) FieldForSummary {
 	}
 
 	return FieldForSummary{
+		Name:      f.Name,
 		Label:     f.Label,
 		Value:     v,
 		Path:      pathSB.String(),

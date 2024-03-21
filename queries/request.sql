@@ -46,6 +46,9 @@ UPDATE request_change_requests SET text = ? WHERE id = ?;
 -- name: GetCurrentRequestChangeRequestForRequestField :one
 SELECT * FROM request_change_requests WHERE field = ? AND rid = ? AND old = false;
 
+-- name: ListCurrentRequestChangeRequestsForRequest :many
+SELECT * FROM request_change_requests WHERE rid = ? AND old = false;
+
 -- name: CountCurrentRequestChangeRequestForRequest :one
 SELECT COUNT(*) FROM request_change_requests WHERE rid = ? AND old = false;
 

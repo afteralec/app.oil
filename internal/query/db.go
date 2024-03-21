@@ -237,6 +237,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listCharacterApplicationsForPlayerStmt, err = db.PrepareContext(ctx, listCharacterApplicationsForPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query ListCharacterApplicationsForPlayer: %w", err)
 	}
+	if q.listCurrentRequestChangeRequestsForRequestStmt, err = db.PrepareContext(ctx, listCurrentRequestChangeRequestsForRequest); err != nil {
+		return nil, fmt.Errorf("error preparing query ListCurrentRequestChangeRequestsForRequest: %w", err)
+	}
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
 	}
@@ -729,6 +732,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listCharacterApplicationsForPlayerStmt: %w", cerr)
 		}
 	}
+	if q.listCurrentRequestChangeRequestsForRequestStmt != nil {
+		if cerr := q.listCurrentRequestChangeRequestsForRequestStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listCurrentRequestChangeRequestsForRequestStmt: %w", cerr)
+		}
+	}
 	if q.listEmailsStmt != nil {
 		if cerr := q.listEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listEmailsStmt: %w", cerr)
@@ -1059,6 +1067,7 @@ type Queries struct {
 	listActorImagesPrimaryHandsStmt                             *sql.Stmt
 	listCharacterApplicationContentForPlayerStmt                *sql.Stmt
 	listCharacterApplicationsForPlayerStmt                      *sql.Stmt
+	listCurrentRequestChangeRequestsForRequestStmt              *sql.Stmt
 	listEmailsStmt                                              *sql.Stmt
 	listHelpHeadersStmt                                         *sql.Stmt
 	listHelpSlugsStmt                                           *sql.Stmt
@@ -1180,6 +1189,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listActorImagesPrimaryHandsStmt:                             q.listActorImagesPrimaryHandsStmt,
 		listCharacterApplicationContentForPlayerStmt:                q.listCharacterApplicationContentForPlayerStmt,
 		listCharacterApplicationsForPlayerStmt:                      q.listCharacterApplicationsForPlayerStmt,
+		listCurrentRequestChangeRequestsForRequestStmt:              q.listCurrentRequestChangeRequestsForRequestStmt,
 		listEmailsStmt:                                              q.listEmailsStmt,
 		listHelpHeadersStmt:                                         q.listHelpHeadersStmt,
 		listHelpSlugsStmt:                                           q.listHelpSlugsStmt,

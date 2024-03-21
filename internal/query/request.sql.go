@@ -511,6 +511,42 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 	return items, nil
 }
 
+const listCurrentRequestChangeRequestsForRequest = `-- name: ListCurrentRequestChangeRequestsForRequest :many
+SELECT created_at, updated_at, text, field, rid, pid, id, old FROM request_change_requests WHERE rid = ? AND old = false
+`
+
+func (q *Queries) ListCurrentRequestChangeRequestsForRequest(ctx context.Context, rid int64) ([]RequestChangeRequest, error) {
+	rows, err := q.query(ctx, q.listCurrentRequestChangeRequestsForRequestStmt, listCurrentRequestChangeRequestsForRequest, rid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestChangeRequest
+	for rows.Next() {
+		var i RequestChangeRequest
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Text,
+			&i.Field,
+			&i.RID,
+			&i.PID,
+			&i.ID,
+			&i.Old,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listOpenCharacterApplications = `-- name: ListOpenCharacterApplications :many
 SELECT 
   character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, players.created_at, players.updated_at, players.pw_hash, players.username, players.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id, requests.vid
