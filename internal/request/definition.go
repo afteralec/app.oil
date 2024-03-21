@@ -301,11 +301,15 @@ func NextIncompleteField(t string, c content) (string, bool) {
 	return fields.NextIncomplete(c)
 }
 
-// TODO: Let this error out with no definition
-func NextUnreviewedField(t string, cr contentreview) (string, bool) {
+type NextUnreviewedFieldOutput struct {
+	Field string
+	Last  bool
+}
+
+func NextUnreviewedField(t string, cr contentreview) (NextUnreviewedFieldOutput, error) {
 	definition, ok := Definitions.Get(t)
 	if !ok {
-		return "", false
+		return NextUnreviewedFieldOutput{}, ErrNoDefinition
 	}
 	fields := definition.Fields()
 	return fields.NextUnreviewed(cr)

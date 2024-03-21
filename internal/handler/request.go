@@ -335,9 +335,36 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			}
 
 			// TODO: Validate that NextUnreviewedField returns something here
-			field, last := request.NextUnreviewedField(req.Type, cr)
-			v := request.View(req.Type, field)
-			value, ok := content.Value(field)
+			nufo, err := request.NextUnreviewedField(req.Type, cr)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+
+			if nufo.Field == "" {
+				b["PageHeader"] = fiber.Map{
+					"Title": request.TitleForSummary(req.Type, content),
+				}
+				// TODO: Build a utility for this
+				b["Status"] = fiber.Map{
+					"StatusIcon": request.NewStatusIcon(request.StatusIconParams{Status: req.Status, IconSize: 48, IncludeText: true, TextSize: "text-xl"}),
+				}
+				summaryFields, err := request.FieldsForSummary(request.FieldsForSummaryParams{
+					PID:     pid,
+					Request: &req,
+					Content: content,
+				})
+				if err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+				}
+				b["SummaryFields"] = summaryFields
+
+				return c.Render(view.RequestSummaryFields, b, layout.Page)
+			}
+
+			v := request.View(req.Type, nufo.Field)
+			value, ok := content.Value(nufo.Field)
 			if !ok {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
@@ -346,7 +373,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			openChange := true
 			change, err := qtx.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
 				RID:   rid,
-				Field: field,
+				Field: nufo.Field,
 			})
 			if err != nil {
 				if err == sql.ErrNoRows {
@@ -357,20 +384,20 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				}
 			}
 
-			label, description := request.GetFieldLabelAndDescription(req.Type, field)
+			label, description := request.GetFieldLabelAndDescription(req.Type, nufo.Field)
 			b["FieldLabel"] = label
 			b["FieldDescription"] = description
 
 			b["RequestFormID"] = request.FormID
 
-			if last {
+			if nufo.Last {
 				b["UpdateButtonText"] = "Finish"
 			} else {
 				b["UpdateButtonText"] = "Next"
 			}
 
-			b["RequestFormPath"] = route.RequestFieldPath(req.ID, field)
-			b["Field"] = field
+			b["RequestFormPath"] = route.RequestFieldPath(req.ID, nufo.Field)
+			b["Field"] = nufo.Field
 			b["FieldValue"] = value
 
 			b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
@@ -378,8 +405,8 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				Name:    "value",
 			})
 
-			b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(req.ID, field)
-			b["ActionButtonPath"] = route.RequestFieldStatusPath(rid, field)
+			b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(req.ID, nufo.Field)
+			b["ActionButtonPath"] = route.RequestFieldStatusPath(rid, nufo.Field)
 
 			if openChange {
 				b["ActionButtonText"] = "Next"

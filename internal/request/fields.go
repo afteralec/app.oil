@@ -53,17 +53,24 @@ func (f *Fields) NextIncomplete(c content) (string, bool) {
 	return "", false
 }
 
-func (f *Fields) NextUnreviewed(cr contentreview) (string, bool) {
+func (f *Fields) NextUnreviewed(cr contentreview) (NextUnreviewedFieldOutput, error) {
 	for i, field := range f.List {
 		status, ok := cr.Status(field.Name)
 		if !ok {
 			continue
 		}
 		if status == FieldStatusNotReviewed {
-			return field.Name, i == len(f.List)-1
+			return NextUnreviewedFieldOutput{
+				Field: field.Name,
+				Last:  i == len(f.List)-1,
+			}, nil
 		}
 	}
-	return "", false
+
+	return NextUnreviewedFieldOutput{
+		Field: "",
+		Last:  false,
+	}, nil
 }
 
 func (f *Fields) IsFieldNameValid(name string) bool {
