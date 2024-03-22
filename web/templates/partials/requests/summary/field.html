@@ -11,19 +11,26 @@
     {{ template "partial-request-change-request" .ChangeRequest }}
   {{ end }}
 
-  <footer class="flex items-center gap-2 pt-2">
-    <button
-      type="button"
-      class="button-outline"
-      @click.prevent="helpOpen = !helpOpen"
-      x-text="helpOpen ? 'Close Help' : 'Help'"
-    >
-      Help
-    </button>
+  <!-- prettier-ignore -->
+  {{ if .IsApproved }}
+    {{ template "partial-request-summary-field-approved" }}
+  {{ end }}
 
-    {{ if .AllowEdit }}
-    <a href="{{ .Path }}" class="button-outline">Edit</a>
-    {{ end }}
+  <footer>
+    <section class="flex items-center gap-2 pt-2">
+      <button
+        type="button"
+        class="button-outline"
+        @click.prevent="helpOpen = !helpOpen"
+        x-text="helpOpen ? 'Close Help' : 'Help'"
+      >
+        Help
+      </button>
+
+      {{ if .AllowEdit }}
+      <a href="{{ .Path }}" class="button-outline">Edit</a>
+      {{ end }}
+    </section>
   </footer>
 
   <div x-cloak x-show="helpOpen" class="pt-2">

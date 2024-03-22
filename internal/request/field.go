@@ -95,6 +95,7 @@ type FieldForSummary struct {
 	Path             string
 	AllowEdit        bool
 	HasChangeRequest bool
+	IsApproved       bool
 }
 
 // TODO: Error output?

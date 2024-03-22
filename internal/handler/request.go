@@ -371,6 +371,12 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 					changeMap[change.Field] = change
 				}
 
+				cr, err := request.ContentReview(qtx, &req)
+				if err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return nil
+				}
+
 				processedSummaryFields := []request.FieldForSummary{}
 				for _, summaryField := range summaryFields {
 					change, ok := changeMap[summaryField.Name]
@@ -382,7 +388,18 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 						})
 					}
 
+					status, ok := cr.Status(summaryField.Name)
+					if ok && status == request.FieldStatusApproved {
+						summaryField.IsApproved = true
+					}
+
 					processedSummaryFields = append(processedSummaryFields, summaryField)
+				}
+
+				if cr.AllAre(request.FieldStatusApproved) {
+					b["ShowApproveAction"] = true
+				} else if cr.AllAre(request.FieldStatusReviewed) {
+					b["ShowFinishReviewAction"] = true
 				}
 
 				b["SummaryFields"] = processedSummaryFields

@@ -19,5 +19,16 @@
     Submit
   </button>
   {{ end }}
+
+  <!-- prettier-ignore -->
+  {{ if .ShowApproveAction }}
+  <button type="button" class="button-primary" @click.prevent="">
+    Approve
+  </button>
+  {{ else if .ShowFinishReviewAction }}
+  <button type="button" class="button-primary" @click.prevent="">
+    Finish Review
+  </button>
+  {{ end }}
 </section>
 {{ end }}
