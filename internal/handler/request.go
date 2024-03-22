@@ -192,7 +192,7 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 		v := request.View(req.Type, field)
 
 		b := view.Bind(c)
-		b, err = request.BindFieldView(b, request.BindFieldViewParams{
+		b, err = request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
 			PID:       pid,
 			Request:   &req,
 			Content:   content,
@@ -291,7 +291,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			field, last := request.NextIncompleteField(req.Type, content)
 			v := request.View(req.Type, field)
 
-			b, err = request.BindFieldView(b, request.BindFieldViewParams{
+			b, err = request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
 				PID:       pid,
 				Request:   &req,
 				Content:   content,
@@ -388,6 +388,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 
 			v := request.View(req.Type, nufo.Field)
 
+			// TODO: Change this query to a :many so we can pivot on the len instead of the error?
 			openChange := true
 			change, err := qtx.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
 				RID:   rid,
@@ -402,32 +403,23 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				}
 			}
 
-			b, err = request.BindFieldView(b, request.BindFieldViewParams{
+			bfvp := request.BindFieldViewParams{
 				PID:       pid,
 				Request:   &req,
 				Content:   content,
 				FieldName: nufo.Field,
 				Last:      nufo.Last,
-			})
+			}
+			if openChange {
+				bfvp.ChangeRequest = &change
+			}
+			b, err = request.BindFieldView(i.Templates, b, bfvp)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
 
-			if openChange {
-				b["ActionButtonText"] = "Next"
-				// TODO: Use a Bind for this
-				b["ChangeRequest"] = request.BindChangeRequest(request.BindChangeRequestParams{
-					PID:           pid,
-					ChangeRequest: &change,
-				})
-			} else {
-				b["ShowRequestChange"] = true
-				b["ActionButtonText"] = "Approve"
-			}
-
 			b["ShowReviewerAction"] = true
-			b["ShowReject"] = true
 
 			if err := tx.Commit(); err != nil {
 				c.Status(fiber.StatusInternalServerError)

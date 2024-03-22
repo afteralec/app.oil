@@ -2,10 +2,10 @@
 <button
   type="button"
   class="button-primary"
-  hx-post="{{ .ActionButtonPath }}"
+  hx-post="{{ .Path }}"
   @click.prevent=""
   :disabled="changeRequestOpen"
 >
-  {{ .ActionButtonText }}
+  {{ .Text}}
 </button>
 {{ end }}

@@ -2,40 +2,8 @@
 <footer class="pt-4">
   <section class="flex justify-end gap-2">
     <!-- prettier-ignore -->
-    {{ if .ShowRequestChange }}
-    <button
-      type="button"
-      class="button-outline"
-      @click.prevent="changeRequestOpen = true;"
-      x-show="!changeRequestOpen"
-    >
-      Request Change
-    </button>
-    {{ end }}
-
-    <!-- prettier-ignore -->
-    {{ if .ShowReject }}
-    <button
-      type="button"
-      class="button-primary button-primary-destructive"
-      @click.prevent=""
-      :disabled="changeRequestOpen"
-    >
-      Reject
-    </button>
-    {{ end }}
-
-    <!-- prettier-ignore  -->
-    {{ if .ShowReviewerAction }}
-    <button
-      type="button"
-      class="button-primary"
-      hx-post="{{ .ActionButtonPath }}"
-      @click.prevent=""
-      :disabled="changeRequestOpen"
-    >
-      {{ .ActionButtonText }}
-    </button>
+    {{ range .Actions }}
+      {{ . }}
     {{ end }}
 
     <!-- prettier-ignore -->

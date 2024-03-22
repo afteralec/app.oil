@@ -1,23 +1,28 @@
 package request
 
 import (
+	"html/template"
+
 	fiber "github.com/gofiber/fiber/v2"
+	html "github.com/gofiber/template/html/v2"
 
 	"petrichormud.com/app/internal/actor"
 	"petrichormud.com/app/internal/bind"
+	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
 )
 
 type BindFieldViewParams struct {
-	Request   *query.Request
-	Content   content
-	FieldName string
-	PID       int64
-	Last      bool
+	Request       *query.Request
+	ChangeRequest *query.RequestChangeRequest
+	Content       content
+	FieldName     string
+	PID           int64
+	Last          bool
 }
 
-func BindFieldView(b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
+func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
 	if p.Request.PID == p.PID {
 		b["ShowCancelAction"] = true
 
@@ -67,8 +72,58 @@ func BindFieldView(b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
 		Name:    "value",
 	})
 
+	actions := []template.HTML{}
+
+	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID {
+		// TODO: Put this in a utility
+		if p.ChangeRequest == nil {
+			change, err := partial.Render(e, partial.RenderParams{
+				Template: partial.RequestFieldActionChangeRequest,
+			})
+			if err != nil {
+				return b, err
+			}
+			actions = append(actions, change)
+		}
+
+		reject, err := partial.Render(e, partial.RenderParams{
+			Template: partial.RequestFieldActionReject,
+		})
+		if err != nil {
+			return b, err
+		}
+		actions = append(actions, reject)
+
+		text := "Approve"
+		if p.ChangeRequest == nil {
+			text = "Approve"
+		} else if p.Last {
+			text = "Finish"
+		} else {
+			text = "Next"
+		}
+		review, err := partial.Render(e, partial.RenderParams{
+			Template: partial.RequestFieldActionReview,
+			Bind: fiber.Map{
+				"Path": route.RequestFieldStatusPath(p.Request.ID, p.FieldName),
+				"Text": text,
+			},
+		})
+		if err != nil {
+			return b, err
+		}
+		actions = append(actions, review)
+	}
+
+	b["Actions"] = actions
 	b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(p.Request.ID, p.FieldName)
-	b["ActionButtonPath"] = route.RequestFieldStatusPath(p.Request.ID, p.FieldName)
+
+	if p.ChangeRequest != nil {
+		b["ChangeRequest"] = BindChangeRequest(BindChangeRequestParams{
+			PID:           p.PID,
+			ChangeRequest: p.ChangeRequest,
+		})
+	}
 
 	return b, nil
 }
