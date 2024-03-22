@@ -10,9 +10,11 @@ import (
 )
 
 const (
-	BindCancelDialog      = "CancelDialog"
-	BindSubmitDialog      = "SubmitDialog"
-	BindPutInReviewDialog = "PutInReviewDialog"
+	BindCancelDialog       = "CancelDialog"
+	BindSubmitDialog       = "SubmitDialog"
+	BindPutInReviewDialog  = "PutInReviewDialog"
+	BindApproveDialog      = "ApproveDialog"
+	BindFinishReviewDialog = "FinishReviewDialog"
 )
 
 const (
@@ -30,64 +32,40 @@ type Dialog struct {
 }
 
 type Dialogs struct {
-	Submit      Dialog
-	Cancel      Dialog
-	PutInReview Dialog
+	Submit       Dialog
+	Cancel       Dialog
+	PutInReview  Dialog
+	Approve      Dialog
+	FinishReview Dialog
 }
 
-var BindDialogsByType map[string]Dialogs = map[string]Dialogs{
-	TypeCharacterApplication: {
-		Submit: Dialog{
-			Header:     "Submit This Application?",
-			Text:       "Once your character application is put in review, this cannot be undone.",
-			ButtonText: "Submit This Application",
-		},
-		Cancel: Dialog{
-			Header:     "Cancel This Application?",
-			Text:       "Once you've canceled this application, it cannot be undone. If you want to apply with this character again in the future, you'll need to create a new application.",
-			ButtonText: "Cancel This Application",
-		},
-		PutInReview: Dialog{
-			Header:     "Put This Application In Review?",
-			Text:       template.HTML("Once you put this application in review, <span class=\"font-semibold\">you must review it within 24 hours</span>. After picking up this application, you'll be the only reviewer able to review it."),
-			ButtonText: "I'm Ready to Review This Application",
-		},
-	},
+func (d *Dialogs) SetPath(rid int64) {
+	path := route.RequestPath(rid)
+	d.Submit.Path = path
+	d.Cancel.Path = path
+	d.PutInReview.Path = path
+	d.Approve.Path = path
+	d.FinishReview.Path = path
 }
 
 type BindDialogsParams struct {
 	Request *query.Request
 }
 
-func BindDialogs(b fiber.Map, p BindDialogsParams) fiber.Map {
-	bindDialogs, ok := BindDialogsByType[p.Request.Type]
+func BindDialogs(b fiber.Map, p BindDialogsParams) (fiber.Map, error) {
+	def, ok := Definitions.Get(p.Request.Type)
 	if !ok {
-		return b
+		return fiber.Map{}, ErrNoDefinition
 	}
 
-	b[BindCancelDialog] = Dialog{
-		Header:     bindDialogs.Cancel.Header,
-		Text:       bindDialogs.Cancel.Text,
-		ButtonText: bindDialogs.Cancel.ButtonText,
-		Path:       route.RequestPath(p.Request.ID),
-		Variable:   VariableCancelDialog,
-	}
+	dialogs := def.Dialogs()
+	dialogs.SetPath(p.Request.ID)
 
-	b[BindSubmitDialog] = Dialog{
-		Header:     bindDialogs.Submit.Header,
-		Text:       bindDialogs.Submit.Text,
-		ButtonText: bindDialogs.Submit.ButtonText,
-		Path:       route.RequestStatusPath(p.Request.ID),
-		Variable:   VariableSubmitDialog,
-	}
+	b[BindCancelDialog] = dialogs.Cancel
+	b[BindSubmitDialog] = dialogs.Submit
+	b[BindPutInReviewDialog] = dialogs.PutInReview
+	b[BindApproveDialog] = dialogs.Approve
+	b[BindFinishReviewDialog] = dialogs.FinishReview
 
-	b[BindPutInReviewDialog] = Dialog{
-		Header:     bindDialogs.PutInReview.Header,
-		Text:       bindDialogs.PutInReview.Text,
-		ButtonText: bindDialogs.PutInReview.ButtonText,
-		Path:       route.RequestStatusPath(p.Request.ID),
-		Variable:   VariablePutInReviewDialog,
-	}
-
-	return b
+	return b, nil
 }

@@ -338,16 +338,31 @@ var DialogsCharacterApplication Dialogs = Dialogs{
 		Header:     "Submit This Application?",
 		Text:       "Once your character application is put in review, this cannot be undone.",
 		ButtonText: "Submit This Application",
+		Variable:   "showSubmitDialog",
 	},
 	Cancel: Dialog{
 		Header:     "Cancel This Application?",
 		Text:       "Once you've canceled this application, it cannot be undone. If you want to apply with this character again in the future, you'll need to create a new application.",
 		ButtonText: "Cancel This Application",
+		Variable:   "showCancelDialog",
 	},
 	PutInReview: Dialog{
 		Header:     "Put This Application In Review?",
 		Text:       template.HTML("Once you put this application in review, <span class=\"font-semibold\">you must review it within 24 hours</span>. After picking up this application, you'll be the only reviewer able to review it."),
 		ButtonText: "I'm Ready to Review This Application",
+		Variable:   "showPutInReviewDialog",
+	},
+	Approve: Dialog{
+		Header:     "Approve This Character Application?",
+		Text:       template.HTML("Once approved, <span class=\"font-semibold\">this cannot be undone</span>. The character will go back to the player for them to create."),
+		ButtonText: "Finish Review",
+		Variable:   "showApproveDialog",
+	},
+	FinishReview: Dialog{
+		Header:     "Finish Reviewing This Character Application?",
+		Text:       template.HTML("Once you finish reviewing, <span class=\"font-semibold\">this cannot be undone</span>. It will be sent back for the player to update and re-submit. Please make sure your change requests are clear!"),
+		ButtonText: "Finish Review",
+		Variable:   "showFinishReviewDialog",
 	},
 }
 

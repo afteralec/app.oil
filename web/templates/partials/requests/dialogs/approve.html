@@ -1,0 +1,21 @@
+<!-- prettier-ignore -->
+{{ define "partial-request-approve-dialog" }}
+{{ template "partial-modal-overlay" .Variable }}
+<div
+  class="modal"
+  @click.away="{{ .Variable }}= false;"
+  x-cloak
+  x-show="{{ .Variable }}"
+>
+  {{ template "partial-modal-close" .Variable }}
+  <h3 class="pt-4 text-lg font-semibold leading-none tracking-tight">
+    {{ .Header }}
+  </h3>
+  <p class="pt-2 text-base leading-none">{{ .Text }}</p>
+  <footer class="flex justify-end pt-6">
+    <button type="button" class="button-primary" hx-post="{{ .Path }}">
+      {{ .ButtonText }}
+    </button>
+  </footer>
+</div>
+{{ end }}

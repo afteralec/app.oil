@@ -141,7 +141,6 @@ type SummaryForQueueParams struct {
 	PID                 int64
 }
 
-// TODO: Error output
 func (d *DefaultDefinition) SummaryForQueue(p SummaryForQueueParams) (SummaryForQueue, error) {
 	def, ok := Definitions.Get(p.Request.Type)
 	if !ok {

@@ -200,9 +200,13 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 			Request: &req,
 			PID:     pid,
 		})
-		b = request.BindDialogs(b, request.BindDialogsParams{
+		b, err = request.BindDialogs(b, request.BindDialogsParams{
 			Request: &req,
 		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
 
 		label, description := request.GetFieldLabelAndDescription(req.Type, field)
 		b["FieldLabel"] = label
@@ -293,9 +297,13 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			Request: &req,
 			PID:     pid,
 		})
-		b = request.BindDialogs(b, request.BindDialogsParams{
+		b, err = request.BindDialogs(b, request.BindDialogsParams{
 			Request: &req,
 		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
 
 		if req.Status == request.StatusIncomplete {
 			field, last := request.NextIncompleteField(req.Type, content)
