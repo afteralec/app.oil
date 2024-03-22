@@ -54,14 +54,6 @@ type BindViewedByParams struct {
 	PID     int64
 }
 
-// TODO: Add ViewedByAdmin and maybe have ViewedByPlayer be ViewedByOwner
-func BindViewedBy(b fiber.Map, p BindViewedByParams) fiber.Map {
-	b["ViewedByPlayer"] = p.Request.PID == p.PID
-	b["ViewedByReviewer"] = p.Request.RPID == p.PID
-
-	return b
-}
-
 type BindChangeRequestParams struct {
 	ChangeRequest *query.RequestChangeRequest
 	PID           int64

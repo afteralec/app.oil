@@ -1,8 +1,7 @@
 {{ define "partial-request-summary-actions" }}
 <section class="flex items-center gap-2 pt-4">
   <!-- prettier-ignore -->
-  {{ if and .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
-  <!-- TODO: Get this in an explicit call for actions to show -->
+  {{ if .ShowCancelAction }}
   <button
     type="button"
     class="button-outline button-outline-destructive"
@@ -10,7 +9,10 @@
   >
     Cancel
   </button>
+  {{ end }}
 
+  <!-- prettier-ignore -->
+  {{ if .ShowSubmitAction }}
   <button
     type="button"
     class="button-primary"

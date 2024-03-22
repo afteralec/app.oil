@@ -36,7 +36,7 @@
 
     <!-- prettier-ignore -->
     <!-- TODO: This should disable if the field is incomplete -->
-    {{ if and .ViewedByPlayer (or .StatusIsIncomplete .StatusIsReady) }}
+    {{ if and .AllowEdit }}
     <button type="submit" form="{{ .RequestFormID }}" class="button-primary">
       {{ .UpdateButtonText }}
     </button>

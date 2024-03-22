@@ -196,10 +196,20 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 
 		b := view.Bind(c)
 		b = request.BindStatus(b, &req)
-		b = request.BindViewedBy(b, request.BindViewedByParams{
-			Request: &req,
-			PID:     pid,
-		})
+
+		// TODO: Move this to a utility
+		if req.PID == pid {
+			b["ShowCancelAction"] = true
+
+			switch req.Status {
+			case request.StatusIncomplete:
+				b["AllowEdit"] = true
+			case request.StatusReady:
+				b["ShowSubmitAction"] = true
+				b["AllowEdit"] = true
+			}
+		}
+
 		b, err = request.BindDialogs(b, request.BindDialogsParams{
 			Request: &req,
 		})
@@ -293,10 +303,20 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		// TODO: Finish new bind pattern
 		b := view.Bind(c)
 		b = request.BindStatus(b, &req)
-		b = request.BindViewedBy(b, request.BindViewedByParams{
-			Request: &req,
-			PID:     pid,
-		})
+
+		// TODO: Move this to a utility
+		if req.PID == pid {
+			b["ShowCancelAction"] = true
+
+			switch req.Status {
+			case request.StatusIncomplete:
+				b["AllowEdit"] = true
+			case request.StatusReady:
+				b["ShowSubmitAction"] = true
+				b["AllowEdit"] = true
+			}
+		}
+
 		b, err = request.BindDialogs(b, request.BindDialogsParams{
 			Request: &req,
 		})
