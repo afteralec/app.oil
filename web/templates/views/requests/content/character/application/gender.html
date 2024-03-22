@@ -1,7 +1,7 @@
 <!-- prettier-ignore -->
 {{ define "view-request-character-application-gender" }}
 {{ if .AllowEdit }}
-  {{ template "partial-requests-character-application-gender-form" . }}
+  {{ template "partial-request-field-form-character-application-gender" . }}
 {{ else }}
   {{ template "partial-requests-character-application-gender-data" . }}
 {{ end }}

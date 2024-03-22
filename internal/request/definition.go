@@ -384,6 +384,7 @@ func IsFieldNameValid(t, name string) bool {
 	return definition.IsFieldNameValid(name)
 }
 
+// TODO: Rename to RenderFieldHelp
 func FieldHelp(e *html.Engine, t, f string) (template.HTML, error) {
 	def, ok := Definitions.Get(t)
 	if !ok {

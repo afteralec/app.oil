@@ -27,7 +27,6 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 	if err != nil {
 		return b, err
 	}
-
 	b["Help"] = help
 
 	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady {

@@ -1,4 +1,4 @@
-{{ define "partial-requests-character-application-sdesc-form" }}
+{{ define "partial-request-field-form-character-application-sdesc" }}
 <form
   id="{{ .RequestFormID }}"
   class="space-y-2 px-4 pt-4"
@@ -21,7 +21,7 @@
   />
   <section>
     <!-- prettier-ignore -->
-    {{ template "partial-request-character-application-sdesc-requirements" }}
+    {{ template "partial-request-field-requirements-character-application-sdesc" }}
   </section>
   <section
     x-show="isCharacterShortDescriptionValid(sdesc)"

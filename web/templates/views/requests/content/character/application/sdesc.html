@@ -1,7 +1,7 @@
 <!-- prettier-ignore -->
 {{ define "view-request-character-application-sdesc" }}
 {{ if .AllowEdit }}
-  {{ template "partial-requests-character-application-sdesc-form" . }}
+  {{ template "partial-request-field-form-character-application-sdesc" . }}
 {{ else }}
   {{ template "partial-requests-character-application-sdesc-data" . }}
 {{ end }}

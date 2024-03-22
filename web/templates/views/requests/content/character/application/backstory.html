@@ -1,7 +1,7 @@
 <!-- prettier-ignore -->
 {{ define "view-request-character-application-backstory" }}
 {{ if .AllowEdit }}
-  {{ template "partial-requests-character-application-backstory-form" . }}
+  {{ template "partial-request-field-form-character-application-backstory" . }}
 {{ else }}
   {{ template "partial-requests-character-application-backstory-data" . }}
 {{ end }}
