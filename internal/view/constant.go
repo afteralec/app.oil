@@ -26,6 +26,7 @@ const (
 
 const (
 	InternalServerError string = "view-500"
+	BadRequest          string = "view-400"
 	NotFound            string = "view-404"
 	Forbidden           string = "view-403"
 	Conflict            string = "view-409"

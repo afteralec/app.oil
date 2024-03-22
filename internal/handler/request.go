@@ -123,15 +123,13 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 		rid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
-			// TODO: 400 view
-			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			return c.Render(view.BadRequest, view.Bind(c), layout.Standalone)
 		}
 
 		field := c.Params("field")
 		if len(field) == 0 {
 			c.Status(fiber.StatusBadRequest)
-			// TODO: 400 view
-			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			return c.Render(view.BadRequest, view.Bind(c), layout.Standalone)
 		}
 
 		tx, err := i.Database.Begin()
@@ -160,8 +158,7 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 
 		if !request.IsFieldNameValid(req.Type, field) {
 			c.Status(fiber.StatusBadRequest)
-			// TODO: 400 view
-			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			return c.Render(view.BadRequest, view.Bind(c), layout.Standalone)
 		}
 
 		content, err := request.Content(qtx, &req)
@@ -262,8 +259,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		rid, err := util.GetID(c)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
-			// TODO: 400 view
-			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			return c.Render(view.BadRequest, view.Bind(c), layout.Standalone)
 		}
 
 		tx, err := i.Database.Begin()
