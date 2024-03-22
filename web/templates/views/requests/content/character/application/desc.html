@@ -9,7 +9,7 @@
 {{ template "partial-request-change-request-empty" }}
 {{ end }}
 
-{{ if and .AllowEdit }}
+{{ if .AllowEdit }}
   {{ template "partial-requests-character-application-desc-form" . }}
 {{ else }}
   {{ template "partial-requests-character-application-desc-data" . }}

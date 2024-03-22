@@ -90,6 +90,7 @@ const VerifyEmailSuccess string = "partial-verify-email-success"
 const (
 	RequestChangeRequest            string = "partial-request-change-request"
 	RequestChangeRequestEmpty       string = "partial-request-change-request-empty"
+	RequestFieldActionUpdate        string = "partial-request-field-action-update"
 	RequestFieldActionChangeRequest string = "partial-request-field-action-change-request"
 	RequestFieldActionReject        string = "partial-request-field-action-reject"
 	RequestFieldActionReview        string = "partial-request-field-action-review"

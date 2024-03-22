@@ -5,14 +5,6 @@
     {{ range .Actions }}
       {{ . }}
     {{ end }}
-
-    <!-- prettier-ignore -->
-    <!-- TODO: This should disable if the field is incomplete -->
-    {{ if and .AllowEdit }}
-    <button type="submit" form="{{ .RequestFormID }}" class="button-primary">
-      {{ .UpdateButtonText }}
-    </button>
-    {{ end }}
   </section>
 
   <!-- prettier-ignore -->

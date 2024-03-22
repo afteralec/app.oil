@@ -62,6 +62,7 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 		b["FieldValue"] = ""
 	}
 
+	// TODO: Key this to be specific to the field definition
 	b = BindGenderRadioGroup(b, BindGenderRadioGroupParams{
 		Content: p.Content,
 		Name:    "value",
@@ -96,6 +97,7 @@ type BindFieldViewActionsParams struct {
 
 func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsParams) (fiber.Map, error) {
 	actions := []template.HTML{}
+
 	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID {
 		// TODO: Put this in a utility
 		if len(p.CurrentChangeRequests) == 0 {
@@ -138,6 +140,30 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 		}
 		actions = append(actions, review)
 	}
+
+	// TODO: Bind this to the same function that determines if we show the form or not
+	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady {
+		text := "Next"
+		if p.Request.Status == StatusReady {
+			text = "Update"
+		}
+		if p.Request.Status == StatusIncomplete && p.Last {
+			text = "Finish"
+		}
+		// TODO: Set this up so the button is disabled if the field is incomplete
+		update, err := partial.Render(e, partial.RenderParams{
+			Template: partial.RequestFieldActionUpdate,
+			Bind: fiber.Map{
+				"Form": FormID,
+				"Text": text,
+			},
+		})
+		if err != nil {
+			return b, err
+		}
+		actions = append(actions, update)
+	}
+
 	b["Actions"] = actions
 	return b, nil
 }
