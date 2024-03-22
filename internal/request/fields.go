@@ -2,7 +2,9 @@ package request
 
 import (
 	"errors"
+	"html/template"
 
+	html "github.com/gofiber/template/html/v2"
 	"petrichormud.com/app/internal/query"
 )
 
@@ -92,4 +94,13 @@ func (f *Fields) ForSummary(p FieldsForSummaryParams) []FieldForSummary {
 		result = append(result, field.ForSummary(p))
 	}
 	return result
+}
+
+func (f *Fields) FieldHelp(e *html.Engine, name string) (template.HTML, error) {
+	field, ok := f.Map[name]
+	if !ok {
+		// TODO: ErrInvalidField
+		return template.HTML(""), ErrInvalidInput
+	}
+	return field.RenderHelp(e)
 }

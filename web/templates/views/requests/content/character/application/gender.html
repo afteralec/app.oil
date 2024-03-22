@@ -1,14 +1,5 @@
 <!-- prettier-ignore -->
 {{ define "view-request-character-application-gender" }}
-{{ template "partial-request-character-application-gender-help" . }}
-{{ template "partial-request-divider" . }}
-
-{{ if .ChangeRequest }}
-{{ template "partial-request-change-request" .ChangeRequest }}
-{{ else }}
-{{ template "partial-request-change-request-empty" }}
-{{ end }}
-
 {{ if .AllowEdit }}
   {{ template "partial-requests-character-application-gender-form" . }}
 {{ else }}

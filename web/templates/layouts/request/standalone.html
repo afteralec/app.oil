@@ -10,7 +10,18 @@
       <section class="w-full max-w-lg rounded-md border p-6">
         <!-- prettier-ignore -->
         {{ template "partial-request-field-header" . }}
+
+        {{ .Help }}
+
+        {{ template "partial-request-divider" . }}
+        {{ if .ChangeRequest }}
+          {{ template "partial-request-change-request" .ChangeRequest }}
+        {{ else }}
+          {{ template "partial-request-change-request-empty" }}
+        {{ end }}
+
         {{ embed }}
+
         {{ template "partial-request-field-footer" . }}
       </section>
     </main>

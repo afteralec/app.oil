@@ -2,9 +2,12 @@ package request
 
 import (
 	"fmt"
+	"html/template"
 	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
+	html "github.com/gofiber/template/html/v2"
+	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/validate"
 )
@@ -17,6 +20,7 @@ type Field struct {
 	Description string
 	View        string
 	Layout      string
+	Help        string
 }
 
 type fieldBuilder struct {
@@ -59,6 +63,11 @@ func (b *fieldBuilder) Updater(updater FieldUpdater) *fieldBuilder {
 
 func (b *fieldBuilder) Validator(validator validate.StringValidator) *fieldBuilder {
 	b.Field.Validator = validator
+	return b
+}
+
+func (b *fieldBuilder) Help(help string) *fieldBuilder {
+	b.Field.Help = help
 	return b
 }
 
@@ -128,4 +137,10 @@ func (f *Field) ForSummary(p FieldsForSummaryParams) FieldForSummary {
 
 func (f *Field) IsValueValid(v string) bool {
 	return f.Validator.IsValid(v)
+}
+
+func (f *Field) RenderHelp(e *html.Engine) (template.HTML, error) {
+	return partial.Render(e, partial.RenderParams{
+		Template: f.Help,
+	})
 }

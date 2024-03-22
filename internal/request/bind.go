@@ -23,11 +23,18 @@ type BindFieldViewParams struct {
 }
 
 func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
+	help, err := FieldHelp(e, p.Request.Type, p.FieldName)
+	if err != nil {
+		return b, err
+	}
+
+	b["Help"] = help
+
 	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady {
 		b["AllowEdit"] = true
 	}
 
-	b, err := BindDialogs(b, BindDialogsParams{
+	b, err = BindDialogs(b, BindDialogsParams{
 		Request: p.Request,
 	})
 	if err != nil {
@@ -69,6 +76,7 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 		Last:                  p.Last,
 	})
 
+	// TODO: Move this to a utility
 	b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(p.Request.ID, p.FieldName)
 	if len(p.CurrentChangeRequests) == 1 {
 		b["ChangeRequest"] = BindChangeRequest(BindChangeRequestParams{

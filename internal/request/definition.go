@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"html/template"
 
+	html "github.com/gofiber/template/html/v2"
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
@@ -30,6 +31,7 @@ type Definition interface {
 	FieldsForSummary(p FieldsForSummaryParams) ([]FieldForSummary, error)
 	SummaryForQueue(p SummaryForQueueParams) (SummaryForQueue, error)
 	UpdateFieldStatus(q *query.Queries, p UpdateFieldStatusParams) error
+	FieldHelp(e *html.Engine, t, f string) (template.HTML, error)
 }
 
 type DefaultDefinition struct{}
@@ -181,6 +183,20 @@ func (d *DefaultDefinition) SummaryForQueue(p SummaryForQueueParams) (SummaryFor
 		AuthorUsername:  p.PlayerUsername,
 		ShowPutInReview: showPutInReview,
 	}, nil
+}
+
+func (d *DefaultDefinition) FieldHelp(e *html.Engine, t, f string) (template.HTML, error) {
+	def, ok := Definitions.Get(t)
+	if !ok {
+		return template.HTML(""), ErrNoDefinition
+	}
+
+	if !IsFieldNameValid(t, f) {
+		return template.HTML(""), ErrInvalidInput
+	}
+
+	fields := def.Fields()
+	return fields.FieldHelp(e, f)
 }
 
 func UpdateField(q *query.Queries, p UpdateFieldParams) error {
@@ -366,4 +382,13 @@ func IsFieldNameValid(t, name string) bool {
 		return false
 	}
 	return definition.IsFieldNameValid(name)
+}
+
+func FieldHelp(e *html.Engine, t, f string) (template.HTML, error) {
+	def, ok := Definitions.Get(t)
+	if !ok {
+		return template.HTML(""), ErrNoDefinition
+	}
+
+	return def.FieldHelp(e, t, f)
 }
