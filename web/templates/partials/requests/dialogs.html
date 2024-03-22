@@ -2,13 +2,13 @@
 {{ define "partial-request-dialogs" }}
 {{ if .ViewedByPlayer }}
   {{ if .StatusIsReady }}
-    {{ template "partial-request-submit-dialog" .SubmitDialog }}
+    {{ template "partial-request-submit-dialog" .Dialogs.Submit }}
   {{ end }}
 
-  {{ template "partial-request-cancel-dialog" .CancelDialog }}
+  {{ template "partial-request-cancel-dialog" .Dialogs.Cancel }}
 {{ end }}
 
 {{ if and .StatusIsSubmitted .ViewedByReviewer }}
-  {{ template "partial-request-put-in-review-dialog" .PutInReviewDialog }}
+  {{ template "partial-request-put-in-review-dialog" .Dialogs.PutInReview }}
 {{ end }}
 {{ end }}

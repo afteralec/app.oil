@@ -1,7 +1,7 @@
 {{ define "partial-character-application-queue-row" }}
 <div
   class="flex items-center gap-4 border-b px-4 py-3"
-  x-data="{ {{ .PutInReviewDialog.Variable }}: false }"
+  x-data="{ {{ .Dialogs.PutInReview.Variable }}: false }"
 >
   <div class="flex flex-col items-center justify-center px-6">
     {{ template "partial-request-status-icon" .StatusIcon }}
@@ -23,17 +23,18 @@
     <p class="text-sm leading-none text-muted-fg">{{ .ReviewerText }}</p>
   </div>
   <div class="ml-auto flex items-center justify-center gap-4">
+    <!-- prettier-ignore -->
     {{ if .ShowPutInReview }}
+    {{ template "partial-request-put-in-review-dialog" .Dialogs.PutInReview }}
     <button
       type="button"
       class="button button-primary"
-      @click="{{ .PutInReviewDialog.Variable }} = true;"
+      @click="{{ .Dialogs.PutInReview.Variable }} = true;"
     >
       Put In Review
     </button>
-    <!-- prettier-ignore -->
-    {{ template "partial-request-put-in-review-dialog" .PutInReviewDialog }}
     {{ end }}
+
     <a href="{{ .Link }}" class="button button-outline">View</a>
   </div>
 </div>

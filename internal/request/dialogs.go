@@ -40,7 +40,7 @@ type Dialogs struct {
 }
 
 func (d *Dialogs) SetPath(rid int64) {
-	path := route.RequestPath(rid)
+	path := route.RequestStatusPath(rid)
 	d.Submit.Path = path
 	d.Cancel.Path = path
 	d.PutInReview.Path = path
@@ -60,6 +60,8 @@ func BindDialogs(b fiber.Map, p BindDialogsParams) (fiber.Map, error) {
 
 	dialogs := def.Dialogs()
 	dialogs.SetPath(p.Request.ID)
+
+	b["Dialogs"] = dialogs
 
 	b[BindCancelDialog] = dialogs.Cancel
 	b[BindSubmitDialog] = dialogs.Submit

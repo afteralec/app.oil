@@ -1299,6 +1299,10 @@ func CharacterApplicationsQueuePage(i *service.Interfaces) fiber.Handler {
 
 		summaries := []request.SummaryForQueue{}
 		for _, app := range apps {
+			if app.Request.PID == pid {
+				continue
+			}
+
 			content, err := request.Content(qtx, &app.Request)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
