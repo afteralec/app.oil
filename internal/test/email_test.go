@@ -25,7 +25,7 @@ func TestAddEmailSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -55,8 +55,7 @@ func TestAddEmailUnauthorized(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -84,8 +83,7 @@ func TestAddEmailInvalidAddress(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -116,8 +114,7 @@ func TestAddEmailFatal(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -151,8 +148,7 @@ func TestAddEmailMalformedInput(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -182,7 +178,7 @@ func TestEditEmailUnauthorized(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -211,7 +207,7 @@ func TestEditEmailMissingBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -233,7 +229,7 @@ func TestEditEmailMalformedInput(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -265,7 +261,7 @@ func TestEditEmailMalformedInput(t *testing.T) {
 func TestEditEmailFatal(t *testing.T) {
 	i := service.NewInterfaces()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -302,7 +298,7 @@ func TestEditEmailUnowned(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -337,7 +333,7 @@ func TestEditEmailInvalidID(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -372,7 +368,7 @@ func TestEditEmailNotFound(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -417,7 +413,7 @@ func TestEditEmailForbiddenUnverified(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -449,7 +445,7 @@ func TestEditEmailConflictAlreadyVerified(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -491,7 +487,7 @@ func TestEditEmailSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -527,7 +523,7 @@ func TestDeleteEmailUnauthorized(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -551,7 +547,7 @@ func TestDeleteEmailFatal(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -583,7 +579,7 @@ func TestDeleteEmailUnowned(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -613,7 +609,7 @@ func TestDeleteEmailInvalidID(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -640,7 +636,7 @@ func TestDeleteEmailNotFound(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -666,7 +662,7 @@ func TestDeleteEmailSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -692,7 +688,7 @@ func TestVerifyEmailPageUnauthorized(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -721,7 +717,7 @@ func TestVerifyEmailPageSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -753,7 +749,7 @@ func TestVerifyEmailPageForbiddenUnowned(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -789,7 +785,7 @@ func TestVerifyPageExpiredToken(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -826,7 +822,7 @@ func TestVerifyEmailUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -855,7 +851,7 @@ func TestVerifyEmailBadRequestMissingToken(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -882,7 +878,7 @@ func TestVerifyEmailNotFoundExpiredToken(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -919,7 +915,7 @@ func TestVerifyEmailSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -952,7 +948,7 @@ func TestResendVerificationEmailUnauthorized(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -974,7 +970,7 @@ func TestResendVerificationEmailFatal(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1005,7 +1001,7 @@ func TestResendVerificationEmailBadRequestUnowned(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1034,7 +1030,7 @@ func TestResendEmailVerificationBadRequestInvalidID(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1069,7 +1065,7 @@ func TestResendEmailVerificationNotFound(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1118,7 +1114,7 @@ func TestResendEmailVerificationSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

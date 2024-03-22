@@ -24,7 +24,7 @@ func TestCreateRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -50,7 +50,7 @@ func TestCreateRequestUnauthorizedNotLoggedIn(t *testing.T) {
 func TestCreateRequestFatal(t *testing.T) {
 	i := service.NewInterfaces()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -84,7 +84,7 @@ func TestCreateRequestBadRequestMissingBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -107,7 +107,7 @@ func TestCreateRequestBadRequestInvalidType(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -135,7 +135,7 @@ func TestCreateRequestSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -164,7 +164,7 @@ func TestCreateCharacterApplicationUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -189,7 +189,7 @@ func TestCreateCharacterApplicationUnauthorizedNotLoggedIn(t *testing.T) {
 func TestCreateCharacterApplicationFatal(t *testing.T) {
 	i := service.NewInterfaces()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -217,7 +217,7 @@ func TestCreateCharacterApplicationSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -240,7 +240,7 @@ func TestRequestFieldPageUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -263,7 +263,7 @@ func TestRequestFieldPageUnowned(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -294,7 +294,7 @@ func TestRequestFieldPageSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -330,7 +330,7 @@ func TestRequestFieldPageNotFound(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -357,7 +357,7 @@ func TestRequestFieldPageNotFound(t *testing.T) {
 func TestRequestFieldPageFatal(t *testing.T) {
 	i := service.NewInterfaces()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -388,7 +388,7 @@ func TestRequestPageUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -411,7 +411,7 @@ func TestRequestFieldPageForbiddenUnowned(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -441,7 +441,7 @@ func TestRequestPageSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -469,7 +469,7 @@ func TestRequestPageNotFound(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -496,7 +496,7 @@ func TestRequestPageNotFound(t *testing.T) {
 func TestRequestPageFatal(t *testing.T) {
 	i := service.NewInterfaces()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -527,7 +527,7 @@ func TestCharactersPageUnauthorized(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -548,7 +548,7 @@ func TestCharactersPageSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -570,7 +570,7 @@ func TestCharactersPageSuccess(t *testing.T) {
 func TestCharactersPageFatal(t *testing.T) {
 	i := service.NewInterfaces()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -598,7 +598,7 @@ func TestUpdateRequestFieldUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -629,7 +629,7 @@ func TestUpdateRequestFieldBadRequestNotFound(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -662,7 +662,7 @@ func TestUpdateRequestFieldBadRequestNotFound(t *testing.T) {
 func TestUpdateRequestFieldFatal(t *testing.T) {
 	i := service.NewInterfaces()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -702,7 +702,7 @@ func TestUpdateRequestFieldForbiddenUnowned(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -739,7 +739,7 @@ func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -782,7 +782,7 @@ func TestUpdateRequestFieldBadRequestMissingBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -810,7 +810,7 @@ func TestUpdateRequestFieldBadRequestMalformedBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -844,7 +844,7 @@ func TestUpdateRequestStatusUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -869,7 +869,7 @@ func TestUpdateRequestStatusBadRequestNotFound(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -896,7 +896,7 @@ func TestUpdateRequestStatusBadRequestNotFound(t *testing.T) {
 func TestUpdateRequestStatusFatal(t *testing.T) {
 	i := service.NewInterfaces()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -930,7 +930,7 @@ func TestUpdateRequestFieldStatusUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -969,7 +969,7 @@ func TestUpdateRequestFieldStatusBadRequestNotFound(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1010,7 +1010,7 @@ func TestUpdateRequestFieldStatusBadRequestNotFound(t *testing.T) {
 func TestUpdateRequestFieldStatusFatal(t *testing.T) {
 	i := service.NewInterfaces()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1056,7 +1056,7 @@ func TestCreateRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1092,7 +1092,7 @@ func TestCreateRequestChangeRequestBadRequestMissingBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1132,7 +1132,7 @@ func TestCreateRequestChangeRequestBadRequestInvalidText(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1178,7 +1178,7 @@ func TestCreateRequestChangeRequestBadRequestInvalidField(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1224,7 +1224,7 @@ func TestCreateRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1270,7 +1270,7 @@ func TestCreateRequestChangeRequestForbiddenNotInReview(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1308,7 +1308,7 @@ func TestCreateRequestChangeRequestForbiddenNotReviewer(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1360,7 +1360,7 @@ func TestCreateRequestChangeRequestForbiddenNoPermission(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1405,7 +1405,7 @@ func TestCreateRequestChangeRequestSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1451,7 +1451,7 @@ func TestDeleteRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1499,7 +1499,7 @@ func TestDeleteRequestChangeRequestNotFoundNoChangeRequest(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1549,7 +1549,7 @@ func TestDeleteRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1599,7 +1599,7 @@ func TestDeleteRequestChangeRequestSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1650,7 +1650,7 @@ func TestEditRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1704,7 +1704,7 @@ func TestEditRequestChangeRequestBadRequestMissingBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1754,7 +1754,7 @@ func TestEditRequestChangeRequestBadRequestInvalidText(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1810,7 +1810,7 @@ func TestEditRequestChangeRequestNotFoundNoChangeRequest(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1866,7 +1866,7 @@ func TestEditRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -1922,7 +1922,7 @@ func TestEditRequestChangeRequestSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

@@ -1,0 +1,11 @@
+{{ define "partial-request-field-action-review" }}
+<button
+  type="button"
+  class="button-primary"
+  hx-post="{{ .ActionButtonPath }}"
+  @click.prevent=""
+  :disabled="changeRequestOpen"
+>
+  {{ .ActionButtonText }}
+</button>
+{{ end }}

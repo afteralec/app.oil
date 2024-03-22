@@ -25,7 +25,7 @@ func TestRecoverPasswordPageSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -44,7 +44,7 @@ func TestRecoverPasswordSuccessPageSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -70,7 +70,7 @@ func TestRecoverPasswordBadRequestMissingBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -89,7 +89,7 @@ func TestRecoverPasswordBadRequestMalformedBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -114,7 +114,7 @@ func TestRecoverPasswordSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -148,7 +148,7 @@ func TestResetPasswordPage(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -167,7 +167,7 @@ func TestResetPasswordSuccessPageSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -185,7 +185,7 @@ func TestResetPasswordMissingBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -204,7 +204,7 @@ func TestResetPasswordMalformedBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -231,7 +231,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -267,7 +267,7 @@ func TestChangePasswordMissingBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -291,7 +291,7 @@ func TestChangePasswordMalformedBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -322,7 +322,7 @@ func TestChangePasswordNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -356,7 +356,7 @@ func TestChangePasswordWrongCurrentPassword(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -392,7 +392,7 @@ func TestChangePasswordInvalidPassword(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -424,7 +424,7 @@ func TestChangePasswordInvalidConfirmPassword(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -460,7 +460,7 @@ func TestChangePasswordSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

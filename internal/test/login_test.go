@@ -21,8 +21,7 @@ func TestLoginPage(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -40,7 +39,7 @@ func TestLoginPageRedirectsIfAlreadyLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -63,8 +62,7 @@ func TestLoginNonExistantUser(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -91,7 +89,7 @@ func TestLoginSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -121,7 +119,7 @@ func TestLoginUnauthorizedWrongPassword(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -151,7 +149,7 @@ func TestLoginBadRequestMalformedBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

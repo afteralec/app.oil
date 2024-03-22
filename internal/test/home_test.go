@@ -18,8 +18,7 @@ func TestHomePage(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

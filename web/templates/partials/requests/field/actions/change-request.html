@@ -1,0 +1,10 @@
+{{ define "partial-request-field-action-change-request" }}
+<button
+  type="button"
+  class="button-outline"
+  @click.prevent="changeRequestOpen = true;"
+  x-show="!changeRequestOpen"
+>
+  Request Change
+</button>
+{{ end }}

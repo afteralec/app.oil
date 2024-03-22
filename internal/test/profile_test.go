@@ -18,7 +18,7 @@ func TestProfilePageUnauthorizedNotLoggedIn(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -37,7 +37,7 @@ func TestProfilePageSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

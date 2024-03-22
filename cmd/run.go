@@ -23,7 +23,7 @@ var runCmd = &cobra.Command{
 		i := service.NewInterfaces()
 		defer i.Close()
 
-		a := fiber.New(config.Fiber())
+		a := fiber.New(config.Fiber(i.Templates))
 
 		app.Middleware(a, &i)
 		app.Handlers(a, &i)

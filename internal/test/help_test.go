@@ -19,8 +19,7 @@ import (
 func TestHelpPageFatal(t *testing.T) {
 	i := service.NewInterfaces()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -41,8 +40,7 @@ func TestHelpPageSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -61,8 +59,7 @@ func TestHelpFilePageNotFound(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -79,8 +76,7 @@ func TestHelpFilePageNotFound(t *testing.T) {
 func TestHelpFilePageFatal(t *testing.T) {
 	i := service.NewInterfaces()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -101,7 +97,7 @@ func TestHelpFilePageSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	a := fiber.New(config.Fiber())
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -125,8 +121,7 @@ func TestSearchHelpNotFound(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 
@@ -150,8 +145,7 @@ func TestSearchHelpSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
-	config := config.Fiber()
-	a := fiber.New(config)
+	a := fiber.New(config.Fiber(i.Templates))
 	app.Middleware(a, &i)
 	app.Handlers(a, &i)
 

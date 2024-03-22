@@ -7,12 +7,14 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2/middleware/session"
+	html "github.com/gofiber/template/html/v2"
 	redis "github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
 	"petrichormud.com/app/internal/config"
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/web"
 )
 
 func NewInterfaces() Interfaces {
@@ -31,7 +33,9 @@ func NewInterfaces() Interfaces {
 
 	s := session.New(config.Session())
 
-	ib := InterfacesBuilder().Database(db).Redis(r).Sessions(s)
+	t := web.ViewsEngine()
+
+	ib := InterfacesBuilder().Database(db).Redis(r).Sessions(s).Templates(t)
 
 	if os.Getenv("DISABLE_SENDING_STONE") != "true" {
 		conn, err := grpc.Dial(os.Getenv("SENDING_STONE_URL"), grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -53,6 +57,7 @@ type Interfaces struct {
 	Queries    *query.Queries
 	Sessions   *session.Store
 	ClientConn *grpc.ClientConn
+	Templates  *html.Engine
 }
 
 type interfacesBuilder struct {
@@ -81,6 +86,11 @@ func (b *interfacesBuilder) Redis(r *redis.Client) *interfacesBuilder {
 
 func (b *interfacesBuilder) Sessions(s *session.Store) *interfacesBuilder {
 	b.Interfaces.Sessions = s
+	return b
+}
+
+func (b *interfacesBuilder) Templates(e *html.Engine) *interfacesBuilder {
+	b.Interfaces.Templates = e
 	return b
 }
 
