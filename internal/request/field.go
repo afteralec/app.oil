@@ -21,6 +21,8 @@ type Field struct {
 	View        string
 	Layout      string
 	Help        string
+	Form        string
+	Data        string
 }
 
 type fieldBuilder struct {
@@ -63,6 +65,16 @@ func (b *fieldBuilder) Updater(updater FieldUpdater) *fieldBuilder {
 
 func (b *fieldBuilder) Validator(validator validate.StringValidator) *fieldBuilder {
 	b.Field.Validator = validator
+	return b
+}
+
+func (b *fieldBuilder) Form(form string) *fieldBuilder {
+	b.Field.Form = form
+	return b
+}
+
+func (b *fieldBuilder) Data(data string) *fieldBuilder {
+	b.Field.Data = data
 	return b
 }
 

@@ -154,10 +154,12 @@ func NewFieldCharacterApplicationName() Field {
 	b.Name("name")
 	b.Label("Name")
 	b.Description("Your character's name")
-	b.View(view.CharacterApplicationName)
-	b.Help(partial.RequestFieldHelpCharacterApplicationName)
 	b.Updater(updater)
 	b.Validator(&actor.CharacterNameValidator)
+	b.View(view.CharacterApplicationName)
+	b.Help(partial.RequestFieldHelpCharacterApplicationName)
+	b.Form(partial.RequestFieldFormCharacterApplicationName)
+	b.Data(partial.RequestFieldDataCharacterApplicationName)
 
 	return b.Build()
 }
@@ -197,6 +199,8 @@ func NewFieldCharacterApplicationGender() Field {
 	b.Description("Your character's gender determines the pronouns used by third-person descriptions in the game")
 	b.View(view.CharacterApplicationGender)
 	b.Help(partial.RequestFieldHelpCharacterApplicationGender)
+	b.Form(partial.RequestFieldFormCharacterApplicationGender)
+	b.Data(partial.RequestFieldDataCharacterApplicationGender)
 	b.Updater(updater)
 	b.Validator(&actor.GenderValidator)
 
@@ -238,6 +242,8 @@ func NewFieldCharacterApplicationShortDescription() Field {
 	b.Description("This is how your character will appear in third-person descriptions during the game")
 	b.View(view.CharacterApplicationShortDescription)
 	b.Help(partial.RequestFieldHelpCharacterApplicationShortDescription)
+	b.Form(partial.RequestFieldFormCharacterApplicationShortDescription)
+	b.Data(partial.RequestFieldDataCharacterApplicationShortDescription)
 	b.Updater(updater)
 	b.Validator(&actor.ShortDescriptionValidator)
 
@@ -279,6 +285,8 @@ func NewFieldCharacterApplicationDescription() Field {
 	b.Description("This is how your character will appear when examined")
 	b.View(view.CharacterApplicationDescription)
 	b.Help(partial.RequestFieldHelpCharacterApplicationDescription)
+	b.Form(partial.RequestFieldFormCharacterApplicationDescription)
+	b.Data(partial.RequestFieldDataCharacterApplicationDescription)
 	b.Updater(updater)
 	b.Validator(&actor.DescriptionLengthValidator)
 	b.Validator(&actor.DescriptionRegexValidator)
@@ -323,6 +331,8 @@ func NewFieldCharacterApplicationBackstory() Field {
 	b.Description("This is your character's private backstory")
 	b.View(view.CharacterApplicationBackstory)
 	b.Help(partial.RequestFieldHelpCharacterApplicationBackstory)
+	b.Form(partial.RequestFieldFormCharacterApplicationBackstory)
+	b.Data(partial.RequestFieldDataCharacterApplicationBackstory)
 	b.Updater(updater)
 	b.Validator(&actor.CharacterBackstoryValidator)
 
