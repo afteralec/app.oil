@@ -192,52 +192,16 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 		v := request.View(req.Type, field)
 
 		b := view.Bind(c)
-		b = request.BindStatus(b, &req)
-
-		// TODO: Move this to a utility
-		if req.PID == pid {
-			b["ShowCancelAction"] = true
-
-			switch req.Status {
-			case request.StatusIncomplete:
-				b["AllowEdit"] = true
-			case request.StatusReady:
-				b["ShowSubmitAction"] = true
-				b["AllowEdit"] = true
-			}
-		}
-
-		b, err = request.BindDialogs(b, request.BindDialogsParams{
-			Request: &req,
+		b, err = request.BindFieldView(b, request.BindFieldViewParams{
+			PID:       pid,
+			Request:   &req,
+			Content:   content,
+			FieldName: field,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
-
-		label, description := request.GetFieldLabelAndDescription(req.Type, field)
-		b["FieldLabel"] = label
-		b["FieldDescription"] = description
-
-		b["RequestFormID"] = request.FormID
-
-		b["UpdateButtonText"] = "Update"
-		b["BackLink"] = route.RequestPath(rid)
-
-		b["RequestFormPath"] = route.RequestFieldPath(rid, field)
-		b["Field"] = field
-
-		fieldValue, ok := content.Value(field)
-		if ok {
-			b["FieldValue"] = fieldValue
-		} else {
-			b["FieldValue"] = ""
-		}
-
-		b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
-			Content: content,
-			Name:    "value",
-		})
 
 		return c.Render(v, b, layout.RequestFieldStandalone)
 	}
@@ -300,7 +264,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 
 		// TODO: Finish new bind pattern
 		b := view.Bind(c)
-		b = request.BindStatus(b, &req)
 
 		// TODO: Move this to a utility
 		if req.PID == pid {
@@ -324,33 +287,23 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 
 		if req.Status == request.StatusIncomplete {
-			field, last := request.NextIncompleteField(req.Type, content)
-			view := request.View(req.Type, field)
-
 			// TODO: Validate that NextIncompleteField returns something here
+			field, last := request.NextIncompleteField(req.Type, content)
+			v := request.View(req.Type, field)
 
-			label, description := request.GetFieldLabelAndDescription(req.Type, field)
-			b["FieldLabel"] = label
-			b["FieldDescription"] = description
-
-			b["RequestFormID"] = request.FormID
-
-			if last {
-				b["UpdateButtonText"] = "Finish"
-			} else {
-				b["UpdateButtonText"] = "Next"
+			b, err = request.BindFieldView(b, request.BindFieldViewParams{
+				PID:       pid,
+				Request:   &req,
+				Content:   content,
+				FieldName: field,
+				Last:      last,
+			})
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
 
-			b["RequestFormPath"] = route.RequestFieldPath(req.ID, field)
-			b["Field"] = field
-			b["FieldValue"] = ""
-
-			b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
-				Content: content,
-				Name:    "value",
-			})
-
-			return c.Render(view, b, layout.RequestFieldStandalone)
+			return c.Render(v, b, layout.RequestFieldStandalone)
 		}
 
 		if req.Status == request.StatusInReview && req.RPID == pid {
@@ -434,11 +387,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			}
 
 			v := request.View(req.Type, nufo.Field)
-			value, ok := content.Value(nufo.Field)
-			if !ok {
-				c.Status(fiber.StatusInternalServerError)
-				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-			}
 
 			openChange := true
 			change, err := qtx.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
@@ -454,29 +402,17 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				}
 			}
 
-			label, description := request.GetFieldLabelAndDescription(req.Type, nufo.Field)
-			b["FieldLabel"] = label
-			b["FieldDescription"] = description
-
-			b["RequestFormID"] = request.FormID
-
-			if nufo.Last {
-				b["UpdateButtonText"] = "Finish"
-			} else {
-				b["UpdateButtonText"] = "Next"
-			}
-
-			b["RequestFormPath"] = route.RequestFieldPath(req.ID, nufo.Field)
-			b["Field"] = nufo.Field
-			b["FieldValue"] = value
-
-			b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
-				Content: content,
-				Name:    "value",
+			b, err = request.BindFieldView(b, request.BindFieldViewParams{
+				PID:       pid,
+				Request:   &req,
+				Content:   content,
+				FieldName: nufo.Field,
+				Last:      nufo.Last,
 			})
-
-			b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(req.ID, nufo.Field)
-			b["ActionButtonPath"] = route.RequestFieldStatusPath(rid, nufo.Field)
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			}
 
 			if openChange {
 				b["ActionButtonText"] = "Next"
@@ -486,8 +422,12 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 					ChangeRequest: &change,
 				})
 			} else {
+				b["ShowRequestChange"] = true
 				b["ActionButtonText"] = "Approve"
 			}
+
+			b["ShowReviewerAction"] = true
+			b["ShowReject"] = true
 
 			if err := tx.Commit(); err != nil {
 				c.Status(fiber.StatusInternalServerError)

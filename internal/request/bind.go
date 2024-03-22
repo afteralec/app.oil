@@ -9,6 +9,70 @@ import (
 	"petrichormud.com/app/internal/route"
 )
 
+type BindFieldViewParams struct {
+	Request   *query.Request
+	Content   content
+	FieldName string
+	PID       int64
+	Last      bool
+}
+
+func BindFieldView(b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
+	if p.Request.PID == p.PID {
+		b["ShowCancelAction"] = true
+
+		switch p.Request.Status {
+		case StatusIncomplete:
+			b["AllowEdit"] = true
+		case StatusReady:
+			b["ShowSubmitAction"] = true
+			b["AllowEdit"] = true
+		}
+	}
+
+	b, err := BindDialogs(b, BindDialogsParams{
+		Request: p.Request,
+	})
+	if err != nil {
+		return b, err
+	}
+
+	label, description := GetFieldLabelAndDescription(p.Request.Type, p.FieldName)
+	b["FieldLabel"] = label
+	b["FieldDescription"] = description
+	if p.Last {
+		b["UpdateButtonText"] = "Finish"
+	} else {
+		b["UpdateButtonText"] = "Next"
+	}
+
+	b["RequestFormID"] = FormID
+
+	b["UpdateButtonText"] = "Update"
+	b["BackLink"] = route.RequestPath(p.Request.ID)
+
+	b["RequestFormPath"] = route.RequestFieldPath(p.Request.ID, p.FieldName)
+	// TODO: Change this to FieldName
+	b["Field"] = p.FieldName
+
+	fieldValue, ok := p.Content.Value(p.FieldName)
+	if ok {
+		b["FieldValue"] = fieldValue
+	} else {
+		b["FieldValue"] = ""
+	}
+
+	b = BindGenderRadioGroup(b, BindGenderRadioGroupParams{
+		Content: p.Content,
+		Name:    "value",
+	})
+
+	b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(p.Request.ID, p.FieldName)
+	b["ActionButtonPath"] = route.RequestFieldStatusPath(p.Request.ID, p.FieldName)
+
+	return b, nil
+}
+
 type BindGenderRadioGroupParams struct {
 	Content content
 	Name    string

@@ -7,8 +7,6 @@ import (
 	"html/template"
 	"strings"
 
-	fiber "github.com/gofiber/fiber/v2"
-
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 )
@@ -182,20 +180,6 @@ func IsEditable(req *query.Request) bool {
 	}
 
 	return true
-}
-
-func BindStatus(b fiber.Map, req *query.Request) fiber.Map {
-	b["StatusIsIncomplete"] = req.Status == StatusIncomplete
-	b["StatusIsReady"] = req.Status == StatusReady
-	b["StatusIsSubmitted"] = req.Status == StatusSubmitted
-	b["StatusIsInReview"] = req.Status == StatusInReview
-	b["StatusIsApproved"] = req.Status == StatusApproved
-	b["StatusIsReviewed"] = req.Status == StatusReviewed
-	b["StatusIsRejected"] = req.Status == StatusRejected
-	b["StatusIsArchived"] = req.Status == StatusArchived
-	b["StatusIsCanceled"] = req.Status == StatusCanceled
-
-	return b
 }
 
 var ErrNextStatusForbidden error = errors.New("that status update is forbidden")
