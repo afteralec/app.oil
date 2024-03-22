@@ -73,7 +73,7 @@ func BindChangeRequest(p BindChangeRequestParams) fiber.Map {
 		"Path": route.RequestChangeRequestPath(p.ChangeRequest.ID),
 	}
 
-	if !p.ChangeRequest.Old && p.ChangeRequest.PID == p.PID {
+	if p.ChangeRequest.PID == p.PID && !p.ChangeRequest.Locked && !p.ChangeRequest.Old {
 		b["ShowDeleteAction"] = true
 		b["ShowEditAction"] = true
 	}

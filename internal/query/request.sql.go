@@ -320,7 +320,7 @@ func (q *Queries) GetCharacterApplicationContentReviewForRequest(ctx context.Con
 }
 
 const getCurrentRequestChangeRequestForRequestField = `-- name: GetCurrentRequestChangeRequestForRequestField :one
-SELECT created_at, updated_at, text, field, rid, pid, id, old FROM request_change_requests WHERE field = ? AND rid = ? AND old = false
+SELECT created_at, updated_at, text, field, rid, pid, id, locked, old FROM request_change_requests WHERE field = ? AND rid = ? AND old = false
 `
 
 type GetCurrentRequestChangeRequestForRequestFieldParams struct {
@@ -339,6 +339,7 @@ func (q *Queries) GetCurrentRequestChangeRequestForRequestField(ctx context.Cont
 		&i.RID,
 		&i.PID,
 		&i.ID,
+		&i.Locked,
 		&i.Old,
 	)
 	return i, err
@@ -365,7 +366,7 @@ func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
 }
 
 const getRequestChangeRequest = `-- name: GetRequestChangeRequest :one
-SELECT created_at, updated_at, text, field, rid, pid, id, old FROM request_change_requests WHERE id = ?
+SELECT created_at, updated_at, text, field, rid, pid, id, locked, old FROM request_change_requests WHERE id = ?
 `
 
 func (q *Queries) GetRequestChangeRequest(ctx context.Context, id int64) (RequestChangeRequest, error) {
@@ -379,6 +380,7 @@ func (q *Queries) GetRequestChangeRequest(ctx context.Context, id int64) (Reques
 		&i.RID,
 		&i.PID,
 		&i.ID,
+		&i.Locked,
 		&i.Old,
 	)
 	return i, err
@@ -512,7 +514,7 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 }
 
 const listCurrentRequestChangeRequestsForRequest = `-- name: ListCurrentRequestChangeRequestsForRequest :many
-SELECT created_at, updated_at, text, field, rid, pid, id, old FROM request_change_requests WHERE rid = ? AND old = false
+SELECT created_at, updated_at, text, field, rid, pid, id, locked, old FROM request_change_requests WHERE rid = ? AND old = false
 `
 
 func (q *Queries) ListCurrentRequestChangeRequestsForRequest(ctx context.Context, rid int64) ([]RequestChangeRequest, error) {
@@ -532,6 +534,7 @@ func (q *Queries) ListCurrentRequestChangeRequestsForRequest(ctx context.Context
 			&i.RID,
 			&i.PID,
 			&i.ID,
+			&i.Locked,
 			&i.Old,
 		); err != nil {
 			return nil, err
@@ -656,6 +659,15 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 		return nil, err
 	}
 	return items, nil
+}
+
+const lockRequestChangeRequestsForRequest = `-- name: LockRequestChangeRequestsForRequest :exec
+UPDATE request_change_requests SET locked = true WHERE rid = ? AND locked = false
+`
+
+func (q *Queries) LockRequestChangeRequestsForRequest(ctx context.Context, rid int64) error {
+	_, err := q.exec(ctx, q.lockRequestChangeRequestsForRequestStmt, lockRequestChangeRequestsForRequest, rid)
+	return err
 }
 
 const updateCharacterApplicationContentBackstory = `-- name: UpdateCharacterApplicationContentBackstory :exec

@@ -55,6 +55,9 @@ SELECT COUNT(*) FROM request_change_requests WHERE rid = ? AND old = false;
 -- name: CountCurrentRequestChangeRequestForRequestField :one
 SELECT COUNT(*) FROM request_change_requests WHERE field = ? AND rid = ? AND old = false;
 
+-- name: LockRequestChangeRequestsForRequest :exec
+UPDATE request_change_requests SET locked = true WHERE rid = ? AND locked = false;
+
 -- name: CreateCharacterApplicationContent :exec
 INSERT INTO
   character_application_content 

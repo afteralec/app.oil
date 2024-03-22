@@ -209,6 +209,7 @@ type RequestChangeRequest struct {
 	RID       int64
 	PID       int64
 	ID        int64
+	Locked    bool
 	Old       bool
 }
 

@@ -302,6 +302,12 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 		}
 	}
 
+	if p.Status == StatusReviewed {
+		if err := q.LockRequestChangeRequestsForRequest(context.Background(), p.RID); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 

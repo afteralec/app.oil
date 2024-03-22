@@ -267,6 +267,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listVerifiedEmailsStmt, err = db.PrepareContext(ctx, listVerifiedEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListVerifiedEmails: %w", err)
 	}
+	if q.lockRequestChangeRequestsForRequestStmt, err = db.PrepareContext(ctx, lockRequestChangeRequestsForRequest); err != nil {
+		return nil, fmt.Errorf("error preparing query LockRequestChangeRequestsForRequest: %w", err)
+	}
 	if q.markEmailVerifiedStmt, err = db.PrepareContext(ctx, markEmailVerified); err != nil {
 		return nil, fmt.Errorf("error preparing query MarkEmailVerified: %w", err)
 	}
@@ -782,6 +785,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listVerifiedEmailsStmt: %w", cerr)
 		}
 	}
+	if q.lockRequestChangeRequestsForRequestStmt != nil {
+		if cerr := q.lockRequestChangeRequestsForRequestStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing lockRequestChangeRequestsForRequestStmt: %w", cerr)
+		}
+	}
 	if q.markEmailVerifiedStmt != nil {
 		if cerr := q.markEmailVerifiedStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing markEmailVerifiedStmt: %w", cerr)
@@ -1077,6 +1085,7 @@ type Queries struct {
 	listRoomsStmt                                               *sql.Stmt
 	listRoomsByIDsStmt                                          *sql.Stmt
 	listVerifiedEmailsStmt                                      *sql.Stmt
+	lockRequestChangeRequestsForRequestStmt                     *sql.Stmt
 	markEmailVerifiedStmt                                       *sql.Stmt
 	searchHelpByCategoryStmt                                    *sql.Stmt
 	searchHelpByContentStmt                                     *sql.Stmt
@@ -1199,6 +1208,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listRoomsStmt:                                               q.listRoomsStmt,
 		listRoomsByIDsStmt:                                          q.listRoomsByIDsStmt,
 		listVerifiedEmailsStmt:                                      q.listVerifiedEmailsStmt,
+		lockRequestChangeRequestsForRequestStmt:                     q.lockRequestChangeRequestsForRequestStmt,
 		markEmailVerifiedStmt:                                       q.markEmailVerifiedStmt,
 		searchHelpByCategoryStmt:                                    q.searchHelpByCategoryStmt,
 		searchHelpByContentStmt:                                     q.searchHelpByContentStmt,
