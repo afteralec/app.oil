@@ -38,13 +38,6 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 	b["FieldLabel"] = label
 	b["FieldDescription"] = description
 
-	// TODO: Sort this out between the different views
-	b["UpdateButtonText"] = "Update"
-	if p.Last {
-		b["UpdateButtonText"] = "Finish"
-	} else {
-		b["UpdateButtonText"] = "Next"
-	}
 	b["RequestFormID"] = FormID
 
 	// TODO: Sort out this being disabled
