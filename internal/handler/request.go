@@ -1023,6 +1023,30 @@ func DeleteRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		cr, err := request.ContentReview(qtx, &req)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		status, ok := cr.Status(change.Field)
+		if !ok {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if status == request.FieldStatusReviewed {
+			if err := request.UpdateFieldStatus(qtx, request.UpdateFieldStatusParams{
+				Request:   &req,
+				FieldName: change.Field,
+				PID:       pid,
+				Status:    request.FieldStatusApproved,
+			}); err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
