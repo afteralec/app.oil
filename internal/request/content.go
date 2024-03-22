@@ -39,3 +39,18 @@ func (c *contentreview) AllAre(status string) bool {
 
 	return true
 }
+
+func (c *contentreview) AnyAre(status string) bool {
+	// TODO: Report this as an error to error tracking
+	if !IsFieldStatusValid(status) {
+		return false
+	}
+
+	for _, fs := range c.Inner {
+		if fs == status {
+			return true
+		}
+	}
+
+	return false
+}

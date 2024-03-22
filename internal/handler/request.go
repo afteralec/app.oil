@@ -406,7 +406,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 
 				if cr.AllAre(request.FieldStatusApproved) {
 					b["ShowApproveAction"] = true
-				} else if cr.AllAre(request.FieldStatusReviewed) {
+				} else if cr.AnyAre(request.FieldStatusReviewed) {
 					b["ShowFinishReviewAction"] = true
 				}
 
