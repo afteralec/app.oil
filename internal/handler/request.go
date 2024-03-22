@@ -230,11 +230,13 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 		b["RequestFormPath"] = route.RequestFieldPath(rid, field)
 		b["Field"] = field
 
-		// TODO: Use this ok value
-		fieldValue, _ := content.Value(field)
-		b["FieldValue"] = fieldValue
+		fieldValue, ok := content.Value(field)
+		if ok {
+			b["FieldValue"] = fieldValue
+		} else {
+			b["FieldValue"] = ""
+		}
 
-		// TODO: Let this bind use the actual content API
 		b = request.BindGenderRadioGroup(b, request.BindGenderRadioGroupParams{
 			Content: content,
 			Name:    "value",
