@@ -1,14 +1,9 @@
 <!-- prettier-ignore -->
 {{ define "partial-request-dialogs" }}
-{{ if .ViewedByPlayer }}
-  {{ if .StatusIsReady }}
-    {{ template "partial-request-submit-dialog" .Dialogs.Submit }}
-  {{ end }}
+  {{ template "partial-request-submit-dialog" .Submit }}
+  {{ template "partial-request-cancel-dialog" .Cancel }}
 
-  {{ template "partial-request-cancel-dialog" .Dialogs.Cancel }}
-{{ end }}
-
-{{ if and .StatusIsSubmitted .ViewedByReviewer }}
-  {{ template "partial-request-put-in-review-dialog" .Dialogs.PutInReview }}
-{{ end }}
+  {{ template "partial-request-put-in-review-dialog" .PutInReview }}
+  {{ template "partial-request-approve-dialog" .Approve }}
+  {{ template "partial-request-finish-review-dialog" .FinishReview}}
 {{ end }}

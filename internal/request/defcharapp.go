@@ -355,7 +355,7 @@ var DialogsCharacterApplication Dialogs = Dialogs{
 	Approve: Dialog{
 		Header:     "Approve This Character Application?",
 		Text:       template.HTML("Once approved, <span class=\"font-semibold\">this cannot be undone</span>. The character will go back to the player for them to create."),
-		ButtonText: "Finish Review",
+		ButtonText: "Approve Character",
 		Variable:   "showApproveDialog",
 	},
 	FinishReview: Dialog{
