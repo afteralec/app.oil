@@ -14,12 +14,12 @@ import (
 )
 
 type BindFieldViewParams struct {
-	Request       *query.Request
-	ChangeRequest *query.RequestChangeRequest
-	Content       content
-	FieldName     string
-	PID           int64
-	Last          bool
+	Request               *query.Request
+	Content               content
+	FieldName             string
+	CurrentChangeRequests []query.RequestChangeRequest
+	PID                   int64
+	Last                  bool
 }
 
 func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
@@ -76,7 +76,7 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 
 	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID {
 		// TODO: Put this in a utility
-		if p.ChangeRequest == nil {
+		if len(p.CurrentChangeRequests) == 0 {
 			change, err := partial.Render(e, partial.RenderParams{
 				Template: partial.RequestFieldActionChangeRequest,
 			})
@@ -95,12 +95,14 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 		actions = append(actions, reject)
 
 		text := "Approve"
-		if p.ChangeRequest == nil {
-			text = "Approve"
-		} else if p.Last {
-			text = "Finish"
+		if len(p.CurrentChangeRequests) > 0 {
+			if p.Last {
+				text = "Finish"
+			} else {
+				text = "Next"
+			}
 		} else {
-			text = "Next"
+			text = "Approve"
 		}
 		review, err := partial.Render(e, partial.RenderParams{
 			Template: partial.RequestFieldActionReview,
@@ -116,12 +118,12 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 	}
 
 	b["Actions"] = actions
-	b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(p.Request.ID, p.FieldName)
 
-	if p.ChangeRequest != nil {
+	b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(p.Request.ID, p.FieldName)
+	if len(p.CurrentChangeRequests) == 1 {
 		b["ChangeRequest"] = BindChangeRequest(BindChangeRequestParams{
 			PID:           p.PID,
-			ChangeRequest: p.ChangeRequest,
+			ChangeRequest: &p.CurrentChangeRequests[0],
 		})
 	}
 

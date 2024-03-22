@@ -231,6 +231,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listActorImagesPrimaryHandsStmt, err = db.PrepareContext(ctx, listActorImagesPrimaryHands); err != nil {
 		return nil, fmt.Errorf("error preparing query ListActorImagesPrimaryHands: %w", err)
 	}
+	if q.listChangeRequestsForRequestFieldStmt, err = db.PrepareContext(ctx, listChangeRequestsForRequestField); err != nil {
+		return nil, fmt.Errorf("error preparing query ListChangeRequestsForRequestField: %w", err)
+	}
 	if q.listCharacterApplicationContentForPlayerStmt, err = db.PrepareContext(ctx, listCharacterApplicationContentForPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query ListCharacterApplicationContentForPlayer: %w", err)
 	}
@@ -725,6 +728,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listActorImagesPrimaryHandsStmt: %w", cerr)
 		}
 	}
+	if q.listChangeRequestsForRequestFieldStmt != nil {
+		if cerr := q.listChangeRequestsForRequestFieldStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listChangeRequestsForRequestFieldStmt: %w", cerr)
+		}
+	}
 	if q.listCharacterApplicationContentForPlayerStmt != nil {
 		if cerr := q.listCharacterApplicationContentForPlayerStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listCharacterApplicationContentForPlayerStmt: %w", cerr)
@@ -1073,6 +1081,7 @@ type Queries struct {
 	listActorImagesStmt                                         *sql.Stmt
 	listActorImagesHandsStmt                                    *sql.Stmt
 	listActorImagesPrimaryHandsStmt                             *sql.Stmt
+	listChangeRequestsForRequestFieldStmt                       *sql.Stmt
 	listCharacterApplicationContentForPlayerStmt                *sql.Stmt
 	listCharacterApplicationsForPlayerStmt                      *sql.Stmt
 	listCurrentRequestChangeRequestsForRequestStmt              *sql.Stmt
@@ -1196,6 +1205,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listActorImagesStmt:                                         q.listActorImagesStmt,
 		listActorImagesHandsStmt:                                    q.listActorImagesHandsStmt,
 		listActorImagesPrimaryHandsStmt:                             q.listActorImagesPrimaryHandsStmt,
+		listChangeRequestsForRequestFieldStmt:                       q.listChangeRequestsForRequestFieldStmt,
 		listCharacterApplicationContentForPlayerStmt:                q.listCharacterApplicationContentForPlayerStmt,
 		listCharacterApplicationsForPlayerStmt:                      q.listCharacterApplicationsForPlayerStmt,
 		listCurrentRequestChangeRequestsForRequestStmt:              q.listCurrentRequestChangeRequestsForRequestStmt,

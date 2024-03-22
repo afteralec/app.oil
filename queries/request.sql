@@ -46,6 +46,9 @@ UPDATE request_change_requests SET text = ? WHERE id = ?;
 -- name: GetCurrentRequestChangeRequestForRequestField :one
 SELECT * FROM request_change_requests WHERE field = ? AND rid = ? AND old = false;
 
+-- name: ListChangeRequestsForRequestField :many
+SELECT * FROM request_change_requests WHERE field = ? AND rid = ? AND locked = ? AND old = ? ORDER BY updated_at;
+
 -- name: ListCurrentRequestChangeRequestsForRequest :many
 SELECT * FROM request_change_requests WHERE rid = ? AND old = false;
 
@@ -65,8 +68,6 @@ INSERT INTO
 VALUES 
   ("", "", "", "", "", ?);
 
-
-
 -- name: GetCharacterApplicationContent :one
 SELECT * FROM character_application_content WHERE id = ?;
 
@@ -84,8 +85,6 @@ WHERE
 
 -- name: GetCharacterApplicationContentForRequest :one
 SELECT * FROM character_application_content WHERE rid = ?;
-
-
 
 -- name: ListCharacterApplicationsForPlayer :many
 SELECT

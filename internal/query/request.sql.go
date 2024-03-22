@@ -395,6 +395,55 @@ func (q *Queries) IncrementRequestVersion(ctx context.Context, id int64) error {
 	return err
 }
 
+const listChangeRequestsForRequestField = `-- name: ListChangeRequestsForRequestField :many
+SELECT created_at, updated_at, text, field, rid, pid, id, locked, old FROM request_change_requests WHERE field = ? AND rid = ? AND locked = ? AND old = ? ORDER BY updated_at
+`
+
+type ListChangeRequestsForRequestFieldParams struct {
+	Field  string
+	RID    int64
+	Locked bool
+	Old    bool
+}
+
+func (q *Queries) ListChangeRequestsForRequestField(ctx context.Context, arg ListChangeRequestsForRequestFieldParams) ([]RequestChangeRequest, error) {
+	rows, err := q.query(ctx, q.listChangeRequestsForRequestFieldStmt, listChangeRequestsForRequestField,
+		arg.Field,
+		arg.RID,
+		arg.Locked,
+		arg.Old,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestChangeRequest
+	for rows.Next() {
+		var i RequestChangeRequest
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Text,
+			&i.Field,
+			&i.RID,
+			&i.PID,
+			&i.ID,
+			&i.Locked,
+			&i.Old,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listCharacterApplicationContentForPlayer = `-- name: ListCharacterApplicationContentForPlayer :many
 SELECT
   created_at, updated_at, backstory, description, short_description, name, gender, rid, id

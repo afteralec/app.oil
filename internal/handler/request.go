@@ -388,38 +388,35 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 
 			v := request.View(req.Type, nufo.Field)
 
-			// TODO: Change this query to a :many so we can pivot on the len instead of the error?
-			openChange := true
-			change, err := qtx.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
-				RID:   rid,
-				Field: nufo.Field,
+			// TODO: Get this into a utility that returns a struct with utilities
+			unlockedchanges, err := qtx.ListChangeRequestsForRequestField(context.Background(), query.ListChangeRequestsForRequestFieldParams{
+				RID:    rid,
+				Field:  nufo.Field,
+				Old:    false,
+				Locked: false,
 			})
-			if err != nil {
-				if err == sql.ErrNoRows {
-					openChange = false
-				} else {
-					c.Status(fiber.StatusInternalServerError)
-					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-				}
-			}
-
-			bfvp := request.BindFieldViewParams{
-				PID:       pid,
-				Request:   &req,
-				Content:   content,
-				FieldName: nufo.Field,
-				Last:      nufo.Last,
-			}
-			if openChange {
-				bfvp.ChangeRequest = &change
-			}
-			b, err = request.BindFieldView(i.Templates, b, bfvp)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
+			if len(unlockedchanges) > 1 {
+				// TODO: This is a fatal error
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			}
 
-			b["ShowReviewerAction"] = true
+			b, err = request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
+				PID:                   pid,
+				Request:               &req,
+				CurrentChangeRequests: unlockedchanges,
+				Content:               content,
+				FieldName:             nufo.Field,
+				Last:                  nufo.Last,
+			})
+			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			}
 
 			if err := tx.Commit(); err != nil {
 				c.Status(fiber.StatusInternalServerError)
