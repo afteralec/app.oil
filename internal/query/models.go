@@ -198,7 +198,6 @@ type Request struct {
 	RPID      int64
 	PID       int64
 	ID        int64
-	VID       int32
 }
 
 type RequestChangeRequest struct {
@@ -213,13 +212,14 @@ type RequestChangeRequest struct {
 	Old       bool
 }
 
-type RequestStatusChangeHistory struct {
+type RequestField struct {
 	CreatedAt time.Time
+	UpdatedAt time.Time
+	Value     string
+	Type      string
 	Status    string
 	RID       int64
-	PID       int64
 	ID        int64
-	VID       int32
 }
 
 type Room struct {

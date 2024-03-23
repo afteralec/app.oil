@@ -266,13 +266,6 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 		return err
 	}
 
-	if err := q.CreateHistoryForRequestStatusChange(context.Background(), query.CreateHistoryForRequestStatusChangeParams{
-		RID: p.RID,
-		PID: p.PID,
-	}); err != nil {
-		return err
-	}
-
 	if p.Status == StatusInReview {
 		if p.PID == 0 {
 			return ErrInvalidReviewerID

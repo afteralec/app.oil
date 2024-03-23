@@ -4,32 +4,26 @@ SELECT * FROM requests WHERE pid = ?;
 -- name: GetRequest :one
 SELECT * FROM requests WHERE id = ?;
 
--- name: CountOpenRequests :one
-SELECT
-  COUNT(*)
-FROM
-  requests
-WHERE
-  pid = ? AND status != "Archived" AND status != "Canceled";
-
 -- name: CreateRequest :execresult
 INSERT INTO requests (type, pid) VALUES (?, ?);
-
--- name: IncrementRequestVersion :exec
-UPDATE requests SET vid = vid + 1 WHERE id = ?;
-
--- name: CreateHistoryForRequestStatusChange :exec
-INSERT INTO 
-  request_status_change_history
-  (rid, vid, status, pid)
-VALUES
-  (?, (SELECT vid FROM requests WHERE requests.id = rid), (SELECT status FROM requests WHERE requests.id = rid), ?);
 
 -- name: UpdateRequestStatus :exec
 UPDATE requests SET status = ? WHERE id = ?;
 
 -- name: UpdateRequestReviewer :exec
 UPDATE requests SET rpid = ? WHERE id = ?;
+
+-- name: CreateRequestField :exec
+INSERT INTO request_fields (value, type, status, rid) VALUES (?, ?, ?, ?);
+
+-- name: ListRequestFieldsForRequest :many
+SELECT * FROM request_fields WHERE rid = ?;
+
+-- name: UpdateRequestFieldValueByRequestAndType :exec
+UPDATE request_fields SET value = ? WHERE type = ? AND rid = ?;
+
+-- name: UpdateRequestFieldStatusByRequestAndType :exec
+UPDATE request_fields SET status = ? WHERE type = ? AND rid = ?;
 
 -- name: CreateRequestChangeRequest :exec
 INSERT INTO request_change_requests (field, text, rid, pid) VALUES (?, ?, ?, ?);
@@ -46,10 +40,10 @@ UPDATE request_change_requests SET text = ? WHERE id = ?;
 -- name: GetCurrentRequestChangeRequestForRequestField :one
 SELECT * FROM request_change_requests WHERE field = ? AND rid = ? AND old = false;
 
--- name: ListChangeRequestsForRequest :many
+-- name: ListRequestChangeRequestsForRequest :many
 SELECT * FROM request_change_requests WHERE rid = ? AND locked = ? AND old = ? ORDER BY updated_at;
 
--- name: ListChangeRequestsForRequestField :many
+-- name: ListRequestChangeRequestsForRequestField :many
 SELECT * FROM request_change_requests WHERE field = ? AND rid = ? AND locked = ? AND old = ? ORDER BY updated_at;
 
 -- name: ListCurrentRequestChangeRequestsForRequest :many

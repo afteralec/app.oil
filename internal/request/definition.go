@@ -8,6 +8,7 @@ import (
 	"html/template"
 
 	html "github.com/gofiber/template/html/v2"
+
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
@@ -263,9 +264,59 @@ func ContentBytes(content any) ([]byte, error) {
 	return b, nil
 }
 
+var FieldsByType map[string][]string = map[string][]string{
+	TypeCharacterApplication: {
+		FieldCharacterApplicationName.Name,
+		FieldCharacterApplicationGender.Name,
+		FieldCharacterApplicationShortDescription.Name,
+		FieldCharacterApplicationDescription.Name,
+		FieldCharacterApplicationBackstory.Name,
+	},
+}
+
 type NewParams struct {
 	Type string
 	PID  int64
+}
+
+func NewNew(q *query.Queries, p NewParams) (int64, error) {
+	if p.PID == 0 {
+		return 0, ErrInvalidInput
+	}
+
+	if !IsTypeValid(p.Type) {
+		return 0, ErrInvalidType
+	}
+
+	fields, ok := FieldsByType[p.Type]
+	if !ok {
+		return 0, ErrInvalidType
+	}
+
+	result, err := q.CreateRequest(context.Background(), query.CreateRequestParams{
+		PID:  p.PID,
+		Type: TypeCharacterApplication,
+	})
+	if err != nil {
+		return 0, err
+	}
+	rid, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	for _, field := range fields {
+		if err := q.CreateRequestField(context.Background(), query.CreateRequestFieldParams{
+			RID:    rid,
+			Type:   field,
+			Status: FieldStatusNotReviewed,
+			Value:  "",
+		}); err != nil {
+			return 0, err
+		}
+	}
+
+	return rid, nil
 }
 
 func New(q *query.Queries, p NewParams) (int64, error) {

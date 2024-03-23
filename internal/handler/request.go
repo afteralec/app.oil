@@ -255,7 +255,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 
 		// TODO: Get this into a utility that returns a struct with utilities
-		unlockedchanges, err := qtx.ListChangeRequestsForRequest(context.Background(), query.ListChangeRequestsForRequestParams{
+		unlockedchanges, err := qtx.ListRequestChangeRequestsForRequest(context.Background(), query.ListRequestChangeRequestsForRequestParams{
 			RID:    rid,
 			Old:    false,
 			Locked: false,
@@ -384,7 +384,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			}
 
 			// TODO: Get this into a utility that returns a struct with utilities
-			unlockedchanges, err := qtx.ListChangeRequestsForRequestField(context.Background(), query.ListChangeRequestsForRequestFieldParams{
+			unlockedchanges, err := qtx.ListRequestChangeRequestsForRequestField(context.Background(), query.ListRequestChangeRequestsForRequestFieldParams{
 				RID:    rid,
 				Field:  nufo.Field,
 				Old:    false,

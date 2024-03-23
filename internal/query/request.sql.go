@@ -59,22 +59,6 @@ func (q *Queries) CountOpenCharacterApplicationsForPlayer(ctx context.Context, p
 	return count, err
 }
 
-const countOpenRequests = `-- name: CountOpenRequests :one
-SELECT
-  COUNT(*)
-FROM
-  requests
-WHERE
-  pid = ? AND status != "Archived" AND status != "Canceled"
-`
-
-func (q *Queries) CountOpenRequests(ctx context.Context, pid int64) (int64, error) {
-	row := q.queryRow(ctx, q.countOpenRequestsStmt, countOpenRequests, pid)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
-
 const createCharacterApplicationContent = `-- name: CreateCharacterApplicationContent :exec
 INSERT INTO
   character_application_content 
@@ -138,24 +122,6 @@ func (q *Queries) CreateHistoryForCharacterApplication(ctx context.Context, rid 
 	return err
 }
 
-const createHistoryForRequestStatusChange = `-- name: CreateHistoryForRequestStatusChange :exec
-INSERT INTO 
-  request_status_change_history
-  (rid, vid, status, pid)
-VALUES
-  (?, (SELECT vid FROM requests WHERE requests.id = rid), (SELECT status FROM requests WHERE requests.id = rid), ?)
-`
-
-type CreateHistoryForRequestStatusChangeParams struct {
-	RID int64
-	PID int64
-}
-
-func (q *Queries) CreateHistoryForRequestStatusChange(ctx context.Context, arg CreateHistoryForRequestStatusChangeParams) error {
-	_, err := q.exec(ctx, q.createHistoryForRequestStatusChangeStmt, createHistoryForRequestStatusChange, arg.RID, arg.PID)
-	return err
-}
-
 const createRequest = `-- name: CreateRequest :execresult
 INSERT INTO requests (type, pid) VALUES (?, ?)
 `
@@ -190,6 +156,27 @@ func (q *Queries) CreateRequestChangeRequest(ctx context.Context, arg CreateRequ
 	return err
 }
 
+const createRequestField = `-- name: CreateRequestField :exec
+INSERT INTO request_fields (value, type, status, rid) VALUES (?, ?, ?, ?)
+`
+
+type CreateRequestFieldParams struct {
+	Value  string
+	Type   string
+	Status string
+	RID    int64
+}
+
+func (q *Queries) CreateRequestField(ctx context.Context, arg CreateRequestFieldParams) error {
+	_, err := q.exec(ctx, q.createRequestFieldStmt, createRequestField,
+		arg.Value,
+		arg.Type,
+		arg.Status,
+		arg.RID,
+	)
+	return err
+}
+
 const deleteRequestChangeRequest = `-- name: DeleteRequestChangeRequest :exec
 DELETE FROM request_change_requests WHERE id = ?
 `
@@ -215,7 +202,7 @@ func (q *Queries) EditRequestChangeRequest(ctx context.Context, arg EditRequestC
 
 const getCharacterApplication = `-- name: GetCharacterApplication :one
 SELECT
-  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id, requests.vid
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id
 FROM
   requests
 JOIN
@@ -251,7 +238,6 @@ func (q *Queries) GetCharacterApplication(ctx context.Context, id int64) (GetCha
 		&i.Request.RPID,
 		&i.Request.PID,
 		&i.Request.ID,
-		&i.Request.VID,
 	)
 	return i, err
 }
@@ -346,7 +332,7 @@ func (q *Queries) GetCurrentRequestChangeRequestForRequestField(ctx context.Cont
 }
 
 const getRequest = `-- name: GetRequest :one
-SELECT created_at, updated_at, type, status, rpid, pid, id, vid FROM requests WHERE id = ?
+SELECT created_at, updated_at, type, status, rpid, pid, id FROM requests WHERE id = ?
 `
 
 func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
@@ -360,7 +346,6 @@ func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
 		&i.RPID,
 		&i.PID,
 		&i.ID,
-		&i.VID,
 	)
 	return i, err
 }
@@ -384,107 +369,6 @@ func (q *Queries) GetRequestChangeRequest(ctx context.Context, id int64) (Reques
 		&i.Old,
 	)
 	return i, err
-}
-
-const incrementRequestVersion = `-- name: IncrementRequestVersion :exec
-UPDATE requests SET vid = vid + 1 WHERE id = ?
-`
-
-func (q *Queries) IncrementRequestVersion(ctx context.Context, id int64) error {
-	_, err := q.exec(ctx, q.incrementRequestVersionStmt, incrementRequestVersion, id)
-	return err
-}
-
-const listChangeRequestsForRequest = `-- name: ListChangeRequestsForRequest :many
-SELECT created_at, updated_at, text, field, rid, pid, id, locked, old FROM request_change_requests WHERE rid = ? AND locked = ? AND old = ? ORDER BY updated_at
-`
-
-type ListChangeRequestsForRequestParams struct {
-	RID    int64
-	Locked bool
-	Old    bool
-}
-
-func (q *Queries) ListChangeRequestsForRequest(ctx context.Context, arg ListChangeRequestsForRequestParams) ([]RequestChangeRequest, error) {
-	rows, err := q.query(ctx, q.listChangeRequestsForRequestStmt, listChangeRequestsForRequest, arg.RID, arg.Locked, arg.Old)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []RequestChangeRequest
-	for rows.Next() {
-		var i RequestChangeRequest
-		if err := rows.Scan(
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.Text,
-			&i.Field,
-			&i.RID,
-			&i.PID,
-			&i.ID,
-			&i.Locked,
-			&i.Old,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listChangeRequestsForRequestField = `-- name: ListChangeRequestsForRequestField :many
-SELECT created_at, updated_at, text, field, rid, pid, id, locked, old FROM request_change_requests WHERE field = ? AND rid = ? AND locked = ? AND old = ? ORDER BY updated_at
-`
-
-type ListChangeRequestsForRequestFieldParams struct {
-	Field  string
-	RID    int64
-	Locked bool
-	Old    bool
-}
-
-func (q *Queries) ListChangeRequestsForRequestField(ctx context.Context, arg ListChangeRequestsForRequestFieldParams) ([]RequestChangeRequest, error) {
-	rows, err := q.query(ctx, q.listChangeRequestsForRequestFieldStmt, listChangeRequestsForRequestField,
-		arg.Field,
-		arg.RID,
-		arg.Locked,
-		arg.Old,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []RequestChangeRequest
-	for rows.Next() {
-		var i RequestChangeRequest
-		if err := rows.Scan(
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.Text,
-			&i.Field,
-			&i.RID,
-			&i.PID,
-			&i.ID,
-			&i.Locked,
-			&i.Old,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const listCharacterApplicationContentForPlayer = `-- name: ListCharacterApplicationContentForPlayer :many
@@ -532,7 +416,7 @@ func (q *Queries) ListCharacterApplicationContentForPlayer(ctx context.Context, 
 
 const listCharacterApplicationsForPlayer = `-- name: ListCharacterApplicationsForPlayer :many
 SELECT
-  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, players.created_at, players.updated_at, players.pw_hash, players.username, players.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id, requests.vid
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, players.created_at, players.updated_at, players.pw_hash, players.username, players.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id
 FROM
   requests
 JOIN
@@ -590,7 +474,6 @@ func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid in
 			&i.Request.RPID,
 			&i.Request.PID,
 			&i.Request.ID,
-			&i.Request.VID,
 		); err != nil {
 			return nil, err
 		}
@@ -644,7 +527,7 @@ func (q *Queries) ListCurrentRequestChangeRequestsForRequest(ctx context.Context
 
 const listOpenCharacterApplications = `-- name: ListOpenCharacterApplications :many
 SELECT 
-  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, players.created_at, players.updated_at, players.pw_hash, players.username, players.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id, requests.vid
+  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, players.created_at, players.updated_at, players.pw_hash, players.username, players.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id
 FROM 
   requests
 JOIN 
@@ -702,7 +585,133 @@ func (q *Queries) ListOpenCharacterApplications(ctx context.Context) ([]ListOpen
 			&i.Request.RPID,
 			&i.Request.PID,
 			&i.Request.ID,
-			&i.Request.VID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listRequestChangeRequestsForRequest = `-- name: ListRequestChangeRequestsForRequest :many
+SELECT created_at, updated_at, text, field, rid, pid, id, locked, old FROM request_change_requests WHERE rid = ? AND locked = ? AND old = ? ORDER BY updated_at
+`
+
+type ListRequestChangeRequestsForRequestParams struct {
+	RID    int64
+	Locked bool
+	Old    bool
+}
+
+func (q *Queries) ListRequestChangeRequestsForRequest(ctx context.Context, arg ListRequestChangeRequestsForRequestParams) ([]RequestChangeRequest, error) {
+	rows, err := q.query(ctx, q.listRequestChangeRequestsForRequestStmt, listRequestChangeRequestsForRequest, arg.RID, arg.Locked, arg.Old)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestChangeRequest
+	for rows.Next() {
+		var i RequestChangeRequest
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Text,
+			&i.Field,
+			&i.RID,
+			&i.PID,
+			&i.ID,
+			&i.Locked,
+			&i.Old,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listRequestChangeRequestsForRequestField = `-- name: ListRequestChangeRequestsForRequestField :many
+SELECT created_at, updated_at, text, field, rid, pid, id, locked, old FROM request_change_requests WHERE field = ? AND rid = ? AND locked = ? AND old = ? ORDER BY updated_at
+`
+
+type ListRequestChangeRequestsForRequestFieldParams struct {
+	Field  string
+	RID    int64
+	Locked bool
+	Old    bool
+}
+
+func (q *Queries) ListRequestChangeRequestsForRequestField(ctx context.Context, arg ListRequestChangeRequestsForRequestFieldParams) ([]RequestChangeRequest, error) {
+	rows, err := q.query(ctx, q.listRequestChangeRequestsForRequestFieldStmt, listRequestChangeRequestsForRequestField,
+		arg.Field,
+		arg.RID,
+		arg.Locked,
+		arg.Old,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestChangeRequest
+	for rows.Next() {
+		var i RequestChangeRequest
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Text,
+			&i.Field,
+			&i.RID,
+			&i.PID,
+			&i.ID,
+			&i.Locked,
+			&i.Old,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listRequestFieldsForRequest = `-- name: ListRequestFieldsForRequest :many
+SELECT created_at, updated_at, value, type, status, rid, id FROM request_fields WHERE rid = ?
+`
+
+func (q *Queries) ListRequestFieldsForRequest(ctx context.Context, rid int64) ([]RequestField, error) {
+	rows, err := q.query(ctx, q.listRequestFieldsForRequestStmt, listRequestFieldsForRequest, rid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestField
+	for rows.Next() {
+		var i RequestField
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Value,
+			&i.Type,
+			&i.Status,
+			&i.RID,
+			&i.ID,
 		); err != nil {
 			return nil, err
 		}
@@ -718,7 +727,7 @@ func (q *Queries) ListOpenCharacterApplications(ctx context.Context) ([]ListOpen
 }
 
 const listRequestsForPlayer = `-- name: ListRequestsForPlayer :many
-SELECT created_at, updated_at, type, status, rpid, pid, id, vid FROM requests WHERE pid = ?
+SELECT created_at, updated_at, type, status, rpid, pid, id FROM requests WHERE pid = ?
 `
 
 func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Request, error) {
@@ -738,7 +747,6 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 			&i.RPID,
 			&i.PID,
 			&i.ID,
-			&i.VID,
 		); err != nil {
 			return nil, err
 		}
@@ -899,6 +907,36 @@ type UpdateCharacterApplicationContentShortDescriptionParams struct {
 
 func (q *Queries) UpdateCharacterApplicationContentShortDescription(ctx context.Context, arg UpdateCharacterApplicationContentShortDescriptionParams) error {
 	_, err := q.exec(ctx, q.updateCharacterApplicationContentShortDescriptionStmt, updateCharacterApplicationContentShortDescription, arg.ShortDescription, arg.RID)
+	return err
+}
+
+const updateRequestFieldStatusByRequestAndType = `-- name: UpdateRequestFieldStatusByRequestAndType :exec
+UPDATE request_fields SET status = ? WHERE type = ? AND rid = ?
+`
+
+type UpdateRequestFieldStatusByRequestAndTypeParams struct {
+	Status string
+	Type   string
+	RID    int64
+}
+
+func (q *Queries) UpdateRequestFieldStatusByRequestAndType(ctx context.Context, arg UpdateRequestFieldStatusByRequestAndTypeParams) error {
+	_, err := q.exec(ctx, q.updateRequestFieldStatusByRequestAndTypeStmt, updateRequestFieldStatusByRequestAndType, arg.Status, arg.Type, arg.RID)
+	return err
+}
+
+const updateRequestFieldValueByRequestAndType = `-- name: UpdateRequestFieldValueByRequestAndType :exec
+UPDATE request_fields SET value = ? WHERE type = ? AND rid = ?
+`
+
+type UpdateRequestFieldValueByRequestAndTypeParams struct {
+	Value string
+	Type  string
+	RID   int64
+}
+
+func (q *Queries) UpdateRequestFieldValueByRequestAndType(ctx context.Context, arg UpdateRequestFieldValueByRequestAndTypeParams) error {
+	_, err := q.exec(ctx, q.updateRequestFieldValueByRequestAndTypeStmt, updateRequestFieldValueByRequestAndType, arg.Value, arg.Type, arg.RID)
 	return err
 }
 
