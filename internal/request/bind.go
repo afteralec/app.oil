@@ -6,8 +6,6 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 	html "github.com/gofiber/template/html/v2"
 
-	"petrichormud.com/app/internal/actor"
-	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
@@ -92,12 +90,6 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 	} else {
 		b["FieldValue"] = ""
 	}
-
-	// TODO: Key this to be specific to the field definition
-	b = BindGenderRadioGroup(b, BindGenderRadioGroupParams{
-		Content: p.Content,
-		Name:    "value",
-	})
 
 	BindFieldViewActions(e, b, BindFieldViewActionsParams{
 		PID:                   p.PID,
@@ -198,51 +190,6 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 
 	b["Actions"] = actions
 	return b, nil
-}
-
-type BindGenderRadioGroupParams struct {
-	Content content
-	Name    string
-}
-
-// TODO: Put this behind a Character Applications, Characters or actor package instead?
-func BindGenderRadioGroup(b fiber.Map, p BindGenderRadioGroupParams) fiber.Map {
-	gender, ok := p.Content.Value(FieldCharacterApplicationGender.Name)
-	if !ok {
-		return fiber.Map{}
-	}
-	b["GenderRadioGroup"] = []bind.Radio{
-		{
-			ID:       "edit-request-character-application-gender-non-binary",
-			Name:     p.Name,
-			Variable: "gender",
-			Value:    actor.GenderNonBinary,
-			Label:    "Non-Binary",
-			Active:   gender == actor.GenderNonBinary,
-		},
-		{
-			ID:       "edit-request-character-application-gender-female",
-			Name:     p.Name,
-			Variable: "gender",
-			Value:    actor.GenderFemale,
-			Label:    "Female",
-			Active:   gender == actor.GenderFemale,
-		},
-		{
-			ID:       "edit-request-character-application-gender-male",
-			Name:     p.Name,
-			Variable: "gender",
-			Value:    actor.GenderMale,
-			Label:    "Male",
-			Active:   gender == actor.GenderMale,
-		},
-	}
-	return b
-}
-
-type BindViewedByParams struct {
-	Request *query.Request
-	PID     int64
 }
 
 type BindChangeRequestParams struct {

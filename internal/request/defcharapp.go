@@ -11,6 +11,7 @@ import (
 	html "github.com/gofiber/template/html/v2"
 
 	"petrichormud.com/app/internal/actor"
+	"petrichormud.com/app/internal/bind"
 	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
@@ -237,10 +238,36 @@ func (f *fieldCharacterApplicationGenderFormRenderer) Render(e *html.Engine, p R
 		"Path":       route.RequestFieldPath(p.Request.ID, p.FieldName),
 		"FieldValue": p.FieldValue,
 	}
-	b = BindGenderRadioGroup(b, BindGenderRadioGroupParams{
-		Content: p.Content,
-		Name:    "value",
-	})
+	gender, ok := p.Content.Value(FieldCharacterApplicationGender.Name)
+	if !ok {
+		return template.HTML(""), ErrInvalidInput
+	}
+	b["GenderRadioGroup"] = []bind.Radio{
+		{
+			ID:       "edit-request-character-application-gender-non-binary",
+			Name:     "value",
+			Variable: "gender",
+			Value:    actor.GenderNonBinary,
+			Label:    "Non-Binary",
+			Active:   gender == actor.GenderNonBinary,
+		},
+		{
+			ID:       "edit-request-character-application-gender-female",
+			Name:     "value",
+			Variable: "gender",
+			Value:    actor.GenderFemale,
+			Label:    "Female",
+			Active:   gender == actor.GenderFemale,
+		},
+		{
+			ID:       "edit-request-character-application-gender-male",
+			Name:     "value",
+			Variable: "gender",
+			Value:    actor.GenderMale,
+			Label:    "Male",
+			Active:   gender == actor.GenderMale,
+		},
+	}
 	return partial.Render(e, partial.RenderParams{
 		Template: partial.RequestFieldFormCharacterApplicationGender,
 		Bind:     b,
