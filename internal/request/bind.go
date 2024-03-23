@@ -29,8 +29,40 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 	}
 	b["Help"] = help
 
+	// TODO: Get this into a utility
 	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady {
-		b["AllowEdit"] = true
+		fieldValue, ok := p.Content.Value(p.FieldName)
+		if !ok {
+			fieldValue = ""
+		}
+
+		form, err := RenderFieldForm(e, RenderFieldFormParams{
+			Request:    p.Request,
+			Content:    p.Content,
+			FieldName:  p.FieldName,
+			FieldValue: fieldValue,
+			FormID:     FormID,
+		})
+		if err != nil {
+			return b, err
+		}
+		b["Form"] = form
+	} else {
+		fieldValue, ok := p.Content.Value(p.FieldName)
+		if !ok {
+			fieldValue = ""
+		}
+
+		data, err := RenderFieldData(e, RenderFieldDataParams{
+			Request:    p.Request,
+			Content:    p.Content,
+			FieldName:  p.FieldName,
+			FieldValue: fieldValue,
+		})
+		if err != nil {
+			return b, err
+		}
+		b["Data"] = data
 	}
 
 	b, err = BindDialogs(b, BindDialogsParams{

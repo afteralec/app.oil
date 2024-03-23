@@ -189,8 +189,6 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 			return c.Redirect(route.RequestPath(rid))
 		}
 
-		v := request.View(req.Type, field)
-
 		b := view.Bind(c)
 		b, err = request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
 			PID:       pid,
@@ -203,7 +201,7 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		return c.Render(v, b, layout.RequestFieldStandalone)
+		return c.Render(view.RequestField, b, layout.Standalone)
 	}
 }
 
@@ -289,8 +287,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		if req.Status == request.StatusIncomplete {
 			// TODO: Validate that NextIncompleteField returns something here
 			field, last := request.NextIncompleteField(req.Type, content)
-			v := request.View(req.Type, field)
-
 			b, err = request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
 				PID:       pid,
 				Request:   &req,
@@ -303,7 +299,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
 
-			return c.Render(v, b, layout.RequestFieldStandalone)
+			return c.Render(view.RequestField, b, layout.Standalone)
 		}
 
 		if req.Status == request.StatusInReview && req.RPID == pid {
@@ -386,8 +382,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.RequestSummaryFields, b, layout.Page)
 			}
 
-			v := request.View(req.Type, nufo.Field)
-
 			// TODO: Get this into a utility that returns a struct with utilities
 			unlockedchanges, err := qtx.ListChangeRequestsForRequestField(context.Background(), query.ListChangeRequestsForRequestFieldParams{
 				RID:    rid,
@@ -423,7 +417,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
 
-			return c.Render(v, b, layout.RequestFieldStandalone)
+			return c.Render(view.RequestField, b, layout.Standalone)
 		}
 
 		b["PageHeader"] = fiber.Map{

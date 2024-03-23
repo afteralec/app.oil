@@ -1,0 +1,29 @@
+{{ define "view-request-field" }}
+<main
+  class="flex h-screen w-full flex-col items-center justify-center"
+  x-data="getRequestData()"
+>
+  <article class="w-full max-w-lg rounded-md border p-6">
+    <!-- prettier-ignore -->
+    {{ template "partial-request-field-header" . }}
+
+    {{ .Help }}
+
+    {{ template "partial-request-divider" . }}
+
+    {{ if .ChangeRequest }}
+      {{ template "partial-request-change-request" .ChangeRequest }}
+    {{ else }}
+      {{ template "partial-request-change-request-empty" }}
+    {{ end }}
+
+    {{ if .Form }}
+      {{ .Form }}
+    {{ else if .Data }}
+      {{ .Data }}
+    {{ end }}
+
+    {{ template "partial-request-field-footer" . }}
+  </article>
+</main>
+{{ end }}

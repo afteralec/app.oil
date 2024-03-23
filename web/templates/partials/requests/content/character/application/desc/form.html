@@ -1,9 +1,9 @@
 {{ define "partial-request-field-form-character-application-desc" }}
 <form
-  id="{{ .RequestFormID }}"
+  id="{{ .FormID }}"
   class="space-y-4 px-4 pt-4"
   @submit.prevent=""
-  hx-patch="{{ .RequestFormPath }}"
+  hx-patch="{{ .Path }}"
   hx-swap="none"
   x-data="getCharacterApplicationDescriptionData('{{ .FieldValue }}')"
 >

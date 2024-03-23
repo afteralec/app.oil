@@ -1,10 +1,10 @@
 {{ define "partial-request-field-form-character-application-name" }}
 <form
-  id="{{ .RequestFormID }}"
+  id="{{ .FormID }}"
   class="space-y-2 px-4 pt-4"
   x-data="getCharacterApplicationNameData(`{{ .FieldValue }}`)"
   @submit.prevent=""
-  hx-patch="{{ .RequestFormPath }}"
+  hx-patch="{{ .Path }}"
   hx-swap="none"
 >
   <input

@@ -1,8 +1,8 @@
 {{ define "partial-request-field-form-character-application-sdesc" }}
 <form
-  id="{{ .RequestFormID }}"
+  id="{{ .FormID }}"
   class="space-y-2 px-4 pt-4"
-  hx-patch="{{ .RequestFormPath }}"
+  hx-patch="{{ .Path }}"
   hx-swap="none"
   x-data="getCharacterApplicationShortDescriptionData('{{ .FieldValue }}')"
 >

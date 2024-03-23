@@ -11,6 +11,7 @@ import (
 	html "github.com/gofiber/template/html/v2"
 
 	"petrichormud.com/app/internal/actor"
+	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
@@ -182,7 +183,8 @@ func NewFieldCharacterApplicationName() Field {
 	b.Description("Your character's name")
 	b.Updater(new(fieldCharacterApplicationNameUpdater))
 	b.Validator(&actor.CharacterNameValidator)
-	b.View(view.CharacterApplicationName)
+	b.View(view.RequestField)
+	b.Layout(layout.Standalone)
 	b.Help(partial.RequestFieldHelpCharacterApplicationName)
 	b.DataRenderer(new(fieldCharacterApplicationNameDataRenderer))
 	b.FormRenderer(new(fieldCharacterApplicationNameFormRenderer))
@@ -252,7 +254,8 @@ func NewFieldCharacterApplicationGender() Field {
 	b.Description("Your character's gender determines the pronouns used by third-person descriptions in the game")
 	b.Updater(new(fieldCharacterApplicationGenderUpdater))
 	b.Validator(&actor.GenderValidator)
-	b.View(view.CharacterApplicationGender)
+	b.View(view.RequestField)
+	b.Layout(layout.Standalone)
 	b.Help(partial.RequestFieldHelpCharacterApplicationGender)
 	b.DataRenderer(new(fieldCharacterApplicationGenderDataRenderer))
 	b.FormRenderer(new(fieldCharacterApplicationGenderFormRenderer))
@@ -317,7 +320,8 @@ func NewFieldCharacterApplicationShortDescription() Field {
 	b.Description("This is how your character will appear in third-person descriptions during the game")
 	b.Updater(new(fieldCharacterApplicationShortDescriptionUpdater))
 	b.Validator(&actor.ShortDescriptionValidator)
-	b.View(view.CharacterApplicationShortDescription)
+	b.View(view.RequestField)
+	b.Layout(layout.Standalone)
 	b.Help(partial.RequestFieldHelpCharacterApplicationShortDescription)
 	b.DataRenderer(new(fieldCharacterApplicationShortDescriptionDataRenderer))
 	b.FormRenderer(new(fieldCharacterApplicationShortDescriptionFormRenderer))
@@ -383,7 +387,8 @@ func NewFieldCharacterApplicationDescription() Field {
 	b.Updater(new(fieldCharacterApplicationDescriptionUpdater))
 	b.Validator(&actor.DescriptionLengthValidator)
 	b.Validator(&actor.DescriptionRegexValidator)
-	b.View(view.CharacterApplicationDescription)
+	b.View(view.RequestField)
+	b.Layout(layout.Standalone)
 	b.Help(partial.RequestFieldHelpCharacterApplicationDescription)
 	b.DataRenderer(new(fieldCharacterApplicationDescriptionDataRenderer))
 	b.FormRenderer(new(fieldCharacterApplicationDescriptionFormRenderer))
@@ -450,7 +455,8 @@ func NewFieldCharacterApplicationBackstory() Field {
 	b.Description("This is your character's private backstory")
 	b.Updater(new(fieldCharacterApplicationBackstoryUpdater))
 	b.Validator(&actor.CharacterBackstoryValidator)
-	b.View(view.CharacterApplicationBackstory)
+	b.View(view.RequestField)
+	b.Layout(layout.Standalone)
 	b.Help(partial.RequestFieldHelpCharacterApplicationBackstory)
 	b.DataRenderer(new(fieldCharacterApplicationBackstoryDataRenderer))
 	b.FormRenderer(new(fieldCharacterApplicationBackstoryFormRenderer))

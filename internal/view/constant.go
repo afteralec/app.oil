@@ -47,7 +47,10 @@ const (
 	RecoverUsernameSuccess string = "view-recover-username-success"
 )
 
-const RequestSummaryFields string = "view-request-summary-fields"
+const (
+	RequestSummaryFields string = "view-request-summary-fields"
+	RequestField         string = "view-request-field"
+)
 
 const (
 	CharacterApplicationName             string = "view-request-character-application-name"
