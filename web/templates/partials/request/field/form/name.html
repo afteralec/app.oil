@@ -1,0 +1,60 @@
+{{ define "partial-request-field-form-character-application-name" }}
+<form
+  id="{{ .FormID }}"
+  class="space-y-2 px-4 pt-4"
+  x-data="getCharacterApplicationNameData(`{{ .FieldValue }}`)"
+  @submit.prevent=""
+  hx-patch="{{ .Path }}"
+  hx-swap="none"
+>
+  <input
+    placeholder=""
+    name="value"
+    autofocus
+    id="requests-character-application-name"
+    class="input"
+    x-model="name"
+    @input="
+      eval.n.len = true;
+      name = sanitizeCharacterName(event.target.value);
+    "
+  />
+  <section>
+    <div
+      id="character-application-name-requirements"
+      class="text-xs leading-none text-muted-fg"
+    >
+      Upper and lower case letters, dashes, and apostrophes only.
+    </div>
+    <div
+      class="flex items-center gap-1 text-xs leading-none text-muted-fg"
+      x-cloak
+      x-show="!isCharacterNameValid(name) && !eval.n.len"
+    >
+      <!-- TODO: Move this string to a passed variable? -->
+      <p>Your character's name should be between 4 and 16 characters long.</p>
+    </div>
+    <div
+      class="flex items-center gap-1 text-xs leading-none text-err-fg"
+      x-cloak
+      x-show="!isCharacterNameValid(name) && eval.n.len && name.length < 4"
+    >
+      <p>Your character's name should be between 4 and 16 characters long.</p>
+    </div>
+    <div
+      class="flex items-center gap-1 text-xs leading-none text-success-fg"
+      x-cloak
+      x-show="!isCharacterNameValid(name) && eval.n.len && name.length >= 4 && name.length <= 16"
+    >
+      <p>Your character's name should be between 4 and 16 characters long.</p>
+    </div>
+    <div
+      class="flex items-center gap-1 text-xs leading-none text-err-fg"
+      x-cloak
+      x-show="!isCharacterNameValid(name) && eval.n.len && name.length > 16"
+    >
+      <p>Your character's name should be between 4 and 16 characters long.</p>
+    </div>
+  </section>
+</form>
+{{ end }}

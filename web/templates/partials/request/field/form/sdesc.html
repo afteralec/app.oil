@@ -1,0 +1,83 @@
+{{ define "partial-request-field-form-character-application-sdesc" }}
+<form
+  id="{{ .FormID }}"
+  class="space-y-2 px-4 pt-4"
+  hx-patch="{{ .Path }}"
+  hx-swap="none"
+  x-data="getCharacterApplicationShortDescriptionData('{{ .FieldValue }}')"
+>
+  <input
+    name="value"
+    placeholder=""
+    value="{{ .FieldValue }}"
+    autofocus
+    id="character-application-flow-sdesc"
+    class="input"
+    x-model="sdesc"
+    @input="
+      eval.sdesc.len = true;
+      sdesc = sanitizeCharacterShortDescription(event.target.value);
+    "
+  />
+  <section>
+    <!-- TODO: Move these min and max numbers to injected variables? -->
+    <!-- TODO: Move this alpine evaluation to htmx -->
+    <div
+      id="character-application-sdesc-requirements"
+      class="pb-1 text-xs leading-none text-muted-fg"
+    >
+      Your short description can include commas and dashes and will always be
+      lower case.
+    </div>
+    <div
+      class="flex items-center gap-1 text-xs leading-none text-muted-fg"
+      x-cloak
+      x-show="!isCharacterShortDescriptionValid(sdesc) && !eval.sdesc.len"
+    >
+      <!-- TODO: Move this string to a passed variable? -->
+      <p>
+        Your character's short description should be between 8 and 300
+        characters long.
+      </p>
+    </div>
+    <div
+      class="flex items-center gap-1 text-xs leading-none text-err-fg"
+      x-cloak
+      x-show="!isCharacterShortDescriptionValid(sdesc) && eval.sdesc.len && sdesc.length < 8"
+    >
+      <p>
+        Your character's short description should be between 8 and 300
+        characters long.
+      </p>
+    </div>
+    <div
+      class="flex items-center gap-1 text-xs leading-none text-success-fg"
+      x-cloak
+      x-show="!isCharacterShortDescriptionValid(sdesc) && eval.sdesc.len && sdesc.length >= 8 && sdesc.length <= 300"
+    >
+      <p>
+        Your character's short description should be between 8 and 300
+        characters long.
+      </p>
+    </div>
+    <div
+      class="flex items-center gap-1 text-xs leading-none text-err-fg"
+      x-cloak
+      x-show="!isCharacterShortDescriptionValid(sdesc) && eval.sdesc.len && sdesc.length > 300"
+    >
+      <p>
+        Your character's short description should be between 8 and 300
+        characters long.
+      </p>
+    </div>
+  </section>
+  <section
+    x-show="isCharacterShortDescriptionValid(sdesc)"
+    class="text-sm leading-none"
+  >
+    Your short description will be displayed in-game as:
+    <br />
+    The <span x-text="sdesc"></span>
+  </section>
+</form>
+{{ end }}

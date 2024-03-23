@@ -1,0 +1,68 @@
+{{ define "partial-request-field-form-character-application-desc" }}
+<form
+  id="{{ .FormID }}"
+  class="space-y-4 px-4 pt-4"
+  @submit.prevent=""
+  hx-patch="{{ .Path }}"
+  hx-swap="none"
+  x-data="getCharacterApplicationDescriptionData('{{ .FieldValue }}')"
+>
+  <div class="space-y-2">
+    <textarea
+      placeholder=""
+      name="value"
+      autofocus
+      id="character-application-flow-description"
+      class="input min-h-[10rem]"
+      x-model="description"
+      @input="
+        eval.desc.len = true;
+        backstory = sanitizeCharacterDescription(event.target.value);
+      "
+    ></textarea>
+    <section>
+      <div
+        class="flex items-center gap-1 text-xs leading-none text-muted-fg"
+        x-cloak
+        x-show="!isCharacterDescriptionValid(description) && !eval.desc.len"
+      >
+        <!-- TODO: Move this string to a passed variable? -->
+        <p>
+          Your character's description should be between 32 and 2000 characters
+          long.
+        </p>
+      </div>
+      <div
+        class="flex items-center gap-1 text-xs leading-none text-err-fg"
+        x-cloak
+        x-show="!isCharacterDescriptionValid(description) && eval.desc.len && description.length < 32"
+      >
+        <p>
+          Your character's description should be between 32 and 2000 characters
+          long.
+        </p>
+      </div>
+      <div
+        class="flex items-center gap-1 text-xs leading-none text-success-fg"
+        x-cloak
+        x-show="!isCharacterDescriptionValid(description) && eval.desc.len && description.length >= 32 && description.length <= 2000"
+      >
+        <p>
+          Your character's description should be between 32 and 2000 characters
+          long.
+        </p>
+      </div>
+      <div
+        class="flex items-center gap-1 text-xs leading-none text-err-fg"
+        x-cloak
+        x-show="!isCharacterDescriptionValid(description) && eval.desc.len && description.length > 2000"
+      >
+        <p>
+          Your character's description should be between 32 and 2000 characters
+          long.
+        </p>
+      </div>
+    </section>
+  </div>
+</form>
+{{ end }}
