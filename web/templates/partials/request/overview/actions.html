@@ -1,0 +1,18 @@
+{{ define "partial-request-summary-actions" }}
+<section class="flex items-center gap-2 pt-4">
+  <!-- prettier-ignore -->
+  {{ if .ShowCancelAction }}
+    {{ template "partial-request-overview-action-cancel" }}
+  {{ end }}
+
+  {{ if .ShowSubmitAction }}
+    {{ template "partial-request-overview-action-submit" }}
+  {{ end }}
+
+  {{ if .ShowApproveAction }}
+    {{ template "partial-request-overview-action-approve" }} 
+  {{ else if .ShowFinishReviewAction }}
+    {{ template "partial-request-overview-action-review" }}
+  {{ end }}
+</section>
+{{ end }}

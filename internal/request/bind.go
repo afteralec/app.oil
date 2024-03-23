@@ -192,6 +192,68 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 	return b, nil
 }
 
+type BindOverviewParams struct {
+	Request               *query.Request
+	CurrentChangeRequests []query.RequestChangeRequest
+	PID                   int64
+}
+
+func BindOverview(e *html.Engine, b fiber.Map, p BindOverviewParams) (fiber.Map, error) {
+	return b, nil
+}
+
+type BindOverviewActionsParams struct {
+	Request               *query.Request
+	CurrentChangeRequests []query.RequestChangeRequest
+	PID                   int64
+}
+
+func BindOverviewActions(e *html.Engine, b fiber.Map, p BindOverviewActionsParams) (fiber.Map, error) {
+	actions := []template.HTML{}
+
+	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID {
+		// TODO: Put this in a utility
+		if len(p.CurrentChangeRequests) == 0 {
+			change, err := partial.Render(e, partial.RenderParams{
+				Template: partial.RequestFieldActionChangeRequest,
+			})
+			if err != nil {
+				return b, err
+			}
+			actions = append(actions, change)
+		}
+
+		reject, err := partial.Render(e, partial.RenderParams{
+			Template: partial.RequestFieldActionReject,
+		})
+		if err != nil {
+			return b, err
+		}
+		actions = append(actions, reject)
+
+		text := "Approve"
+		if len(p.CurrentChangeRequests) > 0 {
+			text = "Next"
+		} else {
+			text = "Approve"
+		}
+		review, err := partial.Render(e, partial.RenderParams{
+			Template: partial.RequestFieldActionReview,
+			Bind: fiber.Map{
+				"Path": route.RequestStatusPath(p.Request.ID),
+				"Text": text,
+			},
+		})
+		if err != nil {
+			return b, err
+		}
+		actions = append(actions, review)
+	}
+
+	b["Actions"] = actions
+	return b, nil
+}
+
 type BindChangeRequestParams struct {
 	ChangeRequest *query.RequestChangeRequest
 	PID           int64
