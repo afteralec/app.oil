@@ -9,6 +9,4 @@ const (
 	PageHeader string = "layout-page-header"
 )
 
-const RequestFieldStandalone = "layout-request-field-standalone"
-
 const EditRoomExitsSelect string = "layout-edit-room-exits-select"
