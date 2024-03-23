@@ -1,4 +1,4 @@
-{{ define "partial-requests-summary-field" }}
+{{ define "partial-request-overview-field" }}
 <section class="space-y-2 pt-6" x-data="{ helpOpen: false }">
   <header>
     <h3 class="header-4">{{ .Label }}</h3>
@@ -13,7 +13,7 @@
 
   <!-- prettier-ignore -->
   {{ if .IsApproved }}
-    {{ template "partial-request-summary-field-approved" }}
+    {{ template "partial-request-overview-field-approved" }}
   {{ end }}
 
   <footer>
@@ -27,15 +27,13 @@
         Help
       </button>
 
+      <!-- prettier-ignore -->
       {{ if .AllowEdit }}
       <a href="{{ .Path }}" class="button-outline">Edit</a>
       {{ end }}
     </section>
   </footer>
 
-  <div x-cloak x-show="helpOpen" class="pt-2">
-    <!-- TODO: This needs to be general, include the help from insert -->
-    {{ template "partial-character-application-summary-field-help" .Label }}
-  </div>
+  <div x-cloak x-show="helpOpen" class="pt-2"></div>
 </section>
 {{ end }}

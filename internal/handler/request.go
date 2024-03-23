@@ -254,6 +254,22 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			}
 		}
 
+		// TODO: Get this into a utility that returns a struct with utilities
+		unlockedchanges, err := qtx.ListChangeRequestsForRequest(context.Background(), query.ListChangeRequestsForRequestParams{
+			RID:    rid,
+			Old:    false,
+			Locked: false,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		}
+		if len(unlockedchanges) > 1 {
+			// TODO: This is a fatal error
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		}
+
 		content, err := request.Content(qtx, &req)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -318,6 +334,17 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			}
 
 			if nufo.Field == "" {
+				b, err = request.BindOverview(i.Templates, b, request.BindOverviewParams{
+					PID:                   pid,
+					Request:               &req,
+					Content:               content,
+					CurrentChangeRequests: unlockedchanges,
+				})
+				if err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+				}
+
 				b["PageHeader"] = fiber.Map{
 					"Title": request.TitleForSummary(req.Type, content),
 				}
@@ -379,7 +406,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 
 				b["SummaryFields"] = processedSummaryFields
 
-				return c.Render(view.RequestSummaryFields, b, layout.Page)
+				return c.Render(view.RequestOverview, b, layout.Page)
 			}
 
 			// TODO: Get this into a utility that returns a struct with utilities
@@ -420,6 +447,17 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.RequestField, b, layout.Standalone)
 		}
 
+		b, err = request.BindOverview(i.Templates, b, request.BindOverviewParams{
+			PID:                   pid,
+			Request:               &req,
+			Content:               content,
+			CurrentChangeRequests: unlockedchanges,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		}
+
 		b["PageHeader"] = fiber.Map{
 			"Title": request.TitleForSummary(req.Type, content),
 		}
@@ -438,7 +476,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 		b["SummaryFields"] = summaryFields
 
-		return c.Render(view.RequestSummaryFields, b, layout.Page)
+		return c.Render(view.RequestOverview, b, layout.Page)
 	}
 }
 

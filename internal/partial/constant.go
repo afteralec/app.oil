@@ -109,4 +109,9 @@ const (
 	RequestFieldFormCharacterApplicationShortDescription string = "partial-request-field-form-character-application-sdesc"
 	RequestFieldFormCharacterApplicationDescription      string = "partial-request-field-form-character-application-desc"
 	RequestFieldFormCharacterApplicationBackstory        string = "partial-request-field-form-character-application-backstory"
+	RequestOverviewActionCancel                          string = "partial-request-overview-action-cancel"
+	RequestOverviewActionSubmit                          string = "partial-request-overview-action-submit"
+	RequestOverviewActionApprove                         string = "partial-request-overview-action-approve"
+	RequestOverviewActionReview                          string = "partial-request-overview-action-review"
+	RequestOverviewActionReject                          string = "partial-request-overview-action-reject"
 )

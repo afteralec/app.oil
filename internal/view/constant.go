@@ -48,8 +48,8 @@ const (
 )
 
 const (
-	RequestSummaryFields string = "view-request-summary-fields"
-	RequestField         string = "view-request-field"
+	RequestOverview string = "view-request-overview"
+	RequestField    string = "view-request-field"
 )
 
 const CharacterApplicationQueue string = "view-character-application-queue"

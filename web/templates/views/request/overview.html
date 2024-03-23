@@ -1,15 +1,15 @@
-{{ define "view-request-summary-fields" }}
+{{ define "view-request-overview" }}
 <div
   class="flex flex-col justify-center space-y-2 md:w-[60%]"
   x-data="getRequestData()"
 >
   <!-- prettier-ignore -->
-  {{ template "partial-request-summary-status" .Status }}
-  {{ template "partial-request-summary-actions" . }}
+  {{ template "partial-request-overview-status" .Status }}
+  {{ template "partial-request-overview-actions" . }}
   {{ range .SummaryFields }}
-    {{ template "partial-requests-summary-field" . }}
+    {{ template "partial-request-overview-field" . }}
   {{ end }}
-  {{ template "partial-request-summary-actions" . }}
+  {{ template "partial-request-overview-actions" . }}
   {{ template "partial-request-dialogs" .Dialogs }}
 </div>
 {{ end }}
