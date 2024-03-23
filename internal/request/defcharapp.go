@@ -176,13 +176,11 @@ func (f *fieldCharacterApplicationNameFormRenderer) Render(e *html.Engine, p Ren
 }
 
 func NewFieldCharacterApplicationName() Field {
-	updater := new(fieldCharacterApplicationNameUpdater)
-
 	b := FieldBuilder()
 	b.Name("name")
 	b.Label("Name")
 	b.Description("Your character's name")
-	b.Updater(updater)
+	b.Updater(new(fieldCharacterApplicationNameUpdater))
 	b.Validator(&actor.CharacterNameValidator)
 	b.View(view.CharacterApplicationName)
 	b.Help(partial.RequestFieldHelpCharacterApplicationName)
@@ -248,13 +246,11 @@ func (f *fieldCharacterApplicationGenderFormRenderer) Render(e *html.Engine, p R
 }
 
 func NewFieldCharacterApplicationGender() Field {
-	updater := new(fieldCharacterApplicationGenderUpdater)
-
 	b := FieldBuilder()
 	b.Name("gender")
 	b.Label("Gender")
 	b.Description("Your character's gender determines the pronouns used by third-person descriptions in the game")
-	b.Updater(updater)
+	b.Updater(new(fieldCharacterApplicationGenderUpdater))
 	b.Validator(&actor.GenderValidator)
 	b.View(view.CharacterApplicationGender)
 	b.Help(partial.RequestFieldHelpCharacterApplicationGender)
@@ -315,13 +311,11 @@ func (f *fieldCharacterApplicationShortDescriptionFormRenderer) Render(e *html.E
 }
 
 func NewFieldCharacterApplicationShortDescription() Field {
-	updater := new(fieldCharacterApplicationShortDescriptionUpdater)
-
 	b := FieldBuilder()
 	b.Name("sdesc")
 	b.Label("Short Description")
 	b.Description("This is how your character will appear in third-person descriptions during the game")
-	b.Updater(updater)
+	b.Updater(new(fieldCharacterApplicationShortDescriptionUpdater))
 	b.Validator(&actor.ShortDescriptionValidator)
 	b.View(view.CharacterApplicationShortDescription)
 	b.Help(partial.RequestFieldHelpCharacterApplicationShortDescription)
@@ -382,13 +376,11 @@ func (f *fieldCharacterApplicationDescriptionFormRenderer) Render(e *html.Engine
 }
 
 func NewFieldCharacterApplicationDescription() Field {
-	updater := new(fieldCharacterApplicationDescriptionUpdater)
-
 	b := FieldBuilder()
 	b.Name("desc")
 	b.Label("Description")
 	b.Description("This is how your character will appear when examined")
-	b.Updater(updater)
+	b.Updater(new(fieldCharacterApplicationDescriptionUpdater))
 	b.Validator(&actor.DescriptionLengthValidator)
 	b.Validator(&actor.DescriptionRegexValidator)
 	b.View(view.CharacterApplicationDescription)
@@ -452,13 +444,11 @@ func (f *fieldCharacterApplicationBackstoryFormRenderer) Render(e *html.Engine, 
 }
 
 func NewFieldCharacterApplicationBackstory() Field {
-	updater := new(fieldCharacterApplicationBackstoryUpdater)
-
 	b := FieldBuilder()
 	b.Name("backstory")
 	b.Label("Backstory")
 	b.Description("This is your character's private backstory")
-	b.Updater(updater)
+	b.Updater(new(fieldCharacterApplicationBackstoryUpdater))
 	b.Validator(&actor.CharacterBackstoryValidator)
 	b.View(view.CharacterApplicationBackstory)
 	b.Help(partial.RequestFieldHelpCharacterApplicationBackstory)
