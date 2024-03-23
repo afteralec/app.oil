@@ -32,6 +32,7 @@ type Definition interface {
 	SummaryForQueue(p SummaryForQueueParams) (SummaryForQueue, error)
 	UpdateFieldStatus(q *query.Queries, p UpdateFieldStatusParams) error
 	FieldHelp(e *html.Engine, t, f string) (template.HTML, error)
+	RenderFieldForm(e *html.Engine, p RenderFieldFormParams) (template.HTML, error)
 }
 
 type DefaultDefinition struct{}
@@ -197,6 +198,20 @@ func (d *DefaultDefinition) FieldHelp(e *html.Engine, t, f string) (template.HTM
 
 	fields := def.Fields()
 	return fields.FieldHelp(e, f)
+}
+
+func (d *DefaultDefinition) RenderFieldForm(e *html.Engine, p RenderFieldFormParams) (template.HTML, error) {
+	def, ok := Definitions.Get(p.Request.Type)
+	if !ok {
+		return template.HTML(""), ErrNoDefinition
+	}
+
+	if !IsFieldNameValid(p.Request.Type, p.FieldName) {
+		return template.HTML(""), ErrInvalidInput
+	}
+
+	fields := def.Fields()
+	return fields.RenderForm(e, p)
 }
 
 func UpdateField(q *query.Queries, p UpdateFieldParams) error {
@@ -392,4 +407,48 @@ func FieldHelp(e *html.Engine, t, f string) (template.HTML, error) {
 	}
 
 	return def.FieldHelp(e, t, f)
+}
+
+type RenderFieldDataParams struct {
+	Request    *query.Request
+	Content    content
+	FieldName  string
+	FieldValue string
+}
+
+func RenderFieldData(e *html.Engine, p RenderFieldDataParams) (template.HTML, error) {
+	def, ok := Definitions.Get(p.Request.Type)
+	if !ok {
+		return template.HTML(""), ErrNoDefinition
+	}
+
+	if !IsFieldNameValid(p.Request.Type, p.FieldName) {
+		return template.HTML(""), ErrInvalidInput
+	}
+
+	fields := def.Fields()
+	return fields.RenderData(e, p)
+}
+
+type RenderFieldFormParams struct {
+	Request    *query.Request
+	Content    content
+	FormID     string
+	Path       string
+	FieldName  string
+	FieldValue string
+}
+
+func RenderFieldForm(e *html.Engine, p RenderFieldFormParams) (template.HTML, error) {
+	def, ok := Definitions.Get(p.Request.Type)
+	if !ok {
+		return template.HTML(""), ErrNoDefinition
+	}
+
+	if !IsFieldNameValid(p.Request.Type, p.FieldName) {
+		return template.HTML(""), ErrInvalidInput
+	}
+
+	fields := def.Fields()
+	return fields.RenderForm(e, p)
 }

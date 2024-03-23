@@ -7,22 +7,31 @@ import (
 
 	fiber "github.com/gofiber/fiber/v2"
 	html "github.com/gofiber/template/html/v2"
+
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/validate"
 )
 
+type DataRenderer interface {
+	Render(e *html.Engine, p RenderFieldDataParams) (template.HTML, error)
+}
+
+type FormRenderer interface {
+	Render(e *html.Engine, p RenderFieldFormParams) (template.HTML, error)
+}
+
 type Field struct {
-	Updater     FieldUpdater
-	Validator   validate.StringValidator
-	Name        string
-	Label       string
-	Description string
-	View        string
-	Layout      string
-	Help        string
-	Form        string
-	Data        string
+	Updater      FieldUpdater
+	Validator    validate.StringValidator
+	FormRenderer FormRenderer
+	DataRenderer DataRenderer
+	Name         string
+	Label        string
+	Description  string
+	View         string
+	Layout       string
+	Help         string
 }
 
 type fieldBuilder struct {
@@ -68,13 +77,13 @@ func (b *fieldBuilder) Validator(validator validate.StringValidator) *fieldBuild
 	return b
 }
 
-func (b *fieldBuilder) Form(form string) *fieldBuilder {
-	b.Field.Form = form
+func (b *fieldBuilder) FormRenderer(r FormRenderer) *fieldBuilder {
+	b.Field.FormRenderer = r
 	return b
 }
 
-func (b *fieldBuilder) Data(data string) *fieldBuilder {
-	b.Field.Data = data
+func (b *fieldBuilder) DataRenderer(r DataRenderer) *fieldBuilder {
+	b.Field.DataRenderer = r
 	return b
 }
 
@@ -155,4 +164,12 @@ func (f *Field) RenderHelp(e *html.Engine) (template.HTML, error) {
 	return partial.Render(e, partial.RenderParams{
 		Template: f.Help,
 	})
+}
+
+func (f *Field) RenderData(e *html.Engine, p RenderFieldDataParams) (template.HTML, error) {
+	return f.DataRenderer.Render(e, p)
+}
+
+func (f *Field) RenderForm(e *html.Engine, p RenderFieldFormParams) (template.HTML, error) {
+	return f.FormRenderer.Render(e, p)
 }

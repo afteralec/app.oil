@@ -7,9 +7,13 @@ import (
 	"html/template"
 	"strings"
 
+	fiber "github.com/gofiber/fiber/v2"
+	html "github.com/gofiber/template/html/v2"
+
 	"petrichormud.com/app/internal/actor"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/view"
 )
 
@@ -147,6 +151,30 @@ func (f *fieldCharacterApplicationNameUpdater) UpdateStatus(q *query.Queries, p 
 	return nil
 }
 
+type fieldCharacterApplicationNameDataRenderer struct{}
+
+func (f *fieldCharacterApplicationNameDataRenderer) Render(e *html.Engine, p RenderFieldDataParams) (template.HTML, error) {
+	return partial.Render(e, partial.RenderParams{
+		Template: partial.RequestFieldFormCharacterApplicationName,
+		Bind: fiber.Map{
+			"FieldValue": p.FieldValue,
+		},
+	})
+}
+
+type fieldCharacterApplicationNameFormRenderer struct{}
+
+func (f *fieldCharacterApplicationNameFormRenderer) Render(e *html.Engine, p RenderFieldFormParams) (template.HTML, error) {
+	return partial.Render(e, partial.RenderParams{
+		Template: partial.RequestFieldFormCharacterApplicationName,
+		Bind: fiber.Map{
+			"FormID":     FormID,
+			"Path":       route.RequestFieldPath(p.Request.ID, p.FieldName),
+			"FieldValue": p.FieldValue,
+		},
+	})
+}
+
 func NewFieldCharacterApplicationName() Field {
 	updater := new(fieldCharacterApplicationNameUpdater)
 
@@ -158,8 +186,8 @@ func NewFieldCharacterApplicationName() Field {
 	b.Validator(&actor.CharacterNameValidator)
 	b.View(view.CharacterApplicationName)
 	b.Help(partial.RequestFieldHelpCharacterApplicationName)
-	b.Form(partial.RequestFieldFormCharacterApplicationName)
-	b.Data(partial.RequestFieldDataCharacterApplicationName)
+	b.DataRenderer(new(fieldCharacterApplicationNameDataRenderer))
+	b.FormRenderer(new(fieldCharacterApplicationNameFormRenderer))
 
 	return b.Build()
 }
@@ -190,6 +218,35 @@ func (f *fieldCharacterApplicationGenderUpdater) UpdateStatus(q *query.Queries, 
 	return nil
 }
 
+type fieldCharacterApplicationGenderDataRenderer struct{}
+
+func (f *fieldCharacterApplicationGenderDataRenderer) Render(e *html.Engine, p RenderFieldDataParams) (template.HTML, error) {
+	return partial.Render(e, partial.RenderParams{
+		Template: partial.RequestFieldFormCharacterApplicationGender,
+		Bind: fiber.Map{
+			"FieldValue": p.FieldValue,
+		},
+	})
+}
+
+type fieldCharacterApplicationGenderFormRenderer struct{}
+
+func (f *fieldCharacterApplicationGenderFormRenderer) Render(e *html.Engine, p RenderFieldFormParams) (template.HTML, error) {
+	b := fiber.Map{
+		"FormID":     FormID,
+		"Path":       route.RequestFieldPath(p.Request.ID, p.FieldName),
+		"FieldValue": p.FieldValue,
+	}
+	b = BindGenderRadioGroup(b, BindGenderRadioGroupParams{
+		Content: p.Content,
+		Name:    "value",
+	})
+	return partial.Render(e, partial.RenderParams{
+		Template: partial.RequestFieldFormCharacterApplicationGender,
+		Bind:     b,
+	})
+}
+
 func NewFieldCharacterApplicationGender() Field {
 	updater := new(fieldCharacterApplicationGenderUpdater)
 
@@ -197,12 +254,12 @@ func NewFieldCharacterApplicationGender() Field {
 	b.Name("gender")
 	b.Label("Gender")
 	b.Description("Your character's gender determines the pronouns used by third-person descriptions in the game")
-	b.View(view.CharacterApplicationGender)
-	b.Help(partial.RequestFieldHelpCharacterApplicationGender)
-	b.Form(partial.RequestFieldFormCharacterApplicationGender)
-	b.Data(partial.RequestFieldDataCharacterApplicationGender)
 	b.Updater(updater)
 	b.Validator(&actor.GenderValidator)
+	b.View(view.CharacterApplicationGender)
+	b.Help(partial.RequestFieldHelpCharacterApplicationGender)
+	b.DataRenderer(new(fieldCharacterApplicationGenderDataRenderer))
+	b.FormRenderer(new(fieldCharacterApplicationGenderFormRenderer))
 
 	return b.Build()
 }
@@ -233,6 +290,30 @@ func (f *fieldCharacterApplicationShortDescriptionUpdater) UpdateStatus(q *query
 	return nil
 }
 
+type fieldCharacterApplicationShortDescriptionDataRenderer struct{}
+
+func (f *fieldCharacterApplicationShortDescriptionDataRenderer) Render(e *html.Engine, p RenderFieldDataParams) (template.HTML, error) {
+	return partial.Render(e, partial.RenderParams{
+		Template: partial.RequestFieldFormCharacterApplicationShortDescription,
+		Bind: fiber.Map{
+			"FieldValue": p.FieldValue,
+		},
+	})
+}
+
+type fieldCharacterApplicationShortDescriptionFormRenderer struct{}
+
+func (f *fieldCharacterApplicationShortDescriptionFormRenderer) Render(e *html.Engine, p RenderFieldFormParams) (template.HTML, error) {
+	return partial.Render(e, partial.RenderParams{
+		Template: partial.RequestFieldFormCharacterApplicationShortDescription,
+		Bind: fiber.Map{
+			"FormID":     FormID,
+			"Path":       route.RequestFieldPath(p.Request.ID, p.FieldName),
+			"FieldValue": p.FieldValue,
+		},
+	})
+}
+
 func NewFieldCharacterApplicationShortDescription() Field {
 	updater := new(fieldCharacterApplicationShortDescriptionUpdater)
 
@@ -240,12 +321,12 @@ func NewFieldCharacterApplicationShortDescription() Field {
 	b.Name("sdesc")
 	b.Label("Short Description")
 	b.Description("This is how your character will appear in third-person descriptions during the game")
-	b.View(view.CharacterApplicationShortDescription)
-	b.Help(partial.RequestFieldHelpCharacterApplicationShortDescription)
-	b.Form(partial.RequestFieldFormCharacterApplicationShortDescription)
-	b.Data(partial.RequestFieldDataCharacterApplicationShortDescription)
 	b.Updater(updater)
 	b.Validator(&actor.ShortDescriptionValidator)
+	b.View(view.CharacterApplicationShortDescription)
+	b.Help(partial.RequestFieldHelpCharacterApplicationShortDescription)
+	b.DataRenderer(new(fieldCharacterApplicationShortDescriptionDataRenderer))
+	b.FormRenderer(new(fieldCharacterApplicationShortDescriptionFormRenderer))
 
 	return b.Build()
 }
@@ -276,6 +357,30 @@ func (f *fieldCharacterApplicationDescriptionUpdater) UpdateStatus(q *query.Quer
 	return nil
 }
 
+type fieldCharacterApplicationDescriptionDataRenderer struct{}
+
+func (f *fieldCharacterApplicationDescriptionDataRenderer) Render(e *html.Engine, p RenderFieldDataParams) (template.HTML, error) {
+	return partial.Render(e, partial.RenderParams{
+		Template: partial.RequestFieldFormCharacterApplicationDescription,
+		Bind: fiber.Map{
+			"FieldValue": p.FieldValue,
+		},
+	})
+}
+
+type fieldCharacterApplicationDescriptionFormRenderer struct{}
+
+func (f *fieldCharacterApplicationDescriptionFormRenderer) Render(e *html.Engine, p RenderFieldFormParams) (template.HTML, error) {
+	return partial.Render(e, partial.RenderParams{
+		Template: partial.RequestFieldFormCharacterApplicationDescription,
+		Bind: fiber.Map{
+			"FormID":     FormID,
+			"Path":       route.RequestFieldPath(p.Request.ID, p.FieldName),
+			"FieldValue": p.FieldValue,
+		},
+	})
+}
+
 func NewFieldCharacterApplicationDescription() Field {
 	updater := new(fieldCharacterApplicationDescriptionUpdater)
 
@@ -283,13 +388,13 @@ func NewFieldCharacterApplicationDescription() Field {
 	b.Name("desc")
 	b.Label("Description")
 	b.Description("This is how your character will appear when examined")
-	b.View(view.CharacterApplicationDescription)
-	b.Help(partial.RequestFieldHelpCharacterApplicationDescription)
-	b.Form(partial.RequestFieldFormCharacterApplicationDescription)
-	b.Data(partial.RequestFieldDataCharacterApplicationDescription)
 	b.Updater(updater)
 	b.Validator(&actor.DescriptionLengthValidator)
 	b.Validator(&actor.DescriptionRegexValidator)
+	b.View(view.CharacterApplicationDescription)
+	b.Help(partial.RequestFieldHelpCharacterApplicationDescription)
+	b.DataRenderer(new(fieldCharacterApplicationDescriptionDataRenderer))
+	b.FormRenderer(new(fieldCharacterApplicationDescriptionFormRenderer))
 
 	return b.Build()
 }
@@ -322,6 +427,30 @@ func (f *fieldCharacterApplicationBackstoryUpdater) UpdateStatus(q *query.Querie
 	return nil
 }
 
+type fieldCharacterApplicationBackstoryDataRenderer struct{}
+
+func (f *fieldCharacterApplicationBackstoryDataRenderer) Render(e *html.Engine, p RenderFieldDataParams) (template.HTML, error) {
+	return partial.Render(e, partial.RenderParams{
+		Template: partial.RequestFieldFormCharacterApplicationBackstory,
+		Bind: fiber.Map{
+			"FieldValue": p.FieldValue,
+		},
+	})
+}
+
+type fieldCharacterApplicationBackstoryFormRenderer struct{}
+
+func (f *fieldCharacterApplicationBackstoryFormRenderer) Render(e *html.Engine, p RenderFieldFormParams) (template.HTML, error) {
+	return partial.Render(e, partial.RenderParams{
+		Template: partial.RequestFieldFormCharacterApplicationBackstory,
+		Bind: fiber.Map{
+			"FormID":     FormID,
+			"Path":       route.RequestFieldPath(p.Request.ID, p.FieldName),
+			"FieldValue": p.FieldValue,
+		},
+	})
+}
+
 func NewFieldCharacterApplicationBackstory() Field {
 	updater := new(fieldCharacterApplicationBackstoryUpdater)
 
@@ -329,12 +458,12 @@ func NewFieldCharacterApplicationBackstory() Field {
 	b.Name("backstory")
 	b.Label("Backstory")
 	b.Description("This is your character's private backstory")
-	b.View(view.CharacterApplicationBackstory)
-	b.Help(partial.RequestFieldHelpCharacterApplicationBackstory)
-	b.Form(partial.RequestFieldFormCharacterApplicationBackstory)
-	b.Data(partial.RequestFieldDataCharacterApplicationBackstory)
 	b.Updater(updater)
 	b.Validator(&actor.CharacterBackstoryValidator)
+	b.View(view.CharacterApplicationBackstory)
+	b.Help(partial.RequestFieldHelpCharacterApplicationBackstory)
+	b.DataRenderer(new(fieldCharacterApplicationBackstoryDataRenderer))
+	b.FormRenderer(new(fieldCharacterApplicationBackstoryFormRenderer))
 
 	return b.Build()
 }

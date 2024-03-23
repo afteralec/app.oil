@@ -104,3 +104,21 @@ func (f *Fields) FieldHelp(e *html.Engine, name string) (template.HTML, error) {
 	}
 	return field.RenderHelp(e)
 }
+
+func (f *Fields) RenderData(e *html.Engine, p RenderFieldDataParams) (template.HTML, error) {
+	field, ok := f.Map[p.FieldName]
+	if !ok {
+		// TODO: ErrInvalidField
+		return template.HTML(""), ErrInvalidInput
+	}
+	return field.RenderData(e, p)
+}
+
+func (f *Fields) RenderForm(e *html.Engine, p RenderFieldFormParams) (template.HTML, error) {
+	field, ok := f.Map[p.FieldName]
+	if !ok {
+		// TODO: ErrInvalidField
+		return template.HTML(""), ErrInvalidInput
+	}
+	return field.RenderForm(e, p)
+}
