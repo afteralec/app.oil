@@ -200,6 +200,14 @@ type BindOverviewParams struct {
 }
 
 func BindOverview(e *html.Engine, b fiber.Map, p BindOverviewParams) (fiber.Map, error) {
+	b["PageHeader"] = fiber.Map{
+		"Title": TitleForSummary(p.Request.Type, p.Content),
+	}
+	// TODO: Build a utility for this
+	b["Status"] = fiber.Map{
+		"StatusIcon": NewStatusIcon(StatusIconParams{Status: p.Request.Status, IconSize: 48, IncludeText: true, TextSize: "text-xl"}),
+	}
+
 	b, err := BindOverviewActions(e, b, BindOverviewActionsParams{
 		PID:                   p.PID,
 		Request:               p.Request,
@@ -249,6 +257,13 @@ func BindOverviewActions(e *html.Engine, b fiber.Map, p BindOverviewActionsParam
 			return b, err
 		}
 		actions = append(actions, reject)
+
+		// TODO: Use the Content Review API instead of counting Change Requests
+		// if cr.AllAre(request.FieldStatusApproved) {
+		// 	b["ShowApproveAction"] = true
+		// } else if cr.AnyAre(request.FieldStatusReviewed) {
+		// 	b["ShowFinishReviewAction"] = true
+		// }
 
 		if len(p.CurrentChangeRequests) > 0 {
 			review, err := partial.Render(e, partial.RenderParams{

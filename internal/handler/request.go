@@ -279,19 +279,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		// TODO: Finish new bind pattern
 		b := view.Bind(c)
 
-		// TODO: Move this to a utility
-		if req.PID == pid {
-			b["ShowCancelAction"] = true
-
-			switch req.Status {
-			case request.StatusIncomplete:
-				b["AllowEdit"] = true
-			case request.StatusReady:
-				b["ShowSubmitAction"] = true
-				b["AllowEdit"] = true
-			}
-		}
-
 		b, err = request.BindDialogs(b, request.BindDialogsParams{
 			Request: &req,
 		})
@@ -345,13 +332,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 				}
 
-				b["PageHeader"] = fiber.Map{
-					"Title": request.TitleForSummary(req.Type, content),
-				}
-				// TODO: Build a utility for this
-				b["Status"] = fiber.Map{
-					"StatusIcon": request.NewStatusIcon(request.StatusIconParams{Status: req.Status, IconSize: 48, IncludeText: true, TextSize: "text-xl"}),
-				}
 				summaryFields, err := request.FieldsForSummary(request.FieldsForSummaryParams{
 					PID:     pid,
 					Request: &req,
@@ -396,12 +376,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 					}
 
 					processedSummaryFields = append(processedSummaryFields, summaryField)
-				}
-
-				if cr.AllAre(request.FieldStatusApproved) {
-					b["ShowApproveAction"] = true
-				} else if cr.AnyAre(request.FieldStatusReviewed) {
-					b["ShowFinishReviewAction"] = true
 				}
 
 				b["SummaryFields"] = processedSummaryFields
@@ -458,13 +432,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		b["PageHeader"] = fiber.Map{
-			"Title": request.TitleForSummary(req.Type, content),
-		}
-		// TODO: Build a utility for this
-		b["Status"] = fiber.Map{
-			"StatusIcon": request.NewStatusIcon(request.StatusIconParams{Status: req.Status, IconSize: 48, IncludeText: true, TextSize: "text-xl"}),
-		}
 		summaryFields, err := request.FieldsForSummary(request.FieldsForSummaryParams{
 			PID:     pid,
 			Request: &req,
