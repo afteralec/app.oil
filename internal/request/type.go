@@ -1,9 +1,13 @@
 package request
 
-const (
-	TypeCharacterApplication string = "CharacterApplication"
-)
+import "slices"
+
+const TypeCharacterApplication string = "CharacterApplication"
+
+var Types []string = []string{
+	TypeCharacterApplication,
+}
 
 func IsTypeValid(t string) bool {
-	return t == TypeCharacterApplication
+	return slices.Contains(Types, t)
 }

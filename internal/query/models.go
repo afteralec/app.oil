@@ -157,6 +157,26 @@ type HelpTag struct {
 	ID   int64
 }
 
+type OpenRequestChangeRequest struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Value     string
+	Text      string
+	RFID      int64
+	PID       int64
+	ID        int64
+}
+
+type PastRequestChangeRequest struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Value     string
+	Text      string
+	RFID      int64
+	PID       int64
+	ID        int64
+}
+
 type Player struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -203,13 +223,11 @@ type Request struct {
 type RequestChangeRequest struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	Value     string
 	Text      string
-	Field     string
-	RID       int64
+	RFID      int64
 	PID       int64
 	ID        int64
-	Locked    bool
-	Old       bool
 }
 
 type RequestField struct {

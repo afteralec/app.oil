@@ -247,10 +247,15 @@ func CreateTestRequestChangeRequest(p CreateTestRequestChangeRequestParams) int6
 		p.T.Fatal(err)
 	}
 
-	change, err := p.I.Queries.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
-		RID:   p.RID,
-		Field: p.Field,
+	field, err := p.I.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  p.RID,
+		Type: p.Field,
 	})
+	if err != nil {
+		p.T.Fatal(err)
+	}
+
+	change, err := p.I.Queries.GetOpenRequestChangeRequestForRequestField(context.Background(), field.ID)
 	if err != nil {
 		p.T.Fatal(err)
 	}

@@ -53,6 +53,10 @@ var (
 	CharacterNameValidator       validate.StringValidatorGroup        = validate.NewStringValidatorGroup([]validate.StringValidator{&CharacterNameLengthValidator, &CharacterNameRegexValidator})
 )
 
+func IsCharacterNameValid(name string) bool {
+	return CharacterNameValidator.IsValid(name)
+}
+
 var (
 	CharacterBackstoryLengthValidator validate.StringLengthValidator       = validate.NewStringLengthValidator(CharacterBackstoryMinLen, CharacterBackstoryMaxLen)
 	CharacterBackstoryRegexValidator  validate.StringRegexNoMatchValidator = validate.NewStringRegexNoMatchValidator(regexp.MustCompile(CharacterBackstoryRegex))

@@ -11,6 +11,8 @@ import (
 
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/request/definition"
+	"petrichormud.com/app/internal/request/field"
 	"petrichormud.com/app/internal/route"
 )
 
@@ -19,20 +21,35 @@ const errNoDefinition string = "no definition with type"
 var ErrNoDefinition error = errors.New(errNoDefinition)
 
 type Definition interface {
+	// Can be broken out
 	New(q *query.Queries, pid int64) (int64, error)
+	// Not needed
 	Type() string
+	// Can be a separate function
 	Dialogs() Dialogs
+	// Not needed unless I split out field functions
 	Fields() Fields
+	// This would be IsFieldTypeValid
 	IsFieldNameValid(f string) bool
+	// Unneeded unless I need riders on fetching content from the db
 	Content(q *query.Queries, rid int64) (content, error)
+	// Can be done with field-level validators based on type
 	IsContentValid(c content) bool
+	// Not needed, field status will be stored on the field
 	ContentReview(q *query.Queries, rid int64) (contentreview, error)
+	// Unneeded, will be done by the RFID
 	UpdateField(q *query.Queries, p UpdateFieldParams) error
+	// Unneeded, can be broken out into a function or a trait-inheritor
 	TitleForSummary(c content) string
+	// Unneeded, can be a query
 	FieldsForSummary(p FieldsForSummaryParams) ([]FieldForSummary, error)
+	// Can be a function or trait-inheritor
 	SummaryForQueue(p SummaryForQueueParams) (SummaryForQueue, error)
+	// Unneeded, will be a query or just a function
 	UpdateFieldStatus(q *query.Queries, p UpdateFieldStatusParams) error
+	// Can be a constant by field type
 	FieldHelp(e *html.Engine, t, f string) (template.HTML, error)
+	// Can be a function or trait inheritor
 	RenderFieldForm(e *html.Engine, p RenderFieldFormParams) (template.HTML, error)
 }
 
@@ -54,7 +71,6 @@ func (d *DefaultDefinition) UpdateField(q *query.Queries, p UpdateFieldParams) e
 	if err := fields.Update(q, p); err != nil {
 		return err
 	}
-
 	if err := fields.UpdateStatus(q, UpdateFieldStatusParams{
 		FieldName: p.FieldName,
 		Request:   p.Request,
@@ -62,7 +78,6 @@ func (d *DefaultDefinition) UpdateField(q *query.Queries, p UpdateFieldParams) e
 	}); err != nil {
 		return err
 	}
-
 	c, err := def.Content(q, p.Request.ID)
 	if err != nil {
 		return err
@@ -76,7 +91,6 @@ func (d *DefaultDefinition) UpdateField(q *query.Queries, p UpdateFieldParams) e
 	}); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -96,7 +110,6 @@ func (d *DefaultDefinition) UpdateFieldStatus(q *query.Queries, p UpdateFieldSta
 	if err := fields.UpdateStatus(q, p); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -150,19 +163,15 @@ func (d *DefaultDefinition) SummaryForQueue(p SummaryForQueueParams) (SummaryFor
 	if !ok {
 		return SummaryForQueue{}, ErrNoDefinition
 	}
-
 	title := def.TitleForSummary(p.Content)
-
 	reviewerText := ReviewerText(ReviewerTextParams{
 		Request:          p.Request,
 		ReviewerUsername: p.ReviewerUsername,
 	})
-
 	// TODO: Build a utility for this
 	dialogs := def.Dialogs()
 	dialogs.SetPath(p.Request.ID)
 	dialogs.PutInReview.Variable = fmt.Sprintf("showReviewDialogForRequest%d", p.Request.ID)
-
 	showPutInReview := CanBePutInReview(
 		CanBePutInReviewParams{
 			Request:             p.Request,
@@ -170,7 +179,6 @@ func (d *DefaultDefinition) SummaryForQueue(p SummaryForQueueParams) (SummaryFor
 			PID:                 p.PID,
 		},
 	)
-
 	// TODO: Make this resilient to a request with an invalid status
 	return SummaryForQueue{
 		ID:              p.Request.ID,
@@ -192,11 +200,9 @@ func (d *DefaultDefinition) FieldHelp(e *html.Engine, t, f string) (template.HTM
 	if !ok {
 		return template.HTML(""), ErrNoDefinition
 	}
-
 	if !IsFieldNameValid(t, f) {
 		return template.HTML(""), ErrInvalidInput
 	}
-
 	fields := def.Fields()
 	return fields.FieldHelp(e, f)
 }
@@ -206,11 +212,9 @@ func (d *DefaultDefinition) RenderFieldForm(e *html.Engine, p RenderFieldFormPar
 	if !ok {
 		return template.HTML(""), ErrNoDefinition
 	}
-
 	if !IsFieldNameValid(p.Request.Type, p.FieldName) {
 		return template.HTML(""), ErrInvalidInput
 	}
-
 	fields := def.Fields()
 	return fields.RenderForm(e, p)
 }
@@ -245,14 +249,14 @@ func FieldsForSummary(p FieldsForSummaryParams) ([]FieldForSummary, error) {
 	return def.FieldsForSummary(p)
 }
 
-func View(t, f string) string {
-	definition, ok := Definitions.Get(t)
+type ForOverviewParams = field.ForOverviewParams
+
+func FieldsForOverview(p field.ForOverviewParams) ([]field.ForOverview, error) {
+	fields, ok := NewFieldsByType[p.Request.Type]
 	if !ok {
-		return ""
+		return []field.ForOverview{}, ErrNoDefinition
 	}
-	fields := definition.Fields().Map
-	field := fields[f]
-	return field.View
+	return fields.ForOverview(p), nil
 }
 
 // TODO: Make this a standard utility
@@ -274,6 +278,10 @@ var FieldsByType map[string][]string = map[string][]string{
 	},
 }
 
+var NewFieldsByType map[string]field.Group = map[string]field.Group{
+	TypeCharacterApplication: definition.CharacterApplicationFields,
+}
+
 type NewParams struct {
 	Type string
 	PID  int64
@@ -288,14 +296,14 @@ func NewNew(q *query.Queries, p NewParams) (int64, error) {
 		return 0, ErrInvalidType
 	}
 
-	fields, ok := FieldsByType[p.Type]
+	fields, ok := NewFieldsByType[p.Type]
 	if !ok {
 		return 0, ErrInvalidType
 	}
 
 	result, err := q.CreateRequest(context.Background(), query.CreateRequestParams{
 		PID:  p.PID,
-		Type: TypeCharacterApplication,
+		Type: p.Type,
 	})
 	if err != nil {
 		return 0, err
@@ -305,10 +313,11 @@ func NewNew(q *query.Queries, p NewParams) (int64, error) {
 		return 0, err
 	}
 
-	for _, field := range fields {
+	for _, field := range fields.List() {
 		if err := q.CreateRequestField(context.Background(), query.CreateRequestFieldParams{
-			RID:    rid,
-			Type:   field,
+			RID:  rid,
+			Type: field.Type,
+			// TODO: Store the Default Field Status in its own const
 			Status: FieldStatusNotReviewed,
 			Value:  "",
 		}); err != nil {
@@ -372,14 +381,18 @@ func ContentReview(q *query.Queries, req *query.Request) (contentreview, error) 
 	return c, nil
 }
 
+type NextIncompleteFieldOutput struct {
+	Field string
+	Last  bool
+}
+
 // TODO: Let this error out with no definition
-func NextIncompleteField(t string, c content) (string, bool) {
-	definition, ok := Definitions.Get(t)
+func NextIncompleteField(t string, fieldmap field.Map) (*query.RequestField, bool) {
+	fields, ok := NewFieldsByType[t]
 	if !ok {
-		return "", false
+		return nil, false
 	}
-	fields := definition.Fields()
-	return fields.NextIncomplete(c)
+	return fields.NextIncomplete(fieldmap)
 }
 
 type NextUnreviewedFieldOutput struct {
@@ -396,41 +409,16 @@ func NextUnreviewedField(t string, cr contentreview) (NextUnreviewedFieldOutput,
 	return fields.NextUnreviewed(cr)
 }
 
-// TODO: Possible error output
-// TODO: Clean this up
-func GetFieldLabelAndDescription(t, f string) (string, string) {
-	definition, ok := Definitions.Get(t)
-	if !ok {
-		return "", ""
-	}
-	fields := definition.Fields().Map
-	field := fields[f]
-	return field.Label, field.Description
-}
-
-func TitleForSummary(t string, c content) string {
-	if !IsTypeValid(t) {
-		return "Request"
-	}
-	definition, ok := Definitions.Get(t)
-	if !ok {
-		return ""
-	}
-	return definition.TitleForSummary(c)
-}
-
 func NewSummaryForQueue(p SummaryForQueueParams) (SummaryForQueue, error) {
 	def, ok := Definitions.Get(p.Request.Type)
 	if !ok {
 		return SummaryForQueue{}, ErrNoDefinition
 	}
-
 	player, err := p.Query.GetPlayer(context.Background(), p.Request.PID)
 	if err != nil {
 		return SummaryForQueue{}, err
 	}
 	p.PlayerUsername = player.Username
-
 	if p.Request.RPID != 0 {
 		reviewer, err := p.Query.GetPlayer(context.Background(), p.Request.RPID)
 		if err != nil {
@@ -438,7 +426,6 @@ func NewSummaryForQueue(p SummaryForQueueParams) (SummaryForQueue, error) {
 		}
 		p.ReviewerUsername = reviewer.Username
 	}
-
 	return def.SummaryForQueue(p)
 }
 
@@ -450,13 +437,22 @@ func IsFieldNameValid(t, name string) bool {
 	return definition.IsFieldNameValid(name)
 }
 
+// TODO: Allow an error output here?
+func IsFieldTypeValid(t, ft string) bool {
+	fields, ok := NewFieldsByType[t]
+	if !ok {
+		return false
+	}
+	_, ok = fields.Map()[ft]
+	return ok
+}
+
 // TODO: Rename to RenderFieldHelp
 func FieldHelp(e *html.Engine, t, f string) (template.HTML, error) {
 	def, ok := Definitions.Get(t)
 	if !ok {
 		return template.HTML(""), ErrNoDefinition
 	}
-
 	return def.FieldHelp(e, t, f)
 }
 
@@ -472,11 +468,9 @@ func RenderFieldData(e *html.Engine, p RenderFieldDataParams) (template.HTML, er
 	if !ok {
 		return template.HTML(""), ErrNoDefinition
 	}
-
 	if !IsFieldNameValid(p.Request.Type, p.FieldName) {
 		return template.HTML(""), ErrInvalidInput
 	}
-
 	fields := def.Fields()
 	return fields.RenderData(e, p)
 }
@@ -495,11 +489,9 @@ func RenderFieldForm(e *html.Engine, p RenderFieldFormParams) (template.HTML, er
 	if !ok {
 		return template.HTML(""), ErrNoDefinition
 	}
-
 	if !IsFieldNameValid(p.Request.Type, p.FieldName) {
 		return template.HTML(""), ErrInvalidInput
 	}
-
 	fields := def.Fields()
 	return fields.RenderForm(e, p)
 }

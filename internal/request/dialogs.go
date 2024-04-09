@@ -52,14 +52,15 @@ type BindDialogsParams struct {
 	Request *query.Request
 }
 
-func BindDialogs(b fiber.Map, p BindDialogsParams) (fiber.Map, error) {
-	def, ok := Definitions.Get(p.Request.Type)
+// TODO: Move Dialogs to new struct
+func BindDialogs(b fiber.Map, req *query.Request) (fiber.Map, error) {
+	def, ok := Definitions.Get(req.Type)
 	if !ok {
 		return fiber.Map{}, ErrNoDefinition
 	}
 
 	dialogs := def.Dialogs()
-	dialogs.SetPath(p.Request.ID)
+	dialogs.SetPath(req.ID)
 
 	b["Dialogs"] = dialogs
 

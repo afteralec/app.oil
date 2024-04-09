@@ -12,6 +12,9 @@ import (
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
+
+	// TODO: Do away with anything that calls for inner request packages outside of the request package
+	"petrichormud.com/app/internal/request/field"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/util"
@@ -65,7 +68,7 @@ func NewRequest(i *service.Interfaces) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusCreated)
-		c.Append("HX-Redirect", route.RequestPath(rid))
+		c.Append(header.HXRedirect, route.RequestPath(rid))
 		return nil
 	}
 }
@@ -103,7 +106,7 @@ func NewCharacterApplication(i *service.Interfaces) fiber.Handler {
 		}
 
 		c.Status(fiber.StatusCreated)
-		c.Append("HX-Redirect", route.RequestPath(rid))
+		c.Append(header.HXRedirect, route.RequestPath(rid))
 		return nil
 	}
 }
@@ -126,8 +129,8 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.BadRequest, view.Bind(c), layout.Standalone)
 		}
 
-		field := c.Params("field")
-		if len(field) == 0 {
+		ft := c.Params("field")
+		if len(ft) == 0 {
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(view.BadRequest, view.Bind(c), layout.Standalone)
 		}
@@ -156,16 +159,30 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		if !request.IsFieldNameValid(req.Type, field) {
+		if !request.IsFieldTypeValid(req.Type, ft) {
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(view.BadRequest, view.Bind(c), layout.Standalone)
 		}
 
-		content, err := request.Content(qtx, &req)
+		field, err := qtx.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+			RID:  rid,
+			Type: ft,
+		})
 		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			}
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
+
+		// TODO: Vestigial Request Change Request handling
+		// changes, err := qtx.ListCurrentRequestChangeRequestsForRequest(context.Background(), field.ID)
+		// if err != nil {
+		// 	c.Status(fiber.StatusInternalServerError)
+		// 	return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		// }
 
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -190,11 +207,10 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 		}
 
 		b := view.Bind(c)
-		b, err = request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
-			PID:       pid,
-			Request:   &req,
-			Content:   content,
-			FieldName: field,
+		b, err = request.NewBindFieldView(i.Templates, b, request.BindFieldViewParams{
+			PID:     pid,
+			Request: &req,
+			Field:   &field,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -248,27 +264,34 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusForbidden)
 				return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 			}
-			if !perms.Permissions[player.PermissionReviewCharacterApplications.Name] {
+			if !perms.HasPermission(player.PermissionReviewCharacterApplications.Name) {
 				c.Status(fiber.StatusForbidden)
 				return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 			}
 		}
 
-		// TODO: Get this into a utility that returns a struct with utilities
-		unlockedchanges, err := qtx.ListRequestChangeRequestsForRequest(context.Background(), query.ListRequestChangeRequestsForRequestParams{
-			RID:    rid,
-			Old:    false,
-			Locked: false,
-		})
+		fields, err := qtx.ListRequestFieldsForRequest(context.Background(), rid)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
-		if len(unlockedchanges) > 1 {
-			// TODO: This is a fatal error
-			c.Status(fiber.StatusInternalServerError)
-			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-		}
+		fieldmap := request.FieldMap(fields)
+
+		// TODO: Get this into a utility that returns a struct with utilities
+		// changes, err := qtx.ListRequestChangeRequestsForRequest(context.Background(), query.ListRequestChangeRequestsForRequestParams{
+		// 	RID:    rid,
+		// 	Old:    false,
+		// 	Locked: false,
+		// })
+		// if err != nil {
+		// 	c.Status(fiber.StatusInternalServerError)
+		// 	return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		// }
+		// if len(changes) > 1 {
+		// 	// TODO: This is a fatal error
+		// 	c.Status(fiber.StatusInternalServerError)
+		// 	return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		// }
 
 		content, err := request.Content(qtx, &req)
 		if err != nil {
@@ -279,153 +302,41 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		// TODO: Finish new bind pattern
 		b := view.Bind(c)
 
-		b, err = request.BindDialogs(b, request.BindDialogsParams{
-			Request: &req,
-		})
+		b, err = request.BindDialogs(b, &req)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
-			return nil
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		}
+
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		if req.Status == request.StatusIncomplete {
 			// TODO: Validate that NextIncompleteField returns something here
-			field, last := request.NextIncompleteField(req.Type, content)
-			b, err = request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
-				PID:       pid,
-				Request:   &req,
-				Content:   content,
-				FieldName: field,
-				Last:      last,
+			field, last := request.NextIncompleteField(req.Type, fieldmap)
+			b, err := request.NewBindFieldView(i.Templates, b, request.BindFieldViewParams{
+				PID:     pid,
+				Request: &req,
+				Field:   field,
+				Last:    last,
 			})
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
-
 			return c.Render(view.RequestField, b, layout.Standalone)
 		}
 
 		if req.Status == request.StatusInReview && req.RPID == pid {
-			// TODO: Here, the reviewer is viewing a request they're currently
-			cr, err := request.ContentReview(qtx, &req)
-			if err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-			}
-
-			// TODO: Validate that NextUnreviewedField returns something here
-			nufo, err := request.NextUnreviewedField(req.Type, cr)
-			if err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
-
-			if nufo.Field == "" {
-				b, err = request.BindOverview(i.Templates, b, request.BindOverviewParams{
-					PID:                   pid,
-					Request:               &req,
-					Content:               content,
-					CurrentChangeRequests: unlockedchanges,
-				})
-				if err != nil {
-					c.Status(fiber.StatusInternalServerError)
-					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-				}
-
-				summaryFields, err := request.FieldsForSummary(request.FieldsForSummaryParams{
-					PID:     pid,
-					Request: &req,
-					Content: content,
-				})
-				if err != nil {
-					c.Status(fiber.StatusInternalServerError)
-					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-				}
-
-				changes, err := qtx.ListCurrentRequestChangeRequestsForRequest(context.Background(), rid)
-				if err != nil {
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-
-				changeMap := make(map[string]query.RequestChangeRequest)
-				for _, change := range changes {
-					changeMap[change.Field] = change
-				}
-
-				cr, err := request.ContentReview(qtx, &req)
-				if err != nil {
-					c.Status(fiber.StatusInternalServerError)
-					return nil
-				}
-
-				processedSummaryFields := []request.FieldForSummary{}
-				for _, summaryField := range summaryFields {
-					change, ok := changeMap[summaryField.Name]
-					if ok {
-						summaryField.HasChangeRequest = true
-						summaryField.ChangeRequest = request.BindChangeRequest(request.BindChangeRequestParams{
-							PID:           pid,
-							ChangeRequest: &change,
-						})
-					}
-
-					status, ok := cr.Status(summaryField.Name)
-					if ok && status == request.FieldStatusApproved {
-						summaryField.IsApproved = true
-					}
-
-					processedSummaryFields = append(processedSummaryFields, summaryField)
-				}
-
-				b["SummaryFields"] = processedSummaryFields
-
-				return c.Render(view.RequestOverview, b, layout.Page)
-			}
-
-			// TODO: Get this into a utility that returns a struct with utilities
-			unlockedchanges, err := qtx.ListRequestChangeRequestsForRequestField(context.Background(), query.ListRequestChangeRequestsForRequestFieldParams{
-				RID:    rid,
-				Field:  nufo.Field,
-				Old:    false,
-				Locked: false,
-			})
-			if err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-			}
-			if len(unlockedchanges) > 1 {
-				// TODO: This is a fatal error
-				c.Status(fiber.StatusInternalServerError)
-				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-			}
-
-			b, err = request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
-				PID:                   pid,
-				Request:               &req,
-				CurrentChangeRequests: unlockedchanges,
-				Content:               content,
-				FieldName:             nufo.Field,
-				Last:                  nufo.Last,
-			})
-			if err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-			}
-
-			if err := tx.Commit(); err != nil {
-				c.Status(fiber.StatusInternalServerError)
-				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-			}
-
-			return c.Render(view.RequestField, b, layout.Standalone)
+			return inReviewRequestPage(i, c, qtx, b, pid, &req, fieldmap)
 		}
 
 		b, err = request.BindOverview(i.Templates, b, request.BindOverviewParams{
-			PID:                   pid,
-			Request:               &req,
-			Content:               content,
-			CurrentChangeRequests: unlockedchanges,
+			PID:      pid,
+			Request:  &req,
+			FieldMap: fieldmap,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -445,6 +356,114 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 
 		return c.Render(view.RequestOverview, b, layout.Page)
 	}
+}
+
+func inReviewRequestPage(i *service.Interfaces, c *fiber.Ctx, qtx *query.Queries, b fiber.Map, pid int64, req *query.Request, fieldmap field.Map) error {
+	// TODO: Here, the reviewer is viewing a request they're currently
+	cr, err := request.ContentReview(qtx, req)
+	if err != nil {
+		c.Status(fiber.StatusInternalServerError)
+		return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+	}
+
+	// TODO: Validate that NextUnreviewedField returns something here
+	nufo, err := request.NextUnreviewedField(req.Type, cr)
+	if err != nil {
+		c.Status(fiber.StatusInternalServerError)
+		return nil
+	}
+
+	if nufo.Field == "" {
+		b, err = request.BindOverview(i.Templates, b, request.BindOverviewParams{
+			PID:      pid,
+			Request:  req,
+			FieldMap: fieldmap,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		}
+
+		overviewfields, err := request.FieldsForOverview(request.ForOverviewParams{
+			PID:      pid,
+			Request:  req,
+			FieldMap: fieldmap,
+		})
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		}
+
+		// TODO: Reintroduce this removed logic
+		// changes, err := qtx.ListCurrentRequestChangeRequestsForRequest(context.Background(), req.ID)
+		// if err != nil {
+		// 	c.Status(fiber.StatusInternalServerError)
+		// 	return nil
+		// }
+		//
+		// changeMap := make(map[string]query.RequestChangeRequest)
+		// for _, change := range changes {
+		// 	changeMap[change.Field] = change
+		// }
+
+		// cr, err := request.ContentReview(qtx, req)
+		// if err != nil {
+		// 	c.Status(fiber.StatusInternalServerError)
+		// 	return nil
+		// }
+
+		// processedoverviewfields := []field.ForOverview{}
+		// for _, overviewfield := range overviewfields {
+		// change, ok := changeMap[overviewfield.Name]
+		// if ok {
+		// 	overviewfield.HasChangeRequest = true
+		// 	overviewfield.ChangeRequest = request.BindChangeRequest(request.BindChangeRequestParams{
+		// 		PID:           pid,
+		// 		ChangeRequest: &change,
+		// 	})
+		// }
+
+		// 	status, ok := cr.Status(overviewfield.Name)
+		// 	if ok && status == request.FieldStatusApproved {
+		// 		overviewfield.IsApproved = true
+		// 	}
+		//
+		// 	processedoverviewfields = append(processedoverviewfields, overviewfield)
+		// }
+
+		b["SummaryFields"] = overviewfields
+
+		return c.Render(view.RequestOverview, b, layout.Page)
+	}
+
+	// TODO: Get this into a utility that returns a struct with utilities
+	// unlockedchanges, err := qtx.ListRequestChangeRequestsForRequestField(context.Background(), query.ListRequestChangeRequestsForRequestFieldParams{
+	// 	RID:    req.ID,
+	// 	Field:  nufo.Field,
+	// 	Old:    false,
+	// 	Locked: false,
+	// })
+	// if err != nil {
+	// 	c.Status(fiber.StatusInternalServerError)
+	// 	return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+	// }
+	// if len(unlockedchanges) > 1 {
+	// 	// TODO: This is a fatal error
+	// 	c.Status(fiber.StatusInternalServerError)
+	// 	return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+	// }
+
+	b, err = request.NewBindFieldView(i.Templates, b, request.BindFieldViewParams{
+		PID:     pid,
+		Request: req,
+		Last:    nufo.Last,
+	})
+	if err != nil {
+		c.Status(fiber.StatusInternalServerError)
+		return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+	}
+
+	return c.Render(view.RequestField, b, layout.Standalone)
 }
 
 func UpdateRequestField(i *service.Interfaces) fiber.Handler {
@@ -657,8 +676,8 @@ func UpdateRequestFieldStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		field := c.Params("field")
-		if len(field) == 0 {
+		ft := c.Params("field")
+		if len(ft) == 0 {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -691,10 +710,21 @@ func UpdateRequestFieldStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		currentChangeRequestCount, err := qtx.CountCurrentRequestChangeRequestForRequestField(context.Background(), query.CountCurrentRequestChangeRequestForRequestFieldParams{
-			RID:   rid,
-			Field: field,
+		field, err := qtx.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+			RID:  rid,
+			Type: ft,
 		})
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		// TODO: Do we need this count if there's only ever one open change request?
+		count, err := qtx.CountOpenRequestChangeRequestsForRequestField(context.Background(), field.ID)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -702,16 +732,15 @@ func UpdateRequestFieldStatus(i *service.Interfaces) fiber.Handler {
 
 		// TODO: Get this in a request utility
 		var status string
-		if currentChangeRequestCount > 0 {
+		if count > 0 {
 			status = request.FieldStatusReviewed
 		} else {
 			status = request.FieldStatusApproved
 		}
 
-		if err = request.UpdateFieldStatus(qtx, request.UpdateFieldStatusParams{
-			Request:   &req,
-			FieldName: field,
-			Status:    status,
+		if err = qtx.UpdateRequestFieldStatus(context.Background(), query.UpdateRequestFieldStatusParams{
+			ID:     field.ID,
+			Status: status,
 		}); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -843,8 +872,8 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		field := c.Params("field")
-		if len(field) == 0 {
+		ft := c.Params("field")
+		if len(ft) == 0 {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -867,7 +896,7 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if !request.IsFieldNameValid(req.Type, field) {
+		if !request.IsFieldNameValid(req.Type, ft) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -887,11 +916,23 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if err = qtx.CreateRequestChangeRequest(context.Background(), query.CreateRequestChangeRequestParams{
-			RID:   rid,
-			PID:   pid,
-			Text:  text,
-			Field: field,
+		field, err := qtx.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+			RID:  rid,
+			Type: ft,
+		})
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err = qtx.CreateOpenRequestChangeRequest(context.Background(), query.CreateOpenRequestChangeRequestParams{
+			RFID: field.ID,
+			PID:  pid,
+			Text: text,
 		}); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -943,33 +984,12 @@ func DeleteRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		change, err := qtx.GetRequestChangeRequest(context.Background(), id)
+		change, err := qtx.GetOpenRequestChangeRequest(context.Background(), id)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if change.Old {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-
-		req, err := qtx.GetRequest(context.Background(), change.RID)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				c.Status(fiber.StatusNotFound)
-				return nil
-			}
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if !request.IsFieldNameValid(req.Type, change.Field) {
-			// TODO: This is a catastrophic failure and needs a recovery path
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -979,39 +999,21 @@ func DeleteRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.Status != request.StatusInReview {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-
-		if req.RPID != pid {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-
 		if err = qtx.DeleteRequestChangeRequest(context.Background(), change.ID); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		cr, err := request.ContentReview(qtx, &req)
+		field, err := qtx.GetRequestField(context.Background(), change.RFID)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
-		status, ok := cr.Status(change.Field)
-		if !ok {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if status == request.FieldStatusReviewed {
-			if err := request.UpdateFieldStatus(qtx, request.UpdateFieldStatusParams{
-				Request:   &req,
-				FieldName: change.Field,
-				PID:       pid,
-				Status:    request.FieldStatusApproved,
+		if field.Status == request.FieldStatusReviewed {
+			if err := qtx.UpdateRequestFieldStatus(context.Background(), query.UpdateRequestFieldStatusParams{
+				ID:     field.ID,
+				Status: request.FieldStatusApproved,
 			}); err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return nil
@@ -1077,33 +1079,12 @@ func EditRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 		defer tx.Rollback()
 		qtx := i.Queries.WithTx(tx)
 
-		change, err := qtx.GetRequestChangeRequest(context.Background(), id)
+		change, err := qtx.GetOpenRequestChangeRequest(context.Background(), id)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.Status(fiber.StatusNotFound)
 				return nil
 			}
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if change.Old {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-
-		req, err := qtx.GetRequest(context.Background(), change.RID)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				c.Status(fiber.StatusNotFound)
-				return nil
-			}
-			c.Status(fiber.StatusInternalServerError)
-			return nil
-		}
-
-		if !request.IsFieldNameValid(req.Type, change.Field) {
-			// TODO: This is a catastrophic failure and needs a recovery path
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -1113,17 +1094,7 @@ func EditRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.Status != request.StatusInReview {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-
-		if req.RPID != pid {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-
-		if err = qtx.EditRequestChangeRequest(context.Background(), query.EditRequestChangeRequestParams{
+		if err = qtx.EditOpenRequestChangeRequest(context.Background(), query.EditOpenRequestChangeRequestParams{
 			ID:   change.ID,
 			Text: text,
 		}); err != nil {

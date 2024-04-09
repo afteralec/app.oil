@@ -12,11 +12,9 @@ import (
 
 	"petrichormud.com/app/internal/actor"
 	"petrichormud.com/app/internal/bind"
-	"petrichormud.com/app/internal/layout"
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/route"
-	"petrichormud.com/app/internal/view"
 )
 
 type CharacterApplication struct {
@@ -35,11 +33,9 @@ func (app *CharacterApplication) New(q *query.Queries, pid int64) (int64, error)
 	if err != nil {
 		return 0, err
 	}
-
 	if err = q.CreateCharacterApplicationContent(context.Background(), rid); err != nil {
 		return 0, err
 	}
-
 	if err = q.CreateCharacterApplicationContentReview(context.Background(), query.CreateCharacterApplicationContentReviewParams{
 		RID:              rid,
 		Name:             FieldStatusNotReviewed,
@@ -50,7 +46,6 @@ func (app *CharacterApplication) New(q *query.Queries, pid int64) (int64, error)
 	}); err != nil {
 		return 0, err
 	}
-
 	return rid, nil
 }
 
@@ -138,7 +133,6 @@ func (f *fieldCharacterApplicationNameUpdater) Update(q *query.Queries, p Update
 	}); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -149,7 +143,6 @@ func (f *fieldCharacterApplicationNameUpdater) UpdateStatus(q *query.Queries, p 
 	}); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -184,12 +177,9 @@ func NewFieldCharacterApplicationName() Field {
 	b.Description("Your character's name")
 	b.Updater(new(fieldCharacterApplicationNameUpdater))
 	b.Validator(&actor.CharacterNameValidator)
-	b.View(view.RequestField)
-	b.Layout(layout.Standalone)
 	b.Help(partial.RequestFieldHelpCharacterApplicationName)
 	b.DataRenderer(new(fieldCharacterApplicationNameDataRenderer))
 	b.FormRenderer(new(fieldCharacterApplicationNameFormRenderer))
-
 	return b.Build()
 }
 
@@ -232,6 +222,7 @@ func (f *fieldCharacterApplicationGenderDataRenderer) Render(e *html.Engine, p R
 
 type fieldCharacterApplicationGenderFormRenderer struct{}
 
+// TODO: Clean this up so we don't need this exception
 func (f *fieldCharacterApplicationGenderFormRenderer) Render(e *html.Engine, p RenderFieldFormParams) (template.HTML, error) {
 	b := fiber.Map{
 		"FormID":     FormID,
@@ -281,12 +272,9 @@ func NewFieldCharacterApplicationGender() Field {
 	b.Description("Your character's gender determines the pronouns used by third-person descriptions in the game")
 	b.Updater(new(fieldCharacterApplicationGenderUpdater))
 	b.Validator(&actor.GenderValidator)
-	b.View(view.RequestField)
-	b.Layout(layout.Standalone)
 	b.Help(partial.RequestFieldHelpCharacterApplicationGender)
 	b.DataRenderer(new(fieldCharacterApplicationGenderDataRenderer))
 	b.FormRenderer(new(fieldCharacterApplicationGenderFormRenderer))
-
 	return b.Build()
 }
 
@@ -347,8 +335,6 @@ func NewFieldCharacterApplicationShortDescription() Field {
 	b.Description("This is how your character will appear in third-person descriptions during the game")
 	b.Updater(new(fieldCharacterApplicationShortDescriptionUpdater))
 	b.Validator(&actor.ShortDescriptionValidator)
-	b.View(view.RequestField)
-	b.Layout(layout.Standalone)
 	b.Help(partial.RequestFieldHelpCharacterApplicationShortDescription)
 	b.DataRenderer(new(fieldCharacterApplicationShortDescriptionDataRenderer))
 	b.FormRenderer(new(fieldCharacterApplicationShortDescriptionFormRenderer))
@@ -412,14 +398,10 @@ func NewFieldCharacterApplicationDescription() Field {
 	b.Label("Description")
 	b.Description("This is how your character will appear when examined")
 	b.Updater(new(fieldCharacterApplicationDescriptionUpdater))
-	b.Validator(&actor.DescriptionLengthValidator)
-	b.Validator(&actor.DescriptionRegexValidator)
-	b.View(view.RequestField)
-	b.Layout(layout.Standalone)
+	b.Validator(&actor.DescriptionValidator)
 	b.Help(partial.RequestFieldHelpCharacterApplicationDescription)
 	b.DataRenderer(new(fieldCharacterApplicationDescriptionDataRenderer))
 	b.FormRenderer(new(fieldCharacterApplicationDescriptionFormRenderer))
-
 	return b.Build()
 }
 
@@ -482,8 +464,6 @@ func NewFieldCharacterApplicationBackstory() Field {
 	b.Description("This is your character's private backstory")
 	b.Updater(new(fieldCharacterApplicationBackstoryUpdater))
 	b.Validator(&actor.CharacterBackstoryValidator)
-	b.View(view.RequestField)
-	b.Layout(layout.Standalone)
 	b.Help(partial.RequestFieldHelpCharacterApplicationBackstory)
 	b.DataRenderer(new(fieldCharacterApplicationBackstoryDataRenderer))
 	b.FormRenderer(new(fieldCharacterApplicationBackstoryFormRenderer))

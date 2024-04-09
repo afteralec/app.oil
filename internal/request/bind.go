@@ -12,16 +12,23 @@ import (
 )
 
 type BindFieldViewParams struct {
-	Request               *query.Request
-	Content               content
-	FieldName             string
-	CurrentChangeRequests []query.RequestChangeRequest
-	PID                   int64
-	Last                  bool
+	Request *query.Request
+	Field   *query.RequestField
+	Changes []query.RequestChangeRequest
+	PID     int64
+	Last    bool
 }
 
-func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
-	help, err := FieldHelp(e, p.Request.Type, p.FieldName)
+func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
+	fields, ok := NewFieldsByType[p.Request.Type]
+	if !ok {
+		return fiber.Map{}, ErrNoDefinition
+	}
+	field, ok := fields.Get(p.Field.Type)
+	if !ok {
+		return fiber.Map{}, ErrInvalidType
+	}
+	help, err := field.RenderHelp(e)
 	if err != nil {
 		return b, err
 	}
@@ -29,82 +36,47 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 
 	// TODO: Get this into a utility
 	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady {
-		fieldValue, ok := p.Content.Value(p.FieldName)
-		if !ok {
-			fieldValue = ""
-		}
-
-		form, err := RenderFieldForm(e, RenderFieldFormParams{
-			Request:    p.Request,
-			Content:    p.Content,
-			FieldName:  p.FieldName,
-			FieldValue: fieldValue,
-			FormID:     FormID,
-		})
+		form, err := field.RenderForm(e, p.Field)
 		if err != nil {
 			return b, err
 		}
 		b["Form"] = form
 	} else {
-		fieldValue, ok := p.Content.Value(p.FieldName)
-		if !ok {
-			fieldValue = ""
-		}
-
-		data, err := RenderFieldData(e, RenderFieldDataParams{
-			Request:    p.Request,
-			Content:    p.Content,
-			FieldName:  p.FieldName,
-			FieldValue: fieldValue,
-		})
+		data, err := field.RenderData(e, p.Field)
 		if err != nil {
 			return b, err
 		}
 		b["Data"] = data
 	}
 
-	b, err = BindDialogs(b, BindDialogsParams{
-		Request: p.Request,
-	})
+	b, err = BindDialogs(b, p.Request)
 	if err != nil {
 		return b, err
 	}
 
-	label, description := GetFieldLabelAndDescription(p.Request.Type, p.FieldName)
-	b["FieldLabel"] = label
-	b["FieldDescription"] = description
-
+	b["FieldLabel"] = field.Label
+	b["FieldDescription"] = field.Description
 	b["RequestFormID"] = FormID
 
 	// TODO: Sort out this being disabled
-	b["BackLink"] = route.RequestPath(p.Request.ID)
+	b["BackLink"] = route.RequestPath(p.Field.RID)
 
-	b["RequestFormPath"] = route.RequestFieldPath(p.Request.ID, p.FieldName)
+	b["RequestFormPath"] = route.RequestFieldPath(p.Field.RID, p.Field.Type)
 	// TODO: Change this to FieldName
-	b["Field"] = p.FieldName
+	b["Field"] = p.Field.Type
+	b["FieldValue"] = p.Field.Value
 
-	// TODO: Consolidate this with the above
-	fieldValue, ok := p.Content.Value(p.FieldName)
-	if ok {
-		b["FieldValue"] = fieldValue
-	} else {
-		b["FieldValue"] = ""
+	b, err = BindFieldViewActions(e, b, BindFieldViewActionsParams(p))
+	if err != nil {
+		return fiber.Map{}, err
 	}
 
-	BindFieldViewActions(e, b, BindFieldViewActionsParams{
-		PID:                   p.PID,
-		Request:               p.Request,
-		CurrentChangeRequests: p.CurrentChangeRequests,
-		FieldName:             p.FieldName,
-		Last:                  p.Last,
-	})
-
-	// TODO: Move this to a utility
-	b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(p.Request.ID, p.FieldName)
-	if len(p.CurrentChangeRequests) == 1 {
+	// TODO: Move this to a utility and include detection for showing the actions
+	b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(p.Request.ID, p.Field.Type)
+	if len(p.Changes) == 1 {
 		b["ChangeRequest"] = BindChangeRequest(BindChangeRequestParams{
-			PID:           p.PID,
-			ChangeRequest: &p.CurrentChangeRequests[0],
+			PID:    p.PID,
+			Change: &p.Changes[0],
 		})
 	}
 
@@ -112,11 +84,11 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 }
 
 type BindFieldViewActionsParams struct {
-	Request               *query.Request
-	FieldName             string
-	CurrentChangeRequests []query.RequestChangeRequest
-	PID                   int64
-	Last                  bool
+	Request *query.Request
+	Field   *query.RequestField
+	Changes []query.RequestChangeRequest
+	PID     int64
+	Last    bool
 }
 
 func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsParams) (fiber.Map, error) {
@@ -124,7 +96,7 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 
 	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID {
 		// TODO: Put this in a utility
-		if len(p.CurrentChangeRequests) == 0 {
+		if len(p.Changes) == 0 {
 			change, err := partial.Render(e, partial.RenderParams{
 				Template: partial.RequestFieldActionChangeRequest,
 			})
@@ -143,7 +115,7 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 		actions = append(actions, reject)
 
 		text := "Approve"
-		if len(p.CurrentChangeRequests) > 0 {
+		if len(p.Changes) > 0 {
 			if p.Last {
 				text = "Finish"
 			} else {
@@ -155,7 +127,7 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 		review, err := partial.Render(e, partial.RenderParams{
 			Template: partial.RequestFieldActionReview,
 			Bind: fiber.Map{
-				"Path": route.RequestFieldStatusPath(p.Request.ID, p.FieldName),
+				"Path": route.RequestFieldStatusPath(p.Request.ID, p.Field.Type),
 				"Text": text,
 			},
 		})
@@ -194,14 +166,14 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 
 type BindOverviewParams struct {
 	Request               *query.Request
-	Content               content
+	FieldMap              map[string]*query.RequestField
 	CurrentChangeRequests []query.RequestChangeRequest
 	PID                   int64
 }
 
 func BindOverview(e *html.Engine, b fiber.Map, p BindOverviewParams) (fiber.Map, error) {
 	b["PageHeader"] = fiber.Map{
-		"Title": TitleForSummary(p.Request.Type, p.Content),
+		"Title": TitleForOverview(p.Request.Type, p.FieldMap),
 	}
 	// TODO: Build a utility for this
 	b["Status"] = fiber.Map{
@@ -282,7 +254,6 @@ func BindOverviewActions(e *html.Engine, b fiber.Map, p BindOverviewActionsParam
 			}
 			actions = append(actions, approve)
 		}
-
 	}
 
 	b["Actions"] = actions
@@ -290,17 +261,18 @@ func BindOverviewActions(e *html.Engine, b fiber.Map, p BindOverviewActionsParam
 }
 
 type BindChangeRequestParams struct {
-	ChangeRequest *query.RequestChangeRequest
-	PID           int64
+	Change      *query.RequestChangeRequest
+	PID         int64
+	ShowActions bool
 }
 
 func BindChangeRequest(p BindChangeRequestParams) fiber.Map {
 	b := fiber.Map{
-		"Text": p.ChangeRequest.Text,
-		"Path": route.RequestChangeRequestPath(p.ChangeRequest.ID),
+		"Text": p.Change.Text,
+		"Path": route.RequestChangeRequestPath(p.Change.ID),
 	}
 
-	if p.ChangeRequest.PID == p.PID && !p.ChangeRequest.Locked && !p.ChangeRequest.Old {
+	if p.Change.PID == p.PID && p.ShowActions {
 		b["ShowDeleteAction"] = true
 		b["ShowEditAction"] = true
 	}

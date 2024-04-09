@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	pb "petrichormud.com/app/internal/proto/sending"
+	"petrichormud.com/app/internal/proto/sending"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/service"
 )
@@ -25,10 +25,10 @@ func Recover(i *service.Interfaces, e query.Email) (string, error) {
 		return id, nil
 	}
 
-	sender := pb.NewSenderClient(i.ClientConn)
+	sender := sending.NewSenderClient(i.ClientConn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	_, err = sender.SendUsernameRecovery(ctx, &pb.SendUsernameRecoveryRequest{
+	_, err = sender.SendUsernameRecovery(ctx, &sending.SendUsernameRecoveryRequest{
 		Email:    e.Address,
 		Username: u,
 	})

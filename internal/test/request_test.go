@@ -1974,10 +1974,14 @@ func TestEditRequestChangeRequestSuccess(t *testing.T) {
 
 	require.Equal(t, fiber.StatusOK, res.StatusCode)
 
-	change, err := i.Queries.GetCurrentRequestChangeRequestForRequestField(context.Background(), query.GetCurrentRequestChangeRequestForRequestFieldParams{
-		RID:   rid,
-		Field: request.FieldCharacterApplicationName.Name,
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: request.FieldCharacterApplicationName.Name,
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	change, err := i.Queries.GetOpenRequestChangeRequestForRequestField(context.Background(), field.ID)
 	if err != nil {
 		t.Fatal(err)
 	}

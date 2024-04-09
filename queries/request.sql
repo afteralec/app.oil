@@ -16,47 +16,94 @@ UPDATE requests SET rpid = ? WHERE id = ?;
 -- name: CreateRequestField :exec
 INSERT INTO request_fields (value, type, status, rid) VALUES (?, ?, ?, ?);
 
+-- name: GetRequestField :one
+SELECT * FROM request_fields WHERE id = ?;
+
+-- name: GetRequestFieldByType :one
+SELECT * FROM request_fields WHERE type = ? AND rid = ?;
+
+-- name: GetRequestFieldByTypeWithChangeRequests :one
+SELECT
+  sqlc.embed(request_fields), sqlc.embed(open_request_change_requests), sqlc.embed(request_change_requests)
+FROM
+  request_fields
+LEFT JOIN
+  open_request_change_requests ON open_request_change_requests.rfid = request_fields.id
+LEFT JOIN
+  request_change_requests ON request_change_requests.rfid = request_fields.id
+WHERE
+  request_fields.type = ? AND request_fields.rid = ?;
+
 -- name: ListRequestFieldsForRequest :many
 SELECT * FROM request_fields WHERE rid = ?;
+
+-- name: ListRequestFieldsForRequestWithChangeRequests :many
+SELECT
+  sqlc.embed(request_fields), sqlc.embed(open_request_change_requests), sqlc.embed(request_change_requests)
+FROM
+  request_fields
+LEFT JOIN
+  open_request_change_requests ON open_request_change_requests.rfid = request_fields.id
+LEFT JOIN
+  request_change_requests ON request_change_requests.rfid = request_fields.id
+WHERE
+  request_fields.rid = ?;
 
 -- name: UpdateRequestFieldValueByRequestAndType :exec
 UPDATE request_fields SET value = ? WHERE type = ? AND rid = ?;
 
+-- name: UpdateRequestFieldStatus :exec
+UPDATE request_fields SET status = ? WHERE id = ?;
+
 -- name: UpdateRequestFieldStatusByRequestAndType :exec
 UPDATE request_fields SET status = ? WHERE type = ? AND rid = ?;
 
--- name: CreateRequestChangeRequest :exec
-INSERT INTO request_change_requests (field, text, rid, pid) VALUES (?, ?, ?, ?);
+-- name: CreateOpenRequestChangeRequest :exec
+INSERT INTO open_request_change_requests (text, rfid, pid) VALUES (?, ?, ?);
 
--- name: GetRequestChangeRequest :one
-SELECT * FROM request_change_requests WHERE id = ?;
+-- name: GetOpenRequestChangeRequestForRequestField :one
+SELECT * FROM open_request_change_requests WHERE rfid = ?;
+
+-- name: CountOpenRequestChangeRequestsForRequestField :one
+SELECT COUNT(*) FROM open_request_change_requests WHERE rfid = ?;
+
+-- name: CountOpenRequestChangeRequestsForRequest :one
+SELECT
+  COUNT(*)
+FROM
+  request_fields
+JOIN
+  open_request_change_requests ON open_request_change_requests.rfid = request_fields.id
+WHERE
+  request_fields.rid = ?;
+
+-- name: GetOpenRequestChangeRequest :one
+SELECT * FROM open_request_change_requests WHERE id = ?;
+
+-- name: DeleteOpenRequestChangeRequest :exec
+DELETE FROM open_request_change_requests WHERE id = ?;
+
+-- name: EditOpenRequestChangeRequest :exec
+UPDATE open_request_change_requests SET text = ? WHERE id = ?;
+
+-- name: CreateRequestChangeRequest :exec
+INSERT INTO
+  request_change_requests
+SELECT * FROM
+  open_request_change_requests
+WHERE
+  open_request_change_requests.id = ?;
 
 -- name: DeleteRequestChangeRequest :exec
 DELETE FROM request_change_requests WHERE id = ?;
 
--- name: EditRequestChangeRequest :exec
-UPDATE request_change_requests SET text = ? WHERE id = ?;
-
--- name: GetCurrentRequestChangeRequestForRequestField :one
-SELECT * FROM request_change_requests WHERE field = ? AND rid = ? AND old = false;
-
--- name: ListRequestChangeRequestsForRequest :many
-SELECT * FROM request_change_requests WHERE rid = ? AND locked = ? AND old = ? ORDER BY updated_at;
-
--- name: ListRequestChangeRequestsForRequestField :many
-SELECT * FROM request_change_requests WHERE field = ? AND rid = ? AND locked = ? AND old = ? ORDER BY updated_at;
-
--- name: ListCurrentRequestChangeRequestsForRequest :many
-SELECT * FROM request_change_requests WHERE rid = ? AND old = false;
-
--- name: CountCurrentRequestChangeRequestForRequest :one
-SELECT COUNT(*) FROM request_change_requests WHERE rid = ? AND old = false;
-
--- name: CountCurrentRequestChangeRequestForRequestField :one
-SELECT COUNT(*) FROM request_change_requests WHERE field = ? AND rid = ? AND old = false;
-
--- name: LockRequestChangeRequestsForRequest :exec
-UPDATE request_change_requests SET locked = true WHERE rid = ? AND locked = false;
+-- name: CreatePastRequestChangeRequest :exec
+INSERT INTO
+  past_request_change_requests
+SELECT * FROM
+  request_change_requests
+WHERE
+  request_change_requests.id = ?;
 
 -- name: CreateCharacterApplicationContent :exec
 INSERT INTO

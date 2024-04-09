@@ -9,18 +9,19 @@ import (
 
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/request/status"
 )
 
 const (
-	StatusIncomplete = "Incomplete"
-	StatusReady      = "Ready"
-	StatusSubmitted  = "Submitted"
-	StatusInReview   = "InReview"
-	StatusApproved   = "Approved"
-	StatusReviewed   = "Reviewed"
-	StatusRejected   = "Rejected"
-	StatusArchived   = "Archived"
-	StatusCanceled   = "Canceled"
+	StatusIncomplete = status.Incomplete
+	StatusReady      = status.Ready
+	StatusSubmitted  = status.Submitted
+	StatusInReview   = status.InReview
+	StatusApproved   = status.Approved
+	StatusReviewed   = status.Reviewed
+	StatusRejected   = status.Rejected
+	StatusArchived   = status.Archived
+	StatusCanceled   = status.Canceled
 )
 
 const (
@@ -209,7 +210,7 @@ func NextStatus(p NextStatusParams) (string, error) {
 			return "", ErrNextStatusForbidden
 		}
 
-		count, err := p.Query.CountCurrentRequestChangeRequestForRequest(context.Background(), p.Request.ID)
+		count, err := p.Query.CountOpenRequestChangeRequestsForRequest(context.Background(), p.Request.ID)
 		if err != nil {
 			return "", err
 		}
@@ -279,11 +280,12 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 		}
 	}
 
-	if p.Status == StatusReviewed {
-		if err := q.LockRequestChangeRequestsForRequest(context.Background(), p.RID); err != nil {
-			return err
-		}
-	}
+	// TODO: Use this to move the current Change Request back to Past
+	// if p.Status == StatusReviewed {
+	// 	if err := q.LockRequestChangeRequestsForRequest(context.Background(), p.RID); err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	return nil
 }

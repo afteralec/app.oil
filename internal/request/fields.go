@@ -5,6 +5,7 @@ import (
 	"html/template"
 
 	html "github.com/gofiber/template/html/v2"
+
 	"petrichormud.com/app/internal/query"
 )
 
@@ -68,7 +69,6 @@ func (f *Fields) NextUnreviewed(cr contentreview) (NextUnreviewedFieldOutput, er
 			}, nil
 		}
 	}
-
 	return NextUnreviewedFieldOutput{
 		Field: "",
 		Last:  false,

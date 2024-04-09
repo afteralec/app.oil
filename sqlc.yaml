@@ -13,6 +13,7 @@ sql:
         rename:
           pid: "PID"
           rid: "RID"
+          rfid: "RFID"
           vid: "VID"
           cid: "CID"
           ipid: "IPID"

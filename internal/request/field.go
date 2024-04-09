@@ -10,8 +10,17 @@ import (
 
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/request/field"
 	"petrichormud.com/app/internal/validate"
 )
+
+func FieldMap(fields []query.RequestField) field.Map {
+	m := field.Map{}
+	for _, field := range fields {
+		m[field.Type] = &field
+	}
+	return m
+}
 
 type DataRenderer interface {
 	Render(e *html.Engine, p RenderFieldDataParams) (template.HTML, error)
@@ -29,8 +38,6 @@ type Field struct {
 	Name         string
 	Label        string
 	Description  string
-	View         string
-	Layout       string
 	Help         string
 }
 
@@ -54,16 +61,6 @@ func (b *fieldBuilder) Label(label string) *fieldBuilder {
 
 func (b *fieldBuilder) Description(description string) *fieldBuilder {
 	b.Field.Description = description
-	return b
-}
-
-func (b *fieldBuilder) View(view string) *fieldBuilder {
-	b.Field.View = view
-	return b
-}
-
-func (b *fieldBuilder) Layout(layout string) *fieldBuilder {
-	b.Field.Layout = layout
 	return b
 }
 
