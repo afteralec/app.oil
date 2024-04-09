@@ -20,7 +20,7 @@ type BindFieldViewParams struct {
 }
 
 func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
-	fields, ok := NewFieldsByType[p.Request.Type]
+	fields, ok := FieldsByType[p.Request.Type]
 	if !ok {
 		return fiber.Map{}, ErrNoDefinition
 	}
@@ -173,7 +173,7 @@ type BindOverviewParams struct {
 
 func BindOverview(e *html.Engine, b fiber.Map, p BindOverviewParams) (fiber.Map, error) {
 	b["PageHeader"] = fiber.Map{
-		"Title": TitleForOverview(p.Request.Type, p.FieldMap),
+		"Title": Title(p.Request.Type, p.FieldMap),
 	}
 	// TODO: Build a utility for this
 	b["Status"] = fiber.Map{

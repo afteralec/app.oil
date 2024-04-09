@@ -9,6 +9,7 @@ import (
 
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/request/field"
 	"petrichormud.com/app/internal/request/status"
 )
 
@@ -25,10 +26,10 @@ const (
 )
 
 const (
-	FieldStatusNotReviewed = "NotReviewed"
-	FieldStatusApproved    = "Approved"
-	FieldStatusReviewed    = "Reviewed"
-	FieldStatusRejected    = "Rejected"
+	FieldStatusNotReviewed = field.StatusNotReviewed
+	FieldStatusApproved    = field.StatusApproved
+	FieldStatusReviewed    = field.StatusReviewed
+	FieldStatusRejected    = field.StatusRejected
 )
 
 var StatusTexts map[string]string = map[string]string{
@@ -260,13 +261,6 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 		return ErrInvalidStatus
 	}
 
-	if err := q.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
-		ID:     p.RID,
-		Status: p.Status,
-	}); err != nil {
-		return err
-	}
-
 	if p.Status == StatusInReview {
 		if p.PID == 0 {
 			return ErrInvalidReviewerID
@@ -280,6 +274,13 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 		}
 	}
 
+	if err := q.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
+		ID:     p.RID,
+		Status: p.Status,
+	}); err != nil {
+		return err
+	}
+
 	// TODO: Use this to move the current Change Request back to Past
 	// if p.Status == StatusReviewed {
 	// 	if err := q.LockRequestChangeRequestsForRequest(context.Background(), p.RID); err != nil {
@@ -290,53 +291,22 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 	return nil
 }
 
-type UpdateReadyStatusParams struct {
-	Status string
-	PID    int64
-	RID    int64
-	Ready  bool
-}
-
-func UpdateReadyStatus(q *query.Queries, p UpdateReadyStatusParams) error {
-	if p.Ready && p.Status == StatusIncomplete {
-		if err := UpdateStatus(q, UpdateStatusParams{
-			PID:    p.PID,
-			RID:    p.RID,
-			Status: StatusReady,
-		}); err != nil {
-			return err
-		}
-	} else if !p.Ready && p.Status == StatusReady {
-		if err := UpdateStatus(q, UpdateStatusParams{
-			PID:    p.PID,
-			RID:    p.RID,
-			Status: StatusIncomplete,
-		}); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 type CanBePutInReviewParams struct {
-	Request             *query.Request
-	ReviewerPermissions *player.Permissions
-	PID                 int64
+	Request     *query.Request
+	Permissions *player.Permissions
+	PID         int64
 }
 
 func CanBePutInReview(p CanBePutInReviewParams) bool {
 	if p.PID == p.Request.PID {
 		return false
 	}
-
 	if p.Request.Status != StatusSubmitted {
 		return false
 	}
-
-	if !p.ReviewerPermissions.HasPermission(player.PermissionReviewCharacterApplications.Name) {
+	if !p.Permissions.HasPermission(player.PermissionReviewCharacterApplications.Name) {
 		return false
 	}
-
 	return true
 }
 

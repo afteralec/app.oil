@@ -49,6 +49,9 @@ LEFT JOIN
 WHERE
   request_fields.rid = ?;
 
+-- name: UpdateRequestFieldValue :exec
+UPDATE request_fields SET value = ? WHERE id = ?;
+
 -- name: UpdateRequestFieldValueByRequestAndType :exec
 UPDATE request_fields SET value = ? WHERE type = ? AND rid = ?;
 

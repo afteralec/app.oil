@@ -16,6 +16,7 @@ import (
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
+	"petrichormud.com/app/internal/request/definition"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/service"
 )
@@ -249,7 +250,7 @@ func TestRequestFieldPageUnauthorizedNotLoggedIn(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -277,7 +278,7 @@ func TestRequestFieldPageUnowned(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -313,7 +314,7 @@ func TestRequestFieldPageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -341,7 +342,7 @@ func TestRequestFieldPageNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid+1, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldPath(rid+1, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -368,7 +369,7 @@ func TestRequestFieldPageFatal(t *testing.T) {
 
 	i.Close()
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -607,7 +608,7 @@ func TestUpdateRequestFieldUnauthorizedNotLoggedIn(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestCharacterApplication(t, &i, rid)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -640,7 +641,7 @@ func TestUpdateRequestFieldBadRequestNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid+1, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldPath(rid+1, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -673,7 +674,7 @@ func TestUpdateRequestFieldFatal(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -718,10 +719,10 @@ func TestUpdateRequestFieldForbiddenUnowned(t *testing.T) {
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField(request.FieldCharacterApplicationName.Name, "Test")
+	writer.WriteField(definition.FieldCharacterApplicationName.Type, "Test")
 	writer.Close()
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -761,10 +762,10 @@ func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField(request.FieldCharacterApplicationName.Name, "Test")
+	writer.WriteField(definition.FieldCharacterApplicationName.Type, "Test")
 	writer.Close()
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -793,7 +794,7 @@ func TestUpdateRequestFieldBadRequestMissingBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
@@ -821,7 +822,7 @@ func TestUpdateRequestFieldBadRequestMalformedBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -953,7 +954,7 @@ func TestUpdateRequestFieldStatusUnauthorizedNotLoggedIn(t *testing.T) {
 	defer DeleteTestCharacterApplication(t, &i, rid)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 
-	url := MakeTestURL(route.RequestFieldStatusPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldStatusPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
@@ -994,7 +995,7 @@ func TestUpdateRequestFieldStatusBadRequestNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldStatusPath(rid+1000, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldStatusPath(rid+1000, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -1032,7 +1033,7 @@ func TestUpdateRequestFieldStatusFatal(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldStatusPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestFieldStatusPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	i.Close()
 
@@ -1070,7 +1071,7 @@ func TestCreateRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
-	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1115,7 +1116,7 @@ func TestCreateRequestChangeRequestBadRequestMissingBody(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
@@ -1155,7 +1156,7 @@ func TestCreateRequestChangeRequestBadRequestInvalidText(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1247,7 +1248,7 @@ func TestCreateRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 		t.Fatal(t)
 	}
 
-	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid+1000, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid+1000, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1285,7 +1286,7 @@ func TestCreateRequestChangeRequestForbiddenNotInReview(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1337,7 +1338,7 @@ func TestCreateRequestChangeRequestForbiddenNotReviewer(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -1387,7 +1388,7 @@ func TestCreateRequestChangeRequestForbiddenNoPermission(t *testing.T) {
 	writer.WriteField("text", "This name is fantastic.")
 	writer.Close()
 
-	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.AddCookie(sessionCookie)
@@ -1433,7 +1434,7 @@ func TestCreateRequestChangeRequestSuccess(t *testing.T) {
 	writer.WriteField("text", "This name is fantastic.")
 	writer.Close()
 
-	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, request.FieldCharacterApplicationName.Name))
+	url := MakeTestURL(route.RequestChangeRequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodPost, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -1479,7 +1480,7 @@ func TestDeleteRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 		A:        a,
 		Username: TestUsernameTwo,
 		Password: TestPassword,
-		Field:    request.FieldCharacterApplicationName.Name,
+		Field:    definition.FieldCharacterApplicationName.Type,
 		RID:      rid,
 	})
 
@@ -1528,7 +1529,7 @@ func TestDeleteRequestChangeRequestNotFoundNoChangeRequest(t *testing.T) {
 		A:        a,
 		Username: TestUsernameTwo,
 		Password: TestPassword,
-		Field:    request.FieldCharacterApplicationName.Name,
+		Field:    definition.FieldCharacterApplicationName.Type,
 		RID:      rid,
 	})
 
@@ -1578,7 +1579,7 @@ func TestDeleteRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 		A:        a,
 		Username: TestUsernameTwo,
 		Password: TestPassword,
-		Field:    request.FieldCharacterApplicationName.Name,
+		Field:    definition.FieldCharacterApplicationName.Type,
 		RID:      rid,
 	})
 
@@ -1629,7 +1630,7 @@ func TestDeleteRequestChangeRequestSuccess(t *testing.T) {
 		A:        a,
 		Username: TestUsernameTwo,
 		Password: TestPassword,
-		Field:    request.FieldCharacterApplicationName.Name,
+		Field:    definition.FieldCharacterApplicationName.Type,
 		RID:      rid,
 	})
 
@@ -1678,7 +1679,7 @@ func TestEditRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 		A:        a,
 		Username: TestUsernameTwo,
 		Password: TestPassword,
-		Field:    request.FieldCharacterApplicationName.Name,
+		Field:    definition.FieldCharacterApplicationName.Type,
 		RID:      rid,
 	})
 
@@ -1733,7 +1734,7 @@ func TestEditRequestChangeRequestBadRequestMissingBody(t *testing.T) {
 		A:        a,
 		Username: TestUsernameTwo,
 		Password: TestPassword,
-		Field:    request.FieldCharacterApplicationName.Name,
+		Field:    definition.FieldCharacterApplicationName.Type,
 		RID:      rid,
 	})
 
@@ -1783,7 +1784,7 @@ func TestEditRequestChangeRequestBadRequestInvalidText(t *testing.T) {
 		A:        a,
 		Username: TestUsernameTwo,
 		Password: TestPassword,
-		Field:    request.FieldCharacterApplicationName.Name,
+		Field:    definition.FieldCharacterApplicationName.Type,
 		RID:      rid,
 	})
 
@@ -1839,7 +1840,7 @@ func TestEditRequestChangeRequestNotFoundNoChangeRequest(t *testing.T) {
 		A:        a,
 		Username: TestUsernameTwo,
 		Password: TestPassword,
-		Field:    request.FieldCharacterApplicationName.Name,
+		Field:    definition.FieldCharacterApplicationName.Type,
 		RID:      rid,
 	})
 
@@ -1895,7 +1896,7 @@ func TestEditRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 		A:        a,
 		Username: TestUsernameTwo,
 		Password: TestPassword,
-		Field:    request.FieldCharacterApplicationName.Name,
+		Field:    definition.FieldCharacterApplicationName.Type,
 		RID:      rid,
 	})
 
@@ -1952,7 +1953,7 @@ func TestEditRequestChangeRequestSuccess(t *testing.T) {
 		A:        a,
 		Username: TestUsernameTwo,
 		Password: TestPassword,
-		Field:    request.FieldCharacterApplicationName.Name,
+		Field:    definition.FieldCharacterApplicationName.Type,
 		RID:      rid,
 	})
 
@@ -1976,7 +1977,7 @@ func TestEditRequestChangeRequestSuccess(t *testing.T) {
 
 	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
 		RID:  rid,
-		Type: request.FieldCharacterApplicationName.Name,
+		Type: definition.FieldCharacterApplicationName.Type,
 	})
 	if err != nil {
 		t.Fatal(err)

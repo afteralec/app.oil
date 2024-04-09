@@ -178,18 +178,48 @@ func (fg *Group) Get(ft string) (Field, bool) {
 	return field, ok
 }
 
+type NextIncompleteOutput struct {
+	Field *query.RequestField
+	Last  bool
+}
+
 // TODO: Create a discrete NextIncomplete output type
-func (f *Group) NextIncomplete(fields Map) (*query.RequestField, bool) {
+func (f *Group) NextIncomplete(fields Map) (NextIncompleteOutput, error) {
 	for i, fd := range f.list {
 		field, ok := fields[fd.Type]
 		if !ok {
 			continue
 		}
 		if len(field.Value) == 0 {
-			return field, i == len(f.list)-1
+			return NextIncompleteOutput{
+				Field: field,
+				Last:  i == len(f.list)-1,
+			}, nil
 		}
 	}
-	return nil, false
+	return NextIncompleteOutput{}, nil
+}
+
+type NextUnreviewedOutput struct {
+	Field *query.RequestField
+	Last  bool
+}
+
+// TODO: Create a discrete NextIncomplete output type
+func (f *Group) NextUnreviewed(fields Map) (NextUnreviewedOutput, error) {
+	for i, fd := range f.list {
+		field, ok := fields[fd.Type]
+		if !ok {
+			continue
+		}
+		if field.Status == StatusNotReviewed {
+			return NextUnreviewedOutput{
+				Field: field,
+				Last:  i == len(f.list)-1,
+			}, nil
+		}
+	}
+	return NextUnreviewedOutput{}, nil
 }
 
 func (f *Group) ForOverview(p ForOverviewParams) []ForOverview {

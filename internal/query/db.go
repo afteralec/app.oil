@@ -351,6 +351,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updateRequestFieldStatusByRequestAndTypeStmt, err = db.PrepareContext(ctx, updateRequestFieldStatusByRequestAndType); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateRequestFieldStatusByRequestAndType: %w", err)
 	}
+	if q.updateRequestFieldValueStmt, err = db.PrepareContext(ctx, updateRequestFieldValue); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRequestFieldValue: %w", err)
+	}
 	if q.updateRequestFieldValueByRequestAndTypeStmt, err = db.PrepareContext(ctx, updateRequestFieldValueByRequestAndType); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateRequestFieldValueByRequestAndType: %w", err)
 	}
@@ -946,6 +949,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateRequestFieldStatusByRequestAndTypeStmt: %w", cerr)
 		}
 	}
+	if q.updateRequestFieldValueStmt != nil {
+		if cerr := q.updateRequestFieldValueStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRequestFieldValueStmt: %w", cerr)
+		}
+	}
 	if q.updateRequestFieldValueByRequestAndTypeStmt != nil {
 		if cerr := q.updateRequestFieldValueByRequestAndTypeStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateRequestFieldValueByRequestAndTypeStmt: %w", cerr)
@@ -1169,6 +1177,7 @@ type Queries struct {
 	updatePlayerSettingsThemeStmt                               *sql.Stmt
 	updateRequestFieldStatusStmt                                *sql.Stmt
 	updateRequestFieldStatusByRequestAndTypeStmt                *sql.Stmt
+	updateRequestFieldValueStmt                                 *sql.Stmt
 	updateRequestFieldValueByRequestAndTypeStmt                 *sql.Stmt
 	updateRequestReviewerStmt                                   *sql.Stmt
 	updateRequestStatusStmt                                     *sql.Stmt
@@ -1299,6 +1308,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updatePlayerSettingsThemeStmt:                               q.updatePlayerSettingsThemeStmt,
 		updateRequestFieldStatusStmt:                                q.updateRequestFieldStatusStmt,
 		updateRequestFieldStatusByRequestAndTypeStmt:                q.updateRequestFieldStatusByRequestAndTypeStmt,
+		updateRequestFieldValueStmt:                                 q.updateRequestFieldValueStmt,
 		updateRequestFieldValueByRequestAndTypeStmt:                 q.updateRequestFieldValueByRequestAndTypeStmt,
 		updateRequestReviewerStmt:                                   q.updateRequestReviewerStmt,
 		updateRequestStatusStmt:                                     q.updateRequestStatusStmt,

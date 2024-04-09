@@ -985,6 +985,20 @@ func (q *Queries) UpdateRequestFieldStatusByRequestAndType(ctx context.Context, 
 	return err
 }
 
+const updateRequestFieldValue = `-- name: UpdateRequestFieldValue :exec
+UPDATE request_fields SET value = ? WHERE id = ?
+`
+
+type UpdateRequestFieldValueParams struct {
+	Value string
+	ID    int64
+}
+
+func (q *Queries) UpdateRequestFieldValue(ctx context.Context, arg UpdateRequestFieldValueParams) error {
+	_, err := q.exec(ctx, q.updateRequestFieldValueStmt, updateRequestFieldValue, arg.Value, arg.ID)
+	return err
+}
+
 const updateRequestFieldValueByRequestAndType = `-- name: UpdateRequestFieldValueByRequestAndType :exec
 UPDATE request_fields SET value = ? WHERE type = ? AND rid = ?
 `
