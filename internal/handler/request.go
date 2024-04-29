@@ -20,7 +20,7 @@ import (
 	"petrichormud.com/app/internal/view"
 )
 
-func NewRequest(i *service.Interfaces) fiber.Handler {
+func CreateRequest(i *service.Interfaces) fiber.Handler {
 	type input struct {
 		Type string `form:"type"`
 	}
@@ -72,7 +72,7 @@ func NewRequest(i *service.Interfaces) fiber.Handler {
 	}
 }
 
-func NewCharacterApplication(i *service.Interfaces) fiber.Handler {
+func CreateCharacterApplication(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
 		if err != nil {
@@ -536,6 +536,11 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		if !request.IsFieldValueValid(req.Type, &field) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
 		if err = request.UpdateField(qtx, request.UpdateFieldParams{
 			PID:     pid,
 			Request: &req,
@@ -929,10 +934,12 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 		}
 
 		if err = qtx.CreateOpenRequestChangeRequest(context.Background(), query.CreateOpenRequestChangeRequestParams{
-			RFID: field.ID,
-			PID:  pid,
-			Text: text,
+			Value: field.Value,
+			RFID:  field.ID,
+			PID:   pid,
+			Text:  text,
 		}); err != nil {
+			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
@@ -1139,7 +1146,7 @@ func CharactersPage(i *service.Interfaces) fiber.Handler {
 		qtx := i.Queries.WithTx(tx)
 
 		// TODO: Make this a ListRequestsForPlayerByType query instead
-		apps, err := qtx.ListCharacterApplicationsForPlayer(context.Background(), pid)
+		reqs, err := qtx.ListRequestsForPlayer(context.Background(), pid)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c))
@@ -1147,15 +1154,15 @@ func CharactersPage(i *service.Interfaces) fiber.Handler {
 
 		// TODO: Get this into a standard API on the request package
 		summaries := []request.SummaryForQueue{}
-		for _, app := range apps {
-			fields, err := qtx.ListRequestFieldsForRequest(context.Background(), app.Request.ID)
+		for _, req := range reqs {
+			fields, err := qtx.ListRequestFieldsForRequest(context.Background(), req.ID)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c))
 			}
 			summary, err := request.NewSummaryForQueue(request.NewSummaryForQueueParams{
 				Query:               qtx,
-				Request:             &app.Request,
+				Request:             &req,
 				FieldMap:            request.FieldMap(fields),
 				PID:                 pid,
 				ReviewerPermissions: &perms,
@@ -1175,7 +1182,7 @@ func CharactersPage(i *service.Interfaces) fiber.Handler {
 		b := view.Bind(c)
 		b["RequestsPath"] = route.Requests
 		b["CharacterApplicationSummaries"] = summaries
-		b["HasCharacterApplications"] = len(apps) > 0
+		b["HasCharacterApplications"] = len(reqs) > 0
 		return c.Render(view.Characters, b)
 	}
 }

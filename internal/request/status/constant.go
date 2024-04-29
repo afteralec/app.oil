@@ -11,3 +11,5 @@ const (
 	Archived   = "Archived"
 	Canceled   = "Canceled"
 )
+
+const Default = Incomplete

@@ -121,3 +121,15 @@ func IsFieldTypeValid(t, ft string) bool {
 	_, ok = fields.Map()[ft]
 	return ok
 }
+
+func IsFieldValueValid(t string, field *query.RequestField) bool {
+	fields, ok := FieldsByType[t]
+	if !ok {
+		return false
+	}
+	fd, ok := fields.Map()[field.Type]
+	if !ok {
+		return false
+	}
+	return fd.IsValid(field.Value)
+}

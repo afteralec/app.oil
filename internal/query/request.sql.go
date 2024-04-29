@@ -125,17 +125,23 @@ func (q *Queries) CreateHistoryForCharacterApplication(ctx context.Context, rid 
 }
 
 const createOpenRequestChangeRequest = `-- name: CreateOpenRequestChangeRequest :exec
-INSERT INTO open_request_change_requests (text, rfid, pid) VALUES (?, ?, ?)
+INSERT INTO open_request_change_requests (value, text, rfid, pid) VALUES (?, ?, ?, ?)
 `
 
 type CreateOpenRequestChangeRequestParams struct {
-	Text string
-	RFID int64
-	PID  int64
+	Value string
+	Text  string
+	RFID  int64
+	PID   int64
 }
 
 func (q *Queries) CreateOpenRequestChangeRequest(ctx context.Context, arg CreateOpenRequestChangeRequestParams) error {
-	_, err := q.exec(ctx, q.createOpenRequestChangeRequestStmt, createOpenRequestChangeRequest, arg.Text, arg.RFID, arg.PID)
+	_, err := q.exec(ctx, q.createOpenRequestChangeRequestStmt, createOpenRequestChangeRequest,
+		arg.Value,
+		arg.Text,
+		arg.RFID,
+		arg.PID,
+	)
 	return err
 }
 
@@ -154,16 +160,17 @@ func (q *Queries) CreatePastRequestChangeRequest(ctx context.Context, id int64) 
 }
 
 const createRequest = `-- name: CreateRequest :execresult
-INSERT INTO requests (type, pid) VALUES (?, ?)
+INSERT INTO requests (type, status, pid) VALUES (?, ?, ?)
 `
 
 type CreateRequestParams struct {
-	Type string
-	PID  int64
+	Type   string
+	Status string
+	PID    int64
 }
 
 func (q *Queries) CreateRequest(ctx context.Context, arg CreateRequestParams) (sql.Result, error) {
-	return q.exec(ctx, q.createRequestStmt, createRequest, arg.Type, arg.PID)
+	return q.exec(ctx, q.createRequestStmt, createRequest, arg.Type, arg.Status, arg.PID)
 }
 
 const createRequestChangeRequest = `-- name: CreateRequestChangeRequest :exec
@@ -520,80 +527,6 @@ func (q *Queries) ListCharacterApplicationContentForPlayer(ctx context.Context, 
 			&i.Gender,
 			&i.RID,
 			&i.ID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listCharacterApplicationsForPlayer = `-- name: ListCharacterApplicationsForPlayer :many
-SELECT
-  character_application_content.created_at, character_application_content.updated_at, character_application_content.backstory, character_application_content.description, character_application_content.short_description, character_application_content.name, character_application_content.gender, character_application_content.rid, character_application_content.id, players.created_at, players.updated_at, players.pw_hash, players.username, players.id, requests.created_at, requests.updated_at, requests.type, requests.status, requests.rpid, requests.pid, requests.id
-FROM
-  requests
-JOIN
-  character_application_content
-ON
-  requests.id = character_application_content.rid
-JOIN
-  players
-ON
-  players.id = requests.pid
-WHERE
-  requests.pid = ?
-AND
-  requests.type = "CharacterApplication"
-AND
-  requests.status != "Archived"
-AND
-  requests.status != "Canceled"
-`
-
-type ListCharacterApplicationsForPlayerRow struct {
-	CharacterApplicationContent CharacterApplicationContent
-	Player                      Player
-	Request                     Request
-}
-
-func (q *Queries) ListCharacterApplicationsForPlayer(ctx context.Context, pid int64) ([]ListCharacterApplicationsForPlayerRow, error) {
-	rows, err := q.query(ctx, q.listCharacterApplicationsForPlayerStmt, listCharacterApplicationsForPlayer, pid)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ListCharacterApplicationsForPlayerRow
-	for rows.Next() {
-		var i ListCharacterApplicationsForPlayerRow
-		if err := rows.Scan(
-			&i.CharacterApplicationContent.CreatedAt,
-			&i.CharacterApplicationContent.UpdatedAt,
-			&i.CharacterApplicationContent.Backstory,
-			&i.CharacterApplicationContent.Description,
-			&i.CharacterApplicationContent.ShortDescription,
-			&i.CharacterApplicationContent.Name,
-			&i.CharacterApplicationContent.Gender,
-			&i.CharacterApplicationContent.RID,
-			&i.CharacterApplicationContent.ID,
-			&i.Player.CreatedAt,
-			&i.Player.UpdatedAt,
-			&i.Player.PwHash,
-			&i.Player.Username,
-			&i.Player.ID,
-			&i.Request.CreatedAt,
-			&i.Request.UpdatedAt,
-			&i.Request.Type,
-			&i.Request.Status,
-			&i.Request.RPID,
-			&i.Request.PID,
-			&i.Request.ID,
 		); err != nil {
 			return nil, err
 		}

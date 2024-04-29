@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/request/status"
 )
 
 // TODO: ReviewDialog needs consolidated and cleaned up here
@@ -28,14 +29,16 @@ func New(q *query.Queries, p NewParams) (int64, error) {
 		return 0, ErrInvalidType
 	}
 
+	// TODO: Get this in an API?
 	fields, ok := FieldsByType[p.Type]
 	if !ok {
 		return 0, ErrInvalidType
 	}
 
 	result, err := q.CreateRequest(context.Background(), query.CreateRequestParams{
-		PID:  p.PID,
-		Type: p.Type,
+		PID:    p.PID,
+		Type:   p.Type,
+		Status: status.Default,
 	})
 	if err != nil {
 		return 0, err

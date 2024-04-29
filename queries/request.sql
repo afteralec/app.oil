@@ -5,7 +5,7 @@ SELECT * FROM requests WHERE pid = ?;
 SELECT * FROM requests WHERE id = ?;
 
 -- name: CreateRequest :execresult
-INSERT INTO requests (type, pid) VALUES (?, ?);
+INSERT INTO requests (type, status, pid) VALUES (?, ?, ?);
 
 -- name: UpdateRequestStatus :exec
 UPDATE requests SET status = ? WHERE id = ?;
@@ -62,7 +62,7 @@ UPDATE request_fields SET status = ? WHERE id = ?;
 UPDATE request_fields SET status = ? WHERE type = ? AND rid = ?;
 
 -- name: CreateOpenRequestChangeRequest :exec
-INSERT INTO open_request_change_requests (text, rfid, pid) VALUES (?, ?, ?);
+INSERT INTO open_request_change_requests (value, text, rfid, pid) VALUES (?, ?, ?, ?);
 
 -- name: GetOpenRequestChangeRequestForRequestField :one
 SELECT * FROM open_request_change_requests WHERE rfid = ?;
@@ -132,28 +132,6 @@ WHERE
 
 -- name: GetCharacterApplicationContentForRequest :one
 SELECT * FROM character_application_content WHERE rid = ?;
-
--- name: ListCharacterApplicationsForPlayer :many
-SELECT
-  sqlc.embed(character_application_content), sqlc.embed(players), sqlc.embed(requests)
-FROM
-  requests
-JOIN
-  character_application_content
-ON
-  requests.id = character_application_content.rid
-JOIN
-  players
-ON
-  players.id = requests.pid
-WHERE
-  requests.pid = ?
-AND
-  requests.type = "CharacterApplication"
-AND
-  requests.status != "Archived"
-AND
-  requests.status != "Canceled";
 
 -- name: ListOpenCharacterApplications :many
 SELECT 

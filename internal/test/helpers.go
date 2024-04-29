@@ -160,7 +160,6 @@ func CreateTestCharacterApplication(t *testing.T, i *service.Interfaces, a *fibe
 	sessionCookie := LoginTestPlayer(t, a, u, pw)
 
 	url := MakeTestURL(route.Characters)
-
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.AddCookie(sessionCookie)
 
@@ -174,12 +173,12 @@ func CreateTestCharacterApplication(t *testing.T, i *service.Interfaces, a *fibe
 		t.Fatal(err)
 	}
 
-	apps, err := i.Queries.ListCharacterApplicationsForPlayer(context.Background(), p.ID)
+	reqs, err := i.Queries.ListRequestsForPlayer(context.Background(), p.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	return apps[0].Request.ID
+	return reqs[0].ID
 }
 
 func DeleteTestCharacterApplication(t *testing.T, i *service.Interfaces, rid int64) {
@@ -199,11 +198,6 @@ func DeleteTestCharacterApplication(t *testing.T, i *service.Interfaces, rid int
 	if err != nil && err != sql.ErrNoRows {
 		t.Fatal(err)
 	}
-
-	_, err = i.Database.Exec("DELETE FROM request_change_requests WHERE rid = ?;", rid)
-	if err != nil && err != sql.ErrNoRows {
-		t.Fatal(err)
-	}
 }
 
 func DeleteTestRequest(t *testing.T, i *service.Interfaces, rid int64) {
@@ -212,10 +206,7 @@ func DeleteTestRequest(t *testing.T, i *service.Interfaces, rid int64) {
 		t.Fatal(err)
 	}
 
-	_, err = i.Database.Exec("DELETE FROM request_status_change_history WHERE rid = ?;", rid)
-	if err != nil && err != sql.ErrNoRows {
-		t.Fatal(err)
-	}
+	// TODO: Remove request_change_requests too
 }
 
 type CreateTestRequestChangeRequestParams struct {
