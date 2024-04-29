@@ -204,7 +204,6 @@ type NextUnreviewedOutput struct {
 	Last  bool
 }
 
-// TODO: Create a discrete NextIncomplete output type
 func (f *Group) NextUnreviewed(fields Map) (NextUnreviewedOutput, error) {
 	for i, fd := range f.list {
 		field, ok := fields[fd.Type]

@@ -417,6 +417,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			b, err = request.NewBindFieldView(i.Templates, b, request.BindFieldViewParams{
 				PID:     pid,
 				Request: &req,
+				Field:   nufo.Field,
 				Last:    nufo.Last,
 			})
 			if err != nil {

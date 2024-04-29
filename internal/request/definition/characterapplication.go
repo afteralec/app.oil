@@ -105,7 +105,7 @@ func NewFieldCharacterApplicationGender() field.Field {
 	b.Help(partial.RequestFieldHelpCharacterApplicationGender)
 	b.Data(partial.RequestFieldDataCharacterApplicationGender)
 	b.Form(partial.RequestFieldFormCharacterApplicationGender)
-	b.FormRenderer(new(field.DefaultRenderer))
+	b.FormRenderer(new(fieldCharacterApplicationGenderFormRenderer))
 	b.Validator(&actor.GenderValidator)
 	return b.Build()
 }

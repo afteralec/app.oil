@@ -25,11 +25,11 @@ func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber
 	if !ok {
 		return fiber.Map{}, ErrNoDefinition
 	}
-	field, ok := fields.Get(p.Field.Type)
+	fd, ok := fields.Get(p.Field.Type)
 	if !ok {
 		return fiber.Map{}, ErrInvalidType
 	}
-	help, err := field.RenderHelp(e)
+	help, err := fd.RenderHelp(e)
 	if err != nil {
 		return b, err
 	}
@@ -37,13 +37,13 @@ func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber
 
 	// TODO: Get this into a utility
 	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady {
-		form, err := field.RenderForm(e, p.Field)
+		form, err := fd.RenderForm(e, p.Field)
 		if err != nil {
 			return b, err
 		}
 		b["Form"] = form
 	} else {
-		data, err := field.RenderData(e, p.Field)
+		data, err := fd.RenderData(e, p.Field)
 		if err != nil {
 			return b, err
 		}
@@ -55,8 +55,8 @@ func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber
 		return b, err
 	}
 
-	b["FieldLabel"] = field.Label
-	b["FieldDescription"] = field.Description
+	b["FieldLabel"] = fd.Label
+	b["FieldDescription"] = fd.Description
 	b["RequestFormID"] = FormID
 
 	// TODO: Sort out this being disabled
