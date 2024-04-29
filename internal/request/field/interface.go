@@ -183,7 +183,6 @@ type NextIncompleteOutput struct {
 	Last  bool
 }
 
-// TODO: Create a discrete NextIncomplete output type
 func (f *Group) NextIncomplete(fields Map) (NextIncompleteOutput, error) {
 	for i, fd := range f.list {
 		field, ok := fields[fd.Type]
@@ -192,7 +191,7 @@ func (f *Group) NextIncomplete(fields Map) (NextIncompleteOutput, error) {
 		}
 		if len(field.Value) == 0 {
 			return NextIncompleteOutput{
-				Field: field,
+				Field: &field,
 				Last:  i == len(f.list)-1,
 			}, nil
 		}
@@ -214,7 +213,7 @@ func (f *Group) NextUnreviewed(fields Map) (NextUnreviewedOutput, error) {
 		}
 		if field.Status == StatusNotReviewed {
 			return NextUnreviewedOutput{
-				Field: field,
+				Field: &field,
 				Last:  i == len(f.list)-1,
 			}, nil
 		}

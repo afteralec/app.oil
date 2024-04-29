@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -12,8 +11,6 @@ import (
 	"petrichormud.com/app/internal/player"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request"
-
-	// TODO: Do away with anything that calls for inner request packages outside of the request package
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/service"
 	"petrichormud.com/app/internal/util"
@@ -307,9 +304,12 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 
 		if req.Status == request.StatusIncomplete {
-			// TODO: Validate that NextIncompleteField returns something here
 			nifo, err := request.NextIncompleteField(req.Type, fieldmap)
 			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			}
+			if nifo.Field == nil {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
@@ -536,7 +536,7 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if !request.IsFieldValueValid(req.Type, &field) {
+		if !request.IsFieldValueValid(req.Type, field.Type, in.Value) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -665,7 +665,6 @@ func UpdateRequestFieldStatus(i *service.Interfaces) fiber.Handler {
 		}
 
 		if !perms.HasPermission(player.PermissionReviewCharacterApplications.Name) {
-			log.Println("No permission")
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -939,7 +938,6 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			PID:   pid,
 			Text:  text,
 		}); err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}

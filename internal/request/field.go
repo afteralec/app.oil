@@ -92,7 +92,7 @@ func FieldsForOverview(p field.ForOverviewParams) ([]field.ForOverview, error) {
 func FieldMap(fields []query.RequestField) field.Map {
 	m := field.Map{}
 	for _, field := range fields {
-		m[field.Type] = &field
+		m[field.Type] = field
 	}
 	return m
 }
@@ -122,14 +122,14 @@ func IsFieldTypeValid(t, ft string) bool {
 	return ok
 }
 
-func IsFieldValueValid(t string, field *query.RequestField) bool {
+func IsFieldValueValid(t, ft, v string) bool {
 	fields, ok := FieldsByType[t]
 	if !ok {
 		return false
 	}
-	fd, ok := fields.Map()[field.Type]
+	fd, ok := fields.Map()[ft]
 	if !ok {
 		return false
 	}
-	return fd.IsValid(field.Value)
+	return fd.IsValid(v)
 }

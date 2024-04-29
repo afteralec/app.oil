@@ -8,6 +8,7 @@ import (
 
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/request/field"
 	"petrichormud.com/app/internal/route"
 )
 
@@ -166,7 +167,7 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 
 type BindOverviewParams struct {
 	Request               *query.Request
-	FieldMap              map[string]*query.RequestField
+	FieldMap              field.Map
 	CurrentChangeRequests []query.RequestChangeRequest
 	PID                   int64
 }
