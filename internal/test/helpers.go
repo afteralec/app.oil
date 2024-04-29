@@ -181,25 +181,6 @@ func CreateTestCharacterApplication(t *testing.T, i *service.Interfaces, a *fibe
 	return reqs[0].ID
 }
 
-func DeleteTestCharacterApplication(t *testing.T, i *service.Interfaces, rid int64) {
-	DeleteTestRequest(t, i, rid)
-
-	_, err := i.Database.Exec("DELETE FROM character_application_content WHERE id = ?;", rid)
-	if err != nil && err != sql.ErrNoRows {
-		t.Fatal(err)
-	}
-
-	_, err = i.Database.Exec("DELETE FROM character_application_content_review WHERE id = ?;", rid)
-	if err != nil && err != sql.ErrNoRows {
-		t.Fatal(err)
-	}
-
-	_, err = i.Database.Exec("DELETE FROM character_application_content_history WHERE rid = ?;", rid)
-	if err != nil && err != sql.ErrNoRows {
-		t.Fatal(err)
-	}
-}
-
 func DeleteTestRequest(t *testing.T, i *service.Interfaces, rid int64) {
 	_, err := i.Database.Exec("DELETE FROM requests WHERE id = ?;", rid)
 	if err != nil && err != sql.ErrNoRows {

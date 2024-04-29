@@ -5,7 +5,7 @@ SELECT * FROM rooms WHERE id = ?;
 SELECT * FROM rooms;
 
 -- name: ListRoomsByIDs :many
-SELECT * FROM rooms WHERE id IN (sqlc.slice('ids'));
+SELECT * FROM rooms WHERE id IN (sqlc.slice("ids"));
 
 -- name: CreateRoom :execresult
 INSERT INTO rooms (title, description, size) VALUES (?, ?, ?);

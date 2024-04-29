@@ -27,9 +27,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.countEmailsStmt, err = db.PrepareContext(ctx, countEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query CountEmails: %w", err)
 	}
-	if q.countOpenCharacterApplicationsForPlayerStmt, err = db.PrepareContext(ctx, countOpenCharacterApplicationsForPlayer); err != nil {
-		return nil, fmt.Errorf("error preparing query CountOpenCharacterApplicationsForPlayer: %w", err)
-	}
 	if q.countOpenRequestChangeRequestsForRequestStmt, err = db.PrepareContext(ctx, countOpenRequestChangeRequestsForRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query CountOpenRequestChangeRequestsForRequest: %w", err)
 	}
@@ -63,17 +60,8 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createActorImagePrimaryHandStmt, err = db.PrepareContext(ctx, createActorImagePrimaryHand); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateActorImagePrimaryHand: %w", err)
 	}
-	if q.createCharacterApplicationContentStmt, err = db.PrepareContext(ctx, createCharacterApplicationContent); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateCharacterApplicationContent: %w", err)
-	}
-	if q.createCharacterApplicationContentReviewStmt, err = db.PrepareContext(ctx, createCharacterApplicationContentReview); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateCharacterApplicationContentReview: %w", err)
-	}
 	if q.createEmailStmt, err = db.PrepareContext(ctx, createEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateEmail: %w", err)
-	}
-	if q.createHistoryForCharacterApplicationStmt, err = db.PrepareContext(ctx, createHistoryForCharacterApplication); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateHistoryForCharacterApplication: %w", err)
 	}
 	if q.createOpenRequestChangeRequestStmt, err = db.PrepareContext(ctx, createOpenRequestChangeRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateOpenRequestChangeRequest: %w", err)
@@ -159,18 +147,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getActorImageFurniturePropertiesStmt, err = db.PrepareContext(ctx, getActorImageFurnitureProperties); err != nil {
 		return nil, fmt.Errorf("error preparing query GetActorImageFurnitureProperties: %w", err)
 	}
-	if q.getCharacterApplicationStmt, err = db.PrepareContext(ctx, getCharacterApplication); err != nil {
-		return nil, fmt.Errorf("error preparing query GetCharacterApplication: %w", err)
-	}
-	if q.getCharacterApplicationContentStmt, err = db.PrepareContext(ctx, getCharacterApplicationContent); err != nil {
-		return nil, fmt.Errorf("error preparing query GetCharacterApplicationContent: %w", err)
-	}
-	if q.getCharacterApplicationContentForRequestStmt, err = db.PrepareContext(ctx, getCharacterApplicationContentForRequest); err != nil {
-		return nil, fmt.Errorf("error preparing query GetCharacterApplicationContentForRequest: %w", err)
-	}
-	if q.getCharacterApplicationContentReviewForRequestStmt, err = db.PrepareContext(ctx, getCharacterApplicationContentReviewForRequest); err != nil {
-		return nil, fmt.Errorf("error preparing query GetCharacterApplicationContentReviewForRequest: %w", err)
-	}
 	if q.getEmailStmt, err = db.PrepareContext(ctx, getEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query GetEmail: %w", err)
 	}
@@ -243,9 +219,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listActorImagesPrimaryHandsStmt, err = db.PrepareContext(ctx, listActorImagesPrimaryHands); err != nil {
 		return nil, fmt.Errorf("error preparing query ListActorImagesPrimaryHands: %w", err)
 	}
-	if q.listCharacterApplicationContentForPlayerStmt, err = db.PrepareContext(ctx, listCharacterApplicationContentForPlayer); err != nil {
-		return nil, fmt.Errorf("error preparing query ListCharacterApplicationContentForPlayer: %w", err)
-	}
 	if q.listEmailsStmt, err = db.PrepareContext(ctx, listEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListEmails: %w", err)
 	}
@@ -255,9 +228,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listHelpSlugsStmt, err = db.PrepareContext(ctx, listHelpSlugs); err != nil {
 		return nil, fmt.Errorf("error preparing query ListHelpSlugs: %w", err)
 	}
-	if q.listOpenCharacterApplicationsStmt, err = db.PrepareContext(ctx, listOpenCharacterApplications); err != nil {
-		return nil, fmt.Errorf("error preparing query ListOpenCharacterApplications: %w", err)
-	}
 	if q.listPlayerPermissionsStmt, err = db.PrepareContext(ctx, listPlayerPermissions); err != nil {
 		return nil, fmt.Errorf("error preparing query ListPlayerPermissions: %w", err)
 	}
@@ -266,6 +236,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.listRequestFieldsForRequestWithChangeRequestsStmt, err = db.PrepareContext(ctx, listRequestFieldsForRequestWithChangeRequests); err != nil {
 		return nil, fmt.Errorf("error preparing query ListRequestFieldsForRequestWithChangeRequests: %w", err)
+	}
+	if q.listRequestsByTypeAndStatusStmt, err = db.PrepareContext(ctx, listRequestsByTypeAndStatus); err != nil {
+		return nil, fmt.Errorf("error preparing query ListRequestsByTypeAndStatus: %w", err)
 	}
 	if q.listRequestsForPlayerStmt, err = db.PrepareContext(ctx, listRequestsForPlayer); err != nil {
 		return nil, fmt.Errorf("error preparing query ListRequestsForPlayer: %w", err)
@@ -305,36 +278,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.updateActorImageShortDescriptionStmt, err = db.PrepareContext(ctx, updateActorImageShortDescription); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateActorImageShortDescription: %w", err)
-	}
-	if q.updateCharacterApplicationContentBackstoryStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentBackstory); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentBackstory: %w", err)
-	}
-	if q.updateCharacterApplicationContentDescriptionStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentDescription); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentDescription: %w", err)
-	}
-	if q.updateCharacterApplicationContentGenderStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentGender); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentGender: %w", err)
-	}
-	if q.updateCharacterApplicationContentNameStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentName); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentName: %w", err)
-	}
-	if q.updateCharacterApplicationContentReviewBackstoryStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentReviewBackstory); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentReviewBackstory: %w", err)
-	}
-	if q.updateCharacterApplicationContentReviewDescriptionStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentReviewDescription); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentReviewDescription: %w", err)
-	}
-	if q.updateCharacterApplicationContentReviewGenderStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentReviewGender); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentReviewGender: %w", err)
-	}
-	if q.updateCharacterApplicationContentReviewNameStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentReviewName); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentReviewName: %w", err)
-	}
-	if q.updateCharacterApplicationContentReviewShortDescriptionStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentReviewShortDescription); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentReviewShortDescription: %w", err)
-	}
-	if q.updateCharacterApplicationContentShortDescriptionStmt, err = db.PrepareContext(ctx, updateCharacterApplicationContentShortDescription); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateCharacterApplicationContentShortDescription: %w", err)
 	}
 	if q.updatePlayerPasswordStmt, err = db.PrepareContext(ctx, updatePlayerPassword); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePlayerPassword: %w", err)
@@ -406,11 +349,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing countEmailsStmt: %w", cerr)
 		}
 	}
-	if q.countOpenCharacterApplicationsForPlayerStmt != nil {
-		if cerr := q.countOpenCharacterApplicationsForPlayerStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing countOpenCharacterApplicationsForPlayerStmt: %w", cerr)
-		}
-	}
 	if q.countOpenRequestChangeRequestsForRequestStmt != nil {
 		if cerr := q.countOpenRequestChangeRequestsForRequestStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing countOpenRequestChangeRequestsForRequestStmt: %w", cerr)
@@ -466,24 +404,9 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createActorImagePrimaryHandStmt: %w", cerr)
 		}
 	}
-	if q.createCharacterApplicationContentStmt != nil {
-		if cerr := q.createCharacterApplicationContentStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createCharacterApplicationContentStmt: %w", cerr)
-		}
-	}
-	if q.createCharacterApplicationContentReviewStmt != nil {
-		if cerr := q.createCharacterApplicationContentReviewStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createCharacterApplicationContentReviewStmt: %w", cerr)
-		}
-	}
 	if q.createEmailStmt != nil {
 		if cerr := q.createEmailStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createEmailStmt: %w", cerr)
-		}
-	}
-	if q.createHistoryForCharacterApplicationStmt != nil {
-		if cerr := q.createHistoryForCharacterApplicationStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createHistoryForCharacterApplicationStmt: %w", cerr)
 		}
 	}
 	if q.createOpenRequestChangeRequestStmt != nil {
@@ -626,26 +549,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getActorImageFurniturePropertiesStmt: %w", cerr)
 		}
 	}
-	if q.getCharacterApplicationStmt != nil {
-		if cerr := q.getCharacterApplicationStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getCharacterApplicationStmt: %w", cerr)
-		}
-	}
-	if q.getCharacterApplicationContentStmt != nil {
-		if cerr := q.getCharacterApplicationContentStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getCharacterApplicationContentStmt: %w", cerr)
-		}
-	}
-	if q.getCharacterApplicationContentForRequestStmt != nil {
-		if cerr := q.getCharacterApplicationContentForRequestStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getCharacterApplicationContentForRequestStmt: %w", cerr)
-		}
-	}
-	if q.getCharacterApplicationContentReviewForRequestStmt != nil {
-		if cerr := q.getCharacterApplicationContentReviewForRequestStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getCharacterApplicationContentReviewForRequestStmt: %w", cerr)
-		}
-	}
 	if q.getEmailStmt != nil {
 		if cerr := q.getEmailStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getEmailStmt: %w", cerr)
@@ -766,11 +669,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listActorImagesPrimaryHandsStmt: %w", cerr)
 		}
 	}
-	if q.listCharacterApplicationContentForPlayerStmt != nil {
-		if cerr := q.listCharacterApplicationContentForPlayerStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listCharacterApplicationContentForPlayerStmt: %w", cerr)
-		}
-	}
 	if q.listEmailsStmt != nil {
 		if cerr := q.listEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listEmailsStmt: %w", cerr)
@@ -786,11 +684,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listHelpSlugsStmt: %w", cerr)
 		}
 	}
-	if q.listOpenCharacterApplicationsStmt != nil {
-		if cerr := q.listOpenCharacterApplicationsStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listOpenCharacterApplicationsStmt: %w", cerr)
-		}
-	}
 	if q.listPlayerPermissionsStmt != nil {
 		if cerr := q.listPlayerPermissionsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listPlayerPermissionsStmt: %w", cerr)
@@ -804,6 +697,11 @@ func (q *Queries) Close() error {
 	if q.listRequestFieldsForRequestWithChangeRequestsStmt != nil {
 		if cerr := q.listRequestFieldsForRequestWithChangeRequestsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listRequestFieldsForRequestWithChangeRequestsStmt: %w", cerr)
+		}
+	}
+	if q.listRequestsByTypeAndStatusStmt != nil {
+		if cerr := q.listRequestsByTypeAndStatusStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listRequestsByTypeAndStatusStmt: %w", cerr)
 		}
 	}
 	if q.listRequestsForPlayerStmt != nil {
@@ -869,56 +767,6 @@ func (q *Queries) Close() error {
 	if q.updateActorImageShortDescriptionStmt != nil {
 		if cerr := q.updateActorImageShortDescriptionStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateActorImageShortDescriptionStmt: %w", cerr)
-		}
-	}
-	if q.updateCharacterApplicationContentBackstoryStmt != nil {
-		if cerr := q.updateCharacterApplicationContentBackstoryStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentBackstoryStmt: %w", cerr)
-		}
-	}
-	if q.updateCharacterApplicationContentDescriptionStmt != nil {
-		if cerr := q.updateCharacterApplicationContentDescriptionStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentDescriptionStmt: %w", cerr)
-		}
-	}
-	if q.updateCharacterApplicationContentGenderStmt != nil {
-		if cerr := q.updateCharacterApplicationContentGenderStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentGenderStmt: %w", cerr)
-		}
-	}
-	if q.updateCharacterApplicationContentNameStmt != nil {
-		if cerr := q.updateCharacterApplicationContentNameStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentNameStmt: %w", cerr)
-		}
-	}
-	if q.updateCharacterApplicationContentReviewBackstoryStmt != nil {
-		if cerr := q.updateCharacterApplicationContentReviewBackstoryStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentReviewBackstoryStmt: %w", cerr)
-		}
-	}
-	if q.updateCharacterApplicationContentReviewDescriptionStmt != nil {
-		if cerr := q.updateCharacterApplicationContentReviewDescriptionStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentReviewDescriptionStmt: %w", cerr)
-		}
-	}
-	if q.updateCharacterApplicationContentReviewGenderStmt != nil {
-		if cerr := q.updateCharacterApplicationContentReviewGenderStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentReviewGenderStmt: %w", cerr)
-		}
-	}
-	if q.updateCharacterApplicationContentReviewNameStmt != nil {
-		if cerr := q.updateCharacterApplicationContentReviewNameStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentReviewNameStmt: %w", cerr)
-		}
-	}
-	if q.updateCharacterApplicationContentReviewShortDescriptionStmt != nil {
-		if cerr := q.updateCharacterApplicationContentReviewShortDescriptionStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentReviewShortDescriptionStmt: %w", cerr)
-		}
-	}
-	if q.updateCharacterApplicationContentShortDescriptionStmt != nil {
-		if cerr := q.updateCharacterApplicationContentShortDescriptionStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateCharacterApplicationContentShortDescriptionStmt: %w", cerr)
 		}
 	}
 	if q.updatePlayerPasswordStmt != nil {
@@ -1058,132 +906,113 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                                                          DBTX
-	tx                                                          *sql.Tx
-	countEmailsStmt                                             *sql.Stmt
-	countOpenCharacterApplicationsForPlayerStmt                 *sql.Stmt
-	countOpenRequestChangeRequestsForRequestStmt                *sql.Stmt
-	countOpenRequestChangeRequestsForRequestFieldStmt           *sql.Stmt
-	createActorImageStmt                                        *sql.Stmt
-	createActorImageCanStmt                                     *sql.Stmt
-	createActorImageCanBeStmt                                   *sql.Stmt
-	createActorImageContainerPropertiesStmt                     *sql.Stmt
-	createActorImageFoodPropertiesStmt                          *sql.Stmt
-	createActorImageFurniturePropertiesStmt                     *sql.Stmt
-	createActorImageHandStmt                                    *sql.Stmt
-	createActorImageKeywordStmt                                 *sql.Stmt
-	createActorImagePrimaryHandStmt                             *sql.Stmt
-	createCharacterApplicationContentStmt                       *sql.Stmt
-	createCharacterApplicationContentReviewStmt                 *sql.Stmt
-	createEmailStmt                                             *sql.Stmt
-	createHistoryForCharacterApplicationStmt                    *sql.Stmt
-	createOpenRequestChangeRequestStmt                          *sql.Stmt
-	createPastRequestChangeRequestStmt                          *sql.Stmt
-	createPlayerStmt                                            *sql.Stmt
-	createPlayerPermissionStmt                                  *sql.Stmt
-	createPlayerPermissionIssuedChangeHistoryStmt               *sql.Stmt
-	createPlayerPermissionRevokedChangeHistoryStmt              *sql.Stmt
-	createPlayerSettingsStmt                                    *sql.Stmt
-	createRequestStmt                                           *sql.Stmt
-	createRequestChangeRequestStmt                              *sql.Stmt
-	createRequestFieldStmt                                      *sql.Stmt
-	createRoomStmt                                              *sql.Stmt
-	deleteActorImageCanStmt                                     *sql.Stmt
-	deleteActorImageCanBeStmt                                   *sql.Stmt
-	deleteActorImageContainerPropertiesStmt                     *sql.Stmt
-	deleteActorImageFoodPropertiesStmt                          *sql.Stmt
-	deleteActorImageFurniturePropertiesStmt                     *sql.Stmt
-	deleteActorImageHandStmt                                    *sql.Stmt
-	deleteActorImagePrimaryHandStmt                             *sql.Stmt
-	deleteEmailStmt                                             *sql.Stmt
-	deleteOpenRequestChangeRequestStmt                          *sql.Stmt
-	deletePlayerPermissionStmt                                  *sql.Stmt
-	deleteRequestChangeRequestStmt                              *sql.Stmt
-	editOpenRequestChangeRequestStmt                            *sql.Stmt
-	getActorImageStmt                                           *sql.Stmt
-	getActorImageByNameStmt                                     *sql.Stmt
-	getActorImageContainerPropertiesStmt                        *sql.Stmt
-	getActorImageFoodPropertiesStmt                             *sql.Stmt
-	getActorImageFurniturePropertiesStmt                        *sql.Stmt
-	getCharacterApplicationStmt                                 *sql.Stmt
-	getCharacterApplicationContentStmt                          *sql.Stmt
-	getCharacterApplicationContentForRequestStmt                *sql.Stmt
-	getCharacterApplicationContentReviewForRequestStmt          *sql.Stmt
-	getEmailStmt                                                *sql.Stmt
-	getEmailByAddressForPlayerStmt                              *sql.Stmt
-	getHelpStmt                                                 *sql.Stmt
-	getHelpRelatedStmt                                          *sql.Stmt
-	getOpenRequestChangeRequestStmt                             *sql.Stmt
-	getOpenRequestChangeRequestForRequestFieldStmt              *sql.Stmt
-	getPlayerStmt                                               *sql.Stmt
-	getPlayerByUsernameStmt                                     *sql.Stmt
-	getPlayerSettingsStmt                                       *sql.Stmt
-	getPlayerUsernameStmt                                       *sql.Stmt
-	getPlayerUsernameByIdStmt                                   *sql.Stmt
-	getRequestStmt                                              *sql.Stmt
-	getRequestFieldStmt                                         *sql.Stmt
-	getRequestFieldByTypeStmt                                   *sql.Stmt
-	getRequestFieldByTypeWithChangeRequestsStmt                 *sql.Stmt
-	getRoomStmt                                                 *sql.Stmt
-	getTagsForHelpFileStmt                                      *sql.Stmt
-	getVerifiedEmailByAddressStmt                               *sql.Stmt
-	listActorImageCanStmt                                       *sql.Stmt
-	listActorImageCanBeStmt                                     *sql.Stmt
-	listActorImageKeywordsStmt                                  *sql.Stmt
-	listActorImagesStmt                                         *sql.Stmt
-	listActorImagesHandsStmt                                    *sql.Stmt
-	listActorImagesPrimaryHandsStmt                             *sql.Stmt
-	listCharacterApplicationContentForPlayerStmt                *sql.Stmt
-	listEmailsStmt                                              *sql.Stmt
-	listHelpHeadersStmt                                         *sql.Stmt
-	listHelpSlugsStmt                                           *sql.Stmt
-	listOpenCharacterApplicationsStmt                           *sql.Stmt
-	listPlayerPermissionsStmt                                   *sql.Stmt
-	listRequestFieldsForRequestStmt                             *sql.Stmt
-	listRequestFieldsForRequestWithChangeRequestsStmt           *sql.Stmt
-	listRequestsForPlayerStmt                                   *sql.Stmt
-	listRoomsStmt                                               *sql.Stmt
-	listRoomsByIDsStmt                                          *sql.Stmt
-	listVerifiedEmailsStmt                                      *sql.Stmt
-	markEmailVerifiedStmt                                       *sql.Stmt
-	searchHelpByCategoryStmt                                    *sql.Stmt
-	searchHelpByContentStmt                                     *sql.Stmt
-	searchHelpByTagsStmt                                        *sql.Stmt
-	searchHelpByTitleStmt                                       *sql.Stmt
-	searchPlayersByUsernameStmt                                 *sql.Stmt
-	searchTagsStmt                                              *sql.Stmt
-	updateActorImageDescriptionStmt                             *sql.Stmt
-	updateActorImageShortDescriptionStmt                        *sql.Stmt
-	updateCharacterApplicationContentBackstoryStmt              *sql.Stmt
-	updateCharacterApplicationContentDescriptionStmt            *sql.Stmt
-	updateCharacterApplicationContentGenderStmt                 *sql.Stmt
-	updateCharacterApplicationContentNameStmt                   *sql.Stmt
-	updateCharacterApplicationContentReviewBackstoryStmt        *sql.Stmt
-	updateCharacterApplicationContentReviewDescriptionStmt      *sql.Stmt
-	updateCharacterApplicationContentReviewGenderStmt           *sql.Stmt
-	updateCharacterApplicationContentReviewNameStmt             *sql.Stmt
-	updateCharacterApplicationContentReviewShortDescriptionStmt *sql.Stmt
-	updateCharacterApplicationContentShortDescriptionStmt       *sql.Stmt
-	updatePlayerPasswordStmt                                    *sql.Stmt
-	updatePlayerSettingsThemeStmt                               *sql.Stmt
-	updateRequestFieldStatusStmt                                *sql.Stmt
-	updateRequestFieldStatusByRequestAndTypeStmt                *sql.Stmt
-	updateRequestFieldValueStmt                                 *sql.Stmt
-	updateRequestFieldValueByRequestAndTypeStmt                 *sql.Stmt
-	updateRequestReviewerStmt                                   *sql.Stmt
-	updateRequestStatusStmt                                     *sql.Stmt
-	updateRoomStmt                                              *sql.Stmt
-	updateRoomDescriptionStmt                                   *sql.Stmt
-	updateRoomExitEastStmt                                      *sql.Stmt
-	updateRoomExitNorthStmt                                     *sql.Stmt
-	updateRoomExitNortheastStmt                                 *sql.Stmt
-	updateRoomExitNorthwestStmt                                 *sql.Stmt
-	updateRoomExitSouthStmt                                     *sql.Stmt
-	updateRoomExitSoutheastStmt                                 *sql.Stmt
-	updateRoomExitSouthwestStmt                                 *sql.Stmt
-	updateRoomExitWestStmt                                      *sql.Stmt
-	updateRoomSizeStmt                                          *sql.Stmt
-	updateRoomTitleStmt                                         *sql.Stmt
+	db                                                DBTX
+	tx                                                *sql.Tx
+	countEmailsStmt                                   *sql.Stmt
+	countOpenRequestChangeRequestsForRequestStmt      *sql.Stmt
+	countOpenRequestChangeRequestsForRequestFieldStmt *sql.Stmt
+	createActorImageStmt                              *sql.Stmt
+	createActorImageCanStmt                           *sql.Stmt
+	createActorImageCanBeStmt                         *sql.Stmt
+	createActorImageContainerPropertiesStmt           *sql.Stmt
+	createActorImageFoodPropertiesStmt                *sql.Stmt
+	createActorImageFurniturePropertiesStmt           *sql.Stmt
+	createActorImageHandStmt                          *sql.Stmt
+	createActorImageKeywordStmt                       *sql.Stmt
+	createActorImagePrimaryHandStmt                   *sql.Stmt
+	createEmailStmt                                   *sql.Stmt
+	createOpenRequestChangeRequestStmt                *sql.Stmt
+	createPastRequestChangeRequestStmt                *sql.Stmt
+	createPlayerStmt                                  *sql.Stmt
+	createPlayerPermissionStmt                        *sql.Stmt
+	createPlayerPermissionIssuedChangeHistoryStmt     *sql.Stmt
+	createPlayerPermissionRevokedChangeHistoryStmt    *sql.Stmt
+	createPlayerSettingsStmt                          *sql.Stmt
+	createRequestStmt                                 *sql.Stmt
+	createRequestChangeRequestStmt                    *sql.Stmt
+	createRequestFieldStmt                            *sql.Stmt
+	createRoomStmt                                    *sql.Stmt
+	deleteActorImageCanStmt                           *sql.Stmt
+	deleteActorImageCanBeStmt                         *sql.Stmt
+	deleteActorImageContainerPropertiesStmt           *sql.Stmt
+	deleteActorImageFoodPropertiesStmt                *sql.Stmt
+	deleteActorImageFurniturePropertiesStmt           *sql.Stmt
+	deleteActorImageHandStmt                          *sql.Stmt
+	deleteActorImagePrimaryHandStmt                   *sql.Stmt
+	deleteEmailStmt                                   *sql.Stmt
+	deleteOpenRequestChangeRequestStmt                *sql.Stmt
+	deletePlayerPermissionStmt                        *sql.Stmt
+	deleteRequestChangeRequestStmt                    *sql.Stmt
+	editOpenRequestChangeRequestStmt                  *sql.Stmt
+	getActorImageStmt                                 *sql.Stmt
+	getActorImageByNameStmt                           *sql.Stmt
+	getActorImageContainerPropertiesStmt              *sql.Stmt
+	getActorImageFoodPropertiesStmt                   *sql.Stmt
+	getActorImageFurniturePropertiesStmt              *sql.Stmt
+	getEmailStmt                                      *sql.Stmt
+	getEmailByAddressForPlayerStmt                    *sql.Stmt
+	getHelpStmt                                       *sql.Stmt
+	getHelpRelatedStmt                                *sql.Stmt
+	getOpenRequestChangeRequestStmt                   *sql.Stmt
+	getOpenRequestChangeRequestForRequestFieldStmt    *sql.Stmt
+	getPlayerStmt                                     *sql.Stmt
+	getPlayerByUsernameStmt                           *sql.Stmt
+	getPlayerSettingsStmt                             *sql.Stmt
+	getPlayerUsernameStmt                             *sql.Stmt
+	getPlayerUsernameByIdStmt                         *sql.Stmt
+	getRequestStmt                                    *sql.Stmt
+	getRequestFieldStmt                               *sql.Stmt
+	getRequestFieldByTypeStmt                         *sql.Stmt
+	getRequestFieldByTypeWithChangeRequestsStmt       *sql.Stmt
+	getRoomStmt                                       *sql.Stmt
+	getTagsForHelpFileStmt                            *sql.Stmt
+	getVerifiedEmailByAddressStmt                     *sql.Stmt
+	listActorImageCanStmt                             *sql.Stmt
+	listActorImageCanBeStmt                           *sql.Stmt
+	listActorImageKeywordsStmt                        *sql.Stmt
+	listActorImagesStmt                               *sql.Stmt
+	listActorImagesHandsStmt                          *sql.Stmt
+	listActorImagesPrimaryHandsStmt                   *sql.Stmt
+	listEmailsStmt                                    *sql.Stmt
+	listHelpHeadersStmt                               *sql.Stmt
+	listHelpSlugsStmt                                 *sql.Stmt
+	listPlayerPermissionsStmt                         *sql.Stmt
+	listRequestFieldsForRequestStmt                   *sql.Stmt
+	listRequestFieldsForRequestWithChangeRequestsStmt *sql.Stmt
+	listRequestsByTypeAndStatusStmt                   *sql.Stmt
+	listRequestsForPlayerStmt                         *sql.Stmt
+	listRoomsStmt                                     *sql.Stmt
+	listRoomsByIDsStmt                                *sql.Stmt
+	listVerifiedEmailsStmt                            *sql.Stmt
+	markEmailVerifiedStmt                             *sql.Stmt
+	searchHelpByCategoryStmt                          *sql.Stmt
+	searchHelpByContentStmt                           *sql.Stmt
+	searchHelpByTagsStmt                              *sql.Stmt
+	searchHelpByTitleStmt                             *sql.Stmt
+	searchPlayersByUsernameStmt                       *sql.Stmt
+	searchTagsStmt                                    *sql.Stmt
+	updateActorImageDescriptionStmt                   *sql.Stmt
+	updateActorImageShortDescriptionStmt              *sql.Stmt
+	updatePlayerPasswordStmt                          *sql.Stmt
+	updatePlayerSettingsThemeStmt                     *sql.Stmt
+	updateRequestFieldStatusStmt                      *sql.Stmt
+	updateRequestFieldStatusByRequestAndTypeStmt      *sql.Stmt
+	updateRequestFieldValueStmt                       *sql.Stmt
+	updateRequestFieldValueByRequestAndTypeStmt       *sql.Stmt
+	updateRequestReviewerStmt                         *sql.Stmt
+	updateRequestStatusStmt                           *sql.Stmt
+	updateRoomStmt                                    *sql.Stmt
+	updateRoomDescriptionStmt                         *sql.Stmt
+	updateRoomExitEastStmt                            *sql.Stmt
+	updateRoomExitNorthStmt                           *sql.Stmt
+	updateRoomExitNortheastStmt                       *sql.Stmt
+	updateRoomExitNorthwestStmt                       *sql.Stmt
+	updateRoomExitSouthStmt                           *sql.Stmt
+	updateRoomExitSoutheastStmt                       *sql.Stmt
+	updateRoomExitSouthwestStmt                       *sql.Stmt
+	updateRoomExitWestStmt                            *sql.Stmt
+	updateRoomSizeStmt                                *sql.Stmt
+	updateRoomTitleStmt                               *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -1191,128 +1020,109 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		db:              tx,
 		tx:              tx,
 		countEmailsStmt: q.countEmailsStmt,
-		countOpenCharacterApplicationsForPlayerStmt:                 q.countOpenCharacterApplicationsForPlayerStmt,
-		countOpenRequestChangeRequestsForRequestStmt:                q.countOpenRequestChangeRequestsForRequestStmt,
-		countOpenRequestChangeRequestsForRequestFieldStmt:           q.countOpenRequestChangeRequestsForRequestFieldStmt,
-		createActorImageStmt:                                        q.createActorImageStmt,
-		createActorImageCanStmt:                                     q.createActorImageCanStmt,
-		createActorImageCanBeStmt:                                   q.createActorImageCanBeStmt,
-		createActorImageContainerPropertiesStmt:                     q.createActorImageContainerPropertiesStmt,
-		createActorImageFoodPropertiesStmt:                          q.createActorImageFoodPropertiesStmt,
-		createActorImageFurniturePropertiesStmt:                     q.createActorImageFurniturePropertiesStmt,
-		createActorImageHandStmt:                                    q.createActorImageHandStmt,
-		createActorImageKeywordStmt:                                 q.createActorImageKeywordStmt,
-		createActorImagePrimaryHandStmt:                             q.createActorImagePrimaryHandStmt,
-		createCharacterApplicationContentStmt:                       q.createCharacterApplicationContentStmt,
-		createCharacterApplicationContentReviewStmt:                 q.createCharacterApplicationContentReviewStmt,
-		createEmailStmt:                                             q.createEmailStmt,
-		createHistoryForCharacterApplicationStmt:                    q.createHistoryForCharacterApplicationStmt,
-		createOpenRequestChangeRequestStmt:                          q.createOpenRequestChangeRequestStmt,
-		createPastRequestChangeRequestStmt:                          q.createPastRequestChangeRequestStmt,
-		createPlayerStmt:                                            q.createPlayerStmt,
-		createPlayerPermissionStmt:                                  q.createPlayerPermissionStmt,
-		createPlayerPermissionIssuedChangeHistoryStmt:               q.createPlayerPermissionIssuedChangeHistoryStmt,
-		createPlayerPermissionRevokedChangeHistoryStmt:              q.createPlayerPermissionRevokedChangeHistoryStmt,
-		createPlayerSettingsStmt:                                    q.createPlayerSettingsStmt,
-		createRequestStmt:                                           q.createRequestStmt,
-		createRequestChangeRequestStmt:                              q.createRequestChangeRequestStmt,
-		createRequestFieldStmt:                                      q.createRequestFieldStmt,
-		createRoomStmt:                                              q.createRoomStmt,
-		deleteActorImageCanStmt:                                     q.deleteActorImageCanStmt,
-		deleteActorImageCanBeStmt:                                   q.deleteActorImageCanBeStmt,
-		deleteActorImageContainerPropertiesStmt:                     q.deleteActorImageContainerPropertiesStmt,
-		deleteActorImageFoodPropertiesStmt:                          q.deleteActorImageFoodPropertiesStmt,
-		deleteActorImageFurniturePropertiesStmt:                     q.deleteActorImageFurniturePropertiesStmt,
-		deleteActorImageHandStmt:                                    q.deleteActorImageHandStmt,
-		deleteActorImagePrimaryHandStmt:                             q.deleteActorImagePrimaryHandStmt,
-		deleteEmailStmt:                                             q.deleteEmailStmt,
-		deleteOpenRequestChangeRequestStmt:                          q.deleteOpenRequestChangeRequestStmt,
-		deletePlayerPermissionStmt:                                  q.deletePlayerPermissionStmt,
-		deleteRequestChangeRequestStmt:                              q.deleteRequestChangeRequestStmt,
-		editOpenRequestChangeRequestStmt:                            q.editOpenRequestChangeRequestStmt,
-		getActorImageStmt:                                           q.getActorImageStmt,
-		getActorImageByNameStmt:                                     q.getActorImageByNameStmt,
-		getActorImageContainerPropertiesStmt:                        q.getActorImageContainerPropertiesStmt,
-		getActorImageFoodPropertiesStmt:                             q.getActorImageFoodPropertiesStmt,
-		getActorImageFurniturePropertiesStmt:                        q.getActorImageFurniturePropertiesStmt,
-		getCharacterApplicationStmt:                                 q.getCharacterApplicationStmt,
-		getCharacterApplicationContentStmt:                          q.getCharacterApplicationContentStmt,
-		getCharacterApplicationContentForRequestStmt:                q.getCharacterApplicationContentForRequestStmt,
-		getCharacterApplicationContentReviewForRequestStmt:          q.getCharacterApplicationContentReviewForRequestStmt,
-		getEmailStmt:                                                q.getEmailStmt,
-		getEmailByAddressForPlayerStmt:                              q.getEmailByAddressForPlayerStmt,
-		getHelpStmt:                                                 q.getHelpStmt,
-		getHelpRelatedStmt:                                          q.getHelpRelatedStmt,
-		getOpenRequestChangeRequestStmt:                             q.getOpenRequestChangeRequestStmt,
-		getOpenRequestChangeRequestForRequestFieldStmt:              q.getOpenRequestChangeRequestForRequestFieldStmt,
-		getPlayerStmt:                                               q.getPlayerStmt,
-		getPlayerByUsernameStmt:                                     q.getPlayerByUsernameStmt,
-		getPlayerSettingsStmt:                                       q.getPlayerSettingsStmt,
-		getPlayerUsernameStmt:                                       q.getPlayerUsernameStmt,
-		getPlayerUsernameByIdStmt:                                   q.getPlayerUsernameByIdStmt,
-		getRequestStmt:                                              q.getRequestStmt,
-		getRequestFieldStmt:                                         q.getRequestFieldStmt,
-		getRequestFieldByTypeStmt:                                   q.getRequestFieldByTypeStmt,
-		getRequestFieldByTypeWithChangeRequestsStmt:                 q.getRequestFieldByTypeWithChangeRequestsStmt,
-		getRoomStmt:                                                 q.getRoomStmt,
-		getTagsForHelpFileStmt:                                      q.getTagsForHelpFileStmt,
-		getVerifiedEmailByAddressStmt:                               q.getVerifiedEmailByAddressStmt,
-		listActorImageCanStmt:                                       q.listActorImageCanStmt,
-		listActorImageCanBeStmt:                                     q.listActorImageCanBeStmt,
-		listActorImageKeywordsStmt:                                  q.listActorImageKeywordsStmt,
-		listActorImagesStmt:                                         q.listActorImagesStmt,
-		listActorImagesHandsStmt:                                    q.listActorImagesHandsStmt,
-		listActorImagesPrimaryHandsStmt:                             q.listActorImagesPrimaryHandsStmt,
-		listCharacterApplicationContentForPlayerStmt:                q.listCharacterApplicationContentForPlayerStmt,
-		listEmailsStmt:                                              q.listEmailsStmt,
-		listHelpHeadersStmt:                                         q.listHelpHeadersStmt,
-		listHelpSlugsStmt:                                           q.listHelpSlugsStmt,
-		listOpenCharacterApplicationsStmt:                           q.listOpenCharacterApplicationsStmt,
-		listPlayerPermissionsStmt:                                   q.listPlayerPermissionsStmt,
-		listRequestFieldsForRequestStmt:                             q.listRequestFieldsForRequestStmt,
-		listRequestFieldsForRequestWithChangeRequestsStmt:           q.listRequestFieldsForRequestWithChangeRequestsStmt,
-		listRequestsForPlayerStmt:                                   q.listRequestsForPlayerStmt,
-		listRoomsStmt:                                               q.listRoomsStmt,
-		listRoomsByIDsStmt:                                          q.listRoomsByIDsStmt,
-		listVerifiedEmailsStmt:                                      q.listVerifiedEmailsStmt,
-		markEmailVerifiedStmt:                                       q.markEmailVerifiedStmt,
-		searchHelpByCategoryStmt:                                    q.searchHelpByCategoryStmt,
-		searchHelpByContentStmt:                                     q.searchHelpByContentStmt,
-		searchHelpByTagsStmt:                                        q.searchHelpByTagsStmt,
-		searchHelpByTitleStmt:                                       q.searchHelpByTitleStmt,
-		searchPlayersByUsernameStmt:                                 q.searchPlayersByUsernameStmt,
-		searchTagsStmt:                                              q.searchTagsStmt,
-		updateActorImageDescriptionStmt:                             q.updateActorImageDescriptionStmt,
-		updateActorImageShortDescriptionStmt:                        q.updateActorImageShortDescriptionStmt,
-		updateCharacterApplicationContentBackstoryStmt:              q.updateCharacterApplicationContentBackstoryStmt,
-		updateCharacterApplicationContentDescriptionStmt:            q.updateCharacterApplicationContentDescriptionStmt,
-		updateCharacterApplicationContentGenderStmt:                 q.updateCharacterApplicationContentGenderStmt,
-		updateCharacterApplicationContentNameStmt:                   q.updateCharacterApplicationContentNameStmt,
-		updateCharacterApplicationContentReviewBackstoryStmt:        q.updateCharacterApplicationContentReviewBackstoryStmt,
-		updateCharacterApplicationContentReviewDescriptionStmt:      q.updateCharacterApplicationContentReviewDescriptionStmt,
-		updateCharacterApplicationContentReviewGenderStmt:           q.updateCharacterApplicationContentReviewGenderStmt,
-		updateCharacterApplicationContentReviewNameStmt:             q.updateCharacterApplicationContentReviewNameStmt,
-		updateCharacterApplicationContentReviewShortDescriptionStmt: q.updateCharacterApplicationContentReviewShortDescriptionStmt,
-		updateCharacterApplicationContentShortDescriptionStmt:       q.updateCharacterApplicationContentShortDescriptionStmt,
-		updatePlayerPasswordStmt:                                    q.updatePlayerPasswordStmt,
-		updatePlayerSettingsThemeStmt:                               q.updatePlayerSettingsThemeStmt,
-		updateRequestFieldStatusStmt:                                q.updateRequestFieldStatusStmt,
-		updateRequestFieldStatusByRequestAndTypeStmt:                q.updateRequestFieldStatusByRequestAndTypeStmt,
-		updateRequestFieldValueStmt:                                 q.updateRequestFieldValueStmt,
-		updateRequestFieldValueByRequestAndTypeStmt:                 q.updateRequestFieldValueByRequestAndTypeStmt,
-		updateRequestReviewerStmt:                                   q.updateRequestReviewerStmt,
-		updateRequestStatusStmt:                                     q.updateRequestStatusStmt,
-		updateRoomStmt:                                              q.updateRoomStmt,
-		updateRoomDescriptionStmt:                                   q.updateRoomDescriptionStmt,
-		updateRoomExitEastStmt:                                      q.updateRoomExitEastStmt,
-		updateRoomExitNorthStmt:                                     q.updateRoomExitNorthStmt,
-		updateRoomExitNortheastStmt:                                 q.updateRoomExitNortheastStmt,
-		updateRoomExitNorthwestStmt:                                 q.updateRoomExitNorthwestStmt,
-		updateRoomExitSouthStmt:                                     q.updateRoomExitSouthStmt,
-		updateRoomExitSoutheastStmt:                                 q.updateRoomExitSoutheastStmt,
-		updateRoomExitSouthwestStmt:                                 q.updateRoomExitSouthwestStmt,
-		updateRoomExitWestStmt:                                      q.updateRoomExitWestStmt,
-		updateRoomSizeStmt:                                          q.updateRoomSizeStmt,
-		updateRoomTitleStmt:                                         q.updateRoomTitleStmt,
+		countOpenRequestChangeRequestsForRequestStmt:      q.countOpenRequestChangeRequestsForRequestStmt,
+		countOpenRequestChangeRequestsForRequestFieldStmt: q.countOpenRequestChangeRequestsForRequestFieldStmt,
+		createActorImageStmt:                              q.createActorImageStmt,
+		createActorImageCanStmt:                           q.createActorImageCanStmt,
+		createActorImageCanBeStmt:                         q.createActorImageCanBeStmt,
+		createActorImageContainerPropertiesStmt:           q.createActorImageContainerPropertiesStmt,
+		createActorImageFoodPropertiesStmt:                q.createActorImageFoodPropertiesStmt,
+		createActorImageFurniturePropertiesStmt:           q.createActorImageFurniturePropertiesStmt,
+		createActorImageHandStmt:                          q.createActorImageHandStmt,
+		createActorImageKeywordStmt:                       q.createActorImageKeywordStmt,
+		createActorImagePrimaryHandStmt:                   q.createActorImagePrimaryHandStmt,
+		createEmailStmt:                                   q.createEmailStmt,
+		createOpenRequestChangeRequestStmt:                q.createOpenRequestChangeRequestStmt,
+		createPastRequestChangeRequestStmt:                q.createPastRequestChangeRequestStmt,
+		createPlayerStmt:                                  q.createPlayerStmt,
+		createPlayerPermissionStmt:                        q.createPlayerPermissionStmt,
+		createPlayerPermissionIssuedChangeHistoryStmt:     q.createPlayerPermissionIssuedChangeHistoryStmt,
+		createPlayerPermissionRevokedChangeHistoryStmt:    q.createPlayerPermissionRevokedChangeHistoryStmt,
+		createPlayerSettingsStmt:                          q.createPlayerSettingsStmt,
+		createRequestStmt:                                 q.createRequestStmt,
+		createRequestChangeRequestStmt:                    q.createRequestChangeRequestStmt,
+		createRequestFieldStmt:                            q.createRequestFieldStmt,
+		createRoomStmt:                                    q.createRoomStmt,
+		deleteActorImageCanStmt:                           q.deleteActorImageCanStmt,
+		deleteActorImageCanBeStmt:                         q.deleteActorImageCanBeStmt,
+		deleteActorImageContainerPropertiesStmt:           q.deleteActorImageContainerPropertiesStmt,
+		deleteActorImageFoodPropertiesStmt:                q.deleteActorImageFoodPropertiesStmt,
+		deleteActorImageFurniturePropertiesStmt:           q.deleteActorImageFurniturePropertiesStmt,
+		deleteActorImageHandStmt:                          q.deleteActorImageHandStmt,
+		deleteActorImagePrimaryHandStmt:                   q.deleteActorImagePrimaryHandStmt,
+		deleteEmailStmt:                                   q.deleteEmailStmt,
+		deleteOpenRequestChangeRequestStmt:                q.deleteOpenRequestChangeRequestStmt,
+		deletePlayerPermissionStmt:                        q.deletePlayerPermissionStmt,
+		deleteRequestChangeRequestStmt:                    q.deleteRequestChangeRequestStmt,
+		editOpenRequestChangeRequestStmt:                  q.editOpenRequestChangeRequestStmt,
+		getActorImageStmt:                                 q.getActorImageStmt,
+		getActorImageByNameStmt:                           q.getActorImageByNameStmt,
+		getActorImageContainerPropertiesStmt:              q.getActorImageContainerPropertiesStmt,
+		getActorImageFoodPropertiesStmt:                   q.getActorImageFoodPropertiesStmt,
+		getActorImageFurniturePropertiesStmt:              q.getActorImageFurniturePropertiesStmt,
+		getEmailStmt:                                      q.getEmailStmt,
+		getEmailByAddressForPlayerStmt:                    q.getEmailByAddressForPlayerStmt,
+		getHelpStmt:                                       q.getHelpStmt,
+		getHelpRelatedStmt:                                q.getHelpRelatedStmt,
+		getOpenRequestChangeRequestStmt:                   q.getOpenRequestChangeRequestStmt,
+		getOpenRequestChangeRequestForRequestFieldStmt:    q.getOpenRequestChangeRequestForRequestFieldStmt,
+		getPlayerStmt:                                     q.getPlayerStmt,
+		getPlayerByUsernameStmt:                           q.getPlayerByUsernameStmt,
+		getPlayerSettingsStmt:                             q.getPlayerSettingsStmt,
+		getPlayerUsernameStmt:                             q.getPlayerUsernameStmt,
+		getPlayerUsernameByIdStmt:                         q.getPlayerUsernameByIdStmt,
+		getRequestStmt:                                    q.getRequestStmt,
+		getRequestFieldStmt:                               q.getRequestFieldStmt,
+		getRequestFieldByTypeStmt:                         q.getRequestFieldByTypeStmt,
+		getRequestFieldByTypeWithChangeRequestsStmt:       q.getRequestFieldByTypeWithChangeRequestsStmt,
+		getRoomStmt:                                       q.getRoomStmt,
+		getTagsForHelpFileStmt:                            q.getTagsForHelpFileStmt,
+		getVerifiedEmailByAddressStmt:                     q.getVerifiedEmailByAddressStmt,
+		listActorImageCanStmt:                             q.listActorImageCanStmt,
+		listActorImageCanBeStmt:                           q.listActorImageCanBeStmt,
+		listActorImageKeywordsStmt:                        q.listActorImageKeywordsStmt,
+		listActorImagesStmt:                               q.listActorImagesStmt,
+		listActorImagesHandsStmt:                          q.listActorImagesHandsStmt,
+		listActorImagesPrimaryHandsStmt:                   q.listActorImagesPrimaryHandsStmt,
+		listEmailsStmt:                                    q.listEmailsStmt,
+		listHelpHeadersStmt:                               q.listHelpHeadersStmt,
+		listHelpSlugsStmt:                                 q.listHelpSlugsStmt,
+		listPlayerPermissionsStmt:                         q.listPlayerPermissionsStmt,
+		listRequestFieldsForRequestStmt:                   q.listRequestFieldsForRequestStmt,
+		listRequestFieldsForRequestWithChangeRequestsStmt: q.listRequestFieldsForRequestWithChangeRequestsStmt,
+		listRequestsByTypeAndStatusStmt:                   q.listRequestsByTypeAndStatusStmt,
+		listRequestsForPlayerStmt:                         q.listRequestsForPlayerStmt,
+		listRoomsStmt:                                     q.listRoomsStmt,
+		listRoomsByIDsStmt:                                q.listRoomsByIDsStmt,
+		listVerifiedEmailsStmt:                            q.listVerifiedEmailsStmt,
+		markEmailVerifiedStmt:                             q.markEmailVerifiedStmt,
+		searchHelpByCategoryStmt:                          q.searchHelpByCategoryStmt,
+		searchHelpByContentStmt:                           q.searchHelpByContentStmt,
+		searchHelpByTagsStmt:                              q.searchHelpByTagsStmt,
+		searchHelpByTitleStmt:                             q.searchHelpByTitleStmt,
+		searchPlayersByUsernameStmt:                       q.searchPlayersByUsernameStmt,
+		searchTagsStmt:                                    q.searchTagsStmt,
+		updateActorImageDescriptionStmt:                   q.updateActorImageDescriptionStmt,
+		updateActorImageShortDescriptionStmt:              q.updateActorImageShortDescriptionStmt,
+		updatePlayerPasswordStmt:                          q.updatePlayerPasswordStmt,
+		updatePlayerSettingsThemeStmt:                     q.updatePlayerSettingsThemeStmt,
+		updateRequestFieldStatusStmt:                      q.updateRequestFieldStatusStmt,
+		updateRequestFieldStatusByRequestAndTypeStmt:      q.updateRequestFieldStatusByRequestAndTypeStmt,
+		updateRequestFieldValueStmt:                       q.updateRequestFieldValueStmt,
+		updateRequestFieldValueByRequestAndTypeStmt:       q.updateRequestFieldValueByRequestAndTypeStmt,
+		updateRequestReviewerStmt:                         q.updateRequestReviewerStmt,
+		updateRequestStatusStmt:                           q.updateRequestStatusStmt,
+		updateRoomStmt:                                    q.updateRoomStmt,
+		updateRoomDescriptionStmt:                         q.updateRoomDescriptionStmt,
+		updateRoomExitEastStmt:                            q.updateRoomExitEastStmt,
+		updateRoomExitNorthStmt:                           q.updateRoomExitNorthStmt,
+		updateRoomExitNortheastStmt:                       q.updateRoomExitNortheastStmt,
+		updateRoomExitNorthwestStmt:                       q.updateRoomExitNorthwestStmt,
+		updateRoomExitSouthStmt:                           q.updateRoomExitSouthStmt,
+		updateRoomExitSoutheastStmt:                       q.updateRoomExitSoutheastStmt,
+		updateRoomExitSouthwestStmt:                       q.updateRoomExitSouthwestStmt,
+		updateRoomExitWestStmt:                            q.updateRoomExitWestStmt,
+		updateRoomSizeStmt:                                q.updateRoomSizeStmt,
+		updateRoomTitleStmt:                               q.updateRoomTitleStmt,
 	}
 }

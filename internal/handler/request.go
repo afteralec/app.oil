@@ -1214,19 +1214,26 @@ func CharacterApplicationsQueuePage(i *service.Interfaces) fiber.Handler {
 		qtx := i.Queries.WithTx(tx)
 
 		// TODO: Make this a "List Open Requests By Type" query
-		apps, err := qtx.ListOpenCharacterApplications(context.Background())
+		reqs, err := qtx.ListRequestsByTypeAndStatus(context.Background(), query.ListRequestsByTypeAndStatusParams{
+			Type: request.TypeCharacterApplication,
+			// TODO: Move this to a standard list
+			Statuses: []string{
+				request.StatusSubmitted,
+				request.StatusInReview,
+			},
+		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
 		summaries := []request.SummaryForQueue{}
-		for _, app := range apps {
-			if app.Request.PID == pid {
+		for _, req := range reqs {
+			if req.PID == pid {
 				continue
 			}
 
-			fields, err := qtx.ListRequestFieldsForRequest(context.Background(), app.Request.ID)
+			fields, err := qtx.ListRequestFieldsForRequest(context.Background(), req.ID)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
@@ -1234,7 +1241,7 @@ func CharacterApplicationsQueuePage(i *service.Interfaces) fiber.Handler {
 			fieldmap := request.FieldMap(fields)
 			summary, err := request.NewSummaryForQueue(request.NewSummaryForQueueParams{
 				Query:               qtx,
-				Request:             &app.Request,
+				Request:             &req,
 				FieldMap:            fieldmap,
 				PID:                 pid,
 				ReviewerPermissions: &perms,

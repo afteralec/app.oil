@@ -248,7 +248,7 @@ func TestRequestFieldPageUnauthorizedNotLoggedIn(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -271,7 +271,7 @@ func TestRequestFieldPageUnowned(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -302,7 +302,7 @@ func TestRequestFieldPageSuccess(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	// TODO: Hack
 	if err := i.Queries.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
@@ -338,7 +338,7 @@ func TestRequestFieldPageNotFound(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -380,7 +380,7 @@ func TestRequestFieldPageFatal(t *testing.T) {
 
 	i = service.NewInterfaces()
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
@@ -396,7 +396,7 @@ func TestRequestPageUnauthorizedNotLoggedIn(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	url := MakeTestURL(route.RequestPath(rid))
 	req := httptest.NewRequest(http.MethodGet, url, nil)
@@ -419,7 +419,7 @@ func TestRequestFieldPageForbiddenUnowned(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -449,7 +449,7 @@ func TestRequestPageSuccess(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -477,7 +477,7 @@ func TestRequestPageNotFound(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -519,7 +519,7 @@ func TestRequestPageFatal(t *testing.T) {
 
 	i = service.NewInterfaces()
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
@@ -606,7 +606,7 @@ func TestUpdateRequestFieldUnauthorizedNotLoggedIn(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
 
@@ -637,7 +637,7 @@ func TestUpdateRequestFieldBadRequestNotFound(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -670,7 +670,7 @@ func TestUpdateRequestFieldFatal(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -694,7 +694,7 @@ func TestUpdateRequestFieldFatal(t *testing.T) {
 
 	i = service.NewInterfaces()
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
@@ -710,7 +710,7 @@ func TestUpdateRequestFieldForbiddenUnowned(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -747,7 +747,7 @@ func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	// TODO: Update this to use a helper that calls the app's API instead of hacking it
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
@@ -790,7 +790,7 @@ func TestUpdateRequestFieldBadRequestMissingBody(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -818,7 +818,7 @@ func TestUpdateRequestFieldBadRequestMalformedBody(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -852,7 +852,7 @@ func TestUpdateRequestStatusUnauthorizedNotLoggedIn(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	url := MakeTestURL(route.RequestStatusPath(rid))
 
@@ -877,7 +877,7 @@ func TestUpdateRequestStatusBadRequestNotFound(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -904,7 +904,7 @@ func TestUpdateRequestStatusFatal(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -922,7 +922,7 @@ func TestUpdateRequestStatusFatal(t *testing.T) {
 
 	i = service.NewInterfaces()
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }
@@ -951,7 +951,7 @@ func TestUpdateRequestFieldStatusUnauthorizedNotLoggedIn(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 
 	url := MakeTestURL(route.RequestFieldStatusPath(rid, definition.FieldCharacterApplicationName.Type))
@@ -990,7 +990,7 @@ func TestUpdateRequestFieldStatusBadRequestNotFound(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
@@ -1047,7 +1047,7 @@ func TestUpdateRequestFieldStatusFatal(t *testing.T) {
 
 	i = service.NewInterfaces()
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 	defer DeleteTestPlayerPermission(t, &i, prid)
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
@@ -1064,7 +1064,7 @@ func TestCreateRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1100,7 +1100,7 @@ func TestCreateRequestChangeRequestBadRequestMissingBody(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1140,7 +1140,7 @@ func TestCreateRequestChangeRequestBadRequestInvalidText(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1186,7 +1186,7 @@ func TestCreateRequestChangeRequestBadRequestInvalidField(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1232,7 +1232,7 @@ func TestCreateRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1278,7 +1278,7 @@ func TestCreateRequestChangeRequestForbiddenNotInReview(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1316,7 +1316,7 @@ func TestCreateRequestChangeRequestForbiddenNotReviewer(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
@@ -1368,7 +1368,7 @@ func TestCreateRequestChangeRequestForbiddenNoPermission(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
@@ -1413,7 +1413,7 @@ func TestCreateRequestChangeRequestSuccess(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1459,7 +1459,7 @@ func TestDeleteRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1507,7 +1507,7 @@ func TestDeleteRequestChangeRequestNotFoundNoChangeRequest(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1557,7 +1557,7 @@ func TestDeleteRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1607,7 +1607,7 @@ func TestDeleteRequestChangeRequestSuccess(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1658,7 +1658,7 @@ func TestEditRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1712,7 +1712,7 @@ func TestEditRequestChangeRequestBadRequestMissingBody(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1762,7 +1762,7 @@ func TestEditRequestChangeRequestBadRequestInvalidText(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1818,7 +1818,7 @@ func TestEditRequestChangeRequestNotFoundNoChangeRequest(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1874,7 +1874,7 @@ func TestEditRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
@@ -1930,7 +1930,7 @@ func TestEditRequestChangeRequestSuccess(t *testing.T) {
 	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestCharacterApplication(t, &i, rid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
