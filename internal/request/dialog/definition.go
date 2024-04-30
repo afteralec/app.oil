@@ -12,6 +12,7 @@ const (
 	VariablePutInReview  = "showPutInReviewDialog"
 	VariableApprove      = "showApproveDialog"
 	VariableFinishReview = "showFinishReviewDialog"
+	VariableReject       = "showRejectDialog"
 )
 
 type Definition struct {
@@ -28,6 +29,7 @@ type DefinitionGroup struct {
 	PutInReview  Definition
 	Approve      Definition
 	FinishReview Definition
+	Reject       Definition
 }
 
 func (d *DefinitionGroup) SetPath(rid int64) {

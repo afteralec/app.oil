@@ -418,6 +418,7 @@ export function getRequestData(text = "") {
     showPutInReviewDialog: false,
     showApproveDialog: false,
     showFinishReviewDialog: false,
+    showRejectDialog: false,
     changeRequestOpen: false,
     text,
   };

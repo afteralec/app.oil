@@ -984,7 +984,6 @@ func DeleteRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
-
 		if field.Status == request.FieldStatusReviewed {
 			if err := qtx.UpdateRequestFieldStatus(context.Background(), query.UpdateRequestFieldStatusParams{
 				ID:     field.ID,

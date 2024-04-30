@@ -180,4 +180,10 @@ var DialogsCharacterApplication dialog.DefinitionGroup = dialog.DefinitionGroup{
 		ButtonText: "Finish Review",
 		Variable:   dialog.VariableFinishReview,
 	},
+	Reject: dialog.Definition{
+		Header:     "Reject This Character Application?",
+		Text:       template.HTML("Once rejected, this Application <span class=\"font-semibold\">cannot be re-opened</span>. Please be absolutely certain before doing this."),
+		ButtonText: "Reject",
+		Variable:   dialog.VariableReject,
+	},
 }

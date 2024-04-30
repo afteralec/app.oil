@@ -18,6 +18,7 @@ const (
 	BindPutInReviewDialog  = "PutInReviewDialog"
 	BindApproveDialog      = "ApproveDialog"
 	BindFinishReviewDialog = "FinishReviewDialog"
+	BindRejectDialog       = "RejectDialog"
 )
 
 // TODO: Move Dialogs to new struct
