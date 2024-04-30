@@ -938,6 +938,9 @@ func TestUpdateRequestFieldStatusUnauthorizedNotLoggedIn(t *testing.T) {
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	prid := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	defer DeleteTestRequest(t, &i, rid)
 	if err := i.Queries.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
 		ID:   rid,
 		RPID: pid,
@@ -950,9 +953,6 @@ func TestUpdateRequestFieldStatusUnauthorizedNotLoggedIn(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestRequest(t, &i, rid)
-	defer DeleteTestPlayerPermission(t, &i, prid)
 
 	url := MakeTestURL(route.RequestFieldStatusPath(rid, definition.FieldCharacterApplicationName.Type))
 
@@ -977,6 +977,9 @@ func TestUpdateRequestFieldStatusBadRequestNotFound(t *testing.T) {
 	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
 	prid := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestPlayerPermission(t, &i, prid)
+	defer DeleteTestRequest(t, &i, rid)
 	if err := i.Queries.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
 		ID:   rid,
 		RPID: pid,
@@ -989,9 +992,6 @@ func TestUpdateRequestFieldStatusBadRequestNotFound(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestRequest(t, &i, rid)
-	defer DeleteTestPlayerPermission(t, &i, prid)
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
@@ -1047,8 +1047,8 @@ func TestUpdateRequestFieldStatusFatal(t *testing.T) {
 
 	i = service.NewInterfaces()
 	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestRequest(t, &i, rid)
 	defer DeleteTestPlayerPermission(t, &i, prid)
+	defer DeleteTestRequest(t, &i, rid)
 
 	require.Equal(t, fiber.StatusInternalServerError, res.StatusCode)
 }

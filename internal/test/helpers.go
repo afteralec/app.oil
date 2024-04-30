@@ -17,7 +17,7 @@ import (
 	"petrichormud.com/app/internal/service"
 )
 
-// TODO: Create queries to delete records for use during these test.
+// TODO: Create queries to delete records for use during these tests.
 // It makes more sense to use the stable API than to risk breaking the test suite on a table name change
 //
 // TODO: See if some of these could accept a session cookie and the PID instead of calling up the player itself
@@ -187,7 +187,32 @@ func DeleteTestRequest(t *testing.T, i *service.Interfaces, rid int64) {
 		t.Fatal(err)
 	}
 
-	// TODO: Remove request_change_requests too
+	fields, err := i.Queries.ListRequestFieldsForRequest(context.Background(), rid)
+	if err != nil && err != sql.ErrNoRows {
+		t.Fatal(err)
+	}
+
+	for _, field := range fields {
+		_, err := i.Database.Exec("DELETE FROM open_request_change_requests WHERE rfid = ?;", field.ID)
+		if err != nil && err != sql.ErrNoRows {
+			t.Fatal(err)
+		}
+
+		_, err = i.Database.Exec("DELETE FROM request_change_requests WHERE rfid = ?;", field.ID)
+		if err != nil && err != sql.ErrNoRows {
+			t.Fatal(err)
+		}
+
+		_, err = i.Database.Exec("DELETE FROM past_request_change_requests WHERE rfid = ?;", field.ID)
+		if err != nil && err != sql.ErrNoRows {
+			t.Fatal(err)
+		}
+	}
+
+	_, err = i.Database.Exec("DELETE FROM request_fields WHERE rid = ?;", rid)
+	if err != nil && err != sql.ErrNoRows {
+		t.Fatal(err)
+	}
 }
 
 type CreateTestRequestChangeRequestParams struct {
