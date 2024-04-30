@@ -1445,7 +1445,7 @@ func TestCreateRequestChangeRequestSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, fiber.StatusOK, res.StatusCode)
+	require.Equal(t, fiber.StatusCreated, res.StatusCode)
 }
 
 func TestDeleteRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {

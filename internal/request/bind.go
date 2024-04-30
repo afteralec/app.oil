@@ -15,9 +15,10 @@ import (
 type BindFieldViewParams struct {
 	Request *query.Request
 	Field   *query.RequestField
-	Changes []query.RequestChangeRequest
-	PID     int64
-	Last    bool
+	// TODO: Update this to just accept the one Open Change Request
+	OpenChange *query.OpenRequestChangeRequest
+	PID        int64
+	Last       bool
 }
 
 func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
@@ -74,10 +75,10 @@ func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber
 
 	// TODO: Move this to a utility and include detection for showing the actions
 	b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(p.Request.ID, p.Field.Type)
-	if len(p.Changes) == 1 {
+	if p.OpenChange != nil {
 		b["ChangeRequest"] = BindChangeRequest(BindChangeRequestParams{
 			PID:    p.PID,
-			Change: &p.Changes[0],
+			Change: p.OpenChange,
 		})
 	}
 
@@ -85,19 +86,18 @@ func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber
 }
 
 type BindFieldViewActionsParams struct {
-	Request *query.Request
-	Field   *query.RequestField
-	Changes []query.RequestChangeRequest
-	PID     int64
-	Last    bool
+	Request    *query.Request
+	Field      *query.RequestField
+	OpenChange *query.OpenRequestChangeRequest
+	PID        int64
+	Last       bool
 }
 
 func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsParams) (fiber.Map, error) {
 	actions := []template.HTML{}
 
 	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID {
-		// TODO: Put this in a utility
-		if len(p.Changes) == 0 {
+		if p.OpenChange == nil {
 			change, err := partial.Render(e, partial.RenderParams{
 				Template: partial.RequestFieldActionChangeRequest,
 			})
@@ -116,7 +116,7 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 		actions = append(actions, reject)
 
 		text := "Approve"
-		if len(p.Changes) > 0 {
+		if p.OpenChange != nil {
 			if p.Last {
 				text = "Finish"
 			} else {
@@ -262,9 +262,8 @@ func BindOverviewActions(e *html.Engine, b fiber.Map, p BindOverviewActionsParam
 }
 
 type BindChangeRequestParams struct {
-	Change      *query.RequestChangeRequest
-	PID         int64
-	ShowActions bool
+	Change *query.OpenRequestChangeRequest
+	PID    int64
 }
 
 func BindChangeRequest(p BindChangeRequestParams) fiber.Map {
@@ -273,7 +272,7 @@ func BindChangeRequest(p BindChangeRequestParams) fiber.Map {
 		"Path": route.RequestChangeRequestPath(p.Change.ID),
 	}
 
-	if p.Change.PID == p.PID && p.ShowActions {
+	if p.Change.PID == p.PID {
 		b["ShowDeleteAction"] = true
 		b["ShowEditAction"] = true
 	}

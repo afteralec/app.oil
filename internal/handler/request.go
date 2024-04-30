@@ -397,28 +397,27 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.RequestOverview, b, layout.Page)
 			}
 
-			// TODO: Get this into a utility that returns a struct with utilities
-			// unlockedchanges, err := qtx.ListRequestChangeRequestsForRequestField(context.Background(), query.ListRequestChangeRequestsForRequestFieldParams{
-			// 	RID:    req.ID,
-			// 	Field:  nufo.Field,
-			// 	Old:    false,
-			// 	Locked: false,
-			// })
-			// if err != nil {
-			// 	c.Status(fiber.StatusInternalServerError)
-			// 	return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-			// }
-			// if len(unlockedchanges) > 1 {
-			// 	// TODO: This is a fatal error
-			// 	c.Status(fiber.StatusInternalServerError)
-			// 	return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-			// }
+			change, err := i.Queries.GetOpenRequestChangeRequestForRequestField(context.Background(), nufo.Field.ID)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					// TODO: This just means there's no Open Change Request for this field
+				} else {
+					c.Status(fiber.StatusInternalServerError)
+					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+				}
+			}
+
+			var openchange *query.OpenRequestChangeRequest = nil
+			if change.ID != 0 {
+				openchange = &change
+			}
 
 			b, err = request.NewBindFieldView(i.Templates, b, request.BindFieldViewParams{
-				PID:     pid,
-				Request: &req,
-				Field:   nufo.Field,
-				Last:    nufo.Last,
+				PID:        pid,
+				Request:    &req,
+				Field:      nufo.Field,
+				Last:       nufo.Last,
+				OpenChange: openchange,
 			})
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
@@ -951,6 +950,7 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 		// TODO: Look into returning a Boost or specific components here
 
 		c.Append(header.HXRefresh, "true")
+		c.Status(fiber.StatusCreated)
 		return nil
 	}
 }
@@ -1004,7 +1004,7 @@ func DeleteRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if err = qtx.DeleteRequestChangeRequest(context.Background(), change.ID); err != nil {
+		if err = qtx.DeleteOpenRequestChangeRequest(context.Background(), change.ID); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
