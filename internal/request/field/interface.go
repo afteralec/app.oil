@@ -99,11 +99,12 @@ func (f *Field) ForOverview(p ForOverviewParams) ForOverview {
 	}
 
 	overview := ForOverview{
-		Type:      f.Type,
-		Label:     f.Label,
-		Value:     v,
-		Path:      route.RequestFieldPath(p.Request.ID, f.Type),
-		AllowEdit: allowEdit,
+		Type:       f.Type,
+		Label:      f.Label,
+		Value:      v,
+		Path:       route.RequestFieldPath(p.Request.ID, f.Type),
+		AllowEdit:  allowEdit,
+		IsApproved: field.Status == StatusApproved,
 	}
 
 	change, ok := p.ChangeMap[field.ID]
