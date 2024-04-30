@@ -273,22 +273,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 		fieldmap := request.FieldMap(fields)
 
-		// TODO: Get this into a utility that returns a struct with utilities
-		// changes, err := qtx.ListRequestChangeRequestsForRequest(context.Background(), query.ListRequestChangeRequestsForRequestParams{
-		// 	RID:    rid,
-		// 	Old:    false,
-		// 	Locked: false,
-		// })
-		// if err != nil {
-		// 	c.Status(fiber.StatusInternalServerError)
-		// 	return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-		// }
-		// if len(changes) > 1 {
-		// 	// TODO: This is a fatal error
-		// 	c.Status(fiber.StatusInternalServerError)
-		// 	return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-		// }
-
 		// TODO: Finish new bind pattern
 		b := view.Bind(c)
 
@@ -345,52 +329,35 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 				}
 
+				// TODO: Extract this to a utility?
+				rfids := []int64{}
+				for _, field := range fieldmap {
+					rfids = append(rfids, field.ID)
+				}
+				changes, err := i.Queries.ListOpenRequestChangeRequestsByFieldID(context.Background(), rfids)
+				if err != nil {
+					if err == sql.ErrNoRows {
+						// TODO: Acceptable, this means that there are no change requests for those fields
+					} else {
+						c.Status(fiber.StatusInternalServerError)
+						return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+					}
+				}
+				changemap := map[int64]query.OpenRequestChangeRequest{}
+				for _, change := range changes {
+					changemap[change.RFID] = change
+				}
+
 				overviewfields, err := request.FieldsForOverview(request.FieldsForOverviewParams{
-					PID:      pid,
-					Request:  &req,
-					FieldMap: fieldmap,
+					PID:       pid,
+					Request:   &req,
+					FieldMap:  fieldmap,
+					ChangeMap: changemap,
 				})
 				if err != nil {
 					c.Status(fiber.StatusInternalServerError)
 					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 				}
-
-				// TODO: Reintroduce this removed logic
-				// changes, err := qtx.ListCurrentRequestChangeRequestsForRequest(context.Background(), req.ID)
-				// if err != nil {
-				// 	c.Status(fiber.StatusInternalServerError)
-				// 	return nil
-				// }
-				//
-				// changeMap := make(map[string]query.RequestChangeRequest)
-				// for _, change := range changes {
-				// 	changeMap[change.Field] = change
-				// }
-
-				// cr, err := request.ContentReview(qtx, req)
-				// if err != nil {
-				// 	c.Status(fiber.StatusInternalServerError)
-				// 	return nil
-				// }
-
-				// processedoverviewfields := []field.ForOverview{}
-				// for _, overviewfield := range overviewfields {
-				// change, ok := changeMap[overviewfield.Name]
-				// if ok {
-				// 	overviewfield.HasChangeRequest = true
-				// 	overviewfield.ChangeRequest = request.BindChangeRequest(request.BindChangeRequestParams{
-				// 		PID:           pid,
-				// 		ChangeRequest: &change,
-				// 	})
-				// }
-
-				// 	status, ok := cr.Status(overviewfield.Name)
-				// 	if ok && status == request.FieldStatusApproved {
-				// 		overviewfield.IsApproved = true
-				// 	}
-				//
-				// 	processedoverviewfields = append(processedoverviewfields, overviewfield)
-				// }
 
 				b["SummaryFields"] = overviewfields
 
@@ -726,19 +693,22 @@ func UpdateRequestFieldStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		// TODO: Do we need this count if there's only ever one open change request?
-		count, err := qtx.CountOpenRequestChangeRequestsForRequestField(context.Background(), field.ID)
+		change, err := qtx.GetOpenRequestChangeRequestForRequestField(context.Background(), field.ID)
 		if err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
+			if err == sql.ErrNoRows {
+				// TODO: Acceptable, it means there's no change request
+			} else {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
 		}
 
 		// TODO: Get this in a request utility
 		var status string
-		if count > 0 {
-			status = request.FieldStatusReviewed
-		} else {
+		if change.ID == 0 {
 			status = request.FieldStatusApproved
+		} else {
+			status = request.FieldStatusReviewed
 		}
 
 		if err = qtx.UpdateRequestFieldStatus(context.Background(), query.UpdateRequestFieldStatusParams{

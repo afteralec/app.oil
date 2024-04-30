@@ -67,9 +67,6 @@ INSERT INTO open_request_change_requests (value, text, rfid, pid) VALUES (?, ?, 
 -- name: GetOpenRequestChangeRequestForRequestField :one
 SELECT * FROM open_request_change_requests WHERE rfid = ?;
 
--- name: CountOpenRequestChangeRequestsForRequestField :one
-SELECT COUNT(*) FROM open_request_change_requests WHERE rfid = ?;
-
 -- name: CountOpenRequestChangeRequestsForRequest :one
 SELECT
   COUNT(*)
@@ -82,6 +79,9 @@ WHERE
 
 -- name: GetOpenRequestChangeRequest :one
 SELECT * FROM open_request_change_requests WHERE id = ?;
+
+-- name: ListOpenRequestChangeRequestsByFieldID :many
+SELECT * FROM open_request_change_requests WHERE rfid IN (sqlc.slice("rfids"));
 
 -- name: DeleteOpenRequestChangeRequest :exec
 DELETE FROM open_request_change_requests WHERE id = ?;

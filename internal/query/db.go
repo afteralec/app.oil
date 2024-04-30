@@ -30,9 +30,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.countOpenRequestChangeRequestsForRequestStmt, err = db.PrepareContext(ctx, countOpenRequestChangeRequestsForRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query CountOpenRequestChangeRequestsForRequest: %w", err)
 	}
-	if q.countOpenRequestChangeRequestsForRequestFieldStmt, err = db.PrepareContext(ctx, countOpenRequestChangeRequestsForRequestField); err != nil {
-		return nil, fmt.Errorf("error preparing query CountOpenRequestChangeRequestsForRequestField: %w", err)
-	}
 	if q.createActorImageStmt, err = db.PrepareContext(ctx, createActorImage); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateActorImage: %w", err)
 	}
@@ -228,6 +225,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listHelpSlugsStmt, err = db.PrepareContext(ctx, listHelpSlugs); err != nil {
 		return nil, fmt.Errorf("error preparing query ListHelpSlugs: %w", err)
 	}
+	if q.listOpenRequestChangeRequestsByFieldIDStmt, err = db.PrepareContext(ctx, listOpenRequestChangeRequestsByFieldID); err != nil {
+		return nil, fmt.Errorf("error preparing query ListOpenRequestChangeRequestsByFieldID: %w", err)
+	}
 	if q.listPlayerPermissionsStmt, err = db.PrepareContext(ctx, listPlayerPermissions); err != nil {
 		return nil, fmt.Errorf("error preparing query ListPlayerPermissions: %w", err)
 	}
@@ -352,11 +352,6 @@ func (q *Queries) Close() error {
 	if q.countOpenRequestChangeRequestsForRequestStmt != nil {
 		if cerr := q.countOpenRequestChangeRequestsForRequestStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing countOpenRequestChangeRequestsForRequestStmt: %w", cerr)
-		}
-	}
-	if q.countOpenRequestChangeRequestsForRequestFieldStmt != nil {
-		if cerr := q.countOpenRequestChangeRequestsForRequestFieldStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing countOpenRequestChangeRequestsForRequestFieldStmt: %w", cerr)
 		}
 	}
 	if q.createActorImageStmt != nil {
@@ -684,6 +679,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listHelpSlugsStmt: %w", cerr)
 		}
 	}
+	if q.listOpenRequestChangeRequestsByFieldIDStmt != nil {
+		if cerr := q.listOpenRequestChangeRequestsByFieldIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listOpenRequestChangeRequestsByFieldIDStmt: %w", cerr)
+		}
+	}
 	if q.listPlayerPermissionsStmt != nil {
 		if cerr := q.listPlayerPermissionsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listPlayerPermissionsStmt: %w", cerr)
@@ -910,7 +910,6 @@ type Queries struct {
 	tx                                                *sql.Tx
 	countEmailsStmt                                   *sql.Stmt
 	countOpenRequestChangeRequestsForRequestStmt      *sql.Stmt
-	countOpenRequestChangeRequestsForRequestFieldStmt *sql.Stmt
 	createActorImageStmt                              *sql.Stmt
 	createActorImageCanStmt                           *sql.Stmt
 	createActorImageCanBeStmt                         *sql.Stmt
@@ -976,6 +975,7 @@ type Queries struct {
 	listEmailsStmt                                    *sql.Stmt
 	listHelpHeadersStmt                               *sql.Stmt
 	listHelpSlugsStmt                                 *sql.Stmt
+	listOpenRequestChangeRequestsByFieldIDStmt        *sql.Stmt
 	listPlayerPermissionsStmt                         *sql.Stmt
 	listRequestFieldsForRequestStmt                   *sql.Stmt
 	listRequestFieldsForRequestWithChangeRequestsStmt *sql.Stmt
@@ -1021,7 +1021,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		tx:              tx,
 		countEmailsStmt: q.countEmailsStmt,
 		countOpenRequestChangeRequestsForRequestStmt:      q.countOpenRequestChangeRequestsForRequestStmt,
-		countOpenRequestChangeRequestsForRequestFieldStmt: q.countOpenRequestChangeRequestsForRequestFieldStmt,
 		createActorImageStmt:                              q.createActorImageStmt,
 		createActorImageCanStmt:                           q.createActorImageCanStmt,
 		createActorImageCanBeStmt:                         q.createActorImageCanBeStmt,
@@ -1087,6 +1086,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listEmailsStmt:                                    q.listEmailsStmt,
 		listHelpHeadersStmt:                               q.listHelpHeadersStmt,
 		listHelpSlugsStmt:                                 q.listHelpSlugsStmt,
+		listOpenRequestChangeRequestsByFieldIDStmt:        q.listOpenRequestChangeRequestsByFieldIDStmt,
 		listPlayerPermissionsStmt:                         q.listPlayerPermissionsStmt,
 		listRequestFieldsForRequestStmt:                   q.listRequestFieldsForRequestStmt,
 		listRequestFieldsForRequestWithChangeRequestsStmt: q.listRequestFieldsForRequestWithChangeRequestsStmt,

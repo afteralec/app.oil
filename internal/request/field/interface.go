@@ -79,9 +79,10 @@ type ForOverview struct {
 }
 
 type ForOverviewParams struct {
-	Request  *query.Request
-	FieldMap Map
-	PID      int64
+	Request   *query.Request
+	FieldMap  Map
+	ChangeMap map[int64]query.OpenRequestChangeRequest
+	PID       int64
 }
 
 func (f *Field) ForOverview(p ForOverviewParams) ForOverview {
@@ -97,13 +98,32 @@ func (f *Field) ForOverview(p ForOverviewParams) ForOverview {
 		allowEdit = false
 	}
 
-	return ForOverview{
+	overview := ForOverview{
 		Type:      f.Type,
 		Label:     f.Label,
 		Value:     v,
 		Path:      route.RequestFieldPath(p.Request.ID, f.Type),
 		AllowEdit: allowEdit,
 	}
+
+	change, ok := p.ChangeMap[field.ID]
+	if ok {
+		// TODO: Get this into a Bind function
+		// This is a copy of request's BindChangeRequest
+		b := fiber.Map{
+			"Text": change.Text,
+			"Path": route.RequestChangeRequestPath(change.ID),
+		}
+
+		if change.PID == p.PID {
+			b["ShowDeleteAction"] = true
+			b["ShowEditAction"] = true
+		}
+
+		overview.ChangeRequest = b
+	}
+
+	return overview
 }
 
 type fieldBuilder struct {

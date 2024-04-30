@@ -29,17 +29,6 @@ func (q *Queries) CountOpenRequestChangeRequestsForRequest(ctx context.Context, 
 	return count, err
 }
 
-const countOpenRequestChangeRequestsForRequestField = `-- name: CountOpenRequestChangeRequestsForRequestField :one
-SELECT COUNT(*) FROM open_request_change_requests WHERE rfid = ?
-`
-
-func (q *Queries) CountOpenRequestChangeRequestsForRequestField(ctx context.Context, rfid int64) (int64, error) {
-	row := q.queryRow(ctx, q.countOpenRequestChangeRequestsForRequestFieldStmt, countOpenRequestChangeRequestsForRequestField, rfid)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
-
 const createOpenRequestChangeRequest = `-- name: CreateOpenRequestChangeRequest :exec
 INSERT INTO open_request_change_requests (value, text, rfid, pid) VALUES (?, ?, ?, ?)
 `
@@ -307,6 +296,51 @@ func (q *Queries) GetRequestFieldByTypeWithChangeRequests(ctx context.Context, a
 		&i.RequestChangeRequest.ID,
 	)
 	return i, err
+}
+
+const listOpenRequestChangeRequestsByFieldID = `-- name: ListOpenRequestChangeRequestsByFieldID :many
+SELECT created_at, updated_at, value, text, rfid, pid, id FROM open_request_change_requests WHERE rfid IN (/*SLICE:rfids*/?)
+`
+
+func (q *Queries) ListOpenRequestChangeRequestsByFieldID(ctx context.Context, rfids []int64) ([]OpenRequestChangeRequest, error) {
+	query := listOpenRequestChangeRequestsByFieldID
+	var queryParams []interface{}
+	if len(rfids) > 0 {
+		for _, v := range rfids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:rfids*/?", strings.Repeat(",?", len(rfids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:rfids*/?", "NULL", 1)
+	}
+	rows, err := q.query(ctx, nil, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []OpenRequestChangeRequest
+	for rows.Next() {
+		var i OpenRequestChangeRequest
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Value,
+			&i.Text,
+			&i.RFID,
+			&i.PID,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listRequestFieldsForRequest = `-- name: ListRequestFieldsForRequest :many

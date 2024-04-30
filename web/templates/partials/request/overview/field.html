@@ -7,7 +7,7 @@
   <p class="whitespace-pre-wrap text-base leading-none">{{ .Value }}</p>
 
   <!-- prettier-ignore -->
-  {{ if .HasChangeRequest }}
+  {{ if .ChangeRequest }}
     {{ template "partial-request-change-request" .ChangeRequest }}
   {{ end }}
 
