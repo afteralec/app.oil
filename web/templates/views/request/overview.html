@@ -6,7 +6,7 @@
   <!-- prettier-ignore -->
   {{ template "partial-request-overview-status" .Status }}
   {{ template "partial-request-overview-actions" .Actions }}
-  {{ range .SummaryFields }}
+  {{ range .Fields }}
     {{ template "partial-request-overview-field" . }}
   {{ end }}
   {{ template "partial-request-overview-actions" .Actions }}

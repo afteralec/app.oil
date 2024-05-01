@@ -16,7 +16,7 @@
     {{ template "partial-request-overview-field-approved" }}
   {{ end }}
 
-  <footer>
+  <footer x-data="{ text: '', changeRequestOpen: true }">
     <section class="flex items-center gap-2 pt-2">
       <button
         type="button"
@@ -34,6 +34,6 @@
     </section>
   </footer>
 
-  <div x-cloak x-show="helpOpen" class="pt-2"></div>
+  <div x-cloak x-show="helpOpen" class="pt-2">{{ .Help }}</div>
 </section>
 {{ end }}

@@ -69,6 +69,7 @@ func (f *Field) RenderForm(e *html.Engine, field *query.RequestField) (template.
 type ForOverview struct {
 	// TODO: Get this into a discrete type instead of a fiber Map?
 	ChangeRequest    fiber.Map
+	Help             template.HTML
 	Type             string
 	Label            string
 	Value            string
@@ -85,7 +86,7 @@ type ForOverviewParams struct {
 	PID       int64
 }
 
-func (f *Field) ForOverview(p ForOverviewParams) ForOverview {
+func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
 	v := ""
 	field, ok := p.FieldMap[f.Type]
 	if ok {
@@ -98,7 +99,14 @@ func (f *Field) ForOverview(p ForOverviewParams) ForOverview {
 		allowEdit = false
 	}
 
+	help, err := f.RenderHelp(e)
+	if err != nil {
+		// TODO: Handle this error
+		help = template.HTML("")
+	}
+
 	overview := ForOverview{
+		Help:       help,
 		Type:       f.Type,
 		Label:      f.Label,
 		Value:      v,
@@ -241,10 +249,10 @@ func (f *Group) NextUnreviewed(fields Map) (NextUnreviewedOutput, error) {
 	return NextUnreviewedOutput{}, nil
 }
 
-func (f *Group) ForOverview(p ForOverviewParams) []ForOverview {
+func (f *Group) ForOverview(e *html.Engine, p ForOverviewParams) []ForOverview {
 	result := []ForOverview{}
 	for _, field := range f.list {
-		result = append(result, field.ForOverview(p))
+		result = append(result, field.ForOverview(e, p))
 	}
 	return result
 }

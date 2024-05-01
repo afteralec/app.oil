@@ -3,6 +3,7 @@ package request
 import (
 	"context"
 
+	html "github.com/gofiber/template/html/v2"
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request/definition"
 	"petrichormud.com/app/internal/request/field"
@@ -81,12 +82,12 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 
 type FieldsForOverviewParams = field.ForOverviewParams
 
-func FieldsForOverview(p field.ForOverviewParams) ([]field.ForOverview, error) {
+func FieldsForOverview(e *html.Engine, p field.ForOverviewParams) ([]field.ForOverview, error) {
 	fields, ok := FieldsByType[p.Request.Type]
 	if !ok {
 		return []field.ForOverview{}, ErrNoDefinition
 	}
-	return fields.ForOverview(p), nil
+	return fields.ForOverview(e, p), nil
 }
 
 func FieldMap(fields []query.RequestField) field.Map {

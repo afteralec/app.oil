@@ -348,7 +348,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 					changemap[change.RFID] = change
 				}
 
-				overviewfields, err := request.FieldsForOverview(request.FieldsForOverviewParams{
+				overviewfields, err := request.FieldsForOverview(i.Templates, request.FieldsForOverviewParams{
 					PID:       pid,
 					Request:   &req,
 					FieldMap:  fieldmap,
@@ -359,7 +359,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 				}
 
-				b["SummaryFields"] = overviewfields
+				b["Fields"] = overviewfields
 
 				return c.Render(view.RequestOverview, b, layout.Page)
 			}
@@ -404,7 +404,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		overviewfields, err := request.FieldsForOverview(request.FieldsForOverviewParams{
+		overviewfields, err := request.FieldsForOverview(i.Templates, request.FieldsForOverviewParams{
 			PID:      pid,
 			Request:  &req,
 			FieldMap: fieldmap,
@@ -413,7 +413,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
-		b["SummaryFields"] = overviewfields
+		b["Fields"] = overviewfields
 
 		return c.Render(view.RequestOverview, b, layout.Page)
 	}
