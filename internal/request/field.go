@@ -4,6 +4,7 @@ import (
 	"context"
 
 	html "github.com/gofiber/template/html/v2"
+
 	"petrichormud.com/app/internal/query"
 	"petrichormud.com/app/internal/request/definition"
 	"petrichormud.com/app/internal/request/field"
@@ -76,7 +77,6 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 			return err
 		}
 	}
-
 	return nil
 }
 

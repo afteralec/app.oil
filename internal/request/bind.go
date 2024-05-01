@@ -72,7 +72,12 @@ func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber
 		return fiber.Map{}, err
 	}
 
-	// TODO: Move this to a utility and include detection for showing the actions
+	b["ChangeRequestConfig"] = BindChangeRequestConfig(BindChangeRequestConfigParams{
+		PID:        p.PID,
+		OpenChange: p.OpenChange,
+		Request:    p.Request,
+		Field:      p.Field,
+	})
 	b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(p.Request.ID, p.Field.Type)
 	if p.OpenChange != nil {
 		b["ChangeRequest"] = BindChangeRequest(BindChangeRequestParams{
@@ -82,6 +87,26 @@ func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber
 	}
 
 	return b, nil
+}
+
+type BindChangeRequestConfigParams struct {
+	OpenChange *query.OpenRequestChangeRequest
+	Request    *query.Request
+	Field      *query.RequestField
+	PID        int64
+}
+
+func BindChangeRequestConfig(p BindChangeRequestConfigParams) fiber.Map {
+	b := fiber.Map{}
+	b["Path"] = route.RequestChangeRequestFieldPath(p.Request.ID, p.Field.Type)
+	b["Type"] = p.Field.Type
+	if p.OpenChange != nil {
+		b["Open"] = BindChangeRequest(BindChangeRequestParams{
+			PID:    p.PID,
+			Change: p.OpenChange,
+		})
+	}
+	return b
 }
 
 type BindFieldViewActionsParams struct {

@@ -1,5 +1,9 @@
 {{ define "partial-request-change-request" }}
-<section id="change-request" class="py-2" x-show="!changeRequestOpen">
+<section
+  id="change-request"
+  class="py-2"
+  x-show="!changeRequestOpen && !editChangeRequestOpen"
+>
   <div
     class="items-center rounded-md bg-warn-bg px-6 py-4 text-sm leading-none text-warn-fg"
   >
@@ -23,7 +27,7 @@
       <button
         type="button"
         class="notice-link-warn flex cursor-pointer items-end justify-end gap-[0.5] align-bottom text-xs leading-[0.9]"
-        @click.prevent="changeRequestOpen = true;"
+        @click.prevent="editChangeRequestOpen = true;"
       >
         <iconify-icon icon="fe:pencil" height="12" width="12"></iconify-icon>
         Edit

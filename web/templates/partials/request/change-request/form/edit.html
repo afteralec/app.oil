@@ -9,7 +9,7 @@
   "
   x-data="{ text: '{{ .ChangeRequest.Text }}' }"
   x-cloak
-  x-show="changeRequestOpen"
+  x-show="editChangeRequestOpen"
 >
   <label
     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -32,7 +32,7 @@
     <button
       type="button"
       class="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-bg transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-      @click.prevent="changeRequestOpen = false;"
+      @click.prevent="editChangeRequestOpen = false;"
     >
       Cancel
     </button>

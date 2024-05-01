@@ -1,5 +1,8 @@
 {{ define "partial-request-overview-field" }}
-<section class="space-y-2 pt-6" x-data="{ helpOpen: false }">
+<section
+  class="space-y-2 pt-6"
+  x-data="{ helpOpen: false, editChangeRequestOpen: false }"
+>
   <header>
     <h3 class="header-4">{{ .Label }}</h3>
   </header>
@@ -7,8 +10,8 @@
   <p class="whitespace-pre-wrap text-base leading-none">{{ .Value }}</p>
 
   <!-- prettier-ignore -->
-  {{ if .ChangeRequest }}
-    {{ template "partial-request-change-request" .ChangeRequest }}
+  {{ if .ChangeRequestConfig.Open }}
+    {{ template "partial-request-change-request" .ChangeRequestConfig.Open }}
   {{ end }}
 
   <!-- prettier-ignore -->
@@ -16,7 +19,7 @@
     {{ template "partial-request-overview-field-approved" }}
   {{ end }}
 
-  <footer x-data="{ text: '', changeRequestOpen: true }">
+  <footer>
     <section class="flex items-center gap-2 pt-2">
       <button
         type="button"
@@ -27,11 +30,24 @@
         Help
       </button>
 
+      {{ if not .ChangeRequestConfig.Open }}
+      <button
+        type="button"
+        class="button-outline"
+        @click.prevent="changeRequestOpenField = '{{ .Type }}'"
+      >
+        Request Change
+      </button>
+      {{ end }}
+
       <!-- prettier-ignore -->
       {{ if .AllowEdit }}
       <a href="{{ .Path }}" class="button-outline">Edit</a>
       {{ end }}
     </section>
+
+    <!-- prettier-ignore -->
+    {{ template "partial-request-change-request-form" .ChangeRequestConfig }}
   </footer>
 
   <div x-cloak x-show="helpOpen" class="pt-2">{{ .Help }}</div>

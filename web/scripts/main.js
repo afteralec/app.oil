@@ -420,6 +420,8 @@ export function getRequestData(text = "") {
     showFinishReviewDialog: false,
     showRejectDialog: false,
     changeRequestOpen: false,
+    editChangeRequestOpen: false,
+    changeRequestOpenField: "",
     text,
   };
 }

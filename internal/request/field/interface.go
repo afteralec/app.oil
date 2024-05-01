@@ -68,15 +68,15 @@ func (f *Field) RenderForm(e *html.Engine, field *query.RequestField) (template.
 
 type ForOverview struct {
 	// TODO: Get this into a discrete type instead of a fiber Map?
-	ChangeRequest    fiber.Map
-	Help             template.HTML
-	Type             string
-	Label            string
-	Value            string
-	Path             string
-	AllowEdit        bool
-	HasChangeRequest bool
-	IsApproved       bool
+	ChangeRequestConfig fiber.Map
+	Help                template.HTML
+	Type                string
+	Label               string
+	Value               string
+	Path                string
+	AllowEdit           bool
+	HasChangeRequest    bool
+	IsApproved          bool
 }
 
 type ForOverviewParams struct {
@@ -116,21 +116,26 @@ func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
 	}
 
 	change, ok := p.ChangeMap[field.ID]
+	crcb := fiber.Map{
+		"Path": route.RequestChangeRequestFieldPath(p.Request.ID, field.Type),
+		"Type": field.Type,
+	}
 	if ok {
 		// TODO: Get this into a Bind function
 		// This is a copy of request's BindChangeRequest
-		b := fiber.Map{
+		crb := fiber.Map{
 			"Text": change.Text,
 			"Path": route.RequestChangeRequestPath(change.ID),
 		}
 
 		if change.PID == p.PID {
-			b["ShowDeleteAction"] = true
-			b["ShowEditAction"] = true
+			crb["ShowDeleteAction"] = true
+			crb["ShowEditAction"] = true
 		}
 
-		overview.ChangeRequest = b
+		crcb["Open"] = crb
 	}
+	overview.ChangeRequestConfig = crcb
 
 	return overview
 }
