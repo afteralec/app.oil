@@ -5,11 +5,11 @@
 >
   <!-- prettier-ignore -->
   {{ template "partial-request-overview-status" .Status }}
-  {{ template "partial-request-overview-actions" . }}
+  {{ template "partial-request-overview-actions" .Actions }}
   {{ range .SummaryFields }}
     {{ template "partial-request-overview-field" . }}
   {{ end }}
-  {{ template "partial-request-overview-actions" . }}
+  {{ template "partial-request-overview-actions" .Actions }}
   {{ template "partial-request-dialogs" .Dialogs }}
 </div>
 {{ end }}
