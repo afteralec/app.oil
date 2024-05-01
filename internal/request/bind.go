@@ -13,9 +13,8 @@ import (
 )
 
 type BindFieldViewParams struct {
-	Request *query.Request
-	Field   *query.RequestField
-	// TODO: Update this to just accept the one Open Change Request
+	Request    *query.Request
+	Field      *query.RequestField
 	OpenChange *query.OpenRequestChangeRequest
 	PID        int64
 	Last       bool

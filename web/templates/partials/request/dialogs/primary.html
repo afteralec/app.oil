@@ -1,9 +1,9 @@
 <!-- prettier-ignore -->
-{{ define "partial-request-approve-dialog" }}
+{{ define "partial-request-dialog-primary" }}
 {{ template "partial-modal-overlay" .Variable }}
 <div
   class="modal"
-  @click.away="{{ .Variable }}= false;"
+  @click.away="{{ .Variable }} = false;"
   x-cloak
   x-show="{{ .Variable }}"
 >

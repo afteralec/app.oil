@@ -15,12 +15,18 @@ const (
 	VariableReject       = "showRejectDialog"
 )
 
+const (
+	TypePrimary     = "primary"
+	TypeDestructive = "destructive"
+)
+
 type Definition struct {
 	Header     string
 	Text       template.HTML
 	ButtonText string
 	Path       string
 	Variable   string
+	Type       string
 }
 
 type DefinitionGroup struct {
@@ -30,6 +36,17 @@ type DefinitionGroup struct {
 	Approve      Definition
 	FinishReview Definition
 	Reject       Definition
+}
+
+func (d *DefinitionGroup) Slice() []Definition {
+	return []Definition{
+		d.Submit,
+		d.Cancel,
+		d.PutInReview,
+		d.Approve,
+		d.FinishReview,
+		d.Reject,
+	}
 }
 
 func (d *DefinitionGroup) SetPath(rid int64) {
