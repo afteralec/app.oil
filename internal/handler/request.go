@@ -273,16 +273,15 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 		fieldmap := request.FieldMap(fields)
 
-		// TODO: Finish new bind pattern
-		b := view.Bind(c)
-
-		b, err = request.BindDialogs(b, &req)
-		if err != nil {
+		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		if err := tx.Commit(); err != nil {
+		// TODO: Finish new bind pattern
+		b := view.Bind(c)
+		b, err = request.BindDialogs(b, &req)
+		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
@@ -910,6 +909,16 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 		}); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
+		}
+
+		if field.Status == request.FieldStatusApproved {
+			if err = qtx.UpdateRequestFieldStatus(context.Background(), query.UpdateRequestFieldStatusParams{
+				ID:     field.ID,
+				Status: request.FieldStatusReviewed,
+			}); err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
 		}
 
 		if err = tx.Commit(); err != nil {

@@ -204,10 +204,7 @@ func BindOverview(e *html.Engine, b fiber.Map, p BindOverviewParams) (fiber.Map,
 		"StatusIcon": NewStatusIcon(StatusIconParams{Status: p.Request.Status, IconSize: 48, IncludeText: true, TextSize: "text-xl"}),
 	}
 
-	b, err := BindOverviewActions(e, b, BindOverviewActionsParams{
-		PID:     p.PID,
-		Request: p.Request,
-	})
+	b, err := BindOverviewActions(e, b, BindOverviewActionsParams(p))
 	if err != nil {
 		return b, err
 	}
