@@ -166,10 +166,9 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 }
 
 type BindOverviewParams struct {
-	Request               *query.Request
-	FieldMap              field.Map
-	CurrentChangeRequests []query.RequestChangeRequest
-	PID                   int64
+	Request  *query.Request
+	FieldMap field.Map
+	PID      int64
 }
 
 func BindOverview(e *html.Engine, b fiber.Map, p BindOverviewParams) (fiber.Map, error) {
@@ -182,9 +181,8 @@ func BindOverview(e *html.Engine, b fiber.Map, p BindOverviewParams) (fiber.Map,
 	}
 
 	b, err := BindOverviewActions(e, b, BindOverviewActionsParams{
-		PID:                   p.PID,
-		Request:               p.Request,
-		CurrentChangeRequests: p.CurrentChangeRequests,
+		PID:     p.PID,
+		Request: p.Request,
 	})
 	if err != nil {
 		return b, err
@@ -194,9 +192,9 @@ func BindOverview(e *html.Engine, b fiber.Map, p BindOverviewParams) (fiber.Map,
 }
 
 type BindOverviewActionsParams struct {
-	Request               *query.Request
-	CurrentChangeRequests []query.RequestChangeRequest
-	PID                   int64
+	Request  *query.Request
+	FieldMap field.Map
+	PID      int64
 }
 
 func BindOverviewActions(e *html.Engine, b fiber.Map, p BindOverviewActionsParams) (fiber.Map, error) {
@@ -231,22 +229,14 @@ func BindOverviewActions(e *html.Engine, b fiber.Map, p BindOverviewActionsParam
 		}
 		actions = append(actions, reject)
 
-		// TODO: Use the Content Review API instead of counting Change Requests
-		// if cr.AllAre(request.FieldStatusApproved) {
-		// 	b["ShowApproveAction"] = true
-		// } else if cr.AnyAre(request.FieldStatusReviewed) {
-		// 	b["ShowFinishReviewAction"] = true
-		// }
-
-		if len(p.CurrentChangeRequests) > 0 {
-			review, err := partial.Render(e, partial.RenderParams{
-				Template: partial.RequestOverviewActionReview,
-			})
-			if err != nil {
-				return b, err
+		allApproved := true
+		for _, field := range p.FieldMap {
+			if field.Status != FieldStatusApproved {
+				allApproved = false
 			}
-			actions = append(actions, review)
-		} else {
+		}
+
+		if allApproved {
 			approve, err := partial.Render(e, partial.RenderParams{
 				Template: partial.RequestOverviewActionApprove,
 			})
@@ -254,6 +244,14 @@ func BindOverviewActions(e *html.Engine, b fiber.Map, p BindOverviewActionsParam
 				return b, err
 			}
 			actions = append(actions, approve)
+		} else {
+			review, err := partial.Render(e, partial.RenderParams{
+				Template: partial.RequestOverviewActionReview,
+			})
+			if err != nil {
+				return b, err
+			}
+			actions = append(actions, review)
 		}
 	}
 
