@@ -348,10 +348,10 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				}
 
 				overviewfields, err := request.FieldsForOverview(i.Templates, request.FieldsForOverviewParams{
-					PID:       pid,
-					Request:   &req,
-					FieldMap:  fieldmap,
-					ChangeMap: changemap,
+					PID:           pid,
+					Request:       &req,
+					FieldMap:      fieldmap,
+					OpenChangeMap: changemap,
 				})
 				if err != nil {
 					c.Status(fiber.StatusInternalServerError)
@@ -393,6 +393,25 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.RequestField, b, layout.Standalone)
 		}
 
+		// TODO: Extract this to a utility?
+		rfids := []int64{}
+		for _, field := range fieldmap {
+			rfids = append(rfids, field.ID)
+		}
+		changes, err := i.Queries.ListRequestChangeRequestsByFieldID(context.Background(), rfids)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO: Acceptable, this means that there are no change requests for those fields
+			} else {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			}
+		}
+		changemap := map[int64]query.RequestChangeRequest{}
+		for _, change := range changes {
+			changemap[change.RFID] = change
+		}
+
 		b, err = request.BindOverview(i.Templates, b, request.BindOverviewParams{
 			PID:      pid,
 			Request:  &req,
@@ -404,9 +423,10 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 
 		overviewfields, err := request.FieldsForOverview(i.Templates, request.FieldsForOverviewParams{
-			PID:      pid,
-			Request:  &req,
-			FieldMap: fieldmap,
+			PID:       pid,
+			Request:   &req,
+			FieldMap:  fieldmap,
+			ChangeMap: changemap,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -597,6 +617,30 @@ func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 			PID:    pid,
 			Status: status,
 		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		// TODO: Retrieve the fields and check the Change Requests
+		// For any change requests, at this point they should be moved from Open to Change Request
+		changes, err := qtx.ListOpenRequestChangeRequestsForRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO: Acceptable, this means there are no change requests
+			} else {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+		changeids := []int64{}
+		for _, change := range changes {
+			changeids = append(changeids, change.ID)
+		}
+		if err = qtx.BatchCreateRequestChangeRequest(context.Background(), changeids); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		if err = qtx.BatchDeleteOpenRequestChangeRequest(context.Background(), changeids); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}

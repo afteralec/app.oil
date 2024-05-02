@@ -12,6 +12,8 @@
   <!-- prettier-ignore -->
   {{ if .ChangeRequestConfig.Open }}
     {{ template "partial-request-change-request" .ChangeRequestConfig.Open }}
+  {{ else if .ChangeRequestConfig.ChangeRequest }}
+    {{ template "partial-request-change-request" .ChangeRequestConfig.ChangeRequest }}
   {{ end }}
 
   <!-- prettier-ignore -->
@@ -30,7 +32,7 @@
         Help
       </button>
 
-      {{ if not .ChangeRequestConfig.Open }}
+      {{ if and (not .ChangeRequestConfig.Open) .ShowRequestChangeAction }}
       <button
         type="button"
         class="button-outline"

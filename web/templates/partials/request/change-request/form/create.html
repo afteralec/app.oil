@@ -10,7 +10,10 @@
   "
   x-data="{ text: '' }"
   x-cloak
-  x-show="changeRequestOpen || changeRequestOpenField === '{{ .Type }}'"
+  x-show="
+    changeRequestOpen || 
+    (changeRequestOpenField.length > 0 && 
+      changeRequestOpenField === '{{ .Type }}')"
 >
   <label
     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

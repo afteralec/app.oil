@@ -11,6 +11,49 @@ import (
 	"strings"
 )
 
+const batchCreateRequestChangeRequest = `-- name: BatchCreateRequestChangeRequest :exec
+INSERT INTO
+  request_change_requests
+SELECT created_at, updated_at, value, text, rfid, pid, id FROM
+  open_request_change_requests
+WHERE
+  open_request_change_requests.id IN (/*SLICE:ids*/?)
+`
+
+func (q *Queries) BatchCreateRequestChangeRequest(ctx context.Context, ids []int64) error {
+	query := batchCreateRequestChangeRequest
+	var queryParams []interface{}
+	if len(ids) > 0 {
+		for _, v := range ids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:ids*/?", strings.Repeat(",?", len(ids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:ids*/?", "NULL", 1)
+	}
+	_, err := q.exec(ctx, nil, query, queryParams...)
+	return err
+}
+
+const batchDeleteOpenRequestChangeRequest = `-- name: BatchDeleteOpenRequestChangeRequest :exec
+DELETE FROM open_request_change_requests WHERE id IN (/*SLICE:ids*/?)
+`
+
+func (q *Queries) BatchDeleteOpenRequestChangeRequest(ctx context.Context, ids []int64) error {
+	query := batchDeleteOpenRequestChangeRequest
+	var queryParams []interface{}
+	if len(ids) > 0 {
+		for _, v := range ids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:ids*/?", strings.Repeat(",?", len(ids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:ids*/?", "NULL", 1)
+	}
+	_, err := q.exec(ctx, nil, query, queryParams...)
+	return err
+}
+
 const countOpenRequestChangeRequestsForRequest = `-- name: CountOpenRequestChangeRequestsForRequest :one
 SELECT
   COUNT(*)
@@ -321,6 +364,93 @@ func (q *Queries) ListOpenRequestChangeRequestsByFieldID(ctx context.Context, rf
 	var items []OpenRequestChangeRequest
 	for rows.Next() {
 		var i OpenRequestChangeRequest
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Value,
+			&i.Text,
+			&i.RFID,
+			&i.PID,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listOpenRequestChangeRequestsForRequest = `-- name: ListOpenRequestChangeRequestsForRequest :many
+SELECT
+  open_request_change_requests.created_at, open_request_change_requests.updated_at, open_request_change_requests.value, open_request_change_requests.text, open_request_change_requests.rfid, open_request_change_requests.pid, open_request_change_requests.id
+FROM
+  request_fields
+JOIN
+  open_request_change_requests ON open_request_change_requests.rfid = request_fields.id
+WHERE
+  request_fields.rid = ?
+`
+
+func (q *Queries) ListOpenRequestChangeRequestsForRequest(ctx context.Context, rid int64) ([]OpenRequestChangeRequest, error) {
+	rows, err := q.query(ctx, q.listOpenRequestChangeRequestsForRequestStmt, listOpenRequestChangeRequestsForRequest, rid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []OpenRequestChangeRequest
+	for rows.Next() {
+		var i OpenRequestChangeRequest
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Value,
+			&i.Text,
+			&i.RFID,
+			&i.PID,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listRequestChangeRequestsByFieldID = `-- name: ListRequestChangeRequestsByFieldID :many
+SELECT created_at, updated_at, value, text, rfid, pid, id FROM request_change_requests WHERE rfid IN (/*SLICE:rfids*/?)
+`
+
+func (q *Queries) ListRequestChangeRequestsByFieldID(ctx context.Context, rfids []int64) ([]RequestChangeRequest, error) {
+	query := listRequestChangeRequestsByFieldID
+	var queryParams []interface{}
+	if len(rfids) > 0 {
+		for _, v := range rfids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:rfids*/?", strings.Repeat(",?", len(rfids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:rfids*/?", "NULL", 1)
+	}
+	rows, err := q.query(ctx, nil, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestChangeRequest
+	for rows.Next() {
+		var i RequestChangeRequest
 		if err := rows.Scan(
 			&i.CreatedAt,
 			&i.UpdatedAt,

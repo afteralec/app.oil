@@ -68,22 +68,23 @@ func (f *Field) RenderForm(e *html.Engine, field *query.RequestField) (template.
 
 type ForOverview struct {
 	// TODO: Get this into a discrete type instead of a fiber Map?
-	ChangeRequestConfig fiber.Map
-	Help                template.HTML
-	Type                string
-	Label               string
-	Value               string
-	Path                string
-	AllowEdit           bool
-	HasChangeRequest    bool
-	IsApproved          bool
+	ChangeRequestConfig     fiber.Map
+	Help                    template.HTML
+	Type                    string
+	Label                   string
+	Value                   string
+	Path                    string
+	AllowEdit               bool
+	IsApproved              bool
+	ShowRequestChangeAction bool
 }
 
 type ForOverviewParams struct {
-	Request   *query.Request
-	FieldMap  Map
-	ChangeMap map[int64]query.OpenRequestChangeRequest
-	PID       int64
+	Request       *query.Request
+	FieldMap      Map
+	ChangeMap     map[int64]query.RequestChangeRequest
+	OpenChangeMap map[int64]query.OpenRequestChangeRequest
+	PID           int64
 }
 
 func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
@@ -106,16 +107,18 @@ func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
 	}
 
 	overview := ForOverview{
-		Help:       help,
-		Type:       f.Type,
-		Label:      f.Label,
-		Value:      v,
-		Path:       route.RequestFieldPath(p.Request.ID, f.Type),
-		AllowEdit:  allowEdit,
-		IsApproved: field.Status == StatusApproved,
+		Help:                    help,
+		Type:                    f.Type,
+		Label:                   f.Label,
+		Value:                   v,
+		Path:                    route.RequestFieldPath(p.Request.ID, f.Type),
+		AllowEdit:               allowEdit,
+		IsApproved:              field.Status == StatusApproved,
+		ShowRequestChangeAction: p.PID == p.Request.RPID && p.Request.Status == status.InReview,
 	}
 
-	change, ok := p.ChangeMap[field.ID]
+	// TODO: Clean this up; this is essentially a re-code of request's BindChangeRequestConfig
+	openchange, ok := p.OpenChangeMap[field.ID]
 	crcb := fiber.Map{
 		"Path": route.RequestChangeRequestFieldPath(p.Request.ID, field.Type),
 		"Type": field.Type,
@@ -124,16 +127,25 @@ func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
 		// TODO: Get this into a Bind function
 		// This is a copy of request's BindChangeRequest
 		crb := fiber.Map{
+			"Text": openchange.Text,
+			"Path": route.RequestChangeRequestPath(openchange.ID),
+		}
+		if openchange.PID == p.PID {
+			crb["ShowDeleteAction"] = true
+			crb["ShowEditAction"] = true
+		}
+		crcb["Open"] = crb
+	}
+	change, ok := p.ChangeMap[field.ID]
+	if ok {
+		// TODO: Get this into a Bind function
+		// This is a copy of request's BindChangeRequest
+		crb := fiber.Map{
 			"Text": change.Text,
 			"Path": route.RequestChangeRequestPath(change.ID),
 		}
 
-		if change.PID == p.PID {
-			crb["ShowDeleteAction"] = true
-			crb["ShowEditAction"] = true
-		}
-
-		crcb["Open"] = crb
+		crcb["ChangeRequest"] = crb
 	}
 	overview.ChangeRequestConfig = crcb
 

@@ -24,6 +24,12 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.batchCreateRequestChangeRequestStmt, err = db.PrepareContext(ctx, batchCreateRequestChangeRequest); err != nil {
+		return nil, fmt.Errorf("error preparing query BatchCreateRequestChangeRequest: %w", err)
+	}
+	if q.batchDeleteOpenRequestChangeRequestStmt, err = db.PrepareContext(ctx, batchDeleteOpenRequestChangeRequest); err != nil {
+		return nil, fmt.Errorf("error preparing query BatchDeleteOpenRequestChangeRequest: %w", err)
+	}
 	if q.countEmailsStmt, err = db.PrepareContext(ctx, countEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query CountEmails: %w", err)
 	}
@@ -228,8 +234,14 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listOpenRequestChangeRequestsByFieldIDStmt, err = db.PrepareContext(ctx, listOpenRequestChangeRequestsByFieldID); err != nil {
 		return nil, fmt.Errorf("error preparing query ListOpenRequestChangeRequestsByFieldID: %w", err)
 	}
+	if q.listOpenRequestChangeRequestsForRequestStmt, err = db.PrepareContext(ctx, listOpenRequestChangeRequestsForRequest); err != nil {
+		return nil, fmt.Errorf("error preparing query ListOpenRequestChangeRequestsForRequest: %w", err)
+	}
 	if q.listPlayerPermissionsStmt, err = db.PrepareContext(ctx, listPlayerPermissions); err != nil {
 		return nil, fmt.Errorf("error preparing query ListPlayerPermissions: %w", err)
+	}
+	if q.listRequestChangeRequestsByFieldIDStmt, err = db.PrepareContext(ctx, listRequestChangeRequestsByFieldID); err != nil {
+		return nil, fmt.Errorf("error preparing query ListRequestChangeRequestsByFieldID: %w", err)
 	}
 	if q.listRequestFieldsForRequestStmt, err = db.PrepareContext(ctx, listRequestFieldsForRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query ListRequestFieldsForRequest: %w", err)
@@ -344,6 +356,16 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.batchCreateRequestChangeRequestStmt != nil {
+		if cerr := q.batchCreateRequestChangeRequestStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing batchCreateRequestChangeRequestStmt: %w", cerr)
+		}
+	}
+	if q.batchDeleteOpenRequestChangeRequestStmt != nil {
+		if cerr := q.batchDeleteOpenRequestChangeRequestStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing batchDeleteOpenRequestChangeRequestStmt: %w", cerr)
+		}
+	}
 	if q.countEmailsStmt != nil {
 		if cerr := q.countEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing countEmailsStmt: %w", cerr)
@@ -684,9 +706,19 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listOpenRequestChangeRequestsByFieldIDStmt: %w", cerr)
 		}
 	}
+	if q.listOpenRequestChangeRequestsForRequestStmt != nil {
+		if cerr := q.listOpenRequestChangeRequestsForRequestStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listOpenRequestChangeRequestsForRequestStmt: %w", cerr)
+		}
+	}
 	if q.listPlayerPermissionsStmt != nil {
 		if cerr := q.listPlayerPermissionsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listPlayerPermissionsStmt: %w", cerr)
+		}
+	}
+	if q.listRequestChangeRequestsByFieldIDStmt != nil {
+		if cerr := q.listRequestChangeRequestsByFieldIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listRequestChangeRequestsByFieldIDStmt: %w", cerr)
 		}
 	}
 	if q.listRequestFieldsForRequestStmt != nil {
@@ -908,6 +940,8 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db                                                DBTX
 	tx                                                *sql.Tx
+	batchCreateRequestChangeRequestStmt               *sql.Stmt
+	batchDeleteOpenRequestChangeRequestStmt           *sql.Stmt
 	countEmailsStmt                                   *sql.Stmt
 	countOpenRequestChangeRequestsForRequestStmt      *sql.Stmt
 	createActorImageStmt                              *sql.Stmt
@@ -976,7 +1010,9 @@ type Queries struct {
 	listHelpHeadersStmt                               *sql.Stmt
 	listHelpSlugsStmt                                 *sql.Stmt
 	listOpenRequestChangeRequestsByFieldIDStmt        *sql.Stmt
+	listOpenRequestChangeRequestsForRequestStmt       *sql.Stmt
 	listPlayerPermissionsStmt                         *sql.Stmt
+	listRequestChangeRequestsByFieldIDStmt            *sql.Stmt
 	listRequestFieldsForRequestStmt                   *sql.Stmt
 	listRequestFieldsForRequestWithChangeRequestsStmt *sql.Stmt
 	listRequestsByTypeAndStatusStmt                   *sql.Stmt
@@ -1017,9 +1053,11 @@ type Queries struct {
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:              tx,
-		tx:              tx,
-		countEmailsStmt: q.countEmailsStmt,
+		db:                                      tx,
+		tx:                                      tx,
+		batchCreateRequestChangeRequestStmt:     q.batchCreateRequestChangeRequestStmt,
+		batchDeleteOpenRequestChangeRequestStmt: q.batchDeleteOpenRequestChangeRequestStmt,
+		countEmailsStmt:                         q.countEmailsStmt,
 		countOpenRequestChangeRequestsForRequestStmt:      q.countOpenRequestChangeRequestsForRequestStmt,
 		createActorImageStmt:                              q.createActorImageStmt,
 		createActorImageCanStmt:                           q.createActorImageCanStmt,
@@ -1087,7 +1125,9 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listHelpHeadersStmt:                               q.listHelpHeadersStmt,
 		listHelpSlugsStmt:                                 q.listHelpSlugsStmt,
 		listOpenRequestChangeRequestsByFieldIDStmt:        q.listOpenRequestChangeRequestsByFieldIDStmt,
+		listOpenRequestChangeRequestsForRequestStmt:       q.listOpenRequestChangeRequestsForRequestStmt,
 		listPlayerPermissionsStmt:                         q.listPlayerPermissionsStmt,
+		listRequestChangeRequestsByFieldIDStmt:            q.listRequestChangeRequestsByFieldIDStmt,
 		listRequestFieldsForRequestStmt:                   q.listRequestFieldsForRequestStmt,
 		listRequestFieldsForRequestWithChangeRequestsStmt: q.listRequestFieldsForRequestWithChangeRequestsStmt,
 		listRequestsByTypeAndStatusStmt:                   q.listRequestsByTypeAndStatusStmt,

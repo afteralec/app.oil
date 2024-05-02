@@ -67,6 +67,16 @@ INSERT INTO open_request_change_requests (value, text, rfid, pid) VALUES (?, ?, 
 -- name: GetOpenRequestChangeRequestForRequestField :one
 SELECT * FROM open_request_change_requests WHERE rfid = ?;
 
+-- name: ListOpenRequestChangeRequestsForRequest :many
+SELECT
+  open_request_change_requests.*
+FROM
+  request_fields
+JOIN
+  open_request_change_requests ON open_request_change_requests.rfid = request_fields.id
+WHERE
+  request_fields.rid = ?;
+
 -- name: CountOpenRequestChangeRequestsForRequest :one
 SELECT
   COUNT(*)
@@ -86,6 +96,9 @@ SELECT * FROM open_request_change_requests WHERE rfid IN (sqlc.slice("rfids"));
 -- name: DeleteOpenRequestChangeRequest :exec
 DELETE FROM open_request_change_requests WHERE id = ?;
 
+-- name: BatchDeleteOpenRequestChangeRequest :exec
+DELETE FROM open_request_change_requests WHERE id IN (sqlc.slice("ids"));
+
 -- name: EditOpenRequestChangeRequest :exec
 UPDATE open_request_change_requests SET text = ? WHERE id = ?;
 
@@ -97,8 +110,19 @@ SELECT * FROM
 WHERE
   open_request_change_requests.id = ?;
 
+-- name: BatchCreateRequestChangeRequest :exec
+INSERT INTO
+  request_change_requests
+SELECT * FROM
+  open_request_change_requests
+WHERE
+  open_request_change_requests.id IN (sqlc.slice("ids"));
+
 -- name: DeleteRequestChangeRequest :exec
 DELETE FROM request_change_requests WHERE id = ?;
+
+-- name: ListRequestChangeRequestsByFieldID :many
+SELECT * FROM request_change_requests WHERE rfid IN (sqlc.slice("rfids"));
 
 -- name: CreatePastRequestChangeRequest :exec
 INSERT INTO
