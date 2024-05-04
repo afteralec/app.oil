@@ -38,40 +38,42 @@
   }
 
   .light {
-    --bg: 0 0% 100%;
-    --fg: 222.2 84% 4.9%;
+    --bg: 0, 0%, 100%;
+    --fg: 222.2, 84%, 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-fg: 210 40% 98%;
+    --primary: 222.2, 47.4%, 11.2%;
+    --primary-muted: 222.2, 47.4%, 31.2%;
+    --primary-fg: 210, 40%, 98%;
 
-    --secondary: 252.5 73.3% 57.8%;
-    --on-secondary: 210 40% 98%;
-    --secondary-hl: 252.5 93.2% 87.3%;
+    --secondary: 252.5, 73.3%, 57.8%;
+    --on-secondary: 210, 40%, 98%;
+    --secondary-hl: 252.5, 93.2%, 87.3%;
 
-    --muted: 210 40% 96.1%;
-    --muted-fg: 215.4 16.3% 46.9%;
+    --muted: 210, 40%, 96.1%;
+    --muted-fg: 215.4, 16.3%, 46.9%;
 
     --accent: var(--muted);
     --accent-fg: var(--primary);
 
-    --border: 214.3 31.8% 91.4%;
+    --border: 214.3, 31.8%, 91.4%;
     --input: var(--border);
     --ring: var(--fg);
   }
 
   .dark {
-    --bg: 222.2 84% 4.9%;
-    --fg: 210 40% 98%;
+    --bg: 222.2, 84%, 4.9%;
+    --fg: 210, 40%, 98%;
 
     --primary: var(--fg);
-    --primary-fg: 222.2 47.4% 11.2%;
+    --primary-muted: 210, 40%, 83%;
+    --primary-fg: 222.2, 47.4%, 11.2%;
 
-    --secondary: 252.5 73.3% 57.8%;
+    --secondary: 252.5, 73.3%, 57.8%;
     --on-secondary: var(--fg);
-    --secondary-hl: 252.5 93.2% 87.3%;
+    --secondary-hl: 252.5, 93.2%, 87.3%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-fg: 215 20.2% 65.1%;
+    --muted: 217.2, 32.6%, 17.5%;
+    --muted-fg: 215, 20.2%, 65.1%;
 
     --accent: var(--muted);
     --accent-fg: var(--fg);
@@ -82,7 +84,7 @@
   }
 
   .keep {
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 212.7, 26.8%, 83.9%;
   }
 
   * {
@@ -171,11 +173,6 @@ body {
   display: block;
 }
 
-/* .request-summary-fields:hover > .request-summary-field:not(:hover) { */
-/*   transition: opacity 250ms; */
-/*   opacity: 0.5; */
-/* } */
-
 .modal {
   @apply z-20 fixed left-[50%] top-0 w-full max-w-lg translate-x-[-50%] border bg-bg p-6 shadow-lg sm:rounded-lg md:top-[50%] md:translate-y-[-50%];
 }
@@ -261,11 +258,11 @@ body {
 }
 
 .button-primary {
-  @apply text-primary-fg ring-offset-bg transition-colors;
+  @apply bg-primary text-primary-fg ring-offset-bg transition-colors;
 }
 
 .button-primary:hover {
-  @apply bg-muted text-primary;
+  @apply bg-primary-muted;
 }
 
 .button-primary:disabled {
@@ -297,7 +294,7 @@ body {
 }
 
 .button-outline:hover {
-  @apply text-muted-fg border-muted-fg;
+  @apply bg-muted;
 }
 
 .button-outline:disabled {
@@ -309,7 +306,7 @@ body {
 }
 
 .button-outline-destructive:hover {
-  @apply text-err-hl border-err-hl;
+  @apply bg-err-bg;
 }
 
 .input {

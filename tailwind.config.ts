@@ -30,6 +30,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           fg: "hsl(var(--primary-fg))",
+          muted: "hsl(var(--primary-muted))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
