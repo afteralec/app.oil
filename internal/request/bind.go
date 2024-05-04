@@ -230,7 +230,13 @@ func BindOverviewActions(e *html.Engine, b fiber.Map, p BindOverviewActionsParam
 		}
 		actions = append(actions, cancel)
 
-		if p.Request.Status == StatusReady {
+		unreviewedField := false
+		for _, field := range p.FieldMap {
+			if field.Status == FieldStatusNotReviewed {
+				unreviewedField = true
+			}
+		}
+		if p.Request.Status == StatusReady || (p.Request.Status == StatusReviewed && unreviewedField) {
 			submit, err := partial.Render(e, partial.RenderParams{
 				Template: partial.RequestOverviewActionSubmit,
 			})

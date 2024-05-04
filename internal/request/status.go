@@ -211,6 +211,7 @@ func NextStatus(p NextStatusParams) (string, error) {
 			return "", ErrNextStatusForbidden
 		}
 
+		// TODO: Do this by the fieldmap instead of counting the change requests
 		count, err := p.Query.CountOpenRequestChangeRequestsForRequest(context.Background(), p.Request.ID)
 		if err != nil {
 			return "", err
@@ -226,7 +227,7 @@ func NextStatus(p NextStatusParams) (string, error) {
 			return "", ErrNextStatusForbidden
 		}
 
-		return StatusReady, nil
+		return StatusSubmitted, nil
 	case StatusApproved:
 		if p.Request.PID != p.PID {
 			return "", ErrNextStatusForbidden
