@@ -36,7 +36,7 @@ func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber
 	b["Help"] = help
 
 	// TODO: Get this into a utility
-	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady {
+	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady || p.Request.Status == StatusReviewed {
 		form, err := fd.RenderForm(e, p.Field)
 		if err != nil {
 			return b, err
@@ -163,7 +163,7 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 	}
 
 	// TODO: Bind this to the same function that determines if we show the form or not
-	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady {
+	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady || p.Request.Status == StatusReviewed {
 		text := "Next"
 		if p.Request.Status == StatusReady {
 			text = "Update"

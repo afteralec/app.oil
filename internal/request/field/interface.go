@@ -96,7 +96,7 @@ func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
 
 	// TODO: Build a utility for this
 	allowEdit := p.Request.PID == p.PID
-	if p.Request.Status != status.Incomplete && p.Request.Status != status.Ready {
+	if p.Request.Status != status.Incomplete && p.Request.Status != status.Ready && p.Request.Status != status.Reviewed {
 		allowEdit = false
 	}
 
