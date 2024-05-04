@@ -6,12 +6,16 @@
   <!-- prettier-ignore -->
   {{ template "partial-edit-room-exits-dialog-link" .LinkDialog }}
   {{ template "partial-edit-room-exits-dialog-create" .CreateDialog }}
-  <button type="button" class="button-outline" @click="showLinkDialog = true;">
+  <button
+    type="button"
+    class="button button-outline"
+    @click="showLinkDialog = true;"
+  >
     Link
   </button>
   <button
     type="button"
-    class="button-primary"
+    class="button button-primary"
     @click="showCreateDialog = true;"
   >
     Create

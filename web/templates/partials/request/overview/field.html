@@ -25,7 +25,7 @@
     <section class="flex items-center gap-2 pt-2">
       <button
         type="button"
-        class="button-outline"
+        class="button button-outline"
         @click.prevent="helpOpen = !helpOpen"
         x-text="helpOpen ? 'Close Help' : 'Help'"
       >
@@ -35,7 +35,7 @@
       {{ if and (not .ChangeRequestConfig.Open) .ShowRequestChangeAction }}
       <button
         type="button"
-        class="button-outline"
+        class="button button-outline"
         @click.prevent="changeRequestOpenField = '{{ .Type }}'"
       >
         Request Change
@@ -44,7 +44,7 @@
 
       <!-- prettier-ignore -->
       {{ if .AllowEdit }}
-      <a href="{{ .Path }}" class="button-outline">Edit</a>
+      <a href="{{ .Path }}" class="button button-outline">Edit</a>
       {{ end }}
     </section>
 

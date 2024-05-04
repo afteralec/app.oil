@@ -224,29 +224,28 @@ body {
   @apply text-success-hl;
 }
 
-/* TODO: Rename to button-nav */
-.nav-button {
-  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-bg leading-none px-4 py-2 text-sm font-medium transition-colors select-none;
+.button {
+  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md leading-none px-4 py-2 text-sm font-medium;
 }
 
-.nav-button:hover {
+.button-nav {
+  @apply bg-bg transition-colors select-none;
+}
+
+.button-nav-active {
+  @apply bg-accent text-accent-fg select-none cursor-default;
+}
+
+.button-nav:hover {
   @apply bg-accent text-accent-fg;
 }
 
-.nav-button:disabled {
-  @apply pointer-events-none opacity-50;
-}
-
-.nav-button-active {
-  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md leading-none px-4 py-2 text-sm font-medium bg-accent text-accent-fg select-none cursor-default;
-}
-
-.nav-button:focus {
+.button-nav:focus {
   @apply bg-accent text-accent-fg outline-none;
 }
 
 .button-toggle {
-  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md bg-bg leading-none px-4 py-2 text-sm font-medium transition-colors select-none;
+  @apply bg-bg transition-colors select-none;
 }
 
 .button-toggle:hover {
@@ -254,7 +253,7 @@ body {
 }
 
 .button-toggle-active {
-  @apply inline-flex h-10 w-max items-center justify-center gap-1 rounded-md leading-none px-4 py-2 text-sm font-medium bg-accent text-accent-fg select-none;
+  @apply bg-accent text-accent-fg select-none;
 }
 
 .button-toggle-active:hover {
@@ -262,7 +261,7 @@ body {
 }
 
 .button-primary {
-  @apply inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-fg ring-offset-bg transition-colors;
+  @apply text-primary-fg ring-offset-bg transition-colors;
 }
 
 .button-primary:hover {
@@ -282,7 +281,7 @@ body {
 }
 
 .button-secondary {
-  @apply inline-flex h-10 items-center justify-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-on-secondary ring-offset-bg transition-colors;
+  @apply bg-secondary text-on-secondary ring-offset-bg transition-colors;
 }
 
 .button-secondary:hover {
@@ -294,7 +293,7 @@ body {
 }
 
 .button-outline {
-  @apply inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary ring-offset-bg transition-colors;
+  @apply border border-primary text-primary ring-offset-bg transition-colors;
 }
 
 .button-outline:hover {

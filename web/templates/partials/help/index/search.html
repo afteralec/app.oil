@@ -54,7 +54,7 @@
     <footer class="flex items-center justify-end gap-2">
       <button
         type="button"
-        class="cursor-pointer"
+        class="button cursor-pointer"
         :class="tags ? 'button-toggle-active' : 'button-toggle'"
         @click="tags = !tags;"
       >
@@ -62,7 +62,7 @@
       </button>
       <button
         type="button"
-        class="cursor-pointer"
+        class="button cursor-pointer"
         :class="category ? 'button-toggle-active' : 'button-toggle'"
         @click="category = !category;"
       >
@@ -70,7 +70,7 @@
       </button>
       <button
         type="button"
-        class="cursor-pointer"
+        class="button cursor-pointer"
         :class="title ? 'button-toggle-active' : 'button-toggle'"
         @click="title = !title;"
       >
@@ -78,7 +78,7 @@
       </button>
       <button
         type="button"
-        class="cursor-pointer"
+        class="button cursor-pointer"
         :class="content ? 'button-toggle-active' : 'button-toggle'"
         @click="content = !content;"
       >
@@ -86,7 +86,7 @@
       </button>
       <button
         type="submit"
-        class="button-primary"
+        class="button button-primary"
         :disabled="search.length == 0 || search.length > 500"
       >
         Search

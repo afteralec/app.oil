@@ -8,7 +8,7 @@
   >
     <button
       type="button"
-      class="htmx-trade-indicator-out button-primary"
+      class="htmx-trade-indicator-out button button-primary"
       :disabled="document.getElementById('emails').childElementCount >= 3"
       @click="
         addEmailMode = true;
@@ -23,7 +23,7 @@
     </button>
     <button
       type="button"
-      class="htmx-trade-indicator-in button-primary flex flex-col"
+      class="htmx-trade-indicator-in button button-primary flex flex-col"
       :disabled="document.getElementById('emails').childElementCount >= 3"
     >
       <img class="mx-4 h-8 w-8" src="/loaders/three-dots.svg" alt="loading" />
@@ -61,7 +61,7 @@
     <div class="htmx-trade-indicator flex flex-col items-start gap-1">
       <button
         type="submit"
-        class="htmx-trade-indicator-out button-primary h-8"
+        class="htmx-trade-indicator-out button button-primary h-8"
         :disabled="document.getElementById('emails').childElementCount >= 3"
       >
         Add

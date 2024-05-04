@@ -19,7 +19,11 @@
   >
   {{ template "partial-form-radio-group" .SizeRadioGroup }}
   <footer class="flex justify-end">
-    <button type="submit" class="button-primary" :disabled="size === load.size">
+    <button
+      type="submit"
+      class="button button-primary"
+      :disabled="size === load.size"
+    >
       Save
     </button>
   </footer>
