@@ -152,16 +152,16 @@ func MakeDefaultStatusIcon(iconsize int, textsize string, includeText bool) Stat
 	return result
 }
 
-func IsEditable(req *query.Request) bool {
+func IsEditable(pid int64, req *query.Request) bool {
+	if req.PID != pid {
+		return false
+	}
+
 	if req.Status == StatusSubmitted {
 		return false
 	}
 
 	if req.Status == StatusInReview {
-		return false
-	}
-
-	if req.Status == StatusReviewed {
 		return false
 	}
 

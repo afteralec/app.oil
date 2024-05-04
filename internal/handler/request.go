@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"database/sql"
+	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -499,12 +500,7 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if req.PID != pid {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-
-		if !request.IsEditable(&req) {
+		if !request.IsEditable(pid, &req) {
 			c.Status(fiber.StatusForbidden)
 			return nil
 		}
@@ -523,6 +519,7 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 		}
 
 		if !request.IsFieldValueValid(req.Type, field.Type, in.Value) {
+			log.Printf("%s, %s, %s", req.Type, field.Type, in.Value)
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}

@@ -626,7 +626,7 @@ func TestUpdateRequestFieldUnauthorizedNotLoggedIn(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
-func TestUpdateRequestFieldBadRequestNotFound(t *testing.T) {
+func TestUpdateRequestFieldNotFound(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
@@ -719,7 +719,7 @@ func TestUpdateRequestFieldForbiddenUnowned(t *testing.T) {
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField(definition.FieldCharacterApplicationName.Type, "Test")
+	writer.WriteField("value", "Test")
 	writer.Close()
 
 	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
@@ -762,7 +762,7 @@ func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	writer.WriteField(definition.FieldCharacterApplicationName.Type, "Test")
+	writer.WriteField("value", "Test")
 	writer.Close()
 
 	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
@@ -839,6 +839,49 @@ func TestUpdateRequestFieldBadRequestMalformedBody(t *testing.T) {
 	}
 
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestUpdateRequestFieldSuccessWhileReviewed(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	// TODO: Update this to use a helper that calls the app's API instead of hacking it
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusReviewed,
+	}); err != nil {
+		t.Fatal(t)
+	}
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("value", "Test")
+	writer.Close()
+
+	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
 
 func TestUpdateRequestStatusUnauthorizedNotLoggedIn(t *testing.T) {
