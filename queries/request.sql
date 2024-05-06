@@ -121,9 +121,13 @@ WHERE
 -- name: DeleteRequestChangeRequest :exec
 DELETE FROM request_change_requests WHERE id = ?;
 
+-- name: GetRequestChangeRequestByFieldID :one
+SELECT * FROM request_change_requests WHERE rfid = ?;
+
 -- name: ListRequestChangeRequestsByFieldID :many
 SELECT * FROM request_change_requests WHERE rfid IN (sqlc.slice("rfids"));
 
+-- TODO: Maybe rename this kind of request to be a Shift instead?
 -- name: CreatePastRequestChangeRequest :exec
 INSERT INTO
   past_request_change_requests

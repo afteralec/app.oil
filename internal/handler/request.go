@@ -334,7 +334,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				for _, field := range fieldmap {
 					rfids = append(rfids, field.ID)
 				}
-				changes, err := i.Queries.ListOpenRequestChangeRequestsByFieldID(context.Background(), rfids)
+				openchanges, err := i.Queries.ListOpenRequestChangeRequestsByFieldID(context.Background(), rfids)
 				if err != nil {
 					if err == sql.ErrNoRows {
 						// TODO: Acceptable, this means that there are no change requests for those fields
@@ -343,7 +343,20 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 						return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 					}
 				}
-				changemap := map[int64]query.OpenRequestChangeRequest{}
+				openchangemap := map[int64]query.OpenRequestChangeRequest{}
+				for _, change := range openchanges {
+					openchangemap[change.RFID] = change
+				}
+				changes, err := i.Queries.ListRequestChangeRequestsByFieldID(context.Background(), rfids)
+				if err != nil {
+					if err == sql.ErrNoRows {
+						// TODO: Acceptable, this means that there are no change requests for those fields
+					} else {
+						c.Status(fiber.StatusInternalServerError)
+						return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+					}
+				}
+				changemap := map[int64]query.RequestChangeRequest{}
 				for _, change := range changes {
 					changemap[change.RFID] = change
 				}
@@ -352,7 +365,8 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 					PID:           pid,
 					Request:       &req,
 					FieldMap:      fieldmap,
-					OpenChangeMap: changemap,
+					OpenChangeMap: openchangemap,
+					ChangeMap:     changemap,
 				})
 				if err != nil {
 					c.Status(fiber.StatusInternalServerError)
@@ -759,6 +773,29 @@ func UpdateRequestFieldStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		if status == request.FieldStatusApproved {
+			change, err := qtx.GetRequestChangeRequestByFieldID(context.Background(), field.ID)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					// TODO: Acceptable; this just means there's no change request
+				} else {
+					c.Status(fiber.StatusInternalServerError)
+					return nil
+				}
+			}
+			if err != sql.ErrNoRows {
+				if err = qtx.CreatePastRequestChangeRequest(context.Background(), change.ID); err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return nil
+				}
+
+				if err = qtx.DeleteRequestChangeRequest(context.Background(), change.ID); err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return nil
+				}
+			}
+		}
+
 		if err = tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -939,6 +976,22 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 				return nil
 			}
 			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		// TODO: Make sure this makes sense and is tested; this is meant to prevent double-creating
+		// an open change request
+		_, err = qtx.GetOpenRequestChangeRequestForRequestField(context.Background(), field.ID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO: Acceptable, means there is no Open Change Request
+			} else {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+		if err != sql.ErrNoRows {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 

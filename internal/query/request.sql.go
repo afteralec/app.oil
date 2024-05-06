@@ -102,6 +102,7 @@ WHERE
   request_change_requests.id = ?
 `
 
+// TODO: Maybe rename this kind of request to be a Shift instead?
 func (q *Queries) CreatePastRequestChangeRequest(ctx context.Context, id int64) error {
 	_, err := q.exec(ctx, q.createPastRequestChangeRequestStmt, createPastRequestChangeRequest, id)
 	return err
@@ -239,6 +240,25 @@ func (q *Queries) GetRequest(ctx context.Context, id int64) (Request, error) {
 		&i.Type,
 		&i.Status,
 		&i.RPID,
+		&i.PID,
+		&i.ID,
+	)
+	return i, err
+}
+
+const getRequestChangeRequestByFieldID = `-- name: GetRequestChangeRequestByFieldID :one
+SELECT created_at, updated_at, value, text, rfid, pid, id FROM request_change_requests WHERE rfid = ?
+`
+
+func (q *Queries) GetRequestChangeRequestByFieldID(ctx context.Context, rfid int64) (RequestChangeRequest, error) {
+	row := q.queryRow(ctx, q.getRequestChangeRequestByFieldIDStmt, getRequestChangeRequestByFieldID, rfid)
+	var i RequestChangeRequest
+	err := row.Scan(
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Value,
+		&i.Text,
+		&i.RFID,
 		&i.PID,
 		&i.ID,
 	)

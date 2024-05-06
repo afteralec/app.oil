@@ -186,6 +186,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getRequestStmt, err = db.PrepareContext(ctx, getRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRequest: %w", err)
 	}
+	if q.getRequestChangeRequestByFieldIDStmt, err = db.PrepareContext(ctx, getRequestChangeRequestByFieldID); err != nil {
+		return nil, fmt.Errorf("error preparing query GetRequestChangeRequestByFieldID: %w", err)
+	}
 	if q.getRequestFieldStmt, err = db.PrepareContext(ctx, getRequestField); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRequestField: %w", err)
 	}
@@ -626,6 +629,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getRequestStmt: %w", cerr)
 		}
 	}
+	if q.getRequestChangeRequestByFieldIDStmt != nil {
+		if cerr := q.getRequestChangeRequestByFieldIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getRequestChangeRequestByFieldIDStmt: %w", cerr)
+		}
+	}
 	if q.getRequestFieldStmt != nil {
 		if cerr := q.getRequestFieldStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getRequestFieldStmt: %w", cerr)
@@ -994,6 +1002,7 @@ type Queries struct {
 	getPlayerUsernameStmt                             *sql.Stmt
 	getPlayerUsernameByIdStmt                         *sql.Stmt
 	getRequestStmt                                    *sql.Stmt
+	getRequestChangeRequestByFieldIDStmt              *sql.Stmt
 	getRequestFieldStmt                               *sql.Stmt
 	getRequestFieldByTypeStmt                         *sql.Stmt
 	getRequestFieldByTypeWithChangeRequestsStmt       *sql.Stmt
@@ -1109,6 +1118,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getPlayerUsernameStmt:                             q.getPlayerUsernameStmt,
 		getPlayerUsernameByIdStmt:                         q.getPlayerUsernameByIdStmt,
 		getRequestStmt:                                    q.getRequestStmt,
+		getRequestChangeRequestByFieldIDStmt:              q.getRequestChangeRequestByFieldIDStmt,
 		getRequestFieldStmt:                               q.getRequestFieldStmt,
 		getRequestFieldByTypeStmt:                         q.getRequestFieldByTypeStmt,
 		getRequestFieldByTypeWithChangeRequestsStmt:       q.getRequestFieldByTypeWithChangeRequestsStmt,
