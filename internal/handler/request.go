@@ -378,7 +378,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.RequestOverview, b, layout.Page)
 			}
 
-			change, err := i.Queries.GetOpenRequestChangeRequestForRequestField(context.Background(), nufo.Field.ID)
+			och, err := i.Queries.GetOpenRequestChangeRequestForRequestField(context.Background(), nufo.Field.ID)
 			if err != nil {
 				if err == sql.ErrNoRows {
 					// TODO: This just means there's no Open Change Request for this field
@@ -387,10 +387,24 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 				}
 			}
-
 			var openchange *query.OpenRequestChangeRequest = nil
-			if change.ID != 0 {
-				openchange = &change
+			if och.ID != 0 {
+				openchange = &och
+			}
+
+			// TODO: Rename this query
+			ch, err := i.Queries.GetRequestChangeRequestByFieldID(context.Background(), nufo.Field.ID)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					// TODO: This just means there's no Open Change Request for this field
+				} else {
+					c.Status(fiber.StatusInternalServerError)
+					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+				}
+			}
+			var change *query.RequestChangeRequest = nil
+			if ch.ID != 0 {
+				change = &ch
 			}
 
 			b, err = request.NewBindFieldView(i.Templates, b, request.BindFieldViewParams{
@@ -399,6 +413,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				Field:      nufo.Field,
 				Last:       nufo.Last,
 				OpenChange: openchange,
+				Change:     change,
 			})
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)

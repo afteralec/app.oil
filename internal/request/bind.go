@@ -16,6 +16,7 @@ type BindFieldViewParams struct {
 	Request    *query.Request
 	Field      *query.RequestField
 	OpenChange *query.OpenRequestChangeRequest
+	Change     *query.RequestChangeRequest
 	PID        int64
 	Last       bool
 }
@@ -75,22 +76,17 @@ func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber
 	b["ChangeRequestConfig"] = BindChangeRequestConfig(BindChangeRequestConfigParams{
 		PID:        p.PID,
 		OpenChange: p.OpenChange,
+		Change:     p.Change,
 		Request:    p.Request,
 		Field:      p.Field,
 	})
-	b["ChangeRequestPath"] = route.RequestChangeRequestFieldPath(p.Request.ID, p.Field.Type)
-	if p.OpenChange != nil {
-		b["ChangeRequest"] = BindChangeRequest(BindChangeRequestParams{
-			PID:    p.PID,
-			Change: p.OpenChange,
-		})
-	}
 
 	return b, nil
 }
 
 type BindChangeRequestConfigParams struct {
 	OpenChange *query.OpenRequestChangeRequest
+	Change     *query.RequestChangeRequest
 	Request    *query.Request
 	Field      *query.RequestField
 	PID        int64
@@ -102,8 +98,14 @@ func BindChangeRequestConfig(p BindChangeRequestConfigParams) fiber.Map {
 	b["Type"] = p.Field.Type
 	if p.OpenChange != nil {
 		b["Open"] = BindChangeRequest(BindChangeRequestParams{
+			PID:        p.PID,
+			OpenChange: p.OpenChange,
+		})
+	}
+	if p.Change != nil {
+		b["Change"] = BindChangeRequest(BindChangeRequestParams{
 			PID:    p.PID,
-			Change: p.OpenChange,
+			Change: p.Change,
 		})
 	}
 	return b
@@ -113,6 +115,7 @@ type BindFieldViewActionsParams struct {
 	Request    *query.Request
 	Field      *query.RequestField
 	OpenChange *query.OpenRequestChangeRequest
+	Change     *query.RequestChangeRequest
 	PID        int64
 	Last       bool
 }
@@ -287,17 +290,31 @@ func BindOverviewActions(e *html.Engine, b fiber.Map, p BindOverviewActionsParam
 }
 
 type BindChangeRequestParams struct {
-	Change *query.OpenRequestChangeRequest
-	PID    int64
+	OpenChange *query.OpenRequestChangeRequest
+	Change     *query.RequestChangeRequest
+	PID        int64
 }
 
 func BindChangeRequest(p BindChangeRequestParams) fiber.Map {
-	b := fiber.Map{
-		"Text": p.Change.Text,
-		"Path": route.RequestChangeRequestPath(p.Change.ID),
+	text := ""
+	if p.OpenChange != nil {
+		text = p.OpenChange.Text
+	} else if p.Change != nil {
+		text = p.Change.Text
+	}
+	var id int64 = 0
+	if p.OpenChange != nil {
+		id = p.OpenChange.ID
+	} else if p.Change != nil {
+		id = p.Change.ID
 	}
 
-	if p.Change.PID == p.PID {
+	b := fiber.Map{
+		"Text": text,
+		"Path": route.RequestChangeRequestPath(id),
+	}
+
+	if p.OpenChange != nil && p.OpenChange.PID == p.PID {
 		b["ShowDeleteAction"] = true
 		b["ShowEditAction"] = true
 	}

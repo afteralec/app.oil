@@ -11,8 +11,10 @@
 
     {{ template "partial-request-divider" . }}
 
-    {{ if .ChangeRequest }}
-      {{ template "partial-request-change-request" .ChangeRequest }}
+    {{ if .ChangeRequestConfig.Open }}
+      {{ template "partial-request-change-request" .ChangeRequestConfig.Open }}
+    {{ else if .ChangeRequestConfig.Change }}
+      {{ template "partial-request-change-request" .ChangeRequestConfig.Change }}
     {{ else }}
       {{ template "partial-request-change-request-empty" }}
     {{ end }}
