@@ -100,12 +100,14 @@ func BindChangeRequestConfig(p BindChangeRequestConfigParams) fiber.Map {
 		b["Open"] = BindChangeRequest(BindChangeRequestParams{
 			PID:        p.PID,
 			OpenChange: p.OpenChange,
+			Field:      p.Field,
 		})
 	}
 	if p.Change != nil {
 		b["Change"] = BindChangeRequest(BindChangeRequestParams{
 			PID:    p.PID,
 			Change: p.Change,
+			Field:  p.Field,
 		})
 	}
 	return b
@@ -290,16 +292,24 @@ func BindOverviewActions(e *html.Engine, b fiber.Map, p BindOverviewActionsParam
 }
 
 type BindChangeRequestParams struct {
+	Field      *query.RequestField
 	OpenChange *query.OpenRequestChangeRequest
 	Change     *query.RequestChangeRequest
 	PID        int64
 }
 
 func BindChangeRequest(p BindChangeRequestParams) fiber.Map {
+	value := ""
 	text := ""
 	if p.OpenChange != nil {
+		if p.OpenChange.Value != p.Field.Value {
+			value = p.OpenChange.Value
+		}
 		text = p.OpenChange.Text
 	} else if p.Change != nil {
+		if p.Change.Value != p.Field.Value {
+			value = p.Change.Value
+		}
 		text = p.Change.Text
 	}
 	var id int64 = 0
@@ -312,6 +322,10 @@ func BindChangeRequest(p BindChangeRequestParams) fiber.Map {
 	b := fiber.Map{
 		"Text": text,
 		"Path": route.RequestChangeRequestPath(id),
+	}
+
+	if len(value) > 0 {
+		b["FieldValue"] = value
 	}
 
 	if p.OpenChange != nil && p.OpenChange.PID == p.PID {

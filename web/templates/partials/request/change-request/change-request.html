@@ -9,6 +9,10 @@
   >
     <h3 class="font-semibold">Change Requested:</h3>
     <p>{{ .Text }}</p>
+    {{ if .FieldValue }}
+    <h3 class="font-semibold">For:</h3>
+    <p>{{ .FieldValue }}</p>
+    {{ end }}
     <footer class="flex items-center justify-end gap-2 text-xs">
       {{ if .ShowDeleteAction }}
       <button
