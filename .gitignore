@@ -13,3 +13,7 @@ bin/
 
 # Shared protobuf definition files
 /proto
+
+# Mac files
+.DS_Store
+**/.DS_Store
