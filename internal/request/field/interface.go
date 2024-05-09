@@ -134,6 +134,9 @@ func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
 			crb["ShowDeleteAction"] = true
 			crb["ShowEditAction"] = true
 		}
+		if field.Value != openchange.Value {
+			crb["FieldValue"] = openchange.Value
+		}
 		crcb["Open"] = crb
 	}
 	change, ok := p.ChangeMap[field.ID]
@@ -144,7 +147,9 @@ func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
 			"Text": change.Text,
 			"Path": route.RequestChangeRequestPath(change.ID),
 		}
-
+		if field.Value != change.Value {
+			crb["FieldValue"] = change.Value
+		}
 		crcb["ChangeRequest"] = crb
 	}
 	overview.ChangeRequestConfig = crcb
