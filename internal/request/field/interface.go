@@ -10,6 +10,7 @@ import (
 
 	"petrichormud.com/app/internal/partial"
 	"petrichormud.com/app/internal/query"
+	"petrichormud.com/app/internal/request/change"
 	"petrichormud.com/app/internal/request/status"
 	"petrichormud.com/app/internal/route"
 	"petrichormud.com/app/internal/validate"
@@ -117,42 +118,17 @@ func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
 		ShowRequestChangeAction: p.PID == p.Request.RPID && p.Request.Status == status.InReview,
 	}
 
-	// TODO: Clean this up; this is essentially a re-code of request's BindChangeRequestConfig
+	bcp := change.BindConfigParams{}
+
 	openchange, ok := p.OpenChangeMap[field.ID]
-	crcb := fiber.Map{
-		"Path": route.RequestChangeRequestFieldPath(p.Request.ID, field.Type),
-		"Type": field.Type,
-	}
 	if ok {
-		// TODO: Get this into a Bind function
-		// This is a copy of request's BindChangeRequest
-		crb := fiber.Map{
-			"Text": openchange.Text,
-			"Path": route.RequestChangeRequestPath(openchange.ID),
-		}
-		if openchange.PID == p.PID {
-			crb["ShowDeleteAction"] = true
-			crb["ShowEditAction"] = true
-		}
-		if field.Value != openchange.Value {
-			crb["FieldValue"] = openchange.Value
-		}
-		crcb["Open"] = crb
+		bcp.OpenChange = &openchange
 	}
-	change, ok := p.ChangeMap[field.ID]
+	ch, ok := p.ChangeMap[field.ID]
 	if ok {
-		// TODO: Get this into a Bind function
-		// This is a copy of request's BindChangeRequest
-		crb := fiber.Map{
-			"Text": change.Text,
-			"Path": route.RequestChangeRequestPath(change.ID),
-		}
-		if field.Value != change.Value {
-			crb["FieldValue"] = change.Value
-		}
-		crcb["ChangeRequest"] = crb
+		bcp.Change = &ch
 	}
-	overview.ChangeRequestConfig = crcb
+	overview.ChangeRequestConfig = change.BindConfig(bcp)
 
 	return overview
 }
