@@ -93,5 +93,6 @@ func Handlers(app *fiber.App, i *service.Interfaces) {
 
 	app.Post(route.SearchPlayerPath(route.Destination), handler.SearchPlayer(i))
 
+	// TODO: Make this a conditional route based on the environment
 	app.Get(route.DesignDictionary, handler.DesignDictionaryPage())
 }

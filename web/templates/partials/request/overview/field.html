@@ -12,8 +12,8 @@
   <!-- prettier-ignore -->
   {{ if .ChangeRequestConfig.Open }}
     {{ template "partial-request-change-request" .ChangeRequestConfig.Open }}
-  {{ else if .ChangeRequestConfig.ChangeRequest }}
-    {{ template "partial-request-change-request" .ChangeRequestConfig.ChangeRequest }}
+  {{ else if .ChangeRequestConfig.Change }}
+    {{ template "partial-request-change-request" .ChangeRequestConfig.Change }}
   {{ end }}
 
   <!-- prettier-ignore -->

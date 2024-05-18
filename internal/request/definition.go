@@ -8,12 +8,6 @@ import (
 	"petrichormud.com/app/internal/request/status"
 )
 
-// TODO: ReviewDialog needs consolidated and cleaned up here
-type ReviewDialogData struct {
-	Path     string
-	Variable string
-}
-
 type NewParams struct {
 	Type string
 	PID  int64

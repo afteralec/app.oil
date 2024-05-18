@@ -118,7 +118,11 @@ func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
 		ShowRequestChangeAction: p.PID == p.Request.RPID && p.Request.Status == status.InReview,
 	}
 
-	bcp := change.BindConfigParams{}
+	bcp := change.BindConfigParams{
+		Request: p.Request,
+		Field:   &field,
+		PID:     p.PID,
+	}
 
 	openchange, ok := p.OpenChangeMap[field.ID]
 	if ok {
