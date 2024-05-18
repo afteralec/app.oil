@@ -1,26 +1,31 @@
 package change
 
-import "regexp"
+import (
+	"regexp"
+
+	"petrichormud.com/app/internal/sanitize"
+	"petrichormud.com/app/internal/validate"
+)
 
 const (
 	TextMinLength = 10
 	TextMaxLength = 1000
 )
 
-// TODO: Turn this into a Sanitizer
+var TextRegex string = "[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+"
+
+var (
+	TextLengthValidator validate.StringLengthValidator       = validate.NewStringLengthValidator(TextMinLength, TextMaxLength)
+	TextRegexValidator  validate.StringRegexNoMatchValidator = validate.NewStringRegexNoMatchValidator(regexp.MustCompile(TextRegex))
+	TextValidator       validate.StringValidatorGroup        = validate.NewStringValidatorGroup([]validate.StringValidator{&TextLengthValidator, &TextRegexValidator})
+)
+
+var TextSanitizer sanitize.StringRegexSanitizer = sanitize.NewStringRegexSanitizer(regexp.MustCompile(TextRegex))
+
 func SanitizeText(c string) string {
-	re := regexp.MustCompile("[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+")
-	return re.ReplaceAllString(c, "")
+	return TextSanitizer.Sanitize(c)
 }
 
-// TODO: Turn this into a Validator
 func IsTextValid(c string) bool {
-	if len(c) < TextMinLength {
-		return false
-	}
-	if len(c) > TextMaxLength {
-		return false
-	}
-	re := regexp.MustCompile("[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+")
-	return !re.MatchString(c)
+	return TextValidator.IsValid(c)
 }
