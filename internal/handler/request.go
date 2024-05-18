@@ -204,7 +204,7 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 		}
 
 		b := view.Bind(c)
-		b, err = request.NewBindFieldView(i.Templates, b, request.BindFieldViewParams{
+		b, err = request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
 			PID:     pid,
 			Request: &req,
 			Field:   &field,
@@ -297,7 +297,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
-			b, err := request.NewBindFieldView(i.Templates, b, request.BindFieldViewParams{
+			b, err := request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
 				PID:     pid,
 				Request: &req,
 				Field:   nifo.Field,
@@ -407,7 +407,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				change = &ch
 			}
 
-			b, err = request.NewBindFieldView(i.Templates, b, request.BindFieldViewParams{
+			b, err = request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
 				PID:        pid,
 				Request:    &req,
 				Field:      nufo.Field,

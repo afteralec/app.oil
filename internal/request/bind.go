@@ -22,7 +22,7 @@ type BindFieldViewParams struct {
 	Last       bool
 }
 
-func NewBindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
+func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
 	fields, ok := FieldsByType[p.Request.Type]
 	if !ok {
 		return fiber.Map{}, ErrNoDefinition
