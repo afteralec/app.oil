@@ -36,7 +36,7 @@ var TitlerCharacterApplication titlerCharacterApplication = titlerCharacterAppli
 
 var FieldCharacterApplicationName field.Field = NewFieldCharacterApplicationName()
 
-var CharacterApplicationFields field.Group = field.NewGroup([]field.Field{
+var FieldsCharacterApplication field.Group = field.NewGroup([]field.Field{
 	FieldCharacterApplicationName,
 	NewFieldCharacterApplicationGender(),
 	NewFieldCharacterApplicationShortDescription(),

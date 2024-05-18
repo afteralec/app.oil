@@ -173,15 +173,20 @@ type BindOverviewParams struct {
 }
 
 func BindOverview(e *html.Engine, b fiber.Map, p BindOverviewParams) (fiber.Map, error) {
-	b["PageHeader"] = fiber.Map{
-		"Title": Title(p.Request.Type, p.FieldMap),
+	title, err := Title(p.Request.Type, p.FieldMap)
+	if err != nil {
+		return b, err
 	}
+	b["PageHeader"] = fiber.Map{
+		"Title": title,
+	}
+
 	// TODO: Build a utility for this
 	b["Status"] = fiber.Map{
 		"StatusIcon": NewStatusIcon(StatusIconParams{Status: p.Request.Status, IconSize: 48, IncludeText: true, TextSize: "text-xl"}),
 	}
 
-	b, err := BindOverviewActions(e, b, BindOverviewActionsParams(p))
+	b, err = BindOverviewActions(e, b, BindOverviewActionsParams(p))
 	if err != nil {
 		return b, err
 	}

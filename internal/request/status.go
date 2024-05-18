@@ -76,26 +76,6 @@ type StatusIcon struct {
 	IconSize int
 }
 
-func IsStatusValid(status string) bool {
-	_, ok := StatusTexts[status]
-	return ok
-}
-
-func IsFieldStatusValid(status string) bool {
-	switch status {
-	case FieldStatusNotReviewed:
-		return true
-	case FieldStatusApproved:
-		return true
-	case FieldStatusReviewed:
-		return true
-	case FieldStatusRejected:
-		return true
-	default:
-		return false
-	}
-}
-
 type StatusIconParams struct {
 	Status      string
 	TextSize    string
@@ -281,13 +261,6 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 	}); err != nil {
 		return err
 	}
-
-	// TODO: Use this to move the current Change Request back to Past
-	// if p.Status == StatusReviewed {
-	// 	if err := q.LockRequestChangeRequestsForRequest(context.Background(), p.RID); err != nil {
-	// 		return err
-	// 	}
-	// }
 
 	return nil
 }

@@ -51,7 +51,10 @@ func NewSummaryForQueue(p NewSummaryForQueueParams) (SummaryForQueue, error) {
 		p.ReviewerUsername = reviewer.Username
 	}
 
-	title := Title(p.Request.Type, p.FieldMap)
+	title, err := Title(p.Request.Type, p.FieldMap)
+	if err != nil {
+		return SummaryForQueue{}, err
+	}
 
 	reviewerText := ReviewerText(ReviewerTextParams{
 		Request:          p.Request,

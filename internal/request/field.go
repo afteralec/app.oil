@@ -11,7 +11,7 @@ import (
 )
 
 var FieldsByType map[string]field.Group = map[string]field.Group{
-	TypeCharacterApplication: definition.CharacterApplicationFields,
+	TypeCharacterApplication: definition.FieldsCharacterApplication,
 }
 
 type UpdateFieldParams struct {
@@ -112,25 +112,4 @@ func NextUnreviewedField(t string, fieldmap field.Map) (field.NextUnreviewedOutp
 		return field.NextUnreviewedOutput{}, ErrNoDefinition
 	}
 	return fields.NextUnreviewed(fieldmap)
-}
-
-func IsFieldTypeValid(t, ft string) bool {
-	fields, ok := FieldsByType[t]
-	if !ok {
-		return false
-	}
-	_, ok = fields.Map()[ft]
-	return ok
-}
-
-func IsFieldValueValid(t, ft, v string) bool {
-	fields, ok := FieldsByType[t]
-	if !ok {
-		return false
-	}
-	fd, ok := fields.Map()[ft]
-	if !ok {
-		return false
-	}
-	return fd.IsValid(v)
 }

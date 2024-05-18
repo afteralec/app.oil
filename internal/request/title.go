@@ -14,13 +14,13 @@ var TitlersByType map[string]Titler = map[string]Titler{
 }
 
 // TODO: Error output?
-func Title(t string, fields field.Map) string {
+func Title(t string, fields field.Map) (string, error) {
 	if !IsTypeValid(t) {
-		return "Request"
+		return "", ErrInvalidType
 	}
 	titler, ok := TitlersByType[t]
 	if !ok {
-		return "Request"
+		return "", ErrNoDefinition
 	}
-	return titler.ForOverview(fields)
+	return titler.ForOverview(fields), nil
 }
