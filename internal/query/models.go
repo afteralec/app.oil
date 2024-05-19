@@ -203,6 +203,14 @@ type RequestField struct {
 	ID        int64
 }
 
+type RequestSubField struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Value     string
+	RFID      int64
+	ID        int64
+}
+
 type Room struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

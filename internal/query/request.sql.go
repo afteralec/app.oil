@@ -157,6 +157,20 @@ func (q *Queries) CreateRequestField(ctx context.Context, arg CreateRequestField
 	return err
 }
 
+const createRequestSubField = `-- name: CreateRequestSubField :exec
+INSERT INTO request_sub_fields (value, rfid) VALUES (?, ?)
+`
+
+type CreateRequestSubFieldParams struct {
+	Value string
+	RFID  int64
+}
+
+func (q *Queries) CreateRequestSubField(ctx context.Context, arg CreateRequestSubFieldParams) error {
+	_, err := q.exec(ctx, q.createRequestSubFieldStmt, createRequestSubField, arg.Value, arg.RFID)
+	return err
+}
+
 const deleteOpenRequestChangeRequest = `-- name: DeleteOpenRequestChangeRequest :exec
 DELETE FROM open_request_change_requests WHERE id = ?
 `
@@ -172,6 +186,15 @@ DELETE FROM request_change_requests WHERE id = ?
 
 func (q *Queries) DeleteRequestChangeRequest(ctx context.Context, id int64) error {
 	_, err := q.exec(ctx, q.deleteRequestChangeRequestStmt, deleteRequestChangeRequest, id)
+	return err
+}
+
+const deleteRequestSubField = `-- name: DeleteRequestSubField :exec
+DELETE FROM request_sub_fields WHERE rfid = ?
+`
+
+func (q *Queries) DeleteRequestSubField(ctx context.Context, rfid int64) error {
+	_, err := q.exec(ctx, q.deleteRequestSubFieldStmt, deleteRequestSubField, rfid)
 	return err
 }
 
@@ -663,6 +686,82 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 			&i.Status,
 			&i.RPID,
 			&i.PID,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listSubFieldsForField = `-- name: ListSubFieldsForField :many
+SELECT created_at, updated_at, value, rfid, id FROM request_sub_fields WHERE rfid = ?
+`
+
+func (q *Queries) ListSubFieldsForField(ctx context.Context, rfid int64) ([]RequestSubField, error) {
+	rows, err := q.query(ctx, q.listSubFieldsForFieldStmt, listSubFieldsForField, rfid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestSubField
+	for rows.Next() {
+		var i RequestSubField
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Value,
+			&i.RFID,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listSubFieldsForFields = `-- name: ListSubFieldsForFields :many
+SELECT created_at, updated_at, value, rfid, id FROM request_sub_fields WHERE rfid IN (/*SLICE:rfids*/?)
+`
+
+func (q *Queries) ListSubFieldsForFields(ctx context.Context, rfids []int64) ([]RequestSubField, error) {
+	query := listSubFieldsForFields
+	var queryParams []interface{}
+	if len(rfids) > 0 {
+		for _, v := range rfids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:rfids*/?", strings.Repeat(",?", len(rfids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:rfids*/?", "NULL", 1)
+	}
+	rows, err := q.query(ctx, nil, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestSubField
+	for rows.Next() {
+		var i RequestSubField
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Value,
+			&i.RFID,
 			&i.ID,
 		); err != nil {
 			return nil, err

@@ -44,40 +44,117 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 		return err
 	}
 
-	// TODO: Split this whole thing out into a tested unit?
-	fields, err := q.ListRequestFieldsForRequest(context.Background(), p.Request.ID)
-	if err != nil {
-		return err
+	if p.Request.Status == StatusIncomplete {
+		fields, err := q.ListRequestFieldsForRequest(context.Background(), p.Request.ID)
+		if err != nil {
+			return err
+		}
+		rfids := []int64{}
+		for _, field := range fields {
+			rfids = append(rfids, field.ID)
+		}
+		subfields, err := q.ListSubFieldsForFields(context.Background(), rfids)
+		if err != nil {
+			return err
+		}
+		ready, err := AreFieldsReady(AreFieldsReadyParams{
+			FieldGroup: fg,
+			Fields:     fields,
+			SubFields:  subfields,
+		})
+		if err != nil {
+			return err
+		}
+
+		if ready {
+			if err := UpdateStatus(q, UpdateStatusParams{
+				PID:    p.PID,
+				RID:    p.Request.ID,
+				Status: StatusReady,
+			}); err != nil {
+				return err
+			}
+		}
 	}
+
+	if p.Request.Status == StatusReady {
+		fields, err := q.ListRequestFieldsForRequest(context.Background(), p.Request.ID)
+		if err != nil {
+			return err
+		}
+		rfids := []int64{}
+		for _, field := range fields {
+			rfids = append(rfids, field.ID)
+		}
+		subfields, err := q.ListSubFieldsForFields(context.Background(), rfids)
+		if err != nil {
+			return err
+		}
+		ready, err := AreFieldsReady(AreFieldsReadyParams{
+			FieldGroup: fg,
+			Fields:     fields,
+			SubFields:  subfields,
+		})
+		if err != nil {
+			return err
+		}
+
+		if ready {
+			if err := UpdateStatus(q, UpdateStatusParams{
+				PID:    p.PID,
+				RID:    p.Request.ID,
+				Status: StatusIncomplete,
+			}); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+type AreFieldsReadyParams struct {
+	Fields     []query.RequestField
+	SubFields  []query.RequestSubField
+	FieldGroup field.Group
+}
+
+func AreFieldsReady(p AreFieldsReadyParams) (bool, error) {
+	sfmap := SubFieldMap(p.SubFields)
+
 	ready := true
-	for _, field := range fields {
-		fd, ok := fg.Get(field.Type)
+	for _, field := range p.Fields {
+		fd, ok := p.FieldGroup.Get(field.Type)
 		if !ok {
 			// TODO: This means there's a field on a request that doesn't have a definition
-			return ErrNoDefinition
+			return false, ErrNoDefinition
 		}
+
+		if fd.SubFieldConfig.Require {
+			subfields, ok := sfmap[field.ID]
+			if ok {
+				if len(subfields) < fd.SubFieldConfig.MinValues || len(subfields) > fd.SubFieldConfig.MaxValues {
+					ready = false
+				}
+
+				for _, subfield := range subfields {
+					if !fd.IsValid(subfield.Value) {
+						ready = false
+					}
+				}
+			} else {
+				// TODO: If there are any Fields that allow 0+ Subfields, this will trigger on 0
+				ready = false
+			}
+			continue
+		}
+
 		if !fd.IsValid(field.Value) {
 			ready = false
 		}
 	}
-	if ready && p.Request.Status == StatusIncomplete {
-		if err := UpdateStatus(q, UpdateStatusParams{
-			PID:    p.PID,
-			RID:    p.Request.ID,
-			Status: StatusReady,
-		}); err != nil {
-			return err
-		}
-	} else if !ready && p.Request.Status == StatusReady {
-		if err := UpdateStatus(q, UpdateStatusParams{
-			PID:    p.PID,
-			RID:    p.Request.ID,
-			Status: StatusIncomplete,
-		}); err != nil {
-			return err
-		}
-	}
-	return nil
+
+	return ready, nil
 }
 
 type FieldsForOverviewParams = field.ForOverviewParams
@@ -94,6 +171,18 @@ func FieldMap(fields []query.RequestField) field.Map {
 	m := field.Map{}
 	for _, field := range fields {
 		m[field.Type] = field
+	}
+	return m
+}
+
+func SubFieldMap(subfields []query.RequestSubField) map[int64][]query.RequestSubField {
+	m := map[int64][]query.RequestSubField{}
+	for _, subfield := range subfields {
+		_, ok := m[subfield.RFID]
+		if !ok {
+			m[subfield.RFID] = []query.RequestSubField{}
+		}
+		m[subfield.RFID] = append(m[subfield.RFID], subfield)
 	}
 	return m
 }

@@ -32,6 +32,7 @@ const (
 	FieldStatusRejected    = field.StatusRejected
 )
 
+// TODO: Move the rest of this file to the underlying status package?
 var StatusTexts map[string]string = map[string]string{
 	StatusIncomplete: "Incomplete",
 	StatusReady:      "Ready",

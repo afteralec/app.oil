@@ -47,6 +47,7 @@ var FieldsCharacterApplication field.Group = field.NewGroup([]field.Field{
 func NewFieldCharacterApplicationName() field.Field {
 	b := field.FieldBuilder()
 	b.Type("name")
+	b.For(field.ForPlayer)
 	b.Label("Name")
 	b.Description("Your character's name")
 	b.Help(partial.RequestFieldHelpCharacterApplicationName)
@@ -100,6 +101,7 @@ func (f *fieldCharacterApplicationGenderFormRenderer) Render(e *html.Engine, fie
 func NewFieldCharacterApplicationGender() field.Field {
 	b := field.FieldBuilder()
 	b.Type("gender")
+	b.For(field.ForPlayer)
 	b.Label("Gender")
 	b.Description("Your character's gender determines the pronouns used by third-person descriptions in the game")
 	b.Help(partial.RequestFieldHelpCharacterApplicationGender)
@@ -113,6 +115,7 @@ func NewFieldCharacterApplicationGender() field.Field {
 func NewFieldCharacterApplicationShortDescription() field.Field {
 	b := field.FieldBuilder()
 	b.Type("sdesc")
+	b.For(field.ForPlayer)
 	b.Label("Short Description")
 	b.Description("This is how your character will appear in third-person descriptions during the game")
 	b.Help(partial.RequestFieldHelpCharacterApplicationShortDescription)
@@ -126,6 +129,7 @@ func NewFieldCharacterApplicationShortDescription() field.Field {
 func NewFieldCharacterApplicationDescription() field.Field {
 	b := field.FieldBuilder()
 	b.Type("desc")
+	b.For(field.ForPlayer)
 	b.Label("Description")
 	b.Description("This is how your character will appear when examined")
 	b.Help(partial.RequestFieldHelpCharacterApplicationDescription)
@@ -139,6 +143,7 @@ func NewFieldCharacterApplicationDescription() field.Field {
 func NewFieldCharacterApplicationBackstory() field.Field {
 	b := field.FieldBuilder()
 	b.Type("backstory")
+	b.For(field.ForPlayer)
 	b.Label("Backstory")
 	b.Description("This is your character's private backstory")
 	b.Help(partial.RequestFieldHelpCharacterApplicationBackstory)

@@ -96,6 +96,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createRequestFieldStmt, err = db.PrepareContext(ctx, createRequestField); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateRequestField: %w", err)
 	}
+	if q.createRequestSubFieldStmt, err = db.PrepareContext(ctx, createRequestSubField); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateRequestSubField: %w", err)
+	}
 	if q.createRoomStmt, err = db.PrepareContext(ctx, createRoom); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateRoom: %w", err)
 	}
@@ -131,6 +134,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.deleteRequestChangeRequestStmt, err = db.PrepareContext(ctx, deleteRequestChangeRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteRequestChangeRequest: %w", err)
+	}
+	if q.deleteRequestSubFieldStmt, err = db.PrepareContext(ctx, deleteRequestSubField); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteRequestSubField: %w", err)
 	}
 	if q.editOpenRequestChangeRequestStmt, err = db.PrepareContext(ctx, editOpenRequestChangeRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query EditOpenRequestChangeRequest: %w", err)
@@ -263,6 +269,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.listRoomsByIDsStmt, err = db.PrepareContext(ctx, listRoomsByIDs); err != nil {
 		return nil, fmt.Errorf("error preparing query ListRoomsByIDs: %w", err)
+	}
+	if q.listSubFieldsForFieldStmt, err = db.PrepareContext(ctx, listSubFieldsForField); err != nil {
+		return nil, fmt.Errorf("error preparing query ListSubFieldsForField: %w", err)
+	}
+	if q.listSubFieldsForFieldsStmt, err = db.PrepareContext(ctx, listSubFieldsForFields); err != nil {
+		return nil, fmt.Errorf("error preparing query ListSubFieldsForFields: %w", err)
 	}
 	if q.listVerifiedEmailsStmt, err = db.PrepareContext(ctx, listVerifiedEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListVerifiedEmails: %w", err)
@@ -479,6 +491,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createRequestFieldStmt: %w", cerr)
 		}
 	}
+	if q.createRequestSubFieldStmt != nil {
+		if cerr := q.createRequestSubFieldStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createRequestSubFieldStmt: %w", cerr)
+		}
+	}
 	if q.createRoomStmt != nil {
 		if cerr := q.createRoomStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createRoomStmt: %w", cerr)
@@ -537,6 +554,11 @@ func (q *Queries) Close() error {
 	if q.deleteRequestChangeRequestStmt != nil {
 		if cerr := q.deleteRequestChangeRequestStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteRequestChangeRequestStmt: %w", cerr)
+		}
+	}
+	if q.deleteRequestSubFieldStmt != nil {
+		if cerr := q.deleteRequestSubFieldStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteRequestSubFieldStmt: %w", cerr)
 		}
 	}
 	if q.editOpenRequestChangeRequestStmt != nil {
@@ -759,6 +781,16 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listRoomsByIDsStmt: %w", cerr)
 		}
 	}
+	if q.listSubFieldsForFieldStmt != nil {
+		if cerr := q.listSubFieldsForFieldStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listSubFieldsForFieldStmt: %w", cerr)
+		}
+	}
+	if q.listSubFieldsForFieldsStmt != nil {
+		if cerr := q.listSubFieldsForFieldsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listSubFieldsForFieldsStmt: %w", cerr)
+		}
+	}
 	if q.listVerifiedEmailsStmt != nil {
 		if cerr := q.listVerifiedEmailsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listVerifiedEmailsStmt: %w", cerr)
@@ -972,6 +1004,7 @@ type Queries struct {
 	createRequestStmt                                 *sql.Stmt
 	createRequestChangeRequestStmt                    *sql.Stmt
 	createRequestFieldStmt                            *sql.Stmt
+	createRequestSubFieldStmt                         *sql.Stmt
 	createRoomStmt                                    *sql.Stmt
 	deleteActorImageCanStmt                           *sql.Stmt
 	deleteActorImageCanBeStmt                         *sql.Stmt
@@ -984,6 +1017,7 @@ type Queries struct {
 	deleteOpenRequestChangeRequestStmt                *sql.Stmt
 	deletePlayerPermissionStmt                        *sql.Stmt
 	deleteRequestChangeRequestStmt                    *sql.Stmt
+	deleteRequestSubFieldStmt                         *sql.Stmt
 	editOpenRequestChangeRequestStmt                  *sql.Stmt
 	getActorImageStmt                                 *sql.Stmt
 	getActorImageByNameStmt                           *sql.Stmt
@@ -1028,6 +1062,8 @@ type Queries struct {
 	listRequestsForPlayerStmt                         *sql.Stmt
 	listRoomsStmt                                     *sql.Stmt
 	listRoomsByIDsStmt                                *sql.Stmt
+	listSubFieldsForFieldStmt                         *sql.Stmt
+	listSubFieldsForFieldsStmt                        *sql.Stmt
 	listVerifiedEmailsStmt                            *sql.Stmt
 	markEmailVerifiedStmt                             *sql.Stmt
 	searchHelpByCategoryStmt                          *sql.Stmt
@@ -1088,6 +1124,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createRequestStmt:                                 q.createRequestStmt,
 		createRequestChangeRequestStmt:                    q.createRequestChangeRequestStmt,
 		createRequestFieldStmt:                            q.createRequestFieldStmt,
+		createRequestSubFieldStmt:                         q.createRequestSubFieldStmt,
 		createRoomStmt:                                    q.createRoomStmt,
 		deleteActorImageCanStmt:                           q.deleteActorImageCanStmt,
 		deleteActorImageCanBeStmt:                         q.deleteActorImageCanBeStmt,
@@ -1100,6 +1137,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		deleteOpenRequestChangeRequestStmt:                q.deleteOpenRequestChangeRequestStmt,
 		deletePlayerPermissionStmt:                        q.deletePlayerPermissionStmt,
 		deleteRequestChangeRequestStmt:                    q.deleteRequestChangeRequestStmt,
+		deleteRequestSubFieldStmt:                         q.deleteRequestSubFieldStmt,
 		editOpenRequestChangeRequestStmt:                  q.editOpenRequestChangeRequestStmt,
 		getActorImageStmt:                                 q.getActorImageStmt,
 		getActorImageByNameStmt:                           q.getActorImageByNameStmt,
@@ -1144,6 +1182,8 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listRequestsForPlayerStmt:                         q.listRequestsForPlayerStmt,
 		listRoomsStmt:                                     q.listRoomsStmt,
 		listRoomsByIDsStmt:                                q.listRoomsByIDsStmt,
+		listSubFieldsForFieldStmt:                         q.listSubFieldsForFieldStmt,
+		listSubFieldsForFieldsStmt:                        q.listSubFieldsForFieldsStmt,
 		listVerifiedEmailsStmt:                            q.listVerifiedEmailsStmt,
 		markEmailVerifiedStmt:                             q.markEmailVerifiedStmt,
 		searchHelpByCategoryStmt:                          q.searchHelpByCategoryStmt,

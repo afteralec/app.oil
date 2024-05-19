@@ -33,15 +33,32 @@ func (r *DefaultRenderer) Render(e *html.Engine, field *query.RequestField, temp
 	})
 }
 
+// TODO: Rename this to Definition or Configuration - I prefer Definition so far
 type Field struct {
-	Validator    validate.StringValidator
-	FormRenderer Renderer
-	Form         string
-	Data         string
-	Type         string
-	Label        string
-	Description  string
-	Help         string
+	Validator      validate.StringValidator
+	FormRenderer   Renderer
+	Type           string
+	For            string
+	Label          string
+	Description    string
+	Help           string
+	Data           string
+	Form           string
+	SubFieldConfig SubFieldConfig
+}
+
+type SubFieldConfig struct {
+	MinValues int
+	MaxValues int
+	Require   bool
+}
+
+func NewSubFieldConfig(min, max int) SubFieldConfig {
+	return SubFieldConfig{
+		Require:   true,
+		MinValues: min,
+		MaxValues: max,
+	}
 }
 
 func (f *Field) IsValid(v string) bool {
@@ -150,6 +167,11 @@ func (b *fieldBuilder) Type(t string) *fieldBuilder {
 	return b
 }
 
+func (b *fieldBuilder) For(f string) *fieldBuilder {
+	b.Field.For = f
+	return b
+}
+
 func (b *fieldBuilder) Label(label string) *fieldBuilder {
 	b.Field.Label = label
 	return b
@@ -185,12 +207,17 @@ func (b *fieldBuilder) Validator(validator validate.StringValidator) *fieldBuild
 	return b
 }
 
+func (b *fieldBuilder) SubFieldConfig(config SubFieldConfig) *fieldBuilder {
+	b.Field.SubFieldConfig = config
+	return b
+}
+
 func (b *fieldBuilder) Build() Field {
+	// TODO: Allow fields to have default values
 	// TODO: Validate that the field is being built with all of its needed parts
 	return b.Field
 }
 
-// TODO: Make the inner Map and List private and return immutable versions of these
 type Group struct {
 	fields map[string]Field
 	list   []Field
