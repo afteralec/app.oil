@@ -19,15 +19,18 @@ const (
 )
 
 const (
-	ImageNameMinLen          int    = 4
-	ImageNameMaxLen          int    = 50
-	ImageNameRegex           string = "[^a-z-]+"
-	ShortDescriptionMinLen   int    = 8
-	ShortDescriptionMaxLen   int    = 300
-	ShortDescriptionRegex    string = "[^a-zA-Z, -]+"
-	DescriptionMinLen        int    = 32
-	DescriptionMaxLen        int    = 2000
-	DescriptionRegex         string = "[^a-zA-Z, '-.!()]+"
+	ImageNameMinLen        int    = 4
+	ImageNameMaxLen        int    = 50
+	ImageNameRegex         string = "[^a-z-]+"
+	ShortDescriptionMinLen int    = 8
+	ShortDescriptionMaxLen int    = 300
+	ShortDescriptionRegex  string = "[^a-zA-Z, -]+"
+	DescriptionMinLen      int    = 32
+	DescriptionMaxLen      int    = 2000
+	DescriptionRegex       string = "[^a-zA-Z, '-.!()]+"
+)
+
+const (
 	CharacterNameMinLen      int    = 4
 	CharacterNameMaxLen      int    = 16
 	CharacterNameRegex       string = "[^a-zA-Z'-]+"
@@ -40,4 +43,10 @@ var (
 	GenderMinLen int    = util.MinLengthOfStrings([]string{GenderNonBinary, GenderFemale, GenderMale})
 	GenderMaxLen int    = util.MaxLengthOfStrings([]string{GenderNonBinary, GenderFemale, GenderMale})
 	GenderRegex  string = util.RegexForExactMatchStrings([]string{GenderNonBinary, GenderFemale, GenderMale})
+)
+
+var (
+	KeywordMinLen int    = 2
+	KeywordMaxLen int    = ShortDescriptionMaxLen
+	KeywordRegex  string = "[^a-zA-Z]+"
 )

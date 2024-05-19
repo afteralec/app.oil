@@ -42,6 +42,7 @@ var FieldsCharacterApplication field.Group = field.NewGroup([]field.Field{
 	NewFieldCharacterApplicationShortDescription(),
 	NewFieldCharacterApplicationDescription(),
 	NewFieldCharacterApplicationBackstory(),
+	NewFieldCharacterApplicationKeywords(),
 })
 
 func NewFieldCharacterApplicationName() field.Field {
@@ -151,6 +152,21 @@ func NewFieldCharacterApplicationBackstory() field.Field {
 	b.Form(partial.RequestFieldFormCharacterApplicationBackstory)
 	b.FormRenderer(new(field.DefaultRenderer))
 	b.Validator(&actor.CharacterBackstoryValidator)
+	return b.Build()
+}
+
+func NewFieldCharacterApplicationKeywords() field.Field {
+	b := field.FieldBuilder()
+	b.Type("keywords")
+	b.For(field.ForReviewer)
+	b.Label("Keywords")
+	b.Description("These are your character's keywords")
+	b.Help(partial.RequestFieldHelpCharacterApplicationKeywords)
+	b.Data(partial.RequestFieldDataCharacterApplicationKeywords)
+	b.Form(partial.RequestFieldFormCharacterApplicationKeywords)
+	b.FormRenderer(new(field.DefaultRenderer))
+	b.Validator(&actor.KeywordValidator)
+	b.SubfieldConfig(field.NewSubfieldConfig(2, 10))
 	return b.Build()
 }
 

@@ -62,3 +62,13 @@ var (
 	CharacterBackstoryRegexValidator  validate.StringRegexNoMatchValidator = validate.NewStringRegexNoMatchValidator(regexp.MustCompile(CharacterBackstoryRegex))
 	CharacterBackstoryValidator       validate.StringValidatorGroup        = validate.NewStringValidatorGroup([]validate.StringValidator{&CharacterBackstoryLengthValidator, &CharacterBackstoryRegexValidator})
 )
+
+func IsKeywordValid(kw string) bool {
+	return false
+}
+
+var (
+	KeywordLengthValidator validate.StringLengthValidator       = validate.NewStringLengthValidator(KeywordMinLen, KeywordMaxLen)
+	KeywordRegexValidator  validate.StringRegexNoMatchValidator = validate.NewStringRegexNoMatchValidator(regexp.MustCompile(KeywordRegex))
+	KeywordValidator       validate.StringValidatorGroup        = validate.NewStringValidatorGroup([]validate.StringValidator{&KeywordLengthValidator, &KeywordRegexValidator})
+)

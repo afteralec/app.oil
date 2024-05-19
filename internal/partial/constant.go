@@ -88,30 +88,39 @@ const (
 const VerifyEmailSuccess string = "partial-verify-email-success"
 
 const (
-	RequestChangeRequest                                 string = "partial-request-change-request"
-	RequestChangeRequestEmpty                            string = "partial-request-change-request-empty"
-	RequestFieldActionUpdate                             string = "partial-request-field-action-update"
-	RequestFieldActionChangeRequest                      string = "partial-request-field-action-change-request"
-	RequestFieldActionReject                             string = "partial-request-field-action-reject"
-	RequestFieldActionReview                             string = "partial-request-field-action-review"
+	RequestChangeRequest            string = "partial-request-change-request"
+	RequestChangeRequestEmpty       string = "partial-request-change-request-empty"
+	RequestFieldActionUpdate        string = "partial-request-field-action-update"
+	RequestFieldActionChangeRequest string = "partial-request-field-action-change-request"
+	RequestFieldActionReject        string = "partial-request-field-action-reject"
+	RequestFieldActionReview        string = "partial-request-field-action-review"
+	RequestOverviewActionCancel     string = "partial-request-overview-action-cancel"
+	RequestOverviewActionSubmit     string = "partial-request-overview-action-submit"
+	RequestOverviewActionApprove    string = "partial-request-overview-action-approve"
+	RequestOverviewActionReview     string = "partial-request-overview-action-review"
+	RequestOverviewActionReject     string = "partial-request-overview-action-reject"
+)
+
+// TODO: Create a tool that generates these? Maybe part of the CLI?
+// That CLI action could stub in all of the code required to add a field to an existing type, or manage request types, etc
+// might be overkill but would be pretty fucking cool
+const (
 	RequestFieldHelpCharacterApplicationName             string = "partial-request-field-help-character-application-name"
 	RequestFieldHelpCharacterApplicationGender           string = "partial-request-field-help-character-application-gender"
 	RequestFieldHelpCharacterApplicationShortDescription string = "partial-request-field-help-character-application-sdesc"
 	RequestFieldHelpCharacterApplicationDescription      string = "partial-request-field-help-character-application-desc"
 	RequestFieldHelpCharacterApplicationBackstory        string = "partial-request-field-help-character-application-backstory"
+	RequestFieldHelpCharacterApplicationKeywords         string = "partial-request-field-help-character-application-keywords"
 	RequestFieldDataCharacterApplicationName             string = "partial-request-field-data-character-application-name"
 	RequestFieldDataCharacterApplicationGender           string = "partial-request-field-data-character-application-gender"
 	RequestFieldDataCharacterApplicationShortDescription string = "partial-request-field-data-character-application-sdesc"
 	RequestFieldDataCharacterApplicationDescription      string = "partial-request-field-data-character-application-desc"
 	RequestFieldDataCharacterApplicationBackstory        string = "partial-request-field-data-character-application-backstory"
+	RequestFieldDataCharacterApplicationKeywords         string = "partial-request-field-data-character-application-keywords"
 	RequestFieldFormCharacterApplicationName             string = "partial-request-field-form-character-application-name"
 	RequestFieldFormCharacterApplicationGender           string = "partial-request-field-form-character-application-gender"
 	RequestFieldFormCharacterApplicationShortDescription string = "partial-request-field-form-character-application-sdesc"
 	RequestFieldFormCharacterApplicationDescription      string = "partial-request-field-form-character-application-desc"
 	RequestFieldFormCharacterApplicationBackstory        string = "partial-request-field-form-character-application-backstory"
-	RequestOverviewActionCancel                          string = "partial-request-overview-action-cancel"
-	RequestOverviewActionSubmit                          string = "partial-request-overview-action-submit"
-	RequestOverviewActionApprove                         string = "partial-request-overview-action-approve"
-	RequestOverviewActionReview                          string = "partial-request-overview-action-review"
-	RequestOverviewActionReject                          string = "partial-request-overview-action-reject"
+	RequestFieldFormCharacterApplicationKeywords         string = "partial-request-field-form-character-application-keywords"
 )

@@ -27,8 +27,9 @@ func (r *DefaultRenderer) Render(e *html.Engine, field *query.RequestField, temp
 		Template: template,
 		Bind: fiber.Map{
 			"FieldValue": field.Value,
-			"FormID":     "request-form",
-			"Path":       route.RequestFieldPath(field.RID, field.Type),
+			// TODO: This uses the request FormID constant; maybe add a constant package?
+			"FormID": "request-form",
+			"Path":   route.RequestFieldPath(field.RID, field.Type),
 		},
 	})
 }
@@ -288,8 +289,11 @@ func (f *Group) NextUnreviewed(fields Map) (NextUnreviewedOutput, error) {
 
 func (f *Group) ForOverview(e *html.Engine, p ForOverviewParams) []ForOverview {
 	result := []ForOverview{}
-	for _, field := range f.list {
-		result = append(result, field.ForOverview(e, p))
+	for _, fd := range f.list {
+		if p.PID == p.Request.PID && !fd.ForPlayer() {
+			continue
+		}
+		result = append(result, fd.ForOverview(e, p))
 	}
 	return result
 }
