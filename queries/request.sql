@@ -61,17 +61,17 @@ UPDATE request_fields SET status = ? WHERE id = ?;
 -- name: UpdateRequestFieldStatusByRequestAndType :exec
 UPDATE request_fields SET status = ? WHERE type = ? AND rid = ?;
 
--- name: CreateRequestSubField :exec
-INSERT INTO request_sub_fields (value, rfid) VALUES (?, ?);
+-- name: CreateRequestSubfield :exec
+INSERT INTO request_subfields (value, rfid) VALUES (?, ?);
 
--- name: DeleteRequestSubField :exec
-DELETE FROM request_sub_fields WHERE rfid = ?;
+-- name: DeleteRequestSubfield :exec
+DELETE FROM request_subfields WHERE rfid = ?;
 
--- name: ListSubFieldsForField :many
-SELECT * FROM request_sub_fields WHERE rfid = ?;
+-- name: ListSubfieldsForField :many
+SELECT * FROM request_subfields WHERE rfid = ?;
 
--- name: ListSubFieldsForFields :many
-SELECT * FROM request_sub_fields WHERE rfid IN (sqlc.slice("rfids"));
+-- name: ListSubfieldsForFields :many
+SELECT * FROM request_subfields WHERE rfid IN (sqlc.slice("rfids"));
 
 -- name: CreateOpenRequestChangeRequest :exec
 INSERT INTO open_request_change_requests (value, text, rfid, pid) VALUES (?, ?, ?, ?);

@@ -44,17 +44,17 @@ type Field struct {
 	Help           string
 	Data           string
 	Form           string
-	SubFieldConfig SubFieldConfig
+	SubfieldConfig SubfieldConfig
 }
 
-type SubFieldConfig struct {
+type SubfieldConfig struct {
 	MinValues int
 	MaxValues int
 	Require   bool
 }
 
-func NewSubFieldConfig(min, max int) SubFieldConfig {
-	return SubFieldConfig{
+func NewSubfieldConfig(min, max int) SubfieldConfig {
+	return SubfieldConfig{
 		Require:   true,
 		MinValues: min,
 		MaxValues: max,
@@ -207,8 +207,8 @@ func (b *fieldBuilder) Validator(validator validate.StringValidator) *fieldBuild
 	return b
 }
 
-func (b *fieldBuilder) SubFieldConfig(config SubFieldConfig) *fieldBuilder {
-	b.Field.SubFieldConfig = config
+func (b *fieldBuilder) SubfieldConfig(config SubfieldConfig) *fieldBuilder {
+	b.Field.SubfieldConfig = config
 	return b
 }
 

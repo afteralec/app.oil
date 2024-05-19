@@ -203,7 +203,7 @@ type RequestField struct {
 	ID        int64
 }
 
-type RequestSubField struct {
+type RequestSubfield struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	Value     string

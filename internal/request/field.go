@@ -53,7 +53,7 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 		for _, field := range fields {
 			rfids = append(rfids, field.ID)
 		}
-		subfields, err := q.ListSubFieldsForFields(context.Background(), rfids)
+		subfields, err := q.ListSubfieldsForFields(context.Background(), rfids)
 		if err != nil {
 			return err
 		}
@@ -86,7 +86,7 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 		for _, field := range fields {
 			rfids = append(rfids, field.ID)
 		}
-		subfields, err := q.ListSubFieldsForFields(context.Background(), rfids)
+		subfields, err := q.ListSubfieldsForFields(context.Background(), rfids)
 		if err != nil {
 			return err
 		}
@@ -115,12 +115,12 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 
 type AreFieldsReadyParams struct {
 	Fields     []query.RequestField
-	SubFields  []query.RequestSubField
+	SubFields  []query.RequestSubfield
 	FieldGroup field.Group
 }
 
 func AreFieldsReady(p AreFieldsReadyParams) (bool, error) {
-	sfmap := SubFieldMap(p.SubFields)
+	sfmap := SubfieldMap(p.SubFields)
 
 	ready := true
 	for _, field := range p.Fields {
@@ -130,10 +130,10 @@ func AreFieldsReady(p AreFieldsReadyParams) (bool, error) {
 			return false, ErrNoDefinition
 		}
 
-		if fd.SubFieldConfig.Require {
+		if fd.SubfieldConfig.Require {
 			subfields, ok := sfmap[field.ID]
 			if ok {
-				if len(subfields) < fd.SubFieldConfig.MinValues || len(subfields) > fd.SubFieldConfig.MaxValues {
+				if len(subfields) < fd.SubfieldConfig.MinValues || len(subfields) > fd.SubfieldConfig.MaxValues {
 					ready = false
 				}
 
@@ -175,12 +175,12 @@ func FieldMap(fields []query.RequestField) field.Map {
 	return m
 }
 
-func SubFieldMap(subfields []query.RequestSubField) map[int64][]query.RequestSubField {
-	m := map[int64][]query.RequestSubField{}
+func SubfieldMap(subfields []query.RequestSubfield) map[int64][]query.RequestSubfield {
+	m := map[int64][]query.RequestSubfield{}
 	for _, subfield := range subfields {
 		_, ok := m[subfield.RFID]
 		if !ok {
-			m[subfield.RFID] = []query.RequestSubField{}
+			m[subfield.RFID] = []query.RequestSubfield{}
 		}
 		m[subfield.RFID] = append(m[subfield.RFID], subfield)
 	}

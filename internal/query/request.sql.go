@@ -157,17 +157,17 @@ func (q *Queries) CreateRequestField(ctx context.Context, arg CreateRequestField
 	return err
 }
 
-const createRequestSubField = `-- name: CreateRequestSubField :exec
-INSERT INTO request_sub_fields (value, rfid) VALUES (?, ?)
+const createRequestSubfield = `-- name: CreateRequestSubfield :exec
+INSERT INTO request_subfields (value, rfid) VALUES (?, ?)
 `
 
-type CreateRequestSubFieldParams struct {
+type CreateRequestSubfieldParams struct {
 	Value string
 	RFID  int64
 }
 
-func (q *Queries) CreateRequestSubField(ctx context.Context, arg CreateRequestSubFieldParams) error {
-	_, err := q.exec(ctx, q.createRequestSubFieldStmt, createRequestSubField, arg.Value, arg.RFID)
+func (q *Queries) CreateRequestSubfield(ctx context.Context, arg CreateRequestSubfieldParams) error {
+	_, err := q.exec(ctx, q.createRequestSubfieldStmt, createRequestSubfield, arg.Value, arg.RFID)
 	return err
 }
 
@@ -189,12 +189,12 @@ func (q *Queries) DeleteRequestChangeRequest(ctx context.Context, id int64) erro
 	return err
 }
 
-const deleteRequestSubField = `-- name: DeleteRequestSubField :exec
-DELETE FROM request_sub_fields WHERE rfid = ?
+const deleteRequestSubfield = `-- name: DeleteRequestSubfield :exec
+DELETE FROM request_subfields WHERE rfid = ?
 `
 
-func (q *Queries) DeleteRequestSubField(ctx context.Context, rfid int64) error {
-	_, err := q.exec(ctx, q.deleteRequestSubFieldStmt, deleteRequestSubField, rfid)
+func (q *Queries) DeleteRequestSubfield(ctx context.Context, rfid int64) error {
+	_, err := q.exec(ctx, q.deleteRequestSubfieldStmt, deleteRequestSubfield, rfid)
 	return err
 }
 
@@ -701,19 +701,19 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 	return items, nil
 }
 
-const listSubFieldsForField = `-- name: ListSubFieldsForField :many
-SELECT created_at, updated_at, value, rfid, id FROM request_sub_fields WHERE rfid = ?
+const listSubfieldsForField = `-- name: ListSubfieldsForField :many
+SELECT created_at, updated_at, value, rfid, id FROM request_subfields WHERE rfid = ?
 `
 
-func (q *Queries) ListSubFieldsForField(ctx context.Context, rfid int64) ([]RequestSubField, error) {
-	rows, err := q.query(ctx, q.listSubFieldsForFieldStmt, listSubFieldsForField, rfid)
+func (q *Queries) ListSubfieldsForField(ctx context.Context, rfid int64) ([]RequestSubfield, error) {
+	rows, err := q.query(ctx, q.listSubfieldsForFieldStmt, listSubfieldsForField, rfid)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []RequestSubField
+	var items []RequestSubfield
 	for rows.Next() {
-		var i RequestSubField
+		var i RequestSubfield
 		if err := rows.Scan(
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -734,12 +734,12 @@ func (q *Queries) ListSubFieldsForField(ctx context.Context, rfid int64) ([]Requ
 	return items, nil
 }
 
-const listSubFieldsForFields = `-- name: ListSubFieldsForFields :many
-SELECT created_at, updated_at, value, rfid, id FROM request_sub_fields WHERE rfid IN (/*SLICE:rfids*/?)
+const listSubfieldsForFields = `-- name: ListSubfieldsForFields :many
+SELECT created_at, updated_at, value, rfid, id FROM request_subfields WHERE rfid IN (/*SLICE:rfids*/?)
 `
 
-func (q *Queries) ListSubFieldsForFields(ctx context.Context, rfids []int64) ([]RequestSubField, error) {
-	query := listSubFieldsForFields
+func (q *Queries) ListSubfieldsForFields(ctx context.Context, rfids []int64) ([]RequestSubfield, error) {
+	query := listSubfieldsForFields
 	var queryParams []interface{}
 	if len(rfids) > 0 {
 		for _, v := range rfids {
@@ -754,9 +754,9 @@ func (q *Queries) ListSubFieldsForFields(ctx context.Context, rfids []int64) ([]
 		return nil, err
 	}
 	defer rows.Close()
-	var items []RequestSubField
+	var items []RequestSubfield
 	for rows.Next() {
-		var i RequestSubField
+		var i RequestSubfield
 		if err := rows.Scan(
 			&i.CreatedAt,
 			&i.UpdatedAt,
