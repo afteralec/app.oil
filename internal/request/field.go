@@ -14,6 +14,21 @@ var FieldsByType map[string]field.Group = map[string]field.Group{
 	TypeCharacterApplication: definition.FieldsCharacterApplication,
 }
 
+func GetFieldDefinition(t, ft string) (field.Field, error) {
+	fg, ok := FieldsByType[t]
+	if !ok {
+		return field.Field{}, ErrNoDefinition
+	}
+
+	fd, ok := fg.Get(ft)
+	if !ok {
+		// TODO: Make this an Invalid Field Type error instead
+		return field.Field{}, ErrInvalidType
+	}
+
+	return fd, nil
+}
+
 type UpdateFieldParams struct {
 	Request *query.Request
 	Field   *query.RequestField

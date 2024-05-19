@@ -98,23 +98,30 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 	actions := []template.HTML{}
 
 	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID {
-		if p.OpenChange == nil {
-			change, err := partial.Render(e, partial.RenderParams{
-				Template: partial.RequestFieldActionChangeRequest,
+		fd, err := GetFieldDefinition(p.Request.Type, p.Field.Type)
+		if err != nil {
+			return b, err
+		}
+
+		if !fd.ForReviewer() {
+			if p.OpenChange == nil {
+				change, err := partial.Render(e, partial.RenderParams{
+					Template: partial.RequestFieldActionChangeRequest,
+				})
+				if err != nil {
+					return b, err
+				}
+				actions = append(actions, change)
+			}
+
+			reject, err := partial.Render(e, partial.RenderParams{
+				Template: partial.RequestFieldActionReject,
 			})
 			if err != nil {
 				return b, err
 			}
-			actions = append(actions, change)
+			actions = append(actions, reject)
 		}
-
-		reject, err := partial.Render(e, partial.RenderParams{
-			Template: partial.RequestFieldActionReject,
-		})
-		if err != nil {
-			return b, err
-		}
-		actions = append(actions, reject)
 
 		text := "Approve"
 		if p.OpenChange != nil {
