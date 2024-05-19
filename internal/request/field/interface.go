@@ -17,17 +17,29 @@ import (
 )
 
 type Renderer interface {
-	Render(e *html.Engine, field *query.RequestField, template string) (template.HTML, error)
+	Render(e *html.Engine, field *query.RequestField, subfields []query.RequestSubfield, template string) (template.HTML, error)
 }
 
 type DefaultRenderer struct{}
 
-func (r *DefaultRenderer) Render(e *html.Engine, field *query.RequestField, template string) (template.HTML, error) {
+func (r *DefaultRenderer) Render(e *html.Engine, field *query.RequestField, _ []query.RequestSubfield, template string) (template.HTML, error) {
 	return partial.Render(e, partial.RenderParams{
 		Template: template,
 		Bind: fiber.Map{
 			"FieldValue": field.Value,
 			// TODO: This uses the request FormID constant; maybe add a constant package?
+			"FormID": "request-form",
+			"Path":   route.RequestFieldPath(field.RID, field.Type),
+		},
+	})
+}
+
+type DefaultSubfieldRenderer struct{}
+
+func (r *DefaultSubfieldRenderer) Render(e *html.Engine, field *query.RequestField, subfields []query.RequestSubfield, template string) (template.HTML, error) {
+	return partial.Render(e, partial.RenderParams{
+		Template: template,
+		Bind: fiber.Map{
 			"FormID": "request-form",
 			"Path":   route.RequestFieldPath(field.RID, field.Type),
 		},
@@ -72,6 +84,7 @@ func (f *Field) RenderHelp(e *html.Engine) (template.HTML, error) {
 	})
 }
 
+// TODO: Go back to a DataRenderer to accommodate Subfields?
 func (f *Field) RenderData(e *html.Engine, field *query.RequestField) (template.HTML, error) {
 	return partial.Render(e, partial.RenderParams{
 		Template: f.Data,
@@ -81,8 +94,8 @@ func (f *Field) RenderData(e *html.Engine, field *query.RequestField) (template.
 	})
 }
 
-func (f *Field) RenderForm(e *html.Engine, field *query.RequestField) (template.HTML, error) {
-	return f.FormRenderer.Render(e, field, f.Form)
+func (f *Field) RenderForm(e *html.Engine, field *query.RequestField, subfields []query.RequestSubfield) (template.HTML, error) {
+	return f.FormRenderer.Render(e, field, subfields, f.Form)
 }
 
 func (f *Field) ForPlayer() bool {

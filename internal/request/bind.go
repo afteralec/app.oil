@@ -18,19 +18,29 @@ type BindFieldViewParams struct {
 	Field      *query.RequestField
 	OpenChange *query.OpenRequestChangeRequest
 	Change     *query.RequestChangeRequest
+	Subfields  []query.RequestSubfield
 	PID        int64
 	Last       bool
 }
 
-func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
-	fields, ok := FieldsByType[p.Request.Type]
-	if !ok {
-		return fiber.Map{}, ErrNoDefinition
+func (p *BindFieldViewParams) ShouldRenderForm(fd field.Field) bool {
+	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady || p.Request.Status == StatusReviewed {
+		return true
 	}
-	fd, ok := fields.Get(p.Field.Type)
-	if !ok {
+
+	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID && fd.ForReviewer() && p.Field.Status != FieldStatusApproved {
+		return true
+	}
+
+	return false
+}
+
+func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
+	fd, err := GetFieldDefinition(p.Request.Type, p.Field.Type)
+	if err != nil {
 		return fiber.Map{}, ErrInvalidType
 	}
+
 	help, err := fd.RenderHelp(e)
 	if err != nil {
 		return b, err
@@ -38,8 +48,8 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 	b["Help"] = help
 
 	// TODO: Get this into a utility
-	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady || p.Request.Status == StatusReviewed {
-		form, err := fd.RenderForm(e, p.Field)
+	if p.ShouldRenderForm(fd) {
+		form, err := fd.RenderForm(e, p.Field, p.Subfields)
 		if err != nil {
 			return b, err
 		}
@@ -57,6 +67,7 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 		return b, err
 	}
 
+	// TODO: Figure out how much of below is dependent directly on the view being Data or Form
 	b["FieldLabel"] = fd.Label
 	b["FieldDescription"] = fd.Description
 	b["RequestFormID"] = FormID
@@ -69,7 +80,7 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 	b["Field"] = p.Field.Type
 	b["FieldValue"] = p.Field.Value
 
-	b, err = BindFieldViewActions(e, b, BindFieldViewActionsParams(p))
+	b, err = BindFieldViewActions(e, b, p)
 	if err != nil {
 		return fiber.Map{}, err
 	}
@@ -85,24 +96,14 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 	return b, nil
 }
 
-type BindFieldViewActionsParams struct {
-	Request    *query.Request
-	Field      *query.RequestField
-	OpenChange *query.OpenRequestChangeRequest
-	Change     *query.RequestChangeRequest
-	PID        int64
-	Last       bool
-}
-
-func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsParams) (fiber.Map, error) {
+func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
 	actions := []template.HTML{}
+	fd, err := GetFieldDefinition(p.Request.Type, p.Field.Type)
+	if err != nil {
+		return b, err
+	}
 
-	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID {
-		fd, err := GetFieldDefinition(p.Request.Type, p.Field.Type)
-		if err != nil {
-			return b, err
-		}
-
+	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID && !p.ShouldRenderForm(fd) {
 		if !fd.ForReviewer() {
 			if p.OpenChange == nil {
 				change, err := partial.Render(e, partial.RenderParams{
@@ -147,7 +148,7 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewActionsPar
 	}
 
 	// TODO: Bind this to the same function that determines if we show the form or not
-	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady || p.Request.Status == StatusReviewed {
+	if p.ShouldRenderForm(fd) {
 		text := "Next"
 		if p.Request.Status == StatusReady {
 			text = "Update"

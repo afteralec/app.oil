@@ -61,7 +61,7 @@ func NewFieldCharacterApplicationName() field.Field {
 
 type fieldCharacterApplicationGenderFormRenderer struct{}
 
-func (f *fieldCharacterApplicationGenderFormRenderer) Render(e *html.Engine, field *query.RequestField, template string) (template.HTML, error) {
+func (f *fieldCharacterApplicationGenderFormRenderer) Render(e *html.Engine, field *query.RequestField, _ []query.RequestSubfield, template string) (template.HTML, error) {
 	b := fiber.Map{
 		"FormID":     "request-form",
 		"Path":       route.RequestFieldPath(field.RID, field.Type),

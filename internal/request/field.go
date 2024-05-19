@@ -224,3 +224,12 @@ func NextUnreviewedField(t string, fieldmap field.Map) (field.NextUnreviewedOutp
 	}
 	return fields.NextUnreviewed(fieldmap)
 }
+
+func FieldRequiresSubfields(t, ft string) bool {
+	fd, err := GetFieldDefinition(t, ft)
+	if err != nil {
+		// TODO: Trace this error
+		return false
+	}
+	return fd.SubfieldConfig.Require
+}

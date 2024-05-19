@@ -173,13 +173,6 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		// TODO: Vestigial Request Change Request handling
-		// changes, err := qtx.ListCurrentRequestChangeRequestsForRequest(context.Background(), field.ID)
-		// if err != nil {
-		// 	c.Status(fiber.StatusInternalServerError)
-		// 	return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-		// }
-
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
@@ -202,12 +195,25 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 			return c.Redirect(route.RequestPath(rid))
 		}
 
-		b := view.Bind(c)
-		b, err = request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
+		bfvp := request.BindFieldViewParams{
 			PID:     pid,
 			Request: &req,
 			Field:   &field,
-		})
+		}
+		if request.FieldRequiresSubfields(req.Type, field.Type) {
+			subfields, err := qtx.ListSubfieldsForField(context.Background(), field.ID)
+			if err != nil {
+				if err == sql.ErrNoRows {
+				} else {
+					c.Status(fiber.StatusInternalServerError)
+					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+				}
+			}
+			bfvp.Subfields = subfields
+		}
+
+		b := view.Bind(c)
+		b, err = request.BindFieldView(i.Templates, b, bfvp)
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
@@ -296,12 +302,24 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
-			b, err := request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
+			bfvp := request.BindFieldViewParams{
 				PID:     pid,
 				Request: &req,
 				Field:   nifo.Field,
 				Last:    nifo.Last,
-			})
+			}
+			if request.FieldRequiresSubfields(req.Type, nifo.Field.Type) {
+				subfields, err := qtx.ListSubfieldsForField(context.Background(), nifo.Field.ID)
+				if err != nil {
+					if err == sql.ErrNoRows {
+					} else {
+						c.Status(fiber.StatusInternalServerError)
+						return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+					}
+				}
+				bfvp.Subfields = subfields
+			}
+			b, err := request.BindFieldView(i.Templates, b, bfvp)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
@@ -406,14 +424,27 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				change = &ch
 			}
 
-			b, err = request.BindFieldView(i.Templates, b, request.BindFieldViewParams{
+			bfvp := request.BindFieldViewParams{
 				PID:        pid,
 				Request:    &req,
 				Field:      nufo.Field,
 				Last:       nufo.Last,
 				OpenChange: openchange,
 				Change:     change,
-			})
+			}
+			if request.FieldRequiresSubfields(req.Type, nufo.Field.Type) {
+				subfields, err := i.Queries.ListSubfieldsForField(context.Background(), nufo.Field.ID)
+				if err != nil {
+					if err == sql.ErrNoRows {
+					} else {
+						c.Status(fiber.StatusInternalServerError)
+						return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+					}
+				}
+				bfvp.Subfields = subfields
+			}
+
+			b, err = request.BindFieldView(i.Templates, b, bfvp)
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
