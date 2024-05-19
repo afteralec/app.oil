@@ -61,6 +61,7 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 			FieldGroup: fg,
 			Fields:     fields,
 			SubFields:  subfields,
+			PlayerOnly: true,
 		})
 		if err != nil {
 			return err
@@ -94,6 +95,7 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 			FieldGroup: fg,
 			Fields:     fields,
 			SubFields:  subfields,
+			PlayerOnly: true,
 		})
 		if err != nil {
 			return err
@@ -117,6 +119,7 @@ type AreFieldsReadyParams struct {
 	Fields     []query.RequestField
 	SubFields  []query.RequestSubfield
 	FieldGroup field.Group
+	PlayerOnly bool
 }
 
 func AreFieldsReady(p AreFieldsReadyParams) (bool, error) {
@@ -128,6 +131,10 @@ func AreFieldsReady(p AreFieldsReadyParams) (bool, error) {
 		if !ok {
 			// TODO: This means there's a field on a request that doesn't have a definition
 			return false, ErrNoDefinition
+		}
+
+		if p.PlayerOnly && !fd.ForPlayer() {
+			continue
 		}
 
 		if fd.SubfieldConfig.Require {

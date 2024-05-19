@@ -84,6 +84,14 @@ func (f *Field) RenderForm(e *html.Engine, field *query.RequestField) (template.
 	return f.FormRenderer.Render(e, field, f.Form)
 }
 
+func (f *Field) ForPlayer() bool {
+	return f.For == ForPlayer
+}
+
+func (f *Field) ForReviewer() bool {
+	return f.For == ForReviewer
+}
+
 type ForOverview struct {
 	// TODO: Get this into a discrete type instead of a fiber Map?
 	ChangeRequestConfig     fiber.Map
