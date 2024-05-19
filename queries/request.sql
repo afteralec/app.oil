@@ -67,6 +67,12 @@ INSERT INTO request_subfields (value, rfid) VALUES (?, ?);
 -- name: DeleteRequestSubfield :exec
 DELETE FROM request_subfields WHERE rfid = ?;
 
+-- name: UpdateRequestSubfield :exec
+UPDATE request_subfields SET value = ? WHERE id = ?;
+
+-- name: GetRequestSubfield :one
+SELECT * FROM request_subfields WHERE id = ?;
+
 -- name: ListSubfieldsForField :many
 SELECT * FROM request_subfields WHERE rfid = ?;
 

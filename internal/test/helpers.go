@@ -193,7 +193,12 @@ func DeleteTestRequest(t *testing.T, i *service.Interfaces, rid int64) {
 	}
 
 	for _, field := range fields {
-		_, err := i.Database.Exec("DELETE FROM open_request_change_requests WHERE rfid = ?;", field.ID)
+		_, err := i.Database.Exec("DELETE FROM request_subfields WHERE rfid = ?;", field.ID)
+		if err != nil && err != sql.ErrNoRows {
+			t.Fatal(err)
+		}
+
+		_, err = i.Database.Exec("DELETE FROM open_request_change_requests WHERE rfid = ?;", field.ID)
 		if err != nil && err != sql.ErrNoRows {
 			t.Fatal(err)
 		}

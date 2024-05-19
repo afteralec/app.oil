@@ -589,7 +589,7 @@ func VerifyEmail(i *service.Interfaces) fiber.Handler {
 
 func ResendEmailVerification(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		id, err := util.GetID(c)
+		id, err := util.GetID(c, "id")
 		if err != nil {
 			c.Append(header.HXAcceptable, "true")
 			c.Status(fiber.StatusBadRequest)

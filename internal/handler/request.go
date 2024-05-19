@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"database/sql"
+	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -119,7 +120,7 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		rid, err := util.GetID(c)
+		rid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(view.BadRequest, view.Bind(c), layout.Standalone)
@@ -236,7 +237,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
-		rid, err := util.GetID(c)
+		rid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(view.BadRequest, view.Bind(c), layout.Standalone)
@@ -520,7 +521,7 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		rid, err := util.GetID(c)
+		rid, err := util.GetID(c, "id")
 		if err != nil {
 			if err == util.ErrNoID {
 				c.Status(fiber.StatusBadRequest)
@@ -530,6 +531,7 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		// TODO: Change this param and elsewhere to "fieldtype"
 		ft := c.Params("field")
 		if len(ft) == 0 {
 			c.Status(fiber.StatusBadRequest)
@@ -612,6 +614,369 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 	}
 }
 
+func CreateRequestSubfield(i *service.Interfaces) fiber.Handler {
+	type input struct {
+		Value string `form:"value"`
+	}
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
+			log.Println("BodyParser error")
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		pid, err := util.GetPID(c)
+		if err != nil {
+			if err == util.ErrNoPID {
+				c.Status(fiber.StatusUnauthorized)
+				return nil
+			}
+
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		rid, err := util.GetID(c, "rid")
+		if err != nil {
+			if err == util.ErrNoID {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		// TODO: For CreateRequestSubfield, we could probably just use the Field ID
+		rfid, err := util.GetID(c, "rfid")
+		if err != nil {
+			if err == util.ErrNoID {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		req, err := qtx.GetRequest(context.Background(), rid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if !request.IsEditable(pid, &req) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		field, err := qtx.GetRequestField(context.Background(), rfid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		sfc, err := request.FieldSubfieldConfig(req.Type, field.Type)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !sfc.Require {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		subfields, err := qtx.ListSubfieldsForField(context.Background(), field.ID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO: Log this out
+			} else {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+
+		if sfc.Unique {
+			for _, subfield := range subfields {
+				if subfield.Value == in.Value {
+					c.Status(fiber.StatusConflict)
+					return nil
+				}
+			}
+		}
+
+		if !request.IsFieldValueValid(req.Type, field.Type, in.Value) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if err := qtx.CreateRequestSubfield(context.Background(), query.CreateRequestSubfieldParams{
+			RFID:  field.ID,
+			Value: in.Value,
+		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		c.Status(fiber.StatusCreated)
+		return nil
+	}
+}
+
+func UpdateRequestSubfield(i *service.Interfaces) fiber.Handler {
+	type input struct {
+		Value string `form:"value"`
+	}
+	return func(c *fiber.Ctx) error {
+		in := new(input)
+		if err := c.BodyParser(in); err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		pid, err := util.GetPID(c)
+		if err != nil {
+			if err == util.ErrNoPID {
+				c.Status(fiber.StatusUnauthorized)
+				return nil
+			}
+
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		id, err := util.GetID(c, "id")
+		if err != nil {
+			if err == util.ErrNoID {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		subfield, err := qtx.GetRequestSubfield(context.Background(), id)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			} else {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+
+		field, err := qtx.GetRequestField(context.Background(), subfield.RFID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO: This means there's a subfield in the system without a field
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			} else {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+
+		req, err := qtx.GetRequest(context.Background(), field.RID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO: This means there's a subfield and field without a request
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		sfc, err := request.FieldSubfieldConfig(req.Type, field.Type)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !request.IsFieldTypeValid(req.Type, field.Type) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !request.IsEditable(pid, &req) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if !request.IsFieldValueValid(req.Type, field.Type, in.Value) {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if subfield.Value == in.Value {
+			c.Status(fiber.StatusConflict)
+			return nil
+		}
+
+		subfields, err := qtx.ListSubfieldsForField(context.Background(), field.ID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO: Log this out
+			} else {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+
+		// TODO: Make this a utility function?
+		if sfc.Unique {
+			for _, subfield := range subfields {
+				if subfield.Value == in.Value {
+					c.Status(fiber.StatusConflict)
+					return nil
+				}
+			}
+		}
+
+		if err := qtx.UpdateRequestSubfield(context.Background(), query.UpdateRequestSubfieldParams{
+			ID:    subfield.ID,
+			Value: in.Value,
+		}); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		c.Status(fiber.StatusCreated)
+		return nil
+	}
+}
+
+func DeleteRequestSubfield(i *service.Interfaces) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// TODO: Probably pull the PID here for auditing purposes
+		if !util.IsLoggedIn(c) {
+			c.Status(fiber.StatusUnauthorized)
+			return nil
+		}
+
+		id, err := util.GetID(c, "id")
+		if err != nil {
+			if err == util.ErrNoID {
+				c.Status(fiber.StatusBadRequest)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		tx, err := i.Database.Begin()
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+		defer tx.Rollback()
+		qtx := i.Queries.WithTx(tx)
+
+		subfield, err := qtx.GetRequestSubfield(context.Background(), id)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.Status(fiber.StatusNotFound)
+				return nil
+			} else {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+
+		field, err := qtx.GetRequestField(context.Background(), subfield.RFID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO: This means there's a subfield in the system without a field
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			} else {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+
+		req, err := qtx.GetRequest(context.Background(), field.RID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO: This means there's a subfield and field without a request
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		sfc, err := request.FieldSubfieldConfig(req.Type, field.Type)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		subfields, err := qtx.ListSubfieldsForField(context.Background(), field.ID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO: Log this out
+			} else {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		}
+
+		if len(subfields)-1 < sfc.MinValues {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
+		if err := qtx.DeleteRequestSubfield(context.Background(), subfield.ID); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		return nil
+	}
+}
+
 func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		pid, err := util.GetPID(c)
@@ -625,7 +990,7 @@ func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		rid, err := util.GetID(c)
+		rid, err := util.GetID(c, "id")
 		if err != nil {
 			if err == util.ErrNoID {
 				c.Status(fiber.StatusBadRequest)
@@ -734,7 +1099,7 @@ func UpdateRequestFieldStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		rid, err := util.GetID(c)
+		rid, err := util.GetID(c, "id")
 		if err != nil {
 			if err == util.ErrNoID {
 				c.Status(fiber.StatusBadRequest)
@@ -862,7 +1227,7 @@ func DeleteRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		rid, err := util.GetID(c)
+		rid, err := util.GetID(c, "id")
 		if err != nil {
 			if err == util.ErrNoID {
 				c.Status(fiber.StatusBadRequest)
@@ -960,7 +1325,7 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		rid, err := util.GetID(c)
+		rid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return nil
@@ -1092,7 +1457,7 @@ func DeleteRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		id, err := util.GetID(c)
+		id, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return nil
@@ -1186,7 +1551,7 @@ func EditRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		id, err := util.GetID(c)
+		id, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return nil

@@ -18,11 +18,14 @@ func Handlers(app *fiber.App, i *service.Interfaces) {
 	app.Post(route.Help, handler.SearchHelp(i))
 
 	app.Post(route.Requests, handler.CreateRequest(i))
-	app.Get(route.RequestFieldPathParam, handler.RequestFieldPage(i))
-	app.Patch(route.RequestFieldPathParam, handler.UpdateRequestField(i))
+
+	app.Get(route.RequestFieldTypePathParam, handler.RequestFieldPage(i))
+	app.Patch(route.RequestFieldTypePathParam, handler.UpdateRequestField(i))
 	app.Post(route.RequestFieldStatusPathParam, handler.UpdateRequestFieldStatus(i))
 	app.Get(route.RequestPathParam, handler.RequestPage(i))
 	app.Post(route.RequestStatusPathParam, handler.UpdateRequestStatus(i))
+
+	app.Post(route.RequestSubfieldsPathParam, handler.CreateRequestSubfield(i))
 
 	app.Post(route.RequestChangeRequestFieldPathParam, handler.CreateRequestChangeRequest(i))
 	app.Delete(route.RequestChangeRequestPathParam, handler.DeleteRequestChangeRequest(i))

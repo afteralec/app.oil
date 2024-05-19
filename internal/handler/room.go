@@ -91,7 +91,7 @@ func RoomPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
 		}
 
-		rmid, err := util.GetID(c)
+		rmid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(view.Forbidden, view.Bind(c), layout.Standalone)
@@ -483,7 +483,7 @@ func EditRoomPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
-		rmid, err := util.GetID(c)
+		rmid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
@@ -592,7 +592,7 @@ func RoomGrid(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		rid, err := util.GetID(c)
+		rid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return nil
@@ -719,7 +719,7 @@ func EditRoomExit(i *service.Interfaces) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(sessionExpiredNoticeParams), layout.None)
 		}
 
-		rid, err := util.GetID(c)
+		rid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
@@ -954,7 +954,7 @@ func ClearRoomExit(i *service.Interfaces) fiber.Handler {
 			return c.Render(partial.NoticeSectionError, partial.BindNoticeSection(sessionExpiredNoticeParams), layout.None)
 		}
 
-		rid, err := util.GetID(c)
+		rid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			c.Append(header.HXAcceptable, "true")
@@ -1134,7 +1134,7 @@ func EditRoomTitle(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		rmid, err := util.GetID(c)
+		rmid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return nil
@@ -1234,7 +1234,7 @@ func EditRoomDescription(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		rmid, err := util.GetID(c)
+		rmid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return nil
@@ -1331,7 +1331,7 @@ func EditRoomSize(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		rmid, err := util.GetID(c)
+		rmid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return nil

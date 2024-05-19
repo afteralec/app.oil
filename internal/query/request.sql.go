@@ -384,6 +384,23 @@ func (q *Queries) GetRequestFieldByTypeWithChangeRequests(ctx context.Context, a
 	return i, err
 }
 
+const getRequestSubfield = `-- name: GetRequestSubfield :one
+SELECT created_at, updated_at, value, rfid, id FROM request_subfields WHERE id = ?
+`
+
+func (q *Queries) GetRequestSubfield(ctx context.Context, id int64) (RequestSubfield, error) {
+	row := q.queryRow(ctx, q.getRequestSubfieldStmt, getRequestSubfield, id)
+	var i RequestSubfield
+	err := row.Scan(
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Value,
+		&i.RFID,
+		&i.ID,
+	)
+	return i, err
+}
+
 const listOpenRequestChangeRequestsByFieldID = `-- name: ListOpenRequestChangeRequestsByFieldID :many
 SELECT created_at, updated_at, value, text, rfid, pid, id FROM open_request_change_requests WHERE rfid IN (/*SLICE:rfids*/?)
 `
@@ -860,5 +877,19 @@ type UpdateRequestStatusParams struct {
 
 func (q *Queries) UpdateRequestStatus(ctx context.Context, arg UpdateRequestStatusParams) error {
 	_, err := q.exec(ctx, q.updateRequestStatusStmt, updateRequestStatus, arg.Status, arg.ID)
+	return err
+}
+
+const updateRequestSubfield = `-- name: UpdateRequestSubfield :exec
+UPDATE request_subfields SET value = ? WHERE id = ?
+`
+
+type UpdateRequestSubfieldParams struct {
+	Value string
+	ID    int64
+}
+
+func (q *Queries) UpdateRequestSubfield(ctx context.Context, arg UpdateRequestSubfieldParams) error {
+	_, err := q.exec(ctx, q.updateRequestSubfieldStmt, updateRequestSubfield, arg.Value, arg.ID)
 	return err
 }

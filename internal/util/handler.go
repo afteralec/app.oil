@@ -37,9 +37,8 @@ func IsLoggedIn(c *fiber.Ctx) bool {
 
 var ErrNoID error = errors.New("no ID value found")
 
-func GetID(c *fiber.Ctx) (int64, error) {
-	// TODO: Get this locals key into a constant
-	param := c.Params("id")
+func GetID(c *fiber.Ctx, key string) (int64, error) {
+	param := c.Params(key)
 	if len(param) == 0 {
 		return 0, ErrNoID
 	}

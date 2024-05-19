@@ -29,7 +29,7 @@ func (r *DefaultRenderer) Render(e *html.Engine, field *query.RequestField, _ []
 			"FieldValue": field.Value,
 			// TODO: This uses the request FormID constant; maybe add a constant package?
 			"FormID": "request-form",
-			"Path":   route.RequestFieldPath(field.RID, field.Type),
+			"Path":   route.RequestFieldTypePath(field.RID, field.Type),
 		},
 	})
 }
@@ -43,7 +43,7 @@ func (r *DefaultSubfieldRenderer) Render(e *html.Engine, field *query.RequestFie
 			"FormID": "request-form",
 			"Value":  subfield.Value,
 			// TODO: Subfield path
-			"Path": route.RequestFieldPath(field.RID, field.Type),
+			"Path": route.RequestFieldTypePath(field.RID, field.Type),
 		})
 	}
 
@@ -73,6 +73,7 @@ type SubfieldConfig struct {
 	MinValues int
 	MaxValues int
 	Require   bool
+	Unique    bool
 }
 
 func NewSubfieldConfig(min, max int) SubfieldConfig {
@@ -80,6 +81,7 @@ func NewSubfieldConfig(min, max int) SubfieldConfig {
 		Require:   true,
 		MinValues: min,
 		MaxValues: max,
+		Unique:    true,
 	}
 }
 
@@ -160,7 +162,7 @@ func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
 		Type:                    f.Type,
 		Label:                   f.Label,
 		Value:                   v,
-		Path:                    route.RequestFieldPath(p.Request.ID, f.Type),
+		Path:                    route.RequestFieldTypePath(p.Request.ID, f.Type),
 		AllowEdit:               allowEdit,
 		IsApproved:              field.Status == StatusApproved,
 		ShowRequestChangeAction: p.PID == p.Request.RPID && p.Request.Status == status.InReview,

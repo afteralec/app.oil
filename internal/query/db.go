@@ -204,6 +204,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getRequestFieldByTypeWithChangeRequestsStmt, err = db.PrepareContext(ctx, getRequestFieldByTypeWithChangeRequests); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRequestFieldByTypeWithChangeRequests: %w", err)
 	}
+	if q.getRequestSubfieldStmt, err = db.PrepareContext(ctx, getRequestSubfield); err != nil {
+		return nil, fmt.Errorf("error preparing query GetRequestSubfield: %w", err)
+	}
 	if q.getRoomStmt, err = db.PrepareContext(ctx, getRoom); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRoom: %w", err)
 	}
@@ -329,6 +332,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.updateRequestStatusStmt, err = db.PrepareContext(ctx, updateRequestStatus); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateRequestStatus: %w", err)
+	}
+	if q.updateRequestSubfieldStmt, err = db.PrepareContext(ctx, updateRequestSubfield); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRequestSubfield: %w", err)
 	}
 	if q.updateRoomStmt, err = db.PrepareContext(ctx, updateRoom); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateRoom: %w", err)
@@ -671,6 +677,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getRequestFieldByTypeWithChangeRequestsStmt: %w", cerr)
 		}
 	}
+	if q.getRequestSubfieldStmt != nil {
+		if cerr := q.getRequestSubfieldStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getRequestSubfieldStmt: %w", cerr)
+		}
+	}
 	if q.getRoomStmt != nil {
 		if cerr := q.getRoomStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getRoomStmt: %w", cerr)
@@ -881,6 +892,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateRequestStatusStmt: %w", cerr)
 		}
 	}
+	if q.updateRequestSubfieldStmt != nil {
+		if cerr := q.updateRequestSubfieldStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRequestSubfieldStmt: %w", cerr)
+		}
+	}
 	if q.updateRoomStmt != nil {
 		if cerr := q.updateRoomStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateRoomStmt: %w", cerr)
@@ -1040,6 +1056,7 @@ type Queries struct {
 	getRequestFieldStmt                               *sql.Stmt
 	getRequestFieldByTypeStmt                         *sql.Stmt
 	getRequestFieldByTypeWithChangeRequestsStmt       *sql.Stmt
+	getRequestSubfieldStmt                            *sql.Stmt
 	getRoomStmt                                       *sql.Stmt
 	getTagsForHelpFileStmt                            *sql.Stmt
 	getVerifiedEmailByAddressStmt                     *sql.Stmt
@@ -1082,6 +1099,7 @@ type Queries struct {
 	updateRequestFieldValueByRequestAndTypeStmt       *sql.Stmt
 	updateRequestReviewerStmt                         *sql.Stmt
 	updateRequestStatusStmt                           *sql.Stmt
+	updateRequestSubfieldStmt                         *sql.Stmt
 	updateRoomStmt                                    *sql.Stmt
 	updateRoomDescriptionStmt                         *sql.Stmt
 	updateRoomExitEastStmt                            *sql.Stmt
@@ -1160,6 +1178,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getRequestFieldStmt:                               q.getRequestFieldStmt,
 		getRequestFieldByTypeStmt:                         q.getRequestFieldByTypeStmt,
 		getRequestFieldByTypeWithChangeRequestsStmt:       q.getRequestFieldByTypeWithChangeRequestsStmt,
+		getRequestSubfieldStmt:                            q.getRequestSubfieldStmt,
 		getRoomStmt:                                       q.getRoomStmt,
 		getTagsForHelpFileStmt:                            q.getTagsForHelpFileStmt,
 		getVerifiedEmailByAddressStmt:                     q.getVerifiedEmailByAddressStmt,
@@ -1202,6 +1221,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updateRequestFieldValueByRequestAndTypeStmt:       q.updateRequestFieldValueByRequestAndTypeStmt,
 		updateRequestReviewerStmt:                         q.updateRequestReviewerStmt,
 		updateRequestStatusStmt:                           q.updateRequestStatusStmt,
+		updateRequestSubfieldStmt:                         q.updateRequestSubfieldStmt,
 		updateRoomStmt:                                    q.updateRoomStmt,
 		updateRoomDescriptionStmt:                         q.updateRoomDescriptionStmt,
 		updateRoomExitEastStmt:                            q.updateRoomExitEastStmt,

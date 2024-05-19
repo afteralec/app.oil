@@ -83,7 +83,7 @@ func EditActorImagePage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
-		aiid, err := util.GetID(c)
+		aiid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
@@ -151,7 +151,7 @@ func ActorImagePage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.Login, view.Bind(c), layout.Standalone)
 		}
 
-		aiid, err := util.GetID(c)
+		aiid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
@@ -416,7 +416,7 @@ func EditActorImageShortDescription(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		aiid, err := util.GetID(c)
+		aiid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return nil
@@ -512,7 +512,7 @@ func EditActorImageDescription(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		aiid, err := util.GetID(c)
+		aiid, err := util.GetID(c, "id")
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
 			return nil

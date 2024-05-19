@@ -225,6 +225,16 @@ func NextUnreviewedField(t string, fieldmap field.Map) (field.NextUnreviewedOutp
 	return fields.NextUnreviewed(fieldmap)
 }
 
+func FieldSubfieldConfig(t, ft string) (field.SubfieldConfig, error) {
+	fd, err := GetFieldDefinition(t, ft)
+	if err != nil {
+		// TODO: Trace this error
+		return field.SubfieldConfig{}, ErrNoDefinition
+	}
+	return fd.SubfieldConfig, nil
+}
+
+// TODO: Deprecate this in favor of FieldSubfieldConfig()
 func FieldRequiresSubfields(t, ft string) bool {
 	fd, err := GetFieldDefinition(t, ft)
 	if err != nil {

@@ -75,7 +75,7 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 	// TODO: Sort out this being disabled
 	b["BackLink"] = route.RequestPath(p.Field.RID)
 
-	b["RequestFormPath"] = route.RequestFieldPath(p.Field.RID, p.Field.Type)
+	b["RequestFormPath"] = route.RequestFieldTypePath(p.Field.RID, p.Field.Type)
 	// TODO: Change this to FieldName
 	b["Field"] = p.Field.Type
 	b["FieldValue"] = p.Field.Value

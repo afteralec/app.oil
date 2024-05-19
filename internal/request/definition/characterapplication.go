@@ -17,6 +17,8 @@ import (
 	"petrichormud.com/app/internal/route"
 )
 
+// TODO: Create constants for FieldTypes and lift them into the Request
+
 type titlerCharacterApplication struct{}
 
 func (t *titlerCharacterApplication) ForOverview(fields field.Map) string {
@@ -64,7 +66,7 @@ type fieldCharacterApplicationGenderFormRenderer struct{}
 func (f *fieldCharacterApplicationGenderFormRenderer) Render(e *html.Engine, field *query.RequestField, _ []query.RequestSubfield, template string) (template.HTML, error) {
 	b := fiber.Map{
 		"FormID":     "request-form",
-		"Path":       route.RequestFieldPath(field.RID, field.Type),
+		"Path":       route.RequestFieldTypePath(field.RID, field.Type),
 		"FieldValue": field.Value,
 	}
 	b["GenderRadioGroup"] = []bind.Radio{

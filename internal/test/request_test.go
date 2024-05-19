@@ -250,7 +250,8 @@ func TestRequestFieldPageUnauthorizedNotLoggedIn(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestRequest(t, &i, rid)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid, definition.FieldCharacterApplicationName.Type))
+
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	res, err := a.Test(req)
 	if err != nil {
@@ -278,7 +279,7 @@ func TestRequestFieldPageUnowned(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -314,7 +315,7 @@ func TestRequestFieldPageSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -342,7 +343,7 @@ func TestRequestFieldPageNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid+1, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid+1, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -369,7 +370,7 @@ func TestRequestFieldPageFatal(t *testing.T) {
 
 	i.Close()
 
-	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodGet, url, nil)
 	req.AddCookie(sessionCookie)
@@ -608,7 +609,7 @@ func TestUpdateRequestFieldUnauthorizedNotLoggedIn(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestRequest(t, &i, rid)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -641,7 +642,7 @@ func TestUpdateRequestFieldNotFound(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid+1, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid+1, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -674,7 +675,7 @@ func TestUpdateRequestFieldFatal(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -722,7 +723,7 @@ func TestUpdateRequestFieldForbiddenUnowned(t *testing.T) {
 	writer.WriteField("value", "Test")
 	writer.Close()
 
-	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -765,7 +766,7 @@ func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
 	writer.WriteField("value", "Test")
 	writer.Close()
 
-	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -794,7 +795,7 @@ func TestUpdateRequestFieldBadRequestMissingBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodPatch, url, nil)
 	req.AddCookie(sessionCookie)
@@ -822,7 +823,7 @@ func TestUpdateRequestFieldBadRequestMalformedBody(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
 
-	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid, definition.FieldCharacterApplicationName.Type))
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -870,7 +871,7 @@ func TestUpdateRequestFieldSuccessWhileReviewed(t *testing.T) {
 	writer.WriteField("value", "Test")
 	writer.Close()
 
-	url := MakeTestURL(route.RequestFieldPath(rid, definition.FieldCharacterApplicationName.Type))
+	url := MakeTestURL(route.RequestFieldTypePath(rid, definition.FieldCharacterApplicationName.Type))
 
 	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -2031,4 +2032,171 @@ func TestEditRequestChangeRequestSuccess(t *testing.T) {
 	}
 
 	require.Equal(t, change.Text, "This name is not fantastic.")
+}
+
+func TestCreateRequestSubfieldUnauthorizedNotLoggedIn(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	_ = LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("value", "test")
+	writer.Close()
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "keywords",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestCreateRequestSubfieldBadRequestInvalidValue(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("value", "test1")
+	writer.Close()
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "keywords",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestCreateRequestSubfieldBadRequestMalformedBody(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("notavalue", "test")
+	writer.Close()
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "keywords",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
+}
+
+func TestCreateRequestSubfieldSuccess(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("value", "test")
+	writer.Close()
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "keywords",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusCreated, res.StatusCode)
 }
