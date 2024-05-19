@@ -164,7 +164,7 @@ func NewFieldCharacterApplicationKeywords() field.Field {
 	b.Help(partial.RequestFieldHelpCharacterApplicationKeywords)
 	b.Data(partial.RequestFieldDataCharacterApplicationKeywords)
 	b.Form(partial.RequestFieldFormCharacterApplicationKeywords)
-	b.FormRenderer(new(field.DefaultRenderer))
+	b.FormRenderer(new(field.DefaultSubfieldRenderer))
 	b.Validator(&actor.KeywordValidator)
 	b.SubfieldConfig(field.NewSubfieldConfig(2, 10))
 	return b.Build()

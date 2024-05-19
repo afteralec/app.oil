@@ -37,11 +37,20 @@ func (r *DefaultRenderer) Render(e *html.Engine, field *query.RequestField, _ []
 type DefaultSubfieldRenderer struct{}
 
 func (r *DefaultSubfieldRenderer) Render(e *html.Engine, field *query.RequestField, subfields []query.RequestSubfield, template string) (template.HTML, error) {
+	sfs := []fiber.Map{}
+	for _, subfield := range subfields {
+		sfs = append(sfs, fiber.Map{
+			"FormID": "request-form",
+			"Value":  subfield.Value,
+			// TODO: Subfield path
+			"Path": route.RequestFieldPath(field.RID, field.Type),
+		})
+	}
+
 	return partial.Render(e, partial.RenderParams{
 		Template: template,
 		Bind: fiber.Map{
-			"FormID": "request-form",
-			"Path":   route.RequestFieldPath(field.RID, field.Type),
+			"Subfields": sfs,
 		},
 	})
 }
