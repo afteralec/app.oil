@@ -133,20 +133,6 @@ func MakeDefaultStatusIcon(iconsize int, textsize string, includeText bool) Stat
 	return result
 }
 
-func IsEditable(pid int64, req *query.Request, fd field.Field) bool {
-	if fd.ForReviewer() {
-		return req.Status == StatusInReview && pid == req.RPID
-	}
-
-	if fd.ForPlayer() {
-		return pid == req.PID && (req.Status == StatusIncomplete ||
-			req.Status == StatusReady ||
-			req.Status == StatusReviewed)
-	}
-
-	return false
-}
-
 var ErrNextStatusForbidden error = errors.New("that status update is forbidden")
 
 type NextStatusParams struct {
