@@ -1,6 +1,6 @@
-# Database schema files required for codegen
-schema.hcl
-migrations/
+# Temporary files
+tmp
+tmp/*
 
 # Built js and css artifacts
 web/static
@@ -10,9 +10,10 @@ node_modules
 
 # Built artifacts
 bin/
+bin/**
 
 # Shared protobuf definition files
-/proto
+proto
 
 # Mac files
 .DS_Store
