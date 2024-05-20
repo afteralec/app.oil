@@ -49,6 +49,12 @@ func RequestFieldSubfieldsPath(rid, id int64) string {
 	return b.String()
 }
 
+func RequestFieldSubfieldPath(rid, rfid, id int64) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "%s/%d/%s/%d/%s/%d", Requests, rid, RequestFields, rfid, RequestSubfields, id)
+	return b.String()
+}
+
 func RequestChangeRequestPath(id int64) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "%s/%s/%d", Requests, RequestChangeRequests, id)

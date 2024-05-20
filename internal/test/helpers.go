@@ -181,6 +181,28 @@ func CreateTestCharacterApplication(t *testing.T, i *service.Interfaces, a *fibe
 	return reqs[0].ID
 }
 
+func CreateTestRequestSubfield(t *testing.T, i *service.Interfaces, rfid int64, ft, v string) int64 {
+	if err := i.Queries.CreateRequestSubfield(context.Background(), query.CreateRequestSubfieldParams{
+		RFID:  rfid,
+		Value: v,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	subfields, err := i.Queries.ListSubfieldsForField(context.Background(), rfid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, subfield := range subfields {
+		if subfield.Value == v {
+			return subfield.ID
+		}
+	}
+
+	return 0
+}
+
 func DeleteTestRequest(t *testing.T, i *service.Interfaces, rid int64) {
 	_, err := i.Database.Exec("DELETE FROM requests WHERE id = ?;", rid)
 	if err != nil && err != sql.ErrNoRows {

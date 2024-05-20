@@ -847,6 +847,11 @@ func UpdateRequestSubfield(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		if !sfc.Require {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
 		if !request.IsFieldTypeValid(req.Type, field.Type) {
 			c.Status(fiber.StatusBadRequest)
 			return nil
