@@ -780,6 +780,65 @@ func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
+// TODO: When there's a Reviewer Field that isn't Subfielded,
+// add a test case for the Success path of a reviewer updating
+// that field and failure cases for a Player being forbidden
+// from updating that field
+func TestUpdateRequestFieldForbiddenReviewer(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	pid := CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	rpid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	permid := CreateTestPlayerPermission(t, &i, rpid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	defer DeleteTestPlayerPermission(t, &i, permid)
+
+	// TODO: Update this to use a helper that calls the app's API instead of hacking it
+	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
+		RID:    rid,
+		PID:    pid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(t)
+	}
+
+	if err := i.Queries.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
+		ID:   rid,
+		RPID: rpid,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("value", "Test")
+	writer.Close()
+
+	url := MakeTestURL(route.RequestFieldTypePath(rid, definition.FieldCharacterApplicationName.Type))
+
+	req := httptest.NewRequest(http.MethodPatch, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
 func TestUpdateRequestFieldBadRequestMissingBody(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
@@ -2465,6 +2524,49 @@ func TestDeleteRequestSubfieldUnauthorizedNotLoggedIn(t *testing.T) {
 	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
 }
 
+func TestDeleteRequestSubfieldForbiddenReviewerFieldPlayer(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("value", "test")
+	writer.Close()
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "keywords",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+// TODO: Update this test case once there's a subfielded Player Field
 func TestDeleteRequestSubfieldForbiddenUnowned(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
