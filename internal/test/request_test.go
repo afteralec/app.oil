@@ -2159,7 +2159,140 @@ func TestCreateRequestSubfieldBadRequestMalformedBody(t *testing.T) {
 	require.Equal(t, fiber.StatusBadRequest, res.StatusCode)
 }
 
+func TestCreateRequestSubfieldForbiddenSubfieldNotRequired(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("value", "test")
+	writer.Close()
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "name",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestCreateRequestSubfieldConflictUniqueValue(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("value", "test")
+	writer.Close()
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "keywords",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	_, err = a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusConflict, res.StatusCode)
+}
+
+// TODO: Add a test for "too many" subfields
+
 func TestCreateRequestSubfieldSuccess(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("value", "test")
+	writer.Close()
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "keywords",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusCreated, res.StatusCode)
+}
+
+func TestDeleteRequestSubfieldSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
