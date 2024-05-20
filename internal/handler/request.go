@@ -561,11 +561,6 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if !request.IsEditable(pid, &req) {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-
 		field, err := qtx.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
 			RID:  rid,
 			Type: ft,
@@ -576,6 +571,17 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 				return nil
 			}
 			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		fd, err := request.GetFieldDefinition(req.Type, field.Type)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if !request.IsEditable(pid, &req, fd) {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
@@ -676,11 +682,6 @@ func CreateRequestSubfield(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if !request.IsEditable(pid, &req) {
-			c.Status(fiber.StatusForbidden)
-			return nil
-		}
-
 		field, err := qtx.GetRequestField(context.Background(), rfid)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -688,6 +689,17 @@ func CreateRequestSubfield(i *service.Interfaces) fiber.Handler {
 				return nil
 			}
 			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		fd, err := request.GetFieldDefinition(req.Type, field.Type)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if !request.IsEditable(pid, &req, fd) {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
@@ -818,6 +830,17 @@ func UpdateRequestSubfield(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		fd, err := request.GetFieldDefinition(req.Type, field.Type)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if !request.IsEditable(pid, &req, fd) {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
 		sfc, err := request.FieldSubfieldConfig(req.Type, field.Type)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
@@ -826,11 +849,6 @@ func UpdateRequestSubfield(i *service.Interfaces) fiber.Handler {
 
 		if !request.IsFieldTypeValid(req.Type, field.Type) {
 			c.Status(fiber.StatusBadRequest)
-			return nil
-		}
-
-		if !request.IsEditable(pid, &req) {
-			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 
@@ -884,9 +902,13 @@ func UpdateRequestSubfield(i *service.Interfaces) fiber.Handler {
 
 func DeleteRequestSubfield(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// TODO: Probably pull the PID here for auditing purposes
-		if !util.IsLoggedIn(c) {
-			c.Status(fiber.StatusUnauthorized)
+		pid, err := util.GetPID(c)
+		if err != nil {
+			if err == util.ErrNoPID {
+				c.Status(fiber.StatusUnauthorized)
+				return nil
+			}
+			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
@@ -939,6 +961,17 @@ func DeleteRequestSubfield(i *service.Interfaces) fiber.Handler {
 				return nil
 			}
 			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		fd, err := request.GetFieldDefinition(req.Type, field.Type)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return nil
+		}
+
+		if !request.IsEditable(pid, &req, fd) {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 

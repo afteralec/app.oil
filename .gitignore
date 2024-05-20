@@ -1,6 +1,5 @@
 # Temporary files
 tmp
-tmp/*
 
 # Built js and css artifacts
 web/static
@@ -9,8 +8,7 @@ web/static
 node_modules
 
 # Built artifacts
-bin/
-bin/**
+bin
 
 # Shared protobuf definition files
 proto
