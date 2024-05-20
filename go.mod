@@ -1,6 +1,6 @@
 module petrichormud.com/app
 
-go 1.21.1
+go 1.22.3
 
 require (
 	github.com/VividCortex/mysqlerr v1.0.0
