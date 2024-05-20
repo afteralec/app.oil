@@ -1777,9 +1777,9 @@ func CharacterApplicationsQueuePage(i *service.Interfaces) fiber.Handler {
 		}
 
 		b := view.Bind(c)
-		// TODO: Move this length check down into the template
-		b["ThereAreCharacterApplications"] = len(summaries) > 0
-		b["CharacterApplicationSummaries"] = summaries
+		if len(summaries) > 0 {
+			b["CharacterApplicationSummaries"] = summaries
+		}
 		return c.Render(view.CharacterApplicationQueue, b)
 	}
 }

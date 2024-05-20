@@ -11,7 +11,7 @@
     </header>
     <section id="character-applications" class="border-t">
       <!-- prettier-ignore -->
-      {{ if .ThereAreCharacterApplications }}
+      {{ if .CharacterApplicationSummaries }}
         {{ range .CharacterApplicationSummaries }}
           {{ template "partial-character-application-queue-row" . }}
         {{ end }}
