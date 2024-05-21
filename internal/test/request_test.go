@@ -2706,7 +2706,7 @@ func TestUpdateRequestSubfieldUnauthorizedNotLoggedIn(t *testing.T) {
 
 	url := MakeTestURL(route.RequestFieldSubfieldPath(rid, field.ID, rsfid))
 
-	req := httptest.NewRequest(http.MethodPut, url, body)
+	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
 	res, err := a.Test(req)
@@ -2769,7 +2769,7 @@ func TestUpdateRequestSubfieldBadRequestInvalidValue(t *testing.T) {
 
 	url := MakeTestURL(route.RequestFieldSubfieldPath(rid, field.ID, rsfid))
 
-	req := httptest.NewRequest(http.MethodPut, url, body)
+	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
@@ -2833,7 +2833,7 @@ func TestUpdateRequestSubfieldBadRequestMalformedBody(t *testing.T) {
 
 	url := MakeTestURL(route.RequestFieldSubfieldPath(rid, field.ID, rsfid))
 
-	req := httptest.NewRequest(http.MethodPut, url, body)
+	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
@@ -2902,7 +2902,7 @@ func TestUpdateRequestSubfieldForbiddenNotReviewer(t *testing.T) {
 
 	url := MakeTestURL(route.RequestFieldSubfieldPath(rid, field.ID, rsfid))
 
-	req := httptest.NewRequest(http.MethodPut, url, body)
+	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
@@ -2949,7 +2949,7 @@ func TestUpdateRequestSubfieldForbiddenSubfieldNotRequired(t *testing.T) {
 
 	url := MakeTestURL(route.RequestFieldSubfieldPath(rid, field.ID, rsfid))
 
-	req := httptest.NewRequest(http.MethodPut, url, body)
+	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
@@ -3018,7 +3018,7 @@ func TestUpdateRequestSubfieldConflictUniqueValue(t *testing.T) {
 
 	url := MakeTestURL(route.RequestFieldSubfieldPath(rid, field.ID, rsfid))
 
-	req := httptest.NewRequest(http.MethodPut, url, body)
+	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 
@@ -3082,7 +3082,7 @@ func TestUpdateRequestSubfieldSuccess(t *testing.T) {
 
 	url := MakeTestURL(route.RequestFieldSubfieldPath(rid, field.ID, rsfid))
 
-	req := httptest.NewRequest(http.MethodPut, url, body)
+	req := httptest.NewRequest(http.MethodPatch, url, body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.AddCookie(sessionCookie)
 

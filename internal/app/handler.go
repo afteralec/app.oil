@@ -26,7 +26,7 @@ func Handlers(app *fiber.App, i *service.Interfaces) {
 	app.Post(route.RequestStatusPathParam, handler.UpdateRequestStatus(i))
 
 	app.Post(route.RequestSubfieldsPathParam, handler.CreateRequestSubfield(i))
-	app.Put(route.RequestSubfieldPathParam, handler.UpdateRequestSubfield(i))
+	app.Patch(route.RequestSubfieldPathParam, handler.UpdateRequestSubfield(i))
 
 	app.Post(route.RequestChangeRequestFieldPathParam, handler.CreateRequestChangeRequest(i))
 	app.Delete(route.RequestChangeRequestPathParam, handler.DeleteRequestChangeRequest(i))
