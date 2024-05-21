@@ -64,7 +64,7 @@ var (
 )
 
 func IsKeywordValid(kw string) bool {
-	return false
+	return KeywordValidator.IsValid(kw)
 }
 
 var (

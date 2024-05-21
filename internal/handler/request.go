@@ -751,6 +751,8 @@ func CreateRequestSubfield(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		// TODO: Let this append the element instead
+		c.Append(header.HXRefresh, header.True)
 		c.Status(fiber.StatusCreated)
 		return nil
 	}
@@ -900,6 +902,8 @@ func UpdateRequestSubfield(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		// TODO: Let this swap on the id
+		c.Append(header.HXRefresh, header.True)
 		c.Status(fiber.StatusCreated)
 		return nil
 	}

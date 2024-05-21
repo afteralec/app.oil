@@ -1,5 +1,8 @@
 "use strict";
 
+// TODO: Organize this file
+// TODO: Add JSDoc to this
+
 export function toggleTheme() {
   if (document.body.classList.contains("light")) {
     document.body.classList.remove("light");
@@ -95,36 +98,41 @@ export function getResetPasswordData() {
 }
 
 export function sanitizeUsername(u) {
-  return u.replace(/[^a-zA-Z0-9_-]+/gi, "").toLowerCase();
+  return u.toLowerCase().replace(/[^a-zA-Z0-9_-]+/g, "");
 }
 
 // TODO: Test
 export function sanitizeCharacterName(n) {
-  return n.replace(/[^a-zA-Z'-]+/gi, "");
+  return n.replace(/[^a-zA-Z'-]+/g, "");
 }
 
 // TODO: Test
 export function sanitizeCharacterShortDescription(sdesc) {
-  return sdesc.replace(/[^a-zA-Z, -]+/gi, "").toLowerCase();
+  return sdesc.replace(/[^a-zA-Z, -]+/g, "").toLowerCase();
 }
 
 // TODO: Test
 export function sanitizeCharacterDescription(desc) {
-  return desc.replace(/[^a-zA-Z, '-.!()]+/gi, "");
+  return desc.replace(/[^a-zA-Z, '-.!()]+/g, "");
 }
 
 // TODO: Test
 export function sanitizeCharacterBackstory(bs) {
-  return bs.replace(/[^a-zA-Z, '\-\.!()\r\n]+/gi, "");
+  return bs.replace(/[^a-zA-Z, '\-\.!()\r\n]+/g, "");
+}
+
+// TODO: Test
+export function sanitizeCharacterKeyword(kw) {
+  return kw.toLowerCase().replace(/[^a-z]+/g, "");
 }
 
 export function sanitizeRequestChangeRequest(c = "") {
-  const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
+  const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/g;
   return c.replace(regex, "");
 }
 
 export function sanitizeActorImageName(u) {
-  return u.replace(/[^a-z-]+/gi, "").toLowerCase();
+  return u.replace(/[^a-z-]+/g, "").toLowerCase();
 }
 
 // TODO: Pass these lengths in as constants
@@ -175,6 +183,27 @@ export function isCharacterBackstoryValid(bs) {
   if (bs.length > 10000) return false;
   const regex = /[^a-zA-Z, '\-\.!()\r\n]+/gi;
   if (regex.test(bs)) return false;
+  return true;
+}
+
+// TODO: Test
+export function isCharacterKeywordValid(kw) {
+  if (kw.length < 2) return false;
+  if (kw.length > 10) return false;
+  const regex = /[^a-z]+/gi;
+  if (regex.test(kw)) return false;
+  return true;
+}
+
+// TODO: Test
+export function areCharacterKeywordsValid(kws) {
+  if (kws.length < 2) return false;
+  if (kws.length > 10) return false;
+  for (let i = 0; i < kws.length; i++) {
+    if (!isCharacterKeywordValid(kws[i])) {
+      return false;
+    }
+  }
   return true;
 }
 
@@ -399,6 +428,19 @@ export function getCharacterApplicationBackstoryData(backstory) {
   };
 }
 
+export function getCharacterApplicationKeywordData(kw) {
+  return {
+    kw,
+    eval: {
+      kw: {
+        len: kw.length > 0,
+      },
+    },
+    sanitizeCharacterKeyword,
+    isCharacterKeywordValid,
+  };
+}
+
 // TODO: Roll this and the generalized func into one?
 export function getCharacterApplicationSummaryData() {
   return {
@@ -488,6 +530,7 @@ window.getCharacterApplicationDescriptionData =
   getCharacterApplicationDescriptionData;
 window.getCharacterApplicationBackstoryData =
   getCharacterApplicationBackstoryData;
+window.getCharacterApplicationKeywordData = getCharacterApplicationKeywordData;
 // TODO: I believe this function can be removed
 window.getCharacterApplicationSummaryData = getCharacterApplicationSummaryData;
 // TODO: I think this function can be removed

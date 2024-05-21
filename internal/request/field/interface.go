@@ -1,9 +1,11 @@
 package field
 
 import (
+	"fmt"
 	"html/template"
 	"maps"
 	"slices"
+	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
 	html "github.com/gofiber/template/html/v2"
@@ -36,14 +38,16 @@ func (r *DefaultRenderer) Render(e *html.Engine, field *query.RequestField, _ []
 
 type DefaultSubfieldRenderer struct{}
 
+// TODO: Figure out if we need/where this FormID can go to be shareable across these subpackages
 func (r *DefaultSubfieldRenderer) Render(e *html.Engine, field *query.RequestField, subfields []query.RequestSubfield, template string) (template.HTML, error) {
 	sfs := []fiber.Map{}
 	for _, subfield := range subfields {
+		var b strings.Builder
+		fmt.Fprintf(&b, "%s-subfield-%d", "request-form", subfield.ID)
 		sfs = append(sfs, fiber.Map{
-			"FormID": "request-form",
+			"FormID": b.String(),
+			"Path":   route.RequestFieldSubfieldPath(field.RID, field.ID, subfield.ID),
 			"Value":  subfield.Value,
-			// TODO: Subfield path
-			"Path": route.RequestFieldTypePath(field.RID, field.Type),
 		})
 	}
 
@@ -51,6 +55,8 @@ func (r *DefaultSubfieldRenderer) Render(e *html.Engine, field *query.RequestFie
 		Template: template,
 		Bind: fiber.Map{
 			"Subfields": sfs,
+			"FormID":    "request-form-subfield",
+			"Path":      route.RequestFieldSubfieldsPath(field.RID, field.ID),
 		},
 	})
 }

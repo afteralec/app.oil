@@ -1,9 +1,10 @@
-{{ define "partial-request-field-form-character-application-keywords" }} {{
-range .Subfields }}
+{{ define "partial-request-field-form-character-application-keywords" }}
+<!-- prettier-ignore -->
+{{ range .Subfields }}
 <form
   id="{{ .FormID }}"
-  class="space-y-2 px-4 pt-4"
-  x-data="getCharacterApplicationNameData(`{{ .Value }}`)"
+  class="update-keyword flex items-center justify-center gap-2 pt-4"
+  x-data="getCharacterApplicationKeywordData(`{{ .Value }}`)"
   @submit.prevent=""
   hx-patch="{{ .Path }}"
   hx-swap="none"
@@ -12,51 +13,56 @@ range .Subfields }}
     placeholder=""
     name="value"
     autofocus
-    id="requests-character-application-name"
     class="input"
-    x-model="name"
+    x-model="kw"
     @input="
-      eval.n.len = true;
-      name = sanitizeCharacterName(event.target.value);
+      eval.kw.len = true;
+      kw = sanitizeCharacterKeyword(event.target.value);
     "
   />
+  <button type="submit" class="button button-primary">Update</button>
+  <button type="button" class="button button-outline button-destructive">
+    Delete
+  </button>
 </form>
 {{ end }}
-<section>
-  <div
-    id="character-application-name-requirements"
-    class="text-xs leading-none text-muted-fg"
+<form
+  id="character-application-keyword-new"
+  class="flex items-center justify-center gap-2 pt-4"
+  x-data="getCharacterApplicationKeywordData(`{{ .Value }}`)"
+  @submit.prevent=""
+  hx-post="{{ .Path }}"
+  hx-swap="none"
+>
+  <input
+    placeholder=""
+    name="value"
+    autofocus
+    class="input"
+    x-model="kw"
+    @input="
+      eval.kw.len = true;
+      kw = sanitizeCharacterKeyword(event.target.value);
+    "
+  />
+  <button type="submit" class="button button-primary">Add</button>
+  <button
+    type="button"
+    class="button button-outline"
+    :click="
+      kw = '';
+      eval.kw.len = false;
+    "
   >
-    Upper and lower case letters, dashes, and apostrophes only.
+    Clear
+  </button>
+</form>
+<section class="pt-3">
+  <div class="text-xs leading-none text-muted-fg">
+    Character keywords must only be lowercase letters.
   </div>
-  <div
-    class="flex items-center gap-1 text-xs leading-none text-muted-fg"
-    x-cloak
-    x-show="!isCharacterNameValid(name) && !eval.n.len"
-  >
-    <!-- TODO: Move this string to a passed variable? -->
-    <p>Your character's name should be between 4 and 16 characters long.</p>
-  </div>
-  <div
-    class="flex items-center gap-1 text-xs leading-none text-err-fg"
-    x-cloak
-    x-show="!isCharacterNameValid(name) && eval.n.len && name.length < 4"
-  >
-    <p>Your character's name should be between 4 and 16 characters long.</p>
-  </div>
-  <div
-    class="flex items-center gap-1 text-xs leading-none text-success-fg"
-    x-cloak
-    x-show="!isCharacterNameValid(name) && eval.n.len && name.length >= 4 && name.length <= 16"
-  >
-    <p>Your character's name should be between 4 and 16 characters long.</p>
-  </div>
-  <div
-    class="flex items-center gap-1 text-xs leading-none text-err-fg"
-    x-cloak
-    x-show="!isCharacterNameValid(name) && eval.n.len && name.length > 16"
-  >
-    <p>Your character's name should be between 4 and 16 characters long.</p>
+  <div class="text-xs leading-none text-muted-fg">
+    A character must have at least 2 and no more than 10 keywords.
   </div>
 </section>
 {{ end }}

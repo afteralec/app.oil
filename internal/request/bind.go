@@ -1,7 +1,9 @@
 package request
 
 import (
+	"fmt"
 	"html/template"
+	"strings"
 
 	fiber "github.com/gofiber/fiber/v2"
 	html "github.com/gofiber/template/html/v2"
@@ -13,6 +15,16 @@ import (
 	"petrichormud.com/app/internal/route"
 )
 
+func (p *BindFieldViewParams) ShouldRenderForm(fd field.Field) bool {
+	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady || p.Request.Status == StatusReviewed {
+		return true
+	}
+	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID && fd.ForReviewer() && p.Field.Status != FieldStatusApproved {
+		return true
+	}
+	return false
+}
+
 type BindFieldViewParams struct {
 	Request    *query.Request
 	Field      *query.RequestField
@@ -21,18 +33,6 @@ type BindFieldViewParams struct {
 	Subfields  []query.RequestSubfield
 	PID        int64
 	Last       bool
-}
-
-func (p *BindFieldViewParams) ShouldRenderForm(fd field.Field) bool {
-	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady || p.Request.Status == StatusReviewed {
-		return true
-	}
-
-	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID && fd.ForReviewer() && p.Field.Status != FieldStatusApproved {
-		return true
-	}
-
-	return false
 }
 
 func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
@@ -96,6 +96,27 @@ func BindFieldView(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Ma
 	return b, nil
 }
 
+type BindFieldViewSubfieldParams struct {
+	Request   *query.Request
+	Field     *query.RequestField
+	Subfields []query.RequestSubfield
+}
+
+func BindFieldViewSubfield(b fiber.Map, p BindFieldViewSubfieldParams) (fiber.Map, error) {
+	subfields := []fiber.Map{}
+	for _, subfield := range p.Subfields {
+		var b strings.Builder
+		fmt.Fprintf(&b, "%s-subfield-%d", FormID, subfield.ID)
+		subfields = append(subfields, fiber.Map{
+			"FormID": b.String(),
+			"Path":   route.RequestFieldSubfieldPath(p.Request.ID, p.Field.ID, subfield.ID),
+			"Value":  subfield.Value,
+		})
+	}
+	b["Subfields"] = subfields
+	return b, nil
+}
+
 func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewParams) (fiber.Map, error) {
 	actions := []template.HTML{}
 	fd, err := GetFieldDefinition(p.Request.Type, p.Field.Type)
@@ -147,8 +168,8 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewParams) (f
 		actions = append(actions, review)
 	}
 
-	// TODO: Bind this to the same function that determines if we show the form or not
 	if p.ShouldRenderForm(fd) {
+		// TODO: Get this into a utility to yield the text string?
 		text := "Next"
 		if p.Request.Status == StatusReady {
 			text = "Update"
@@ -157,6 +178,7 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewParams) (f
 			text = "Finish"
 		}
 		// TODO: Set this up so the button is disabled if the field is incomplete
+		// TODO: Include subfields in this
 		update, err := partial.Render(e, partial.RenderParams{
 			Template: partial.RequestFieldActionUpdate,
 			Bind: fiber.Map{
