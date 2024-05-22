@@ -190,11 +190,11 @@ func (q *Queries) DeleteRequestChangeRequest(ctx context.Context, id int64) erro
 }
 
 const deleteRequestSubfield = `-- name: DeleteRequestSubfield :exec
-DELETE FROM request_subfields WHERE rfid = ?
+DELETE FROM request_subfields WHERE id = ?
 `
 
-func (q *Queries) DeleteRequestSubfield(ctx context.Context, rfid int64) error {
-	_, err := q.exec(ctx, q.deleteRequestSubfieldStmt, deleteRequestSubfield, rfid)
+func (q *Queries) DeleteRequestSubfield(ctx context.Context, id int64) error {
+	_, err := q.exec(ctx, q.deleteRequestSubfieldStmt, deleteRequestSubfield, id)
 	return err
 }
 

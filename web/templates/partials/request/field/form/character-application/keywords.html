@@ -21,7 +21,12 @@
     "
   />
   <button type="submit" class="button button-primary">Update</button>
-  <button type="button" class="button button-outline button-destructive">
+  <button
+    type="button"
+    class="button button-outline button-destructive"
+    @click.prevent=""
+    hx-delete="{{ .Path }}"
+  >
     Delete
   </button>
 </form>
@@ -49,7 +54,7 @@
   <button
     type="button"
     class="button button-outline"
-    :click="
+    @click="
       kw = '';
       eval.kw.len = false;
     "

@@ -65,7 +65,7 @@ UPDATE request_fields SET status = ? WHERE type = ? AND rid = ?;
 INSERT INTO request_subfields (value, rfid) VALUES (?, ?);
 
 -- name: DeleteRequestSubfield :exec
-DELETE FROM request_subfields WHERE rfid = ?;
+DELETE FROM request_subfields WHERE id = ?;
 
 -- name: UpdateRequestSubfield :exec
 UPDATE request_subfields SET value = ? WHERE id = ?;

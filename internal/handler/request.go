@@ -756,7 +756,7 @@ func CreateRequestSubfield(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		// TODO: Let this append the element instead
+		// TODO: Let this append a new element instead
 		c.Append(header.HXRefresh, header.True)
 		c.Status(fiber.StatusCreated)
 		return nil
@@ -1019,11 +1019,14 @@ func DeleteRequestSubfield(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		log.Printf("Subfield deleted %d", subfield.ID)
+
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
 		}
 
+		c.Append(header.HXRefresh, header.True)
 		return nil
 	}
 }
