@@ -724,6 +724,11 @@ func CreateRequestSubfield(i *service.Interfaces) fiber.Handler {
 			}
 		}
 
+		if len(subfields) >= sfc.MaxValues {
+			c.Status(fiber.StatusForbidden)
+			return nil
+		}
+
 		if sfc.Unique {
 			for _, subfield := range subfields {
 				if subfield.Value == in.Value {
@@ -904,7 +909,6 @@ func UpdateRequestSubfield(i *service.Interfaces) fiber.Handler {
 
 		// TODO: Let this swap on the id
 		c.Append(header.HXRefresh, header.True)
-		c.Status(fiber.StatusCreated)
 		return nil
 	}
 }
@@ -987,6 +991,11 @@ func DeleteRequestSubfield(i *service.Interfaces) fiber.Handler {
 		sfc, err := request.FieldSubfieldConfig(req.Type, field.Type)
 		if err != nil {
 			c.Status(fiber.StatusBadRequest)
+			return nil
+		}
+
+		if !sfc.Require {
+			c.Status(fiber.StatusForbidden)
 			return nil
 		}
 

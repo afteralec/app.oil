@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -2317,6 +2319,76 @@ func TestCreateRequestSubfieldForbiddenNotReviewer(t *testing.T) {
 	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
 }
 
+func TestCreateRequestSubfieldForbiddenTooMany(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	rpid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permid := CreateTestPlayerPermission(t, &i, rpid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permid)
+	if err := i.Queries.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
+		ID:     rid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := i.Queries.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
+		ID:   rid,
+		RPID: rpid,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "keywords",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	nums := []string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"}
+
+	for idx := 0; idx < 10; idx++ {
+		var b strings.Builder
+		fmt.Fprintf(&b, "test%s", nums[idx])
+		rsfid := CreateTestRequestSubfield(t, &i, field.ID, "keywords", b.String())
+		if rsfid == 0 {
+			t.Fatal(errors.New("CreateTestRequestSubfield returned rsfid of 0"))
+		}
+	}
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("value", "test")
+	writer.Close()
+
+	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
+
+	req := httptest.NewRequest(http.MethodPost, url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
 func TestCreateRequestSubfieldForbiddenSubfieldNotRequired(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
@@ -2423,196 +2495,7 @@ func TestCreateRequestSubfieldConflictUniqueValue(t *testing.T) {
 	require.Equal(t, fiber.StatusConflict, res.StatusCode)
 }
 
-// TODO: Add a test for "too many" subfields
-
 func TestCreateRequestSubfieldSuccess(t *testing.T) {
-	i := service.NewInterfaces()
-	defer i.Close()
-
-	a := fiber.New(config.Fiber(i.Templates))
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestRequest(t, &i, rid)
-
-	rpid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-	permid := CreateTestPlayerPermission(t, &i, rpid, player.PermissionReviewCharacterApplications.Name)
-	defer DeleteTestPlayerPermission(t, &i, permid)
-	if err := i.Queries.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
-		ID:     rid,
-		Status: request.StatusInReview,
-	}); err != nil {
-		t.Fatal(err)
-	}
-	if err := i.Queries.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
-		ID:   rid,
-		RPID: rpid,
-	}); err != nil {
-		t.Fatal(err)
-	}
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("value", "test")
-	writer.Close()
-
-	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
-		RID:  rid,
-		Type: "keywords",
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
-
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusCreated, res.StatusCode)
-}
-
-func TestDeleteRequestSubfieldUnauthorizedNotLoggedIn(t *testing.T) {
-	i := service.NewInterfaces()
-	defer i.Close()
-
-	a := fiber.New(config.Fiber(i.Templates))
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestRequest(t, &i, rid)
-
-	_ = LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("value", "test")
-	writer.Close()
-
-	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
-		RID:  rid,
-		Type: "keywords",
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
-
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
-}
-
-func TestDeleteRequestSubfieldForbiddenReviewerFieldPlayer(t *testing.T) {
-	i := service.NewInterfaces()
-	defer i.Close()
-
-	a := fiber.New(config.Fiber(i.Templates))
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestRequest(t, &i, rid)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("value", "test")
-	writer.Close()
-
-	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
-		RID:  rid,
-		Type: "keywords",
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
-
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
-}
-
-// TODO: Update this test case once there's a subfielded Player Field
-func TestDeleteRequestSubfieldForbiddenUnowned(t *testing.T) {
-	i := service.NewInterfaces()
-	defer i.Close()
-
-	a := fiber.New(config.Fiber(i.Templates))
-	app.Middleware(a, &i)
-	app.Handlers(a, &i)
-
-	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
-	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsername)
-	defer DeleteTestRequest(t, &i, rid)
-	CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
-	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
-
-	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("value", "test")
-	writer.Close()
-
-	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
-		RID:  rid,
-		Type: "keywords",
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	url := MakeTestURL(route.RequestFieldSubfieldsPath(rid, field.ID))
-
-	req := httptest.NewRequest(http.MethodPost, url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.AddCookie(sessionCookie)
-
-	res, err := a.Test(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
-}
-
-func TestDeleteRequestSubfieldSuccess(t *testing.T) {
 	i := service.NewInterfaces()
 	defer i.Close()
 
@@ -3091,5 +2974,285 @@ func TestUpdateRequestSubfieldSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	require.Equal(t, fiber.StatusCreated, res.StatusCode)
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
+}
+
+func TestDeleteRequestSubfieldUnauthorizedNotLoggedIn(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	_ = LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "keywords",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rsfid := CreateTestRequestSubfield(t, &i, field.ID, "keywords", "test")
+	if rsfid == 0 {
+		t.Fatal(errors.New("CreateTestRequestSubfield returned rsfid of 0"))
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldPath(rid, field.ID, rsfid))
+
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusUnauthorized, res.StatusCode)
+}
+
+func TestDeleteRequestSubfieldForbiddenNotReviewer(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	rpid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permid := CreateTestPlayerPermission(t, &i, rpid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permid)
+	if err := i.Queries.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
+		ID:     rid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := i.Queries.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
+		ID:   rid,
+		RPID: rpid,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	pid := CreateTestPlayer(t, &i, a, TestUsernameThree, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameThree)
+	permid = CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameThree, TestPassword)
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "keywords",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rsfid := CreateTestRequestSubfield(t, &i, field.ID, "keywords", "test")
+	if rsfid == 0 {
+		t.Fatal(errors.New("CreateTestRequestSubfield returned rsfid of 0"))
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldPath(rid, field.ID, rsfid))
+
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestDeleteRequestSubfieldForbiddenSubfieldNotRequired(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsername, TestPassword)
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "name",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rsfid := CreateTestRequestSubfield(t, &i, field.ID, "keywords", "test")
+	if rsfid == 0 {
+		t.Fatal(errors.New("CreateTestRequestSubfield returned rsfid of 0"))
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldPath(rid, field.ID, rsfid))
+
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestDeleteRequestSubfieldForbiddenNotEnough(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	rpid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permid := CreateTestPlayerPermission(t, &i, rpid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permid)
+	if err := i.Queries.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
+		ID:     rid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := i.Queries.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
+		ID:   rid,
+		RPID: rpid,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("value", "tested")
+	writer.Close()
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "keywords",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rsfid := CreateTestRequestSubfield(t, &i, field.ID, "keywords", "test")
+	if rsfid == 0 {
+		t.Fatal(errors.New("CreateTestRequestSubfield returned rsfid of 0"))
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldPath(rid, field.ID, rsfid))
+
+	req := httptest.NewRequest(http.MethodDelete, url, body)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusForbidden, res.StatusCode)
+}
+
+func TestDeleteRequestSubfieldSuccess(t *testing.T) {
+	i := service.NewInterfaces()
+	defer i.Close()
+
+	a := fiber.New(config.Fiber(i.Templates))
+	app.Middleware(a, &i)
+	app.Handlers(a, &i)
+
+	CreateTestPlayer(t, &i, a, TestUsername, TestPassword)
+	rid := CreateTestCharacterApplication(t, &i, a, TestUsername, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsername)
+	defer DeleteTestRequest(t, &i, rid)
+
+	rpid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
+	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
+	permid := CreateTestPlayerPermission(t, &i, rpid, player.PermissionReviewCharacterApplications.Name)
+	defer DeleteTestPlayerPermission(t, &i, permid)
+	if err := i.Queries.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
+		ID:     rid,
+		Status: request.StatusInReview,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := i.Queries.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
+		ID:   rid,
+		RPID: rpid,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
+
+	field, err := i.Queries.GetRequestFieldByType(context.Background(), query.GetRequestFieldByTypeParams{
+		RID:  rid,
+		Type: "keywords",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rsfid := CreateTestRequestSubfield(t, &i, field.ID, "keywords", "test")
+	if rsfid == 0 {
+		t.Fatal(errors.New("CreateTestRequestSubfield returned rsfid of 0"))
+	}
+
+	rsfid = CreateTestRequestSubfield(t, &i, field.ID, "keywords", "testify")
+	if rsfid == 0 {
+		t.Fatal(errors.New("CreateTestRequestSubfield returned rsfid of 0"))
+	}
+
+	rsfid = CreateTestRequestSubfield(t, &i, field.ID, "keywords", "testified")
+	if rsfid == 0 {
+		t.Fatal(errors.New("CreateTestRequestSubfield returned rsfid of 0"))
+	}
+
+	url := MakeTestURL(route.RequestFieldSubfieldPath(rid, field.ID, rsfid))
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	writer.WriteField("value", "tested")
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodDelete, url, body)
+	req.AddCookie(sessionCookie)
+
+	res, err := a.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, fiber.StatusOK, res.StatusCode)
 }
