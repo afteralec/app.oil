@@ -22,7 +22,6 @@ func Login(i *service.Interfaces) fiber.Handler {
 		Username string `form:"username"`
 		Password string `form:"password"`
 	}
-
 	return func(c *fiber.Ctx) error {
 		in := new(input)
 		if err := c.BodyParser(in); err != nil {

@@ -13,7 +13,6 @@ var rootCmd = &cobra.Command{
 	Use:   "ptcr",
 	Short: "The Petrichor App",
 	Long:  `The Petrichor App`,
-	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
 func Execute() {

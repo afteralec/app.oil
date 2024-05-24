@@ -38,6 +38,7 @@ func NewInterfaces() Interfaces {
 	ib := InterfacesBuilder().Database(db).Redis(r).Sessions(s).Templates(t)
 
 	if os.Getenv("DISABLE_SENDING_STONE") != "true" {
+		// TODO: Migrate this to grpc.NewClient
 		conn, err := grpc.Dial(os.Getenv("SENDING_STONE_URL"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatal(err)

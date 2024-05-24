@@ -9,6 +9,7 @@ import (
 func New() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		csp := "default-src 'self'"
+		// TODO: Use the centralized IsProd instead
 		if os.Getenv("PETRICHOR_APP_ENV") == "prod" {
 			csp = "default-src https://petrichormud.com https://play.petrichormud.com"
 		}

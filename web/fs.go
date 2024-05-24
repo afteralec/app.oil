@@ -4,7 +4,7 @@ import (
 	"embed"
 	"net/http"
 
-	"github.com/gofiber/template/html/v2"
+	html "github.com/gofiber/template/html/v2"
 )
 
 //go:embed templates/*
