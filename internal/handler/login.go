@@ -146,6 +146,7 @@ func Login(i *service.Interfaces) fiber.Handler {
 
 func LoginPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		// TODO: Rework this to use the util
 		pid := c.Locals("pid")
 		if pid != nil {
 			return c.Redirect(route.Home)

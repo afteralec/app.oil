@@ -330,7 +330,7 @@ func ResetPasswordPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tid := c.Query("t")
 		if len(tid) == 0 {
-			return c.Redirect("/")
+			return c.Redirect(route.Home)
 		}
 
 		b := view.Bind(c)
