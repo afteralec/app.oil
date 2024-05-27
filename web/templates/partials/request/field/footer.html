@@ -1,13 +1,8 @@
 {{ define "partial-request-field-footer" }}
 <footer class="pt-4">
   <section class="flex justify-end gap-2">
-    <!-- prettier-ignore -->
-    {{ range .Actions }}
-      {{ . }}
-    {{ end }}
+    {{ range .Actions }} {{ . }} {{ end }}
   </section>
-
-  <!-- prettier-ignore -->
   {{ template "partial-request-change-request-form" .ChangeRequestConfig }}
 </footer>
 {{ end }}
