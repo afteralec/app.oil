@@ -1,6 +1,8 @@
 package definition
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"html/template"
 	"strings"
@@ -17,6 +19,12 @@ import (
 	"petrichormud.com/app/internal/route"
 )
 
+// TODO: Get this in a shared package
+var (
+	ErrMissingField      error = errors.New("a field is missing")
+	ErrCurrentActorImage error = errors.New("this player already has a current actor")
+)
+
 // TODO: Create constants for FieldTypes and lift them into the Request
 
 type fulfillerCharacterApplication struct{}
@@ -26,15 +34,131 @@ func (f *fulfillerCharacterApplication) For() string {
 	return "Player"
 }
 
+// TODO: Split these individual steps out into their own functions?
 func (f *fulfillerCharacterApplication) Fulfill(q *query.Queries, req *query.Request) error {
-	// TODO: To Fulfill a Character Application Request:
-	// 1. Create Actor Image
-	// 2. Create Actor Keywords
-	// 3. Create Actor Permissions
-	// 4. Create Actor Properties - Inventory, Hands, etc.
-	// 5. Create Character Metadata from non-mechanical fields on the application: name, backstory
-	// 6. Create Player ownership record of Actor
-	// 7. For now, a Player can only have one Current Actor, so set that and deny if there is one
+	currentcount, err := q.CountCurrentActorImagePlayerPropertiesForPlayer(context.Background(), req.PID)
+	if err != nil {
+		return err
+	}
+	if currentcount > 0 {
+		return ErrCurrentActorImage
+	}
+
+	fields, err := q.ListRequestFieldsForRequest(context.Background(), req.ID)
+	if err != nil {
+		return err
+	}
+	fieldmap := field.NewMap(fields)
+
+	// TODO: Make FieldMap a valid type and add an API to it?
+	// TODO: Run validations on all of these values?
+	sdescfield, ok := fieldmap[FieldCharacterApplicationShortDescription.Type]
+	if !ok {
+		return ErrMissingField
+	}
+	descfield, ok := fieldmap[FieldCharacterApplicationDescription.Type]
+	if !ok {
+		return ErrMissingField
+	}
+	genderfield, ok := fieldmap[FieldCharacterApplicationGender.Type]
+	if !ok {
+		return ErrMissingField
+	}
+	namefield, ok := fieldmap[FieldCharacterApplicationName.Type]
+	if !ok {
+		return ErrMissingField
+	}
+	var nb strings.Builder
+	fmt.Fprintf(&nb, "%d-%d-%s", req.PID, req.ID, namefield.Value)
+	name := nb.String()
+	result, err := q.CreateActorImage(context.Background(), query.CreateActorImageParams{
+		Name:             name,
+		Gender:           genderfield.Value,
+		ShortDescription: sdescfield.Value,
+		Description:      descfield.Value,
+	})
+	if err != nil {
+		return err
+	}
+	aiid, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	keywordsfield, ok := fieldmap[FieldCharacterApplicationKeywords.Type]
+	if !ok {
+		return ErrMissingField
+	}
+	keywordsubfields, err := q.ListRequestSubfieldsForField(context.Background(), keywordsfield.ID)
+	if err != nil {
+		return err
+	}
+	for _, keywordsubfield := range keywordsubfields {
+		_, err := q.CreateActorImageKeyword(context.Background(), query.CreateActorImageKeywordParams{
+			AIID:    aiid,
+			Keyword: keywordsubfield.Value,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	// TODO: Create Actor Permissions
+
+	// TODO: Maybe add a string name to each hand?
+	_, err = q.CreateActorImageHand(context.Background(), query.CreateActorImageHandParams{
+		AIID: aiid,
+		Hand: 1,
+	})
+	if err != nil {
+		return err
+	}
+	_, err = q.CreateActorImageHand(context.Background(), query.CreateActorImageHandParams{
+		AIID: aiid,
+		Hand: 2,
+	})
+	if err != nil {
+		return err
+	}
+
+	// TODO: Rename Key to Type here?
+	if err := q.CreateActorImageCharacterMetadata(context.Background(), query.CreateActorImageCharacterMetadataParams{
+		AIID:  aiid,
+		Key:   FieldCharacterApplicationName.Type,
+		Value: namefield.Value,
+	}); err != nil {
+		return err
+	}
+	backstoryfield, ok := fieldmap[FieldCharacterApplicationBackstory.Type]
+	if !ok {
+		return ErrMissingField
+	}
+	if err := q.CreateActorImageCharacterMetadata(context.Background(), query.CreateActorImageCharacterMetadataParams{
+		AIID:  aiid,
+		Key:   FieldCharacterApplicationBackstory.Type,
+		Value: backstoryfield.Value,
+	}); err != nil {
+		return err
+	}
+
+	result, err = q.CreateActorImagePlayerProperties(context.Background(), query.CreateActorImagePlayerPropertiesParams{
+		AIID: aiid,
+		PID:  req.PID,
+	})
+	if err != nil {
+		return err
+	}
+	aippid, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+	if err := q.SetActorImagePlayerPropertiesCurrent(context.Background(), query.SetActorImagePlayerPropertiesCurrentParams{
+		ID:      aippid,
+		Current: true,
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -57,15 +181,22 @@ func (t *titlerCharacterApplication) ForOverview(fields field.Map) string {
 
 var TitlerCharacterApplication titlerCharacterApplication = titlerCharacterApplication{}
 
-var FieldCharacterApplicationName field.Field = NewFieldCharacterApplicationName()
+var (
+	FieldCharacterApplicationName             field.Field = NewFieldCharacterApplicationName()
+	FieldCharacterApplicationGender           field.Field = NewFieldCharacterApplicationGender()
+	FieldCharacterApplicationShortDescription field.Field = NewFieldCharacterApplicationShortDescription()
+	FieldCharacterApplicationDescription      field.Field = NewFieldCharacterApplicationDescription()
+	FieldCharacterApplicationBackstory        field.Field = NewFieldCharacterApplicationBackstory()
+	FieldCharacterApplicationKeywords         field.Field = NewFieldCharacterApplicationKeywords()
+)
 
 var FieldsCharacterApplication field.Group = field.NewGroup([]field.Field{
 	FieldCharacterApplicationName,
-	NewFieldCharacterApplicationGender(),
-	NewFieldCharacterApplicationShortDescription(),
-	NewFieldCharacterApplicationDescription(),
-	NewFieldCharacterApplicationBackstory(),
-	NewFieldCharacterApplicationKeywords(),
+	FieldCharacterApplicationGender,
+	FieldCharacterApplicationShortDescription,
+	FieldCharacterApplicationDescription,
+	FieldCharacterApplicationBackstory,
+	FieldCharacterApplicationKeywords,
 })
 
 func NewFieldCharacterApplicationName() field.Field {

@@ -86,13 +86,16 @@ INSERT INTO actor_images_furniture_properties (aiid, seating) VALUES (?, ?);
 DELETE FROM actor_images_furniture_properties WHERE id = ?;
 
 -- name: CreateActorImageCharacterMetadata :exec
-INSERT INTO actor_images_character_metadata (aiid, `key`, value) VALUES (?, ?, ?);
+INSERT INTO actor_images_character_metadata (`key`, value, aiid) VALUES (?, ?, ?);
 
 -- name: CreateActorImagePlayerProperties :execresult
 INSERT INTO actor_images_player_properties (aiid, pid) VALUES (?, ?);
 
 -- name: GetActorImagePlayerPropertiesForImage :one
 SELECT * FROM actor_images_player_properties WHERE aiid = ?;
+
+-- name: CountCurrentActorImagePlayerPropertiesForPlayer :one
+SELECT COUNT(*) FROM actor_images_player_properties WHERE pid = ? AND current = true;
 
 -- name: SetActorImagePlayerPropertiesCurrent :exec
 UPDATE actor_images_player_properties SET current = ? WHERE id = ?;

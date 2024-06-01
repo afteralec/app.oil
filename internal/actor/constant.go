@@ -50,3 +50,8 @@ var (
 	KeywordMaxLen int    = ShortDescriptionMaxLen
 	KeywordRegex  string = "[^a-zA-Z]+"
 )
+
+const (
+	HandRight = "right"
+	HandLeft  = "left"
+)

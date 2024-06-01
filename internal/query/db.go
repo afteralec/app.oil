@@ -30,6 +30,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.batchDeleteOpenRequestChangeRequestStmt, err = db.PrepareContext(ctx, batchDeleteOpenRequestChangeRequest); err != nil {
 		return nil, fmt.Errorf("error preparing query BatchDeleteOpenRequestChangeRequest: %w", err)
 	}
+	if q.countCurrentActorImagePlayerPropertiesForPlayerStmt, err = db.PrepareContext(ctx, countCurrentActorImagePlayerPropertiesForPlayer); err != nil {
+		return nil, fmt.Errorf("error preparing query CountCurrentActorImagePlayerPropertiesForPlayer: %w", err)
+	}
 	if q.countEmailsStmt, err = db.PrepareContext(ctx, countEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query CountEmails: %w", err)
 	}
@@ -397,6 +400,11 @@ func (q *Queries) Close() error {
 	if q.batchDeleteOpenRequestChangeRequestStmt != nil {
 		if cerr := q.batchDeleteOpenRequestChangeRequestStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing batchDeleteOpenRequestChangeRequestStmt: %w", cerr)
+		}
+	}
+	if q.countCurrentActorImagePlayerPropertiesForPlayerStmt != nil {
+		if cerr := q.countCurrentActorImagePlayerPropertiesForPlayerStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countCurrentActorImagePlayerPropertiesForPlayerStmt: %w", cerr)
 		}
 	}
 	if q.countEmailsStmt != nil {
@@ -1026,128 +1034,129 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                                                DBTX
-	tx                                                *sql.Tx
-	batchCreateRequestChangeRequestStmt               *sql.Stmt
-	batchDeleteOpenRequestChangeRequestStmt           *sql.Stmt
-	countEmailsStmt                                   *sql.Stmt
-	countOpenRequestChangeRequestsForRequestStmt      *sql.Stmt
-	createActorImageStmt                              *sql.Stmt
-	createActorImageCanStmt                           *sql.Stmt
-	createActorImageCanBeStmt                         *sql.Stmt
-	createActorImageCharacterMetadataStmt             *sql.Stmt
-	createActorImageContainerPropertiesStmt           *sql.Stmt
-	createActorImageFoodPropertiesStmt                *sql.Stmt
-	createActorImageFurniturePropertiesStmt           *sql.Stmt
-	createActorImageHandStmt                          *sql.Stmt
-	createActorImageKeywordStmt                       *sql.Stmt
-	createActorImagePlayerPropertiesStmt              *sql.Stmt
-	createActorImagePrimaryHandStmt                   *sql.Stmt
-	createEmailStmt                                   *sql.Stmt
-	createOpenRequestChangeRequestStmt                *sql.Stmt
-	createPastRequestChangeRequestStmt                *sql.Stmt
-	createPlayerStmt                                  *sql.Stmt
-	createPlayerPermissionStmt                        *sql.Stmt
-	createPlayerPermissionIssuedChangeHistoryStmt     *sql.Stmt
-	createPlayerPermissionRevokedChangeHistoryStmt    *sql.Stmt
-	createPlayerSettingsStmt                          *sql.Stmt
-	createRequestStmt                                 *sql.Stmt
-	createRequestChangeRequestStmt                    *sql.Stmt
-	createRequestFieldStmt                            *sql.Stmt
-	createRequestSubfieldStmt                         *sql.Stmt
-	createRoomStmt                                    *sql.Stmt
-	deleteActorImageCanStmt                           *sql.Stmt
-	deleteActorImageCanBeStmt                         *sql.Stmt
-	deleteActorImageContainerPropertiesStmt           *sql.Stmt
-	deleteActorImageFoodPropertiesStmt                *sql.Stmt
-	deleteActorImageFurniturePropertiesStmt           *sql.Stmt
-	deleteActorImageHandStmt                          *sql.Stmt
-	deleteActorImagePrimaryHandStmt                   *sql.Stmt
-	deleteEmailStmt                                   *sql.Stmt
-	deleteOpenRequestChangeRequestStmt                *sql.Stmt
-	deletePlayerPermissionStmt                        *sql.Stmt
-	deleteRequestChangeRequestStmt                    *sql.Stmt
-	deleteRequestSubfieldStmt                         *sql.Stmt
-	editOpenRequestChangeRequestStmt                  *sql.Stmt
-	getActorImageStmt                                 *sql.Stmt
-	getActorImageByNameStmt                           *sql.Stmt
-	getActorImageContainerPropertiesStmt              *sql.Stmt
-	getActorImageFoodPropertiesStmt                   *sql.Stmt
-	getActorImageFurniturePropertiesStmt              *sql.Stmt
-	getActorImagePlayerPropertiesForImageStmt         *sql.Stmt
-	getEmailStmt                                      *sql.Stmt
-	getEmailByAddressForPlayerStmt                    *sql.Stmt
-	getHelpStmt                                       *sql.Stmt
-	getHelpRelatedStmt                                *sql.Stmt
-	getOpenRequestChangeRequestStmt                   *sql.Stmt
-	getOpenRequestChangeRequestForRequestFieldStmt    *sql.Stmt
-	getPlayerStmt                                     *sql.Stmt
-	getPlayerByUsernameStmt                           *sql.Stmt
-	getPlayerSettingsStmt                             *sql.Stmt
-	getPlayerUsernameStmt                             *sql.Stmt
-	getPlayerUsernameByIdStmt                         *sql.Stmt
-	getRequestStmt                                    *sql.Stmt
-	getRequestChangeRequestByFieldIDStmt              *sql.Stmt
-	getRequestFieldStmt                               *sql.Stmt
-	getRequestFieldByTypeStmt                         *sql.Stmt
-	getRequestFieldByTypeWithChangeRequestsStmt       *sql.Stmt
-	getRequestSubfieldStmt                            *sql.Stmt
-	getRoomStmt                                       *sql.Stmt
-	getTagsForHelpFileStmt                            *sql.Stmt
-	getVerifiedEmailByAddressStmt                     *sql.Stmt
-	listActorImageCanStmt                             *sql.Stmt
-	listActorImageCanBeStmt                           *sql.Stmt
-	listActorImageKeywordsStmt                        *sql.Stmt
-	listActorImagesStmt                               *sql.Stmt
-	listActorImagesHandsStmt                          *sql.Stmt
-	listActorImagesPrimaryHandsStmt                   *sql.Stmt
-	listEmailsStmt                                    *sql.Stmt
-	listHelpHeadersStmt                               *sql.Stmt
-	listHelpSlugsStmt                                 *sql.Stmt
-	listOpenRequestChangeRequestsByFieldIDStmt        *sql.Stmt
-	listOpenRequestChangeRequestsForRequestStmt       *sql.Stmt
-	listPlayerPermissionsStmt                         *sql.Stmt
-	listRequestChangeRequestsByFieldIDStmt            *sql.Stmt
-	listRequestFieldsForRequestStmt                   *sql.Stmt
-	listRequestFieldsForRequestWithChangeRequestsStmt *sql.Stmt
-	listRequestSubfieldsForFieldStmt                  *sql.Stmt
-	listRequestSubfieldsForFieldsStmt                 *sql.Stmt
-	listRequestsByTypeAndStatusStmt                   *sql.Stmt
-	listRequestsForPlayerStmt                         *sql.Stmt
-	listRoomsStmt                                     *sql.Stmt
-	listRoomsByIDsStmt                                *sql.Stmt
-	listVerifiedEmailsStmt                            *sql.Stmt
-	markEmailVerifiedStmt                             *sql.Stmt
-	searchHelpByCategoryStmt                          *sql.Stmt
-	searchHelpByContentStmt                           *sql.Stmt
-	searchHelpByTagsStmt                              *sql.Stmt
-	searchHelpByTitleStmt                             *sql.Stmt
-	searchPlayersByUsernameStmt                       *sql.Stmt
-	searchTagsStmt                                    *sql.Stmt
-	setActorImagePlayerPropertiesCurrentStmt          *sql.Stmt
-	updateActorImageDescriptionStmt                   *sql.Stmt
-	updateActorImageShortDescriptionStmt              *sql.Stmt
-	updatePlayerPasswordStmt                          *sql.Stmt
-	updatePlayerSettingsThemeStmt                     *sql.Stmt
-	updateRequestFieldStatusStmt                      *sql.Stmt
-	updateRequestFieldStatusByRequestAndTypeStmt      *sql.Stmt
-	updateRequestFieldValueStmt                       *sql.Stmt
-	updateRequestFieldValueByRequestAndTypeStmt       *sql.Stmt
-	updateRequestReviewerStmt                         *sql.Stmt
-	updateRequestStatusStmt                           *sql.Stmt
-	updateRequestSubfieldStmt                         *sql.Stmt
-	updateRoomStmt                                    *sql.Stmt
-	updateRoomDescriptionStmt                         *sql.Stmt
-	updateRoomExitEastStmt                            *sql.Stmt
-	updateRoomExitNorthStmt                           *sql.Stmt
-	updateRoomExitNortheastStmt                       *sql.Stmt
-	updateRoomExitNorthwestStmt                       *sql.Stmt
-	updateRoomExitSouthStmt                           *sql.Stmt
-	updateRoomExitSoutheastStmt                       *sql.Stmt
-	updateRoomExitSouthwestStmt                       *sql.Stmt
-	updateRoomExitWestStmt                            *sql.Stmt
-	updateRoomSizeStmt                                *sql.Stmt
-	updateRoomTitleStmt                               *sql.Stmt
+	db                                                  DBTX
+	tx                                                  *sql.Tx
+	batchCreateRequestChangeRequestStmt                 *sql.Stmt
+	batchDeleteOpenRequestChangeRequestStmt             *sql.Stmt
+	countCurrentActorImagePlayerPropertiesForPlayerStmt *sql.Stmt
+	countEmailsStmt                                     *sql.Stmt
+	countOpenRequestChangeRequestsForRequestStmt        *sql.Stmt
+	createActorImageStmt                                *sql.Stmt
+	createActorImageCanStmt                             *sql.Stmt
+	createActorImageCanBeStmt                           *sql.Stmt
+	createActorImageCharacterMetadataStmt               *sql.Stmt
+	createActorImageContainerPropertiesStmt             *sql.Stmt
+	createActorImageFoodPropertiesStmt                  *sql.Stmt
+	createActorImageFurniturePropertiesStmt             *sql.Stmt
+	createActorImageHandStmt                            *sql.Stmt
+	createActorImageKeywordStmt                         *sql.Stmt
+	createActorImagePlayerPropertiesStmt                *sql.Stmt
+	createActorImagePrimaryHandStmt                     *sql.Stmt
+	createEmailStmt                                     *sql.Stmt
+	createOpenRequestChangeRequestStmt                  *sql.Stmt
+	createPastRequestChangeRequestStmt                  *sql.Stmt
+	createPlayerStmt                                    *sql.Stmt
+	createPlayerPermissionStmt                          *sql.Stmt
+	createPlayerPermissionIssuedChangeHistoryStmt       *sql.Stmt
+	createPlayerPermissionRevokedChangeHistoryStmt      *sql.Stmt
+	createPlayerSettingsStmt                            *sql.Stmt
+	createRequestStmt                                   *sql.Stmt
+	createRequestChangeRequestStmt                      *sql.Stmt
+	createRequestFieldStmt                              *sql.Stmt
+	createRequestSubfieldStmt                           *sql.Stmt
+	createRoomStmt                                      *sql.Stmt
+	deleteActorImageCanStmt                             *sql.Stmt
+	deleteActorImageCanBeStmt                           *sql.Stmt
+	deleteActorImageContainerPropertiesStmt             *sql.Stmt
+	deleteActorImageFoodPropertiesStmt                  *sql.Stmt
+	deleteActorImageFurniturePropertiesStmt             *sql.Stmt
+	deleteActorImageHandStmt                            *sql.Stmt
+	deleteActorImagePrimaryHandStmt                     *sql.Stmt
+	deleteEmailStmt                                     *sql.Stmt
+	deleteOpenRequestChangeRequestStmt                  *sql.Stmt
+	deletePlayerPermissionStmt                          *sql.Stmt
+	deleteRequestChangeRequestStmt                      *sql.Stmt
+	deleteRequestSubfieldStmt                           *sql.Stmt
+	editOpenRequestChangeRequestStmt                    *sql.Stmt
+	getActorImageStmt                                   *sql.Stmt
+	getActorImageByNameStmt                             *sql.Stmt
+	getActorImageContainerPropertiesStmt                *sql.Stmt
+	getActorImageFoodPropertiesStmt                     *sql.Stmt
+	getActorImageFurniturePropertiesStmt                *sql.Stmt
+	getActorImagePlayerPropertiesForImageStmt           *sql.Stmt
+	getEmailStmt                                        *sql.Stmt
+	getEmailByAddressForPlayerStmt                      *sql.Stmt
+	getHelpStmt                                         *sql.Stmt
+	getHelpRelatedStmt                                  *sql.Stmt
+	getOpenRequestChangeRequestStmt                     *sql.Stmt
+	getOpenRequestChangeRequestForRequestFieldStmt      *sql.Stmt
+	getPlayerStmt                                       *sql.Stmt
+	getPlayerByUsernameStmt                             *sql.Stmt
+	getPlayerSettingsStmt                               *sql.Stmt
+	getPlayerUsernameStmt                               *sql.Stmt
+	getPlayerUsernameByIdStmt                           *sql.Stmt
+	getRequestStmt                                      *sql.Stmt
+	getRequestChangeRequestByFieldIDStmt                *sql.Stmt
+	getRequestFieldStmt                                 *sql.Stmt
+	getRequestFieldByTypeStmt                           *sql.Stmt
+	getRequestFieldByTypeWithChangeRequestsStmt         *sql.Stmt
+	getRequestSubfieldStmt                              *sql.Stmt
+	getRoomStmt                                         *sql.Stmt
+	getTagsForHelpFileStmt                              *sql.Stmt
+	getVerifiedEmailByAddressStmt                       *sql.Stmt
+	listActorImageCanStmt                               *sql.Stmt
+	listActorImageCanBeStmt                             *sql.Stmt
+	listActorImageKeywordsStmt                          *sql.Stmt
+	listActorImagesStmt                                 *sql.Stmt
+	listActorImagesHandsStmt                            *sql.Stmt
+	listActorImagesPrimaryHandsStmt                     *sql.Stmt
+	listEmailsStmt                                      *sql.Stmt
+	listHelpHeadersStmt                                 *sql.Stmt
+	listHelpSlugsStmt                                   *sql.Stmt
+	listOpenRequestChangeRequestsByFieldIDStmt          *sql.Stmt
+	listOpenRequestChangeRequestsForRequestStmt         *sql.Stmt
+	listPlayerPermissionsStmt                           *sql.Stmt
+	listRequestChangeRequestsByFieldIDStmt              *sql.Stmt
+	listRequestFieldsForRequestStmt                     *sql.Stmt
+	listRequestFieldsForRequestWithChangeRequestsStmt   *sql.Stmt
+	listRequestSubfieldsForFieldStmt                    *sql.Stmt
+	listRequestSubfieldsForFieldsStmt                   *sql.Stmt
+	listRequestsByTypeAndStatusStmt                     *sql.Stmt
+	listRequestsForPlayerStmt                           *sql.Stmt
+	listRoomsStmt                                       *sql.Stmt
+	listRoomsByIDsStmt                                  *sql.Stmt
+	listVerifiedEmailsStmt                              *sql.Stmt
+	markEmailVerifiedStmt                               *sql.Stmt
+	searchHelpByCategoryStmt                            *sql.Stmt
+	searchHelpByContentStmt                             *sql.Stmt
+	searchHelpByTagsStmt                                *sql.Stmt
+	searchHelpByTitleStmt                               *sql.Stmt
+	searchPlayersByUsernameStmt                         *sql.Stmt
+	searchTagsStmt                                      *sql.Stmt
+	setActorImagePlayerPropertiesCurrentStmt            *sql.Stmt
+	updateActorImageDescriptionStmt                     *sql.Stmt
+	updateActorImageShortDescriptionStmt                *sql.Stmt
+	updatePlayerPasswordStmt                            *sql.Stmt
+	updatePlayerSettingsThemeStmt                       *sql.Stmt
+	updateRequestFieldStatusStmt                        *sql.Stmt
+	updateRequestFieldStatusByRequestAndTypeStmt        *sql.Stmt
+	updateRequestFieldValueStmt                         *sql.Stmt
+	updateRequestFieldValueByRequestAndTypeStmt         *sql.Stmt
+	updateRequestReviewerStmt                           *sql.Stmt
+	updateRequestStatusStmt                             *sql.Stmt
+	updateRequestSubfieldStmt                           *sql.Stmt
+	updateRoomStmt                                      *sql.Stmt
+	updateRoomDescriptionStmt                           *sql.Stmt
+	updateRoomExitEastStmt                              *sql.Stmt
+	updateRoomExitNorthStmt                             *sql.Stmt
+	updateRoomExitNortheastStmt                         *sql.Stmt
+	updateRoomExitNorthwestStmt                         *sql.Stmt
+	updateRoomExitSouthStmt                             *sql.Stmt
+	updateRoomExitSoutheastStmt                         *sql.Stmt
+	updateRoomExitSouthwestStmt                         *sql.Stmt
+	updateRoomExitWestStmt                              *sql.Stmt
+	updateRoomSizeStmt                                  *sql.Stmt
+	updateRoomTitleStmt                                 *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -1156,7 +1165,8 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		tx:                                      tx,
 		batchCreateRequestChangeRequestStmt:     q.batchCreateRequestChangeRequestStmt,
 		batchDeleteOpenRequestChangeRequestStmt: q.batchDeleteOpenRequestChangeRequestStmt,
-		countEmailsStmt:                         q.countEmailsStmt,
+		countCurrentActorImagePlayerPropertiesForPlayerStmt: q.countCurrentActorImagePlayerPropertiesForPlayerStmt,
+		countEmailsStmt: q.countEmailsStmt,
 		countOpenRequestChangeRequestsForRequestStmt:      q.countOpenRequestChangeRequestsForRequestStmt,
 		createActorImageStmt:                              q.createActorImageStmt,
 		createActorImageCanStmt:                           q.createActorImageCanStmt,

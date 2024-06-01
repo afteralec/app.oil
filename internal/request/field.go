@@ -190,11 +190,7 @@ func FieldsForOverview(e *html.Engine, p field.ForOverviewParams) ([]field.ForOv
 }
 
 func FieldMap(fields []query.RequestField) field.Map {
-	m := field.Map{}
-	for _, field := range fields {
-		m[field.Type] = field
-	}
-	return m
+	return field.NewMap(fields)
 }
 
 // TODO: Make this SubfieldMap a discrete type?

@@ -10,6 +10,17 @@ import (
 	"database/sql"
 )
 
+const countCurrentActorImagePlayerPropertiesForPlayer = `-- name: CountCurrentActorImagePlayerPropertiesForPlayer :one
+SELECT COUNT(*) FROM actor_images_player_properties WHERE pid = ? AND current = true
+`
+
+func (q *Queries) CountCurrentActorImagePlayerPropertiesForPlayer(ctx context.Context, pid int64) (int64, error) {
+	row := q.queryRow(ctx, q.countCurrentActorImagePlayerPropertiesForPlayerStmt, countCurrentActorImagePlayerPropertiesForPlayer, pid)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createActorImage = `-- name: CreateActorImage :execresult
 INSERT INTO actor_images (name, gender, short_description, description) VALUES (?, ?, ?, ?)
 `
@@ -57,17 +68,17 @@ func (q *Queries) CreateActorImageCanBe(ctx context.Context, arg CreateActorImag
 }
 
 const createActorImageCharacterMetadata = `-- name: CreateActorImageCharacterMetadata :exec
-INSERT INTO actor_images_character_metadata (aiid, ` + "`" + `key` + "`" + `, value) VALUES (?, ?, ?)
+INSERT INTO actor_images_character_metadata (` + "`" + `key` + "`" + `, value, aiid) VALUES (?, ?, ?)
 `
 
 type CreateActorImageCharacterMetadataParams struct {
-	AIID  int64
 	Key   string
 	Value string
+	AIID  int64
 }
 
 func (q *Queries) CreateActorImageCharacterMetadata(ctx context.Context, arg CreateActorImageCharacterMetadataParams) error {
-	_, err := q.exec(ctx, q.createActorImageCharacterMetadataStmt, createActorImageCharacterMetadata, arg.AIID, arg.Key, arg.Value)
+	_, err := q.exec(ctx, q.createActorImageCharacterMetadataStmt, createActorImageCharacterMetadata, arg.Key, arg.Value, arg.AIID)
 	return err
 }
 
