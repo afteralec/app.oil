@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -653,7 +652,6 @@ func CreateRequestSubfield(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		in := new(input)
 		if err := c.BodyParser(in); err != nil {
-			log.Println("BodyParser error")
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
@@ -1041,8 +1039,6 @@ func DeleteRequestSubfield(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		log.Printf("Subfield deleted %d", subfield.ID)
-
 		if err := tx.Commit(); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -1101,7 +1097,6 @@ func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 		})
 		if err != nil {
 			if err == request.ErrNextStatusForbidden {
-				log.Println("next status is verboten")
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
@@ -1111,7 +1106,7 @@ func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 
 		if status == request.StatusFulfilled {
 			// TODO: Return Forbidden, Conflict, etc depending on the error
-			if err := request.Fulfill(qtx, &req); err != nil {
+			if err := request.Fulfill(qtx, pid, &req); err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return nil
 			}

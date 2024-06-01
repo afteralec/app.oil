@@ -240,7 +240,7 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 		}
 	}
 
-	if p.Status == StatusApproved {
+	if p.Status == StatusFulfilled {
 		// TODO: Validate that the correct person is attempting to fulfill this?
 		fulfilledby, err := FulfilledBy(p.Request.Type)
 		if err != nil {

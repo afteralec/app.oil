@@ -14,7 +14,7 @@ var FulfillersByType map[string]Fulfiller = map[string]Fulfiller{
 	TypeCharacterApplication: &definition.FulfillerCharacterApplication,
 }
 
-func Fulfill(q *query.Queries, req *query.Request) error {
+func Fulfill(q *query.Queries, pid int64, req *query.Request) error {
 	fulfiller, ok := FulfillersByType[req.Type]
 	if !ok {
 		return ErrNoDefinition
@@ -25,6 +25,7 @@ func Fulfill(q *query.Queries, req *query.Request) error {
 	}
 
 	if err := UpdateStatus(q, UpdateStatusParams{
+		PID:     pid,
 		Request: req,
 		Status:  StatusFulfilled,
 	}); err != nil {
