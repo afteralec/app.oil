@@ -85,6 +85,13 @@ func (f *fulfillerCharacterApplication) Fulfill(q *query.Queries, req *query.Req
 		return err
 	}
 
+	if err := q.UpdateActorImageUnique(context.Background(), query.UpdateActorImageUniqueParams{
+		ID:     aiid,
+		Unique: true,
+	}); err != nil {
+		return err
+	}
+
 	keywordsfield, ok := fieldmap[FieldCharacterApplicationKeywords.Type]
 	if !ok {
 		return ErrMissingField

@@ -259,7 +259,7 @@ func (q *Queries) GetActorImage(ctx context.Context, id int64) (ActorImage, erro
 		&i.Name,
 		&i.Gender,
 		&i.ID,
-		&i.Uniq,
+		&i.Unique,
 	)
 	return i, err
 }
@@ -279,7 +279,7 @@ func (q *Queries) GetActorImageByName(ctx context.Context, name string) (ActorIm
 		&i.Name,
 		&i.Gender,
 		&i.ID,
-		&i.Uniq,
+		&i.Unique,
 	)
 	return i, err
 }
@@ -477,7 +477,7 @@ func (q *Queries) ListActorImages(ctx context.Context) ([]ActorImage, error) {
 			&i.Name,
 			&i.Gender,
 			&i.ID,
-			&i.Uniq,
+			&i.Unique,
 		); err != nil {
 			return nil, err
 		}
@@ -597,5 +597,19 @@ type UpdateActorImageShortDescriptionParams struct {
 
 func (q *Queries) UpdateActorImageShortDescription(ctx context.Context, arg UpdateActorImageShortDescriptionParams) error {
 	_, err := q.exec(ctx, q.updateActorImageShortDescriptionStmt, updateActorImageShortDescription, arg.ShortDescription, arg.ID)
+	return err
+}
+
+const updateActorImageUnique = `-- name: UpdateActorImageUnique :exec
+UPDATE actor_images SET uniq = ? WHERE id = ?
+`
+
+type UpdateActorImageUniqueParams struct {
+	Unique bool
+	ID     int64
+}
+
+func (q *Queries) UpdateActorImageUnique(ctx context.Context, arg UpdateActorImageUniqueParams) error {
+	_, err := q.exec(ctx, q.updateActorImageUniqueStmt, updateActorImageUnique, arg.Unique, arg.ID)
 	return err
 }

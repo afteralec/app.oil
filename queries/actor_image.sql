@@ -13,6 +13,9 @@ UPDATE actor_images SET short_description = ? WHERE id = ?;
 -- name: UpdateActorImageDescription :exec
 UPDATE actor_images SET description = ? WHERE id = ?;
 
+-- name: UpdateActorImageUnique :exec
+UPDATE actor_images SET uniq = ? WHERE id = ?;
+
 -- name: CreateActorImage :execresult
 INSERT INTO actor_images (name, gender, short_description, description) VALUES (?, ?, ?, ?);
 

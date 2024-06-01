@@ -324,6 +324,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updateActorImageShortDescriptionStmt, err = db.PrepareContext(ctx, updateActorImageShortDescription); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateActorImageShortDescription: %w", err)
 	}
+	if q.updateActorImageUniqueStmt, err = db.PrepareContext(ctx, updateActorImageUnique); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateActorImageUnique: %w", err)
+	}
 	if q.updatePlayerPasswordStmt, err = db.PrepareContext(ctx, updatePlayerPassword); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePlayerPassword: %w", err)
 	}
@@ -892,6 +895,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateActorImageShortDescriptionStmt: %w", cerr)
 		}
 	}
+	if q.updateActorImageUniqueStmt != nil {
+		if cerr := q.updateActorImageUniqueStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateActorImageUniqueStmt: %w", cerr)
+		}
+	}
 	if q.updatePlayerPasswordStmt != nil {
 		if cerr := q.updatePlayerPasswordStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updatePlayerPasswordStmt: %w", cerr)
@@ -1136,6 +1144,7 @@ type Queries struct {
 	setActorImagePlayerPropertiesCurrentStmt            *sql.Stmt
 	updateActorImageDescriptionStmt                     *sql.Stmt
 	updateActorImageShortDescriptionStmt                *sql.Stmt
+	updateActorImageUniqueStmt                          *sql.Stmt
 	updatePlayerPasswordStmt                            *sql.Stmt
 	updatePlayerSettingsThemeStmt                       *sql.Stmt
 	updateRequestFieldStatusStmt                        *sql.Stmt
@@ -1263,6 +1272,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		setActorImagePlayerPropertiesCurrentStmt:          q.setActorImagePlayerPropertiesCurrentStmt,
 		updateActorImageDescriptionStmt:                   q.updateActorImageDescriptionStmt,
 		updateActorImageShortDescriptionStmt:              q.updateActorImageShortDescriptionStmt,
+		updateActorImageUniqueStmt:                        q.updateActorImageUniqueStmt,
 		updatePlayerPasswordStmt:                          q.updatePlayerPasswordStmt,
 		updatePlayerSettingsThemeStmt:                     q.updatePlayerSettingsThemeStmt,
 		updateRequestFieldStatusStmt:                      q.updateRequestFieldStatusStmt,

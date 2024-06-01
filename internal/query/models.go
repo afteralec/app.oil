@@ -16,7 +16,7 @@ type ActorImage struct {
 	Name             string
 	Gender           string
 	ID               int64
-	Uniq             bool
+	Unique           bool
 }
 
 type ActorImagesCan struct {

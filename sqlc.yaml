@@ -22,3 +22,4 @@ sql:
           riid: "RIID"
           aiid: "AIID"
           html: "HTML"
+          uniq: "Unique"
