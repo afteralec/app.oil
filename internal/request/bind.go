@@ -152,8 +152,6 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewParams) (f
 			} else {
 				text = "Next"
 			}
-		} else {
-			text = "Approve"
 		}
 		review, err := partial.Render(e, partial.RenderParams{
 			Template: partial.RequestFieldActionReview,
@@ -168,6 +166,8 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewParams) (f
 		actions = append(actions, review)
 	}
 
+	// TODO: Maybe collapse all of this action stuff into ShouldRenderForm or otherwise
+	// make this output more complex?
 	if p.ShouldRenderForm(fd) {
 		// TODO: Get this into a utility to yield the text string?
 		text := "Next"
@@ -177,19 +177,36 @@ func BindFieldViewActions(e *html.Engine, b fiber.Map, p BindFieldViewParams) (f
 		if p.Request.Status == StatusIncomplete && p.Last {
 			text = "Finish"
 		}
+
 		// TODO: Set this up so the button is disabled if the field is incomplete
 		// TODO: Include subfields in this
-		update, err := partial.Render(e, partial.RenderParams{
-			Template: partial.RequestFieldActionUpdate,
-			Bind: fiber.Map{
-				"Form": FormID,
-				"Text": text,
-			},
-		})
-		if err != nil {
-			return b, err
+		if p.PID == p.Request.RPID && fd.SubfieldConfig.Require {
+			review, err := partial.Render(e, partial.RenderParams{
+				Template: partial.RequestFieldActionReview,
+				Bind: fiber.Map{
+					"Path": route.RequestFieldStatusPath(p.Request.ID, p.Field.Type),
+					// TODO: Get the "Finish Review" text in here when appropriate
+					"Text": "Next",
+				},
+			})
+			if err != nil {
+				return b, err
+			}
+			actions = append(actions, review)
+		} else {
+			// TODO: For the Reviewer, this should be an action that both updates the field status and automatically approves it
+			update, err := partial.Render(e, partial.RenderParams{
+				Template: partial.RequestFieldActionUpdate,
+				Bind: fiber.Map{
+					"Form": FormID,
+					"Text": text,
+				},
+			})
+			if err != nil {
+				return b, err
+			}
+			actions = append(actions, update)
 		}
-		actions = append(actions, update)
 	}
 
 	b["Actions"] = actions
