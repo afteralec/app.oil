@@ -367,4 +367,12 @@ var DialogsCharacterApplication dialog.DefinitionGroup = dialog.DefinitionGroup{
 		Variable:   dialog.VariableReject,
 		Type:       dialog.TypeDestructive,
 	},
+	Fulfill: dialog.Definition{
+		Header: "Create This Character?",
+		Text:   template.HTML("Once this character is created, you will not be able to play a different character until they die or retire."),
+		// TODO: Pull this from the Fulfiller
+		ButtonText: "Create Character",
+		Variable:   dialog.VariableFulfill,
+		Type:       dialog.TypePrimary,
+	},
 }

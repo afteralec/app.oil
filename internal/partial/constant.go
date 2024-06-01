@@ -99,6 +99,7 @@ const (
 	RequestOverviewActionApprove    string = "partial-request-overview-action-approve"
 	RequestOverviewActionReview     string = "partial-request-overview-action-review"
 	RequestOverviewActionReject     string = "partial-request-overview-action-reject"
+	RequestOverviewActionFulfill    string = "partial-request-overview-action-fulfill"
 )
 
 // TODO: Create a tool that generates these? Maybe part of the CLI?

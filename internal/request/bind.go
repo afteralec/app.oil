@@ -275,6 +275,26 @@ func BindOverviewActions(e *html.Engine, b fiber.Map, p BindOverviewActionsParam
 			}
 			actions = append(actions, submit)
 		}
+		if p.Request.Status == StatusApproved {
+			fulfilledby, err := FulfilledBy(p.Request.Type)
+			if err != nil {
+				return b, err
+			}
+			// TODO: Use a constant here
+			if fulfilledby == "Player" && p.PID == p.Request.PID {
+				fulfill, err := partial.Render(e, partial.RenderParams{
+					Template: partial.RequestOverviewActionFulfill,
+					Bind: fiber.Map{
+						// TODO: Create utility to get this for Request type
+						"Text": "Create Character",
+					},
+				})
+				if err != nil {
+					return b, err
+				}
+				actions = append(actions, fulfill)
+			}
+		}
 	}
 
 	if p.Request.Status == StatusInReview && p.Request.RPID == p.PID {

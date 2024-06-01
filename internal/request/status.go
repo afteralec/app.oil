@@ -184,8 +184,17 @@ func NextStatus(p NextStatusParams) (string, error) {
 
 		return StatusSubmitted, nil
 	case StatusApproved:
-		if p.Request.PID != p.PID {
-			return "", ErrNextStatusForbidden
+		fulfilledby, err := FulfilledBy(p.Request.Type)
+		if err != nil {
+			return "", err
+		}
+
+		if fulfilledby == "Player" && p.Request.PID == p.PID {
+			return StatusFulfilled, nil
+		}
+
+		if fulfilledby == "Reviewer" && p.Request.RPID == p.PID {
+			return StatusFulfilled, nil
 		}
 
 		// TODO: Figure out resolving an approved request
@@ -232,16 +241,17 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 	}
 
 	if p.Status == StatusApproved {
+		// TODO: Validate that the correct person is attempting to fulfill this?
 		fulfilledby, err := FulfilledBy(p.Request.Type)
 		if err != nil {
 			return err
 		}
 		// TODO: Use a constant here instead
-		if fulfilledby == "player" && p.PID != p.Request.PID {
+		if fulfilledby == "Player" && p.PID != p.Request.PID {
 			return ErrNextStatusForbidden
 		}
 		// TODO: Use a constant here instead
-		if fulfilledby == "reviewer" && p.PID != p.Request.RPID {
+		if fulfilledby == "Reviewer" && p.PID != p.Request.RPID {
 			return ErrNextStatusForbidden
 		}
 	}

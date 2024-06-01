@@ -13,6 +13,7 @@ const (
 	VariableApprove      = "showApproveDialog"
 	VariableFinishReview = "showFinishReviewDialog"
 	VariableReject       = "showRejectDialog"
+	VariableFulfill      = "showFulfillDialog"
 )
 
 const (
@@ -36,6 +37,7 @@ type DefinitionGroup struct {
 	Approve      Definition
 	FinishReview Definition
 	Reject       Definition
+	Fulfill      Definition
 }
 
 func (d *DefinitionGroup) Slice() []Definition {
@@ -46,6 +48,7 @@ func (d *DefinitionGroup) Slice() []Definition {
 		d.Approve,
 		d.FinishReview,
 		d.Reject,
+		d.Fulfill,
 	}
 }
 
@@ -56,4 +59,5 @@ func (d *DefinitionGroup) SetPath(rid int64) {
 	d.PutInReview.Path = path
 	d.Approve.Path = path
 	d.FinishReview.Path = path
+	d.Fulfill.Path = path
 }

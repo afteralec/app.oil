@@ -461,6 +461,7 @@ export function getRequestData(text = "") {
     showApproveDialog: false,
     showFinishReviewDialog: false,
     showRejectDialog: false,
+    showFulfillDialog: false,
     changeRequestOpen: false,
     editChangeRequestOpen: false,
     changeRequestOpenField: "",

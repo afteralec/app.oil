@@ -25,8 +25,8 @@ func Fulfill(q *query.Queries, req *query.Request) error {
 	}
 
 	if err := UpdateStatus(q, UpdateStatusParams{
-		PID:    req.PID,
-		Status: StatusFulfilled,
+		Request: req,
+		Status:  StatusFulfilled,
 	}); err != nil {
 		return err
 	}

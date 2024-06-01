@@ -1101,6 +1101,7 @@ func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 		})
 		if err != nil {
 			if err == request.ErrNextStatusForbidden {
+				log.Println("next status is verboten")
 				c.Status(fiber.StatusForbidden)
 				return nil
 			}
