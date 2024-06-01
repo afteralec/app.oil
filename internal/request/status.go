@@ -202,9 +202,9 @@ func NextStatus(p NextStatusParams) (string, error) {
 }
 
 type UpdateStatusParams struct {
-	Status string
-	PID    int64
-	RID    int64
+	Request *query.Request
+	Status  string
+	PID     int64
 }
 
 var (
@@ -212,6 +212,7 @@ var (
 	ErrInvalidReviewerID error = errors.New("invalid reviewer ID")
 )
 
+// TODO: Invalidate an invalid status? i.e., make this a state machine?
 func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 	if !IsStatusValid(p.Status) {
 		return ErrInvalidStatus
@@ -223,15 +224,32 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 		}
 
 		if err := q.UpdateRequestReviewer(context.Background(), query.UpdateRequestReviewerParams{
-			ID:   p.RID,
+			ID:   p.Request.ID,
 			RPID: p.PID,
 		}); err != nil {
 			return err
 		}
 	}
 
+	if p.Status == StatusApproved {
+		fulfiller, ok := FulfillersByType[p.Request.Type]
+		if !ok {
+			return ErrNoDefinition
+		}
+		// TODO: Use a constant here instead
+		if fulfiller.For() == "player" && p.PID != p.Request.PID {
+			// TODO: Create an error for this
+			return ErrNoDefinition
+		}
+		// TODO: Use a constant here instead
+		if fulfiller.For() == "reviewer" && p.PID != p.Request.RPID {
+			// TODO: Create an error for this
+			return ErrNoDefinition
+		}
+	}
+
 	if err := q.UpdateRequestStatus(context.Background(), query.UpdateRequestStatusParams{
-		ID:     p.RID,
+		ID:     p.Request.ID,
 		Status: p.Status,
 	}); err != nil {
 		return err

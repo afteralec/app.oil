@@ -24,7 +24,12 @@ func Fulfill(q *query.Queries, req *query.Request, p *query.Player) error {
 		return err
 	}
 
-	// TODO: Change the Request's status to Fulfilled
+	if err := UpdateStatus(q, UpdateStatusParams{
+		PID:    req.PID,
+		Status: StatusFulfilled,
+	}); err != nil {
+		return err
+	}
 
 	return nil
 }

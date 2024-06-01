@@ -84,9 +84,9 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 
 		if ready {
 			if err := UpdateStatus(q, UpdateStatusParams{
-				PID:    p.PID,
-				RID:    p.Request.ID,
-				Status: StatusReady,
+				PID:     p.PID,
+				Request: p.Request,
+				Status:  StatusReady,
 			}); err != nil {
 				return err
 			}
@@ -118,9 +118,9 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 
 		if ready {
 			if err := UpdateStatus(q, UpdateStatusParams{
-				PID:    p.PID,
-				RID:    p.Request.ID,
-				Status: StatusIncomplete,
+				PID:     p.PID,
+				Request: p.Request,
+				Status:  StatusIncomplete,
 			}); err != nil {
 				return err
 			}

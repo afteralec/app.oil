@@ -753,11 +753,16 @@ func TestUpdateRequestFieldForbiddenNotEditable(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestRequest(t, &i, rid)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	// TODO: Update this to use a helper that calls the app's API instead of hacking it
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusSubmitted,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusSubmitted,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -805,11 +810,16 @@ func TestUpdateRequestFieldForbiddenReviewer(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsernameTwo)
 	defer DeleteTestPlayerPermission(t, &i, permid)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	// TODO: Update this to use a helper that calls the app's API instead of hacking it
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -917,11 +927,16 @@ func TestUpdateRequestFieldSuccessWhileReviewed(t *testing.T) {
 	defer DeleteTestPlayer(t, &i, TestUsername)
 	defer DeleteTestRequest(t, &i, rid)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	// TODO: Update this to use a helper that calls the app's API instead of hacking it
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusReviewed,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusReviewed,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1214,10 +1229,15 @@ func TestCreateRequestChangeRequestBadRequestMissingBody(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1254,10 +1274,15 @@ func TestCreateRequestChangeRequestBadRequestInvalidText(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1300,10 +1325,15 @@ func TestCreateRequestChangeRequestBadRequestInvalidField(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1346,10 +1376,15 @@ func TestCreateRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1434,10 +1469,15 @@ func TestCreateRequestChangeRequestForbiddenNotReviewer(t *testing.T) {
 	permissionID = CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1479,10 +1519,15 @@ func TestCreateRequestChangeRequestForbiddenNoPermission(t *testing.T) {
 	pid := CreateTestPlayer(t, &i, a, TestUsernameTwo, TestPassword)
 	defer DeleteTestPlayer(t, &i, TestUsername)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1527,10 +1572,15 @@ func TestCreateRequestChangeRequestSuccess(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionID)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1572,10 +1622,15 @@ func TestDeleteRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1621,10 +1676,15 @@ func TestDeleteRequestChangeRequestNotFoundNoChangeRequest(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1671,10 +1731,15 @@ func TestDeleteRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1722,10 +1787,15 @@ func TestDeleteRequestChangeRequestSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1771,10 +1841,15 @@ func TestEditRequestChangeRequestUnauthorizedNotLoggedIn(t *testing.T) {
 	permissionId := CreateTestPlayerPermission(t, &i, pid, player.PermissionReviewCharacterApplications.Name)
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1826,10 +1901,15 @@ func TestEditRequestChangeRequestBadRequestMissingBody(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1876,10 +1956,15 @@ func TestEditRequestChangeRequestBadRequestInvalidText(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1932,10 +2017,15 @@ func TestEditRequestChangeRequestNotFoundNoChangeRequest(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -1988,10 +2078,15 @@ func TestEditRequestChangeRequestNotFoundNoRequest(t *testing.T) {
 	defer DeleteTestPlayerPermission(t, &i, permissionId)
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}
@@ -2045,10 +2140,15 @@ func TestEditRequestChangeRequestSuccess(t *testing.T) {
 
 	sessionCookie := LoginTestPlayer(t, a, TestUsernameTwo, TestPassword)
 
+	preq, err := i.Queries.GetRequest(context.Background(), rid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := request.UpdateStatus(i.Queries, request.UpdateStatusParams{
-		RID:    rid,
-		PID:    pid,
-		Status: request.StatusInReview,
+		Request: &preq,
+		PID:     pid,
+		Status:  request.StatusInReview,
 	}); err != nil {
 		t.Fatal(t)
 	}

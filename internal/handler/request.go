@@ -1109,9 +1109,9 @@ func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 		}
 
 		if err = request.UpdateStatus(qtx, request.UpdateStatusParams{
-			RID:    rid,
-			PID:    pid,
-			Status: status,
+			Request: &req,
+			PID:     pid,
+			Status:  status,
 		}); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
@@ -1351,9 +1351,9 @@ func DeleteRequest(i *service.Interfaces) fiber.Handler {
 		}
 
 		if err = request.UpdateStatus(qtx, request.UpdateStatusParams{
-			RID:    rid,
-			PID:    pid,
-			Status: status,
+			Request: &req,
+			PID:     pid,
+			Status:  status,
 		}); err != nil {
 			c.Status(fiber.StatusInternalServerError)
 			return nil
