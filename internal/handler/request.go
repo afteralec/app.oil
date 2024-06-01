@@ -902,12 +902,8 @@ func UpdateRequestSubfield(i *service.Interfaces) fiber.Handler {
 
 		subfields, err := qtx.ListRequestSubfieldsForField(context.Background(), field.ID)
 		if err != nil {
-			if err == sql.ErrNoRows {
-				// TODO: Log this out
-			} else {
-				c.Status(fiber.StatusInternalServerError)
-				return nil
-			}
+			c.Status(fiber.StatusInternalServerError)
+			return nil
 		}
 
 		// TODO: Make this a utility function?
