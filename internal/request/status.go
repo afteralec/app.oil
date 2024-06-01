@@ -21,6 +21,7 @@ const (
 	StatusApproved   = status.Approved
 	StatusReviewed   = status.Reviewed
 	StatusRejected   = status.Rejected
+	StatusFulfilled  = status.Fulfilled
 	StatusArchived   = status.Archived
 	StatusCanceled   = status.Canceled
 )
@@ -41,6 +42,7 @@ var StatusTexts map[string]string = map[string]string{
 	StatusApproved:   "Approved",
 	StatusReviewed:   "Reviewed",
 	StatusRejected:   "Rejected",
+	StatusFulfilled:  "Fulfilled",
 	StatusArchived:   "Archived",
 	StatusCanceled:   "Canceled",
 }
@@ -53,10 +55,12 @@ var StatusIcons map[string]string = map[string]string{
 	StatusApproved:   "gg:check-o",
 	StatusReviewed:   "fe:warning",
 	StatusRejected:   "fe:warning",
+	StatusFulfilled:  "gg:check-o",
 	StatusArchived:   "ic:round-lock",
 	StatusCanceled:   "fe:outline-close",
 }
 
+// TODO: Get a color value for text-fulfilled
 var StatusColors map[string]string = map[string]string{
 	StatusIncomplete: "text-incomplete",
 	StatusReady:      "text-ready",
@@ -65,6 +69,7 @@ var StatusColors map[string]string = map[string]string{
 	StatusApproved:   "text-approved",
 	StatusReviewed:   "text-reviewed",
 	StatusRejected:   "text-rejected",
+	StatusFulfilled:  "text-submitted",
 	StatusArchived:   "text-archived",
 	StatusCanceled:   "text-canceled",
 }
@@ -133,6 +138,7 @@ func MakeDefaultStatusIcon(iconsize int, textsize string, includeText bool) Stat
 	return result
 }
 
+// TODO: Split these out into better errors
 var ErrNextStatusForbidden error = errors.New("that status update is forbidden")
 
 type NextStatusParams struct {

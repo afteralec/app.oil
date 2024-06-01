@@ -1146,7 +1146,7 @@ func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		c.Append("HX-Refresh", "true")
+		c.Append(header.HXRefresh, header.True)
 		return nil
 	}
 }

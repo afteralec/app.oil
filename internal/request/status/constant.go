@@ -8,6 +8,7 @@ const (
 	Approved   = "Approved"
 	Reviewed   = "Reviewed"
 	Rejected   = "Rejected"
+	Fulfilled  = "Fulfilled"
 	Archived   = "Archived"
 	Canceled   = "Canceled"
 )
