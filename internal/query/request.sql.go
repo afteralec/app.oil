@@ -632,6 +632,82 @@ func (q *Queries) ListRequestFieldsForRequestWithChangeRequests(ctx context.Cont
 	return items, nil
 }
 
+const listRequestSubfieldsForField = `-- name: ListRequestSubfieldsForField :many
+SELECT created_at, updated_at, value, rfid, id FROM request_subfields WHERE rfid = ?
+`
+
+func (q *Queries) ListRequestSubfieldsForField(ctx context.Context, rfid int64) ([]RequestSubfield, error) {
+	rows, err := q.query(ctx, q.listRequestSubfieldsForFieldStmt, listRequestSubfieldsForField, rfid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestSubfield
+	for rows.Next() {
+		var i RequestSubfield
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Value,
+			&i.RFID,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listRequestSubfieldsForFields = `-- name: ListRequestSubfieldsForFields :many
+SELECT created_at, updated_at, value, rfid, id FROM request_subfields WHERE rfid IN (/*SLICE:rfids*/?)
+`
+
+func (q *Queries) ListRequestSubfieldsForFields(ctx context.Context, rfids []int64) ([]RequestSubfield, error) {
+	query := listRequestSubfieldsForFields
+	var queryParams []interface{}
+	if len(rfids) > 0 {
+		for _, v := range rfids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:rfids*/?", strings.Repeat(",?", len(rfids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:rfids*/?", "NULL", 1)
+	}
+	rows, err := q.query(ctx, nil, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RequestSubfield
+	for rows.Next() {
+		var i RequestSubfield
+		if err := rows.Scan(
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Value,
+			&i.RFID,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listRequestsByTypeAndStatus = `-- name: ListRequestsByTypeAndStatus :many
 SELECT created_at, updated_at, type, status, rpid, pid, id FROM requests WHERE type = ? AND status IN (/*SLICE:statuses*/?)
 `
@@ -703,82 +779,6 @@ func (q *Queries) ListRequestsForPlayer(ctx context.Context, pid int64) ([]Reque
 			&i.Status,
 			&i.RPID,
 			&i.PID,
-			&i.ID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listSubfieldsForField = `-- name: ListSubfieldsForField :many
-SELECT created_at, updated_at, value, rfid, id FROM request_subfields WHERE rfid = ?
-`
-
-func (q *Queries) ListSubfieldsForField(ctx context.Context, rfid int64) ([]RequestSubfield, error) {
-	rows, err := q.query(ctx, q.listSubfieldsForFieldStmt, listSubfieldsForField, rfid)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []RequestSubfield
-	for rows.Next() {
-		var i RequestSubfield
-		if err := rows.Scan(
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.Value,
-			&i.RFID,
-			&i.ID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listSubfieldsForFields = `-- name: ListSubfieldsForFields :many
-SELECT created_at, updated_at, value, rfid, id FROM request_subfields WHERE rfid IN (/*SLICE:rfids*/?)
-`
-
-func (q *Queries) ListSubfieldsForFields(ctx context.Context, rfids []int64) ([]RequestSubfield, error) {
-	query := listSubfieldsForFields
-	var queryParams []interface{}
-	if len(rfids) > 0 {
-		for _, v := range rfids {
-			queryParams = append(queryParams, v)
-		}
-		query = strings.Replace(query, "/*SLICE:rfids*/?", strings.Repeat(",?", len(rfids))[1:], 1)
-	} else {
-		query = strings.Replace(query, "/*SLICE:rfids*/?", "NULL", 1)
-	}
-	rows, err := q.query(ctx, nil, query, queryParams...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []RequestSubfield
-	for rows.Next() {
-		var i RequestSubfield
-		if err := rows.Scan(
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.Value,
-			&i.RFID,
 			&i.ID,
 		); err != nil {
 			return nil, err

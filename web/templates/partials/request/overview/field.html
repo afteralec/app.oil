@@ -9,6 +9,10 @@
 
   <p class="whitespace-pre-wrap text-base leading-none">{{ .Value }}</p>
 
+  {{ range .Values }}
+  <p class="whitespace-pre-wrap text-base leading-none">{{ . }}</p>
+  {{ end }}
+
   <!-- prettier-ignore -->
   {{ if .ChangeRequestConfig.Open }}
     {{ template "partial-request-change-request" .ChangeRequestConfig.Open }}

@@ -202,7 +202,7 @@ func RequestFieldPage(i *service.Interfaces) fiber.Handler {
 			Field:   &field,
 		}
 		if request.FieldRequiresSubfields(req.Type, field.Type) {
-			subfields, err := qtx.ListSubfieldsForField(context.Background(), field.ID)
+			subfields, err := qtx.ListRequestSubfieldsForField(context.Background(), field.ID)
 			if err != nil {
 				if err == sql.ErrNoRows {
 				} else {
@@ -280,11 +280,6 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 		fieldmap := request.FieldMap(fields)
 
-		if err := tx.Commit(); err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
-		}
-
 		// TODO: Finish new bind pattern
 		b := view.Bind(c)
 		b, err = request.BindDialogs(b, &req)
@@ -310,7 +305,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				Last:    nifo.Last,
 			}
 			if request.FieldRequiresSubfields(req.Type, nifo.Field.Type) {
-				subfields, err := qtx.ListSubfieldsForField(context.Background(), nifo.Field.ID)
+				subfields, err := qtx.ListRequestSubfieldsForField(context.Background(), nifo.Field.ID)
 				if err != nil {
 					if err == sql.ErrNoRows {
 					} else {
@@ -322,6 +317,11 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			}
 			b, err := request.BindFieldView(i.Templates, b, bfvp)
 			if err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			}
+
+			if err := tx.Commit(); err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
@@ -379,12 +379,19 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 					changemap[change.RFID] = change
 				}
 
+				subfields, err := qtx.ListRequestSubfieldsForFields(context.Background(), rfids)
+				if err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+				}
+
 				overviewfields, err := request.FieldsForOverview(i.Templates, request.FieldsForOverviewParams{
 					PID:           pid,
 					Request:       &req,
 					FieldMap:      fieldmap,
 					OpenChangeMap: openchangemap,
 					ChangeMap:     changemap,
+					Subfields:     subfields,
 				})
 				if err != nil {
 					c.Status(fiber.StatusInternalServerError)
@@ -393,6 +400,10 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 
 				b["Fields"] = overviewfields
 
+				if err := tx.Commit(); err != nil {
+					c.Status(fiber.StatusInternalServerError)
+					return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+				}
 				return c.Render(view.RequestOverview, b, layout.Page)
 			}
 
@@ -434,7 +445,7 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				Change:     change,
 			}
 			if request.FieldRequiresSubfields(req.Type, nufo.Field.Type) {
-				subfields, err := i.Queries.ListSubfieldsForField(context.Background(), nufo.Field.ID)
+				subfields, err := i.Queries.ListRequestSubfieldsForField(context.Background(), nufo.Field.ID)
 				if err != nil {
 					if err == sql.ErrNoRows {
 					} else {
@@ -451,6 +462,10 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 			}
 
+			if err := tx.Commit(); err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+			}
 			return c.Render(view.RequestField, b, layout.Standalone)
 		}
 
@@ -483,11 +498,18 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
 		}
 
+		subfields, err := qtx.ListRequestSubfieldsForFields(context.Background(), rfids)
+		if err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		}
+
 		overviewfields, err := request.FieldsForOverview(i.Templates, request.FieldsForOverviewParams{
 			PID:       pid,
 			Request:   &req,
 			FieldMap:  fieldmap,
 			ChangeMap: changemap,
+			Subfields: subfields,
 		})
 		if err != nil {
 			c.Status(fiber.StatusInternalServerError)
@@ -495,6 +517,10 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 		b["Fields"] = overviewfields
 
+		if err := tx.Commit(); err != nil {
+			c.Status(fiber.StatusInternalServerError)
+			return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
+		}
 		return c.Render(view.RequestOverview, b, layout.Page)
 	}
 }
@@ -714,7 +740,7 @@ func CreateRequestSubfield(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		subfields, err := qtx.ListSubfieldsForField(context.Background(), field.ID)
+		subfields, err := qtx.ListRequestSubfieldsForField(context.Background(), field.ID)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				// TODO: Log this out
@@ -874,7 +900,7 @@ func UpdateRequestSubfield(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		subfields, err := qtx.ListSubfieldsForField(context.Background(), field.ID)
+		subfields, err := qtx.ListRequestSubfieldsForField(context.Background(), field.ID)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				// TODO: Log this out
@@ -999,7 +1025,7 @@ func DeleteRequestSubfield(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		subfields, err := qtx.ListSubfieldsForField(context.Background(), field.ID)
+		subfields, err := qtx.ListRequestSubfieldsForField(context.Background(), field.ID)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				// TODO: Log this out

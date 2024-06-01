@@ -261,6 +261,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listRequestFieldsForRequestWithChangeRequestsStmt, err = db.PrepareContext(ctx, listRequestFieldsForRequestWithChangeRequests); err != nil {
 		return nil, fmt.Errorf("error preparing query ListRequestFieldsForRequestWithChangeRequests: %w", err)
 	}
+	if q.listRequestSubfieldsForFieldStmt, err = db.PrepareContext(ctx, listRequestSubfieldsForField); err != nil {
+		return nil, fmt.Errorf("error preparing query ListRequestSubfieldsForField: %w", err)
+	}
+	if q.listRequestSubfieldsForFieldsStmt, err = db.PrepareContext(ctx, listRequestSubfieldsForFields); err != nil {
+		return nil, fmt.Errorf("error preparing query ListRequestSubfieldsForFields: %w", err)
+	}
 	if q.listRequestsByTypeAndStatusStmt, err = db.PrepareContext(ctx, listRequestsByTypeAndStatus); err != nil {
 		return nil, fmt.Errorf("error preparing query ListRequestsByTypeAndStatus: %w", err)
 	}
@@ -272,12 +278,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.listRoomsByIDsStmt, err = db.PrepareContext(ctx, listRoomsByIDs); err != nil {
 		return nil, fmt.Errorf("error preparing query ListRoomsByIDs: %w", err)
-	}
-	if q.listSubfieldsForFieldStmt, err = db.PrepareContext(ctx, listSubfieldsForField); err != nil {
-		return nil, fmt.Errorf("error preparing query ListSubfieldsForField: %w", err)
-	}
-	if q.listSubfieldsForFieldsStmt, err = db.PrepareContext(ctx, listSubfieldsForFields); err != nil {
-		return nil, fmt.Errorf("error preparing query ListSubfieldsForFields: %w", err)
 	}
 	if q.listVerifiedEmailsStmt, err = db.PrepareContext(ctx, listVerifiedEmails); err != nil {
 		return nil, fmt.Errorf("error preparing query ListVerifiedEmails: %w", err)
@@ -772,6 +772,16 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing listRequestFieldsForRequestWithChangeRequestsStmt: %w", cerr)
 		}
 	}
+	if q.listRequestSubfieldsForFieldStmt != nil {
+		if cerr := q.listRequestSubfieldsForFieldStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listRequestSubfieldsForFieldStmt: %w", cerr)
+		}
+	}
+	if q.listRequestSubfieldsForFieldsStmt != nil {
+		if cerr := q.listRequestSubfieldsForFieldsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listRequestSubfieldsForFieldsStmt: %w", cerr)
+		}
+	}
 	if q.listRequestsByTypeAndStatusStmt != nil {
 		if cerr := q.listRequestsByTypeAndStatusStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listRequestsByTypeAndStatusStmt: %w", cerr)
@@ -790,16 +800,6 @@ func (q *Queries) Close() error {
 	if q.listRoomsByIDsStmt != nil {
 		if cerr := q.listRoomsByIDsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listRoomsByIDsStmt: %w", cerr)
-		}
-	}
-	if q.listSubfieldsForFieldStmt != nil {
-		if cerr := q.listSubfieldsForFieldStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listSubfieldsForFieldStmt: %w", cerr)
-		}
-	}
-	if q.listSubfieldsForFieldsStmt != nil {
-		if cerr := q.listSubfieldsForFieldsStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing listSubfieldsForFieldsStmt: %w", cerr)
 		}
 	}
 	if q.listVerifiedEmailsStmt != nil {
@@ -1075,12 +1075,12 @@ type Queries struct {
 	listRequestChangeRequestsByFieldIDStmt            *sql.Stmt
 	listRequestFieldsForRequestStmt                   *sql.Stmt
 	listRequestFieldsForRequestWithChangeRequestsStmt *sql.Stmt
+	listRequestSubfieldsForFieldStmt                  *sql.Stmt
+	listRequestSubfieldsForFieldsStmt                 *sql.Stmt
 	listRequestsByTypeAndStatusStmt                   *sql.Stmt
 	listRequestsForPlayerStmt                         *sql.Stmt
 	listRoomsStmt                                     *sql.Stmt
 	listRoomsByIDsStmt                                *sql.Stmt
-	listSubfieldsForFieldStmt                         *sql.Stmt
-	listSubfieldsForFieldsStmt                        *sql.Stmt
 	listVerifiedEmailsStmt                            *sql.Stmt
 	markEmailVerifiedStmt                             *sql.Stmt
 	searchHelpByCategoryStmt                          *sql.Stmt
@@ -1197,12 +1197,12 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listRequestChangeRequestsByFieldIDStmt:            q.listRequestChangeRequestsByFieldIDStmt,
 		listRequestFieldsForRequestStmt:                   q.listRequestFieldsForRequestStmt,
 		listRequestFieldsForRequestWithChangeRequestsStmt: q.listRequestFieldsForRequestWithChangeRequestsStmt,
+		listRequestSubfieldsForFieldStmt:                  q.listRequestSubfieldsForFieldStmt,
+		listRequestSubfieldsForFieldsStmt:                 q.listRequestSubfieldsForFieldsStmt,
 		listRequestsByTypeAndStatusStmt:                   q.listRequestsByTypeAndStatusStmt,
 		listRequestsForPlayerStmt:                         q.listRequestsForPlayerStmt,
 		listRoomsStmt:                                     q.listRoomsStmt,
 		listRoomsByIDsStmt:                                q.listRoomsByIDsStmt,
-		listSubfieldsForFieldStmt:                         q.listSubfieldsForFieldStmt,
-		listSubfieldsForFieldsStmt:                        q.listSubfieldsForFieldsStmt,
 		listVerifiedEmailsStmt:                            q.listVerifiedEmailsStmt,
 		markEmailVerifiedStmt:                             q.markEmailVerifiedStmt,
 		searchHelpByCategoryStmt:                          q.searchHelpByCategoryStmt,

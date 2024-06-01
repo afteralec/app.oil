@@ -68,7 +68,7 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 		for _, field := range fields {
 			rfids = append(rfids, field.ID)
 		}
-		subfields, err := q.ListSubfieldsForFields(context.Background(), rfids)
+		subfields, err := q.ListRequestSubfieldsForFields(context.Background(), rfids)
 		if err != nil {
 			return err
 		}
@@ -102,7 +102,7 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 		for _, field := range fields {
 			rfids = append(rfids, field.ID)
 		}
-		subfields, err := q.ListSubfieldsForFields(context.Background(), rfids)
+		subfields, err := q.ListRequestSubfieldsForFields(context.Background(), rfids)
 		if err != nil {
 			return err
 		}
@@ -197,6 +197,7 @@ func FieldMap(fields []query.RequestField) field.Map {
 	return m
 }
 
+// TODO: Make this SubfieldMap a discrete type?
 func SubfieldMap(subfields []query.RequestSubfield) map[int64][]query.RequestSubfield {
 	m := map[int64][]query.RequestSubfield{}
 	for _, subfield := range subfields {

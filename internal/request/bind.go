@@ -15,6 +15,7 @@ import (
 	"petrichormud.com/app/internal/route"
 )
 
+// TODO: This is a good candidate for cleanup and refinement
 func (p *BindFieldViewParams) ShouldRenderForm(fd field.Field) bool {
 	if p.Request.PID == p.PID && p.Request.Status == StatusIncomplete || p.Request.Status == StatusReady || p.Request.Status == StatusReviewed {
 		return true

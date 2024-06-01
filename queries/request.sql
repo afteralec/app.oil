@@ -73,10 +73,10 @@ UPDATE request_subfields SET value = ? WHERE id = ?;
 -- name: GetRequestSubfield :one
 SELECT * FROM request_subfields WHERE id = ?;
 
--- name: ListSubfieldsForField :many
+-- name: ListRequestSubfieldsForField :many
 SELECT * FROM request_subfields WHERE rfid = ?;
 
--- name: ListSubfieldsForFields :many
+-- name: ListRequestSubfieldsForFields :many
 SELECT * FROM request_subfields WHERE rfid IN (sqlc.slice("rfids"));
 
 -- name: CreateOpenRequestChangeRequest :exec

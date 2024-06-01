@@ -129,8 +129,9 @@ type ForOverview struct {
 	Help                    template.HTML
 	Type                    string
 	Label                   string
-	Value                   string
 	Path                    string
+	Value                   string
+	Values                  []string
 	AllowEdit               bool
 	IsApproved              bool
 	ShowRequestChangeAction bool
@@ -141,7 +142,9 @@ type ForOverviewParams struct {
 	FieldMap      Map
 	ChangeMap     map[int64]query.RequestChangeRequest
 	OpenChangeMap map[int64]query.OpenRequestChangeRequest
-	PID           int64
+	// TODO: Make this a SubfieldMap instead?
+	Subfields []query.RequestSubfield
+	PID       int64
 }
 
 func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
@@ -163,11 +166,22 @@ func (f *Field) ForOverview(e *html.Engine, p ForOverviewParams) ForOverview {
 		help = template.HTML("")
 	}
 
+	vs := []string{}
+	if len(p.Subfields) > 0 {
+		for _, sf := range p.Subfields {
+			if sf.RFID != field.ID {
+				continue
+			}
+			vs = append(vs, sf.Value)
+		}
+	}
+
 	overview := ForOverview{
 		Help:                    help,
 		Type:                    f.Type,
 		Label:                   f.Label,
 		Value:                   v,
+		Values:                  vs,
 		Path:                    route.RequestFieldTypePath(p.Request.ID, f.Type),
 		AllowEdit:               allowEdit,
 		IsApproved:              field.Status == StatusApproved,

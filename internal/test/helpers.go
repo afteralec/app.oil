@@ -189,7 +189,7 @@ func CreateTestRequestSubfield(t *testing.T, i *service.Interfaces, rfid int64, 
 		t.Fatal(err)
 	}
 
-	subfields, err := i.Queries.ListSubfieldsForField(context.Background(), rfid)
+	subfields, err := i.Queries.ListRequestSubfieldsForField(context.Background(), rfid)
 	if err != nil {
 		t.Fatal(err)
 	}
