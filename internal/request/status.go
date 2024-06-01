@@ -232,19 +232,17 @@ func UpdateStatus(q *query.Queries, p UpdateStatusParams) error {
 	}
 
 	if p.Status == StatusApproved {
-		fulfiller, ok := FulfillersByType[p.Request.Type]
-		if !ok {
-			return ErrNoDefinition
+		fulfilledby, err := FulfilledBy(p.Request.Type)
+		if err != nil {
+			return err
 		}
 		// TODO: Use a constant here instead
-		if fulfiller.For() == "player" && p.PID != p.Request.PID {
-			// TODO: Create an error for this
-			return ErrNoDefinition
+		if fulfilledby == "player" && p.PID != p.Request.PID {
+			return ErrNextStatusForbidden
 		}
 		// TODO: Use a constant here instead
-		if fulfiller.For() == "reviewer" && p.PID != p.Request.RPID {
-			// TODO: Create an error for this
-			return ErrNoDefinition
+		if fulfilledby == "reviewer" && p.PID != p.Request.RPID {
+			return ErrNextStatusForbidden
 		}
 	}
 

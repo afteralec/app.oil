@@ -30,7 +30,7 @@ var (
 type fulfillerCharacterApplication struct{}
 
 // TODO: This should return a constant
-func (f *fulfillerCharacterApplication) For() string {
+func (f *fulfillerCharacterApplication) By() string {
 	return "Player"
 }
 

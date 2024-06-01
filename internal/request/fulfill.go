@@ -6,7 +6,7 @@ import (
 )
 
 type Fulfiller interface {
-	For() string
+	By() string
 	Fulfill(q *query.Queries, req *query.Request) error
 }
 
@@ -14,7 +14,7 @@ var FulfillersByType map[string]Fulfiller = map[string]Fulfiller{
 	TypeCharacterApplication: &definition.FulfillerCharacterApplication,
 }
 
-func Fulfill(q *query.Queries, req *query.Request, p *query.Player) error {
+func Fulfill(q *query.Queries, req *query.Request) error {
 	fulfiller, ok := FulfillersByType[req.Type]
 	if !ok {
 		return ErrNoDefinition
@@ -32,4 +32,17 @@ func Fulfill(q *query.Queries, req *query.Request, p *query.Player) error {
 	}
 
 	return nil
+}
+
+func FulfilledBy(t string) (string, error) {
+	if !IsTypeValid(t) {
+		return "", ErrInvalidType
+	}
+
+	fulfiller, ok := FulfillersByType[t]
+	if !ok {
+		return "", ErrNoDefinition
+	}
+
+	return fulfiller.By(), nil
 }

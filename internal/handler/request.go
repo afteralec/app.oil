@@ -1108,13 +1108,21 @@ func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
-		if err = request.UpdateStatus(qtx, request.UpdateStatusParams{
-			Request: &req,
-			PID:     pid,
-			Status:  status,
-		}); err != nil {
-			c.Status(fiber.StatusInternalServerError)
-			return nil
+		if status == request.StatusFulfilled {
+			// TODO: Return Forbidden, Conflict, etc depending on the error
+			if err := request.Fulfill(qtx, &req); err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
+		} else {
+			if err := request.UpdateStatus(qtx, request.UpdateStatusParams{
+				Request: &req,
+				PID:     pid,
+				Status:  status,
+			}); err != nil {
+				c.Status(fiber.StatusInternalServerError)
+				return nil
+			}
 		}
 
 		// TODO: Retrieve the fields and check the Change Requests
@@ -1146,6 +1154,7 @@ func UpdateRequestStatus(i *service.Interfaces) fiber.Handler {
 			return nil
 		}
 
+		// TODO: Success notice?
 		c.Append(header.HXRefresh, header.True)
 		return nil
 	}
