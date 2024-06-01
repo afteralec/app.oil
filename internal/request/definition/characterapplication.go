@@ -19,6 +19,27 @@ import (
 
 // TODO: Create constants for FieldTypes and lift them into the Request
 
+type fulfillerCharacterApplication struct{}
+
+// TODO: This should return a constant
+func (f *fulfillerCharacterApplication) For() string {
+	return "Player"
+}
+
+func (f *fulfillerCharacterApplication) Fulfill(q *query.Queries, req *query.Request) error {
+	// TODO: To Fulfill a Character Application Request:
+	// 1. Create Actor Image
+	// 2. Create Actor Keywords
+	// 3. Create Actor Permissions
+	// 4. Create Actor Properties - Inventory, Hands, etc.
+	// 5. Create Character Metadata from non-mechanical fields on the application: name, backstory
+	// 6. Create Player ownership record of Actor
+	// 7. For now, a Player can only have one Current Actor, so set that and deny if there is one
+	return nil
+}
+
+var FulfillerCharacterApplication fulfillerCharacterApplication = fulfillerCharacterApplication{}
+
 type titlerCharacterApplication struct{}
 
 func (t *titlerCharacterApplication) ForOverview(fields field.Map) string {

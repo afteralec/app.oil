@@ -45,6 +45,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createActorImageCanBeStmt, err = db.PrepareContext(ctx, createActorImageCanBe); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateActorImageCanBe: %w", err)
 	}
+	if q.createActorImageCharacterMetadataStmt, err = db.PrepareContext(ctx, createActorImageCharacterMetadata); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateActorImageCharacterMetadata: %w", err)
+	}
 	if q.createActorImageContainerPropertiesStmt, err = db.PrepareContext(ctx, createActorImageContainerProperties); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateActorImageContainerProperties: %w", err)
 	}
@@ -59,6 +62,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.createActorImageKeywordStmt, err = db.PrepareContext(ctx, createActorImageKeyword); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateActorImageKeyword: %w", err)
+	}
+	if q.createActorImagePlayerPropertiesStmt, err = db.PrepareContext(ctx, createActorImagePlayerProperties); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateActorImagePlayerProperties: %w", err)
 	}
 	if q.createActorImagePrimaryHandStmt, err = db.PrepareContext(ctx, createActorImagePrimaryHand); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateActorImagePrimaryHand: %w", err)
@@ -155,6 +161,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getActorImageFurniturePropertiesStmt, err = db.PrepareContext(ctx, getActorImageFurnitureProperties); err != nil {
 		return nil, fmt.Errorf("error preparing query GetActorImageFurnitureProperties: %w", err)
+	}
+	if q.getActorImagePlayerPropertiesForImageStmt, err = db.PrepareContext(ctx, getActorImagePlayerPropertiesForImage); err != nil {
+		return nil, fmt.Errorf("error preparing query GetActorImagePlayerPropertiesForImage: %w", err)
 	}
 	if q.getEmailStmt, err = db.PrepareContext(ctx, getEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query GetEmail: %w", err)
@@ -303,6 +312,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.searchTagsStmt, err = db.PrepareContext(ctx, searchTags); err != nil {
 		return nil, fmt.Errorf("error preparing query SearchTags: %w", err)
 	}
+	if q.setActorImagePlayerPropertiesCurrentStmt, err = db.PrepareContext(ctx, setActorImagePlayerPropertiesCurrent); err != nil {
+		return nil, fmt.Errorf("error preparing query SetActorImagePlayerPropertiesCurrent: %w", err)
+	}
 	if q.updateActorImageDescriptionStmt, err = db.PrepareContext(ctx, updateActorImageDescription); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateActorImageDescription: %w", err)
 	}
@@ -412,6 +424,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createActorImageCanBeStmt: %w", cerr)
 		}
 	}
+	if q.createActorImageCharacterMetadataStmt != nil {
+		if cerr := q.createActorImageCharacterMetadataStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createActorImageCharacterMetadataStmt: %w", cerr)
+		}
+	}
 	if q.createActorImageContainerPropertiesStmt != nil {
 		if cerr := q.createActorImageContainerPropertiesStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createActorImageContainerPropertiesStmt: %w", cerr)
@@ -435,6 +452,11 @@ func (q *Queries) Close() error {
 	if q.createActorImageKeywordStmt != nil {
 		if cerr := q.createActorImageKeywordStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createActorImageKeywordStmt: %w", cerr)
+		}
+	}
+	if q.createActorImagePlayerPropertiesStmt != nil {
+		if cerr := q.createActorImagePlayerPropertiesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createActorImagePlayerPropertiesStmt: %w", cerr)
 		}
 	}
 	if q.createActorImagePrimaryHandStmt != nil {
@@ -595,6 +617,11 @@ func (q *Queries) Close() error {
 	if q.getActorImageFurniturePropertiesStmt != nil {
 		if cerr := q.getActorImageFurniturePropertiesStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getActorImageFurniturePropertiesStmt: %w", cerr)
+		}
+	}
+	if q.getActorImagePlayerPropertiesForImageStmt != nil {
+		if cerr := q.getActorImagePlayerPropertiesForImageStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getActorImagePlayerPropertiesForImageStmt: %w", cerr)
 		}
 	}
 	if q.getEmailStmt != nil {
@@ -842,6 +869,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing searchTagsStmt: %w", cerr)
 		}
 	}
+	if q.setActorImagePlayerPropertiesCurrentStmt != nil {
+		if cerr := q.setActorImagePlayerPropertiesCurrentStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing setActorImagePlayerPropertiesCurrentStmt: %w", cerr)
+		}
+	}
 	if q.updateActorImageDescriptionStmt != nil {
 		if cerr := q.updateActorImageDescriptionStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateActorImageDescriptionStmt: %w", cerr)
@@ -1003,11 +1035,13 @@ type Queries struct {
 	createActorImageStmt                              *sql.Stmt
 	createActorImageCanStmt                           *sql.Stmt
 	createActorImageCanBeStmt                         *sql.Stmt
+	createActorImageCharacterMetadataStmt             *sql.Stmt
 	createActorImageContainerPropertiesStmt           *sql.Stmt
 	createActorImageFoodPropertiesStmt                *sql.Stmt
 	createActorImageFurniturePropertiesStmt           *sql.Stmt
 	createActorImageHandStmt                          *sql.Stmt
 	createActorImageKeywordStmt                       *sql.Stmt
+	createActorImagePlayerPropertiesStmt              *sql.Stmt
 	createActorImagePrimaryHandStmt                   *sql.Stmt
 	createEmailStmt                                   *sql.Stmt
 	createOpenRequestChangeRequestStmt                *sql.Stmt
@@ -1040,6 +1074,7 @@ type Queries struct {
 	getActorImageContainerPropertiesStmt              *sql.Stmt
 	getActorImageFoodPropertiesStmt                   *sql.Stmt
 	getActorImageFurniturePropertiesStmt              *sql.Stmt
+	getActorImagePlayerPropertiesForImageStmt         *sql.Stmt
 	getEmailStmt                                      *sql.Stmt
 	getEmailByAddressForPlayerStmt                    *sql.Stmt
 	getHelpStmt                                       *sql.Stmt
@@ -1089,6 +1124,7 @@ type Queries struct {
 	searchHelpByTitleStmt                             *sql.Stmt
 	searchPlayersByUsernameStmt                       *sql.Stmt
 	searchTagsStmt                                    *sql.Stmt
+	setActorImagePlayerPropertiesCurrentStmt          *sql.Stmt
 	updateActorImageDescriptionStmt                   *sql.Stmt
 	updateActorImageShortDescriptionStmt              *sql.Stmt
 	updatePlayerPasswordStmt                          *sql.Stmt
@@ -1125,11 +1161,13 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		createActorImageStmt:                              q.createActorImageStmt,
 		createActorImageCanStmt:                           q.createActorImageCanStmt,
 		createActorImageCanBeStmt:                         q.createActorImageCanBeStmt,
+		createActorImageCharacterMetadataStmt:             q.createActorImageCharacterMetadataStmt,
 		createActorImageContainerPropertiesStmt:           q.createActorImageContainerPropertiesStmt,
 		createActorImageFoodPropertiesStmt:                q.createActorImageFoodPropertiesStmt,
 		createActorImageFurniturePropertiesStmt:           q.createActorImageFurniturePropertiesStmt,
 		createActorImageHandStmt:                          q.createActorImageHandStmt,
 		createActorImageKeywordStmt:                       q.createActorImageKeywordStmt,
+		createActorImagePlayerPropertiesStmt:              q.createActorImagePlayerPropertiesStmt,
 		createActorImagePrimaryHandStmt:                   q.createActorImagePrimaryHandStmt,
 		createEmailStmt:                                   q.createEmailStmt,
 		createOpenRequestChangeRequestStmt:                q.createOpenRequestChangeRequestStmt,
@@ -1162,6 +1200,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getActorImageContainerPropertiesStmt:              q.getActorImageContainerPropertiesStmt,
 		getActorImageFoodPropertiesStmt:                   q.getActorImageFoodPropertiesStmt,
 		getActorImageFurniturePropertiesStmt:              q.getActorImageFurniturePropertiesStmt,
+		getActorImagePlayerPropertiesForImageStmt:         q.getActorImagePlayerPropertiesForImageStmt,
 		getEmailStmt:                                      q.getEmailStmt,
 		getEmailByAddressForPlayerStmt:                    q.getEmailByAddressForPlayerStmt,
 		getHelpStmt:                                       q.getHelpStmt,
@@ -1211,6 +1250,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		searchHelpByTitleStmt:                             q.searchHelpByTitleStmt,
 		searchPlayersByUsernameStmt:                       q.searchPlayersByUsernameStmt,
 		searchTagsStmt:                                    q.searchTagsStmt,
+		setActorImagePlayerPropertiesCurrentStmt:          q.setActorImagePlayerPropertiesCurrentStmt,
 		updateActorImageDescriptionStmt:                   q.updateActorImageDescriptionStmt,
 		updateActorImageShortDescriptionStmt:              q.updateActorImageShortDescriptionStmt,
 		updatePlayerPasswordStmt:                          q.updatePlayerPasswordStmt,

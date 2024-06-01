@@ -14,7 +14,7 @@ UPDATE actor_images SET short_description = ? WHERE id = ?;
 UPDATE actor_images SET description = ? WHERE id = ?;
 
 -- name: CreateActorImage :execresult
-INSERT INTO actor_images (gender, name, short_description, description) VALUES (?, ?, ?, ?);
+INSERT INTO actor_images (name, gender, short_description, description) VALUES (?, ?, ?, ?);
 
 -- name: ListActorImageKeywords :many
 SELECT * FROM actor_images_keywords WHERE aiid = ?;
@@ -84,3 +84,15 @@ INSERT INTO actor_images_furniture_properties (aiid, seating) VALUES (?, ?);
 
 -- name: DeleteActorImageFurnitureProperties :exec
 DELETE FROM actor_images_furniture_properties WHERE id = ?;
+
+-- name: CreateActorImageCharacterMetadata :exec
+INSERT INTO actor_images_character_metadata (aiid, `key`, value) VALUES (?, ?, ?);
+
+-- name: CreateActorImagePlayerProperties :execresult
+INSERT INTO actor_images_player_properties (aiid, pid) VALUES (?, ?);
+
+-- name: GetActorImagePlayerPropertiesForImage :one
+SELECT * FROM actor_images_player_properties WHERE aiid = ?;
+
+-- name: SetActorImagePlayerPropertiesCurrent :exec
+UPDATE actor_images_player_properties SET current = ? WHERE id = ?;

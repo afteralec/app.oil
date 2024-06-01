@@ -35,6 +35,15 @@ type ActorImagesCanBe struct {
 	ID        int64
 }
 
+type ActorImagesCharacterMetadatum struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	AIID      int64
+	ID        int64
+	Key       string
+	Value     string
+}
+
 type ActorImagesContainerProperty struct {
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
@@ -76,6 +85,15 @@ type ActorImagesKeyword struct {
 	Keyword   string
 	AIID      int64
 	ID        int64
+}
+
+type ActorImagesPlayerProperty struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	AIID      int64
+	PID       int64
+	ID        int64
+	Current   bool
 }
 
 type ActorImagesPrimaryHand struct {
