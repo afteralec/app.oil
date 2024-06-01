@@ -189,6 +189,7 @@ var grantPlayerPermissionCmd = &cobra.Command{
 	},
 }
 
+// TODO: Split out the username case here into a "granted" command
 var listPlayerPermissionCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List a player's current permissions.",
@@ -203,7 +204,14 @@ var listPlayerPermissionCmd = &cobra.Command{
 		}
 
 		if !username.IsValid(u) {
-			return errors.New("please enter a valid username")
+			permissionnames := []string{}
+			for _, permission := range player.AllPermissions {
+				permissionnames = append(permissionnames, permission.Name)
+			}
+			permmissionsmsg := strings.Join(permissionnames, "\n")
+			msg := fmt.Sprintf("All permissions:\n%s", permmissionsmsg)
+			fmt.Println(msg)
+			return nil
 		}
 
 		db, err := sql.Open("mysql", fmt.Sprintf("%s?parseTime=true", dbURL))
