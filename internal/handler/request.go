@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"database/sql"
+	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -288,7 +289,11 @@ func RequestPage(i *service.Interfaces) fiber.Handler {
 		}
 
 		if req.Status == request.StatusIncomplete {
-			nifo, err := request.NextIncompleteField(req.Type, fieldmap)
+			nifo, err := request.NextIncompleteField(request.NextIncompleteFieldParams{
+				PID:      pid,
+				Request:  &req,
+				FieldMap: fieldmap,
+			})
 			if err != nil {
 				c.Status(fiber.StatusInternalServerError)
 				return c.Render(view.InternalServerError, view.Bind(c), layout.Standalone)
@@ -636,9 +641,9 @@ func UpdateRequestField(i *service.Interfaces) fiber.Handler {
 
 		if req.Status == request.StatusIncomplete {
 			// TODO: Boost this using the same handler logic for the request page?
-			c.Append("HX-Refresh", "true")
+			c.Append(header.HXRefresh, header.True)
 		} else {
-			c.Append("HX-Redirect", route.RequestPath(rid))
+			c.Append(header.HXRedirect, route.RequestPath(rid))
 		}
 
 		return nil
@@ -1380,12 +1385,14 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		in := new(input)
 		if err := c.BodyParser(in); err != nil {
+			log.Println(err)
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
 
 		text := request.SanitizeChangeRequestText(in.Text)
 		if !request.IsChangeRequestTextValid(text) {
+			log.Println("change request text invalid")
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}

@@ -2,6 +2,7 @@ package request
 
 import (
 	"context"
+	"log"
 
 	html "github.com/gofiber/template/html/v2"
 
@@ -116,7 +117,7 @@ func UpdateField(q *query.Queries, p UpdateFieldParams) error {
 			return err
 		}
 
-		if ready {
+		if !ready {
 			if err := UpdateStatus(q, UpdateStatusParams{
 				PID:     p.PID,
 				Request: p.Request,
@@ -149,6 +150,7 @@ func AreFieldsReady(p AreFieldsReadyParams) (bool, error) {
 		}
 
 		if p.PlayerOnly && !fd.ForPlayer() {
+			log.Printf("skipping ready check on %s", fd.Type)
 			continue
 		}
 
@@ -175,6 +177,8 @@ func AreFieldsReady(p AreFieldsReadyParams) (bool, error) {
 			ready = false
 		}
 	}
+
+	log.Println(ready)
 
 	return ready, nil
 }
@@ -206,12 +210,14 @@ func SubfieldMap(subfields []query.RequestSubfield) map[int64][]query.RequestSub
 	return m
 }
 
-func NextIncompleteField(t string, fieldmap field.Map) (field.NextIncompleteOutput, error) {
-	fields, ok := FieldsByType[t]
+type NextIncompleteFieldParams = field.NextIncompleteParams
+
+func NextIncompleteField(p field.NextIncompleteParams) (field.NextIncompleteOutput, error) {
+	fields, ok := FieldsByType[p.Request.Type]
 	if !ok {
 		return field.NextIncompleteOutput{}, ErrNoDefinition
 	}
-	return fields.NextIncomplete(fieldmap)
+	return fields.NextIncomplete(p)
 }
 
 func NextUnreviewedField(t string, fieldmap field.Map) (field.NextUnreviewedOutput, error) {

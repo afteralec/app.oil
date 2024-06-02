@@ -289,14 +289,24 @@ func (fg *Group) Get(ft string) (Field, bool) {
 	return field, ok
 }
 
+type NextIncompleteParams struct {
+	Request  *query.Request
+	FieldMap Map
+	PID      int64
+}
+
 type NextIncompleteOutput struct {
 	Field *query.RequestField
 	Last  bool
 }
 
-func (f *Group) NextIncomplete(fields Map) (NextIncompleteOutput, error) {
+func (f *Group) NextIncomplete(p NextIncompleteParams) (NextIncompleteOutput, error) {
 	for i, fd := range f.list {
-		field, ok := fields[fd.Type]
+		if fd.ForReviewer() && p.Request.PID == p.PID {
+			continue
+		}
+
+		field, ok := p.FieldMap[fd.Type]
 		if !ok {
 			continue
 		}
