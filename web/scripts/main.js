@@ -127,7 +127,8 @@ export function sanitizeCharacterKeyword(kw) {
 }
 
 export function sanitizeRequestChangeRequest(c = "") {
-  const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/g;
+  // const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/g;
+  const regex = /[^a-zA-Z;,'\"-.!():/ ]+/g;
   return c.replace(regex, "");
 }
 
@@ -209,9 +210,10 @@ export function areCharacterKeywordsValid(kws) {
 
 // TODO: Test
 export function isRequestChangeRequestValid(c = "") {
-  if (c.length < 1) return false;
+  if (c.length < 10) return false;
   if (c.length > 1000) return false;
-  const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
+  // const regex = /[^a-zA-Z, "'\-\.?!()\r\n]+/gi;
+  const regex = /[^a-zA-Z;,'\"-.!():/ ]+/g;
   if (regex.test(c)) return false;
   return true;
 }

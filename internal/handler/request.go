@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
 
@@ -1385,14 +1384,12 @@ func CreateRequestChangeRequest(i *service.Interfaces) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		in := new(input)
 		if err := c.BodyParser(in); err != nil {
-			log.Println(err)
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}
 
 		text := request.SanitizeChangeRequestText(in.Text)
 		if !request.IsChangeRequestTextValid(text) {
-			log.Println("change request text invalid")
 			c.Status(fiber.StatusBadRequest)
 			return nil
 		}

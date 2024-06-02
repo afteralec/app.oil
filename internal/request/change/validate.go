@@ -12,7 +12,8 @@ const (
 	TextMaxLength = 1000
 )
 
-var TextRegex string = "[^a-zA-Z, \"'\\-\\.?!()\\r\\n]+"
+// var TextRegex string = "[^a-zA-Z;, \"'\\-\\.?!()\\r\\n]+"
+var TextRegex string = "[^a-zA-Z;,'\"-.!():/ ]+"
 
 var (
 	TextLengthValidator validate.StringLengthValidator       = validate.NewStringLengthValidator(TextMinLength, TextMaxLength)

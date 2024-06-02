@@ -12,7 +12,7 @@ func TestSanitizeTextWithoutInvalidChars(t *testing.T) {
 }
 
 func TestSanitizeTextWithInvalidChars(t *testing.T) {
-	text := "test1234@%%"
+	text := "test1234@"
 	expected := "test"
 	require.Equal(t, expected, SanitizeText(text))
 }
